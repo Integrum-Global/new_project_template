@@ -1,0 +1,77 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "new_project"
+version = "0.1.1"
+description = "New Project Description"
+authors = [
+    {name = "Integrum", email = "info@integrum.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "networkx>=2.7",
+    "pydantic>=1.9",
+    "matplotlib>=3.5",
+    "pyyaml>=6.0",
+    "click>=8.0",
+    "pytest>=8.3.5",
+    "mcp[cli]>=1.9.2",
+    "pandas>=2.2.3",
+    "numpy>=2.2.5",
+    "scipy>=1.15.3",
+    "scikit-learn>=1.6.1",
+    "requests>=2.32.3",
+    "pytest-cov>=6.1.1",
+    "isort>=6.0.1",
+    "aiohttp>=3.12.4",
+    "ruff>=0.11.12",
+    "msal>=1.32.3",
+    "sphinx>=8.2.3",
+    "sphinx-rtd-theme>=3.0.2",
+    "sphinx-copybutton>=0.5.2",
+    "sphinxcontrib-mermaid>=1.0.0",
+    "sphinx-autobuild>=2024.10.3",
+    "autodoc>=0.5.0",
+    "myst-parser>=4.0.1",
+    "black>=25.1.0",
+    "psutil>=7.0.0",
+    "fastapi[all]>=0.115.12",
+    "pytest-asyncio>=1.0.0",
+    "pre-commit>=4.2.0",
+    "twine>=6.1.0",
+    "ollama>=0.5.1",
+    "kailash>=0.1.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "black>=22.0",
+    "isort>=5.10",
+    "mypy>=0.9",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/integrum/new_project_template"
+"Bug Tracker" = "https://github.com/integrum/new_project_template/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[dependency-groups]
+dev = [
+    "detect-secrets>=1.5.0",
+    "doc8>=1.1.2",
+    "pre-commit>=4.2.0",
+]

@@ -1,0 +1,86 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+docs/api/_build/
+docs/*/_build/
+_build/
+site/
+*.doctree
+
+# Generated outputs - all output directories
+outputs/
+output/
+data/outputs/
+examples/outputs/
+examples/output/
+
+# Task tracking storage
+**/task_storage/
+**/tasks/runs/
+**/tasks/tasks/
+**/tasks/metrics/
+**/*_tracking/
+
+# Data exports
+data/exports/docker/
+data/exports/kubernetes/
+data/exports/minimal/
+data/exports/standard/
+
+# Generated visualizations and data files
+data/*_matplotlib.png
+data/sample_metrics.csv
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Local development
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.claude
