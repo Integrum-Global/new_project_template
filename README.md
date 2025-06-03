@@ -46,6 +46,7 @@ This template provides a foundation for building node-based workflow architectur
    This creates a virtual environment and installs all dependencies from pyproject.toml.
 
 4. **Activate Environment**
+   Automated if using uv, but you can manually activate it:
    ```bash
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
    ```
@@ -134,17 +135,44 @@ Claude Code provides structured development sessions that align with enterprise 
 
 ```
 new_project_template/
-├── src/                    # Main package source code
-├── examples/               # Categorized workflow examples
-├── tests/                  # Test suite
-├── docs/                   # Sphinx documentation
-├── guide/
-│   ├── prd/               # Product Requirements Documents
-│   ├── adr/               # Architecture Decision Records
-│   ├── todos/             # Task management
-│   └── mistakes/          # Common pitfalls documentation
-├── data/                   # Input data files
-└── outputs/               # Generated outputs
+├── src/                        # SOURCE CODE - All Python packages
+│   ├── shared/                 # Shared components package
+│   │   ├── nodes/             # Custom shared nodes
+│   │   ├── workflows/         # Reusable workflow components
+│   │   └── utils/             # Shared utilities
+│   └── solutions/              # Individual solution packages
+│       └── new_module/        # Example solution module
+├── docs/                       # Documentation (Sphinx)
+│   ├── api/                   # API documentation
+│   ├── guides/               # User guides
+│   │   ├── solution-development.md  # Detailed solution workflows
+│   │   ├── solution-templates.md    # Ready-to-use templates
+│   │   ├── checklists.md           # Quick reference checklists
+│   │   └── best-practices.md       # Development best practices
+│   └── examples/             # Example usage
+├── guide/                      # Solution development guides
+│   ├── adr/                   # Architecture Decision Records
+│   ├── mistakes/             # Mistakes and lessons learned
+│   └── prd/                  # Product Requirements Documents
+├── reference/                  # API references (from SDK)
+│   ├── api-registry.yaml     # Exact API specifications
+│   ├── validation-guide.md   # Error prevention rules
+│   └── cheatsheet.md        # Common patterns
+├── templates/                  # Solution templates
+├── todos/                      # Solution tracking
+│   ├── 000-master.md         # Active solution priorities
+│   └── completed-archive.md  # Completed solutions
+├── data/                       # Data files (not in src/)
+│   ├── samples/               # Sample data for testing
+│   ├── configs/              # Configuration files
+│   └── outputs/              # Output directory
+├── scripts/                    # Utility scripts
+│   ├── deploy.py             # Deployment script
+│   ├── validate.py           # Validation script
+│   └── setup_env.py          # Environment setup
+├── CLAUDE.md                   # Claude Code instructions & quick reference
+├── pyproject.toml              # Modern Python packaging config
+└── uv.lock                    # Dependency lock file
 ```
 
 ## Key Kailash SDK Concepts
