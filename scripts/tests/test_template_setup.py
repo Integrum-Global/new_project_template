@@ -10,7 +10,7 @@ import os
 
 def test_project_structure():
     """Test that essential project structure exists."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     
     # Essential directories
     assert (root / "src").exists(), "src directory should exist"
@@ -29,7 +29,7 @@ def test_project_structure():
 
 def test_github_workflows_exist():
     """Test that GitHub workflows are properly configured."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     workflows_dir = root / ".github" / "workflows"
     
     assert workflows_dir.exists(), ".github/workflows directory should exist"
@@ -42,7 +42,7 @@ def test_github_workflows_exist():
 
 def test_workflow_yaml_syntax():
     """Test that workflow YAML files have valid syntax."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     workflows_dir = root / ".github" / "workflows"
     
     for workflow_file in workflows_dir.glob("*.yml"):
@@ -55,7 +55,7 @@ def test_workflow_yaml_syntax():
 
 def test_codeowners_exists():
     """Test that CODEOWNERS file exists and protects important directories."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     codeowners = root / ".github" / "CODEOWNERS"
     
     assert codeowners.exists(), "CODEOWNERS file should exist"
@@ -66,7 +66,7 @@ def test_codeowners_exists():
 
 def test_sync_scripts_exist():
     """Test that sync scripts are executable and exist."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     scripts_dir = root / "scripts"
     
     sync_script = scripts_dir / "sync_template.py"
@@ -83,7 +83,7 @@ def test_sync_scripts_exist():
 
 def test_reference_documentation():
     """Test that reference documentation exists."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     reference_dir = root / "reference"
     
     essential_docs = [
@@ -99,22 +99,24 @@ def test_reference_documentation():
 
 def test_template_sync_configuration():
     """Test that template sync configuration is properly set up."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     
     # Check sync-to-downstream workflow has required triggers
     sync_downstream = root / ".github" / "workflows" / "sync-to-downstream.yml"
     with open(sync_downstream, 'r') as f:
         workflow = yaml.safe_load(f)
     
-    assert 'on' in workflow, "Workflow should have trigger configuration"
-    assert 'push' in workflow['on'], "Should trigger on push"
-    assert 'schedule' in workflow['on'], "Should have scheduled trigger"
-    assert 'workflow_dispatch' in workflow['on'], "Should allow manual trigger"
+    # Handle the case where 'on' is parsed as True (boolean) due to YAML parsing
+    triggers = workflow.get('on') or workflow.get(True)
+    assert triggers is not None, "Workflow should have trigger configuration"
+    assert 'push' in triggers, "Should trigger on push"
+    assert 'schedule' in triggers, "Should have scheduled trigger"
+    assert 'workflow_dispatch' in triggers, "Should allow manual trigger"
 
 
 def test_preserve_patterns():
     """Test that important preservation patterns are configured."""
-    root = Path(__file__).parent.parent
+    root = Path(__file__).parent.parent.parent
     sync_script = root / "scripts" / "sync_template.py"
     
     if sync_script.exists():

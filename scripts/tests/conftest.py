@@ -9,7 +9,7 @@ from pathlib import Path
 @pytest.fixture
 def repo_root():
     """Fixture providing the repository root path."""
-    return Path(__file__).parent.parent
+    return Path(__file__).parent.parent.parent
 
 
 @pytest.fixture

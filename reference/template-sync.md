@@ -129,7 +129,7 @@ gh run list --workflow=sync-to-downstream.yml
 - **No manual sync needed** - Everything is automated
 - **No tokens or secrets needed** - Just clone and code!
 
-📋 **Detailed File List**: See [Complete Sync Reference](../docs/SYNC-FILES-REFERENCE.md)
+📋 **Detailed File List**: See [Complete Sync Reference](sync-files-reference.md)
 
 ### Files Preserved (🛡️ Never Touched)
 - `src/solutions/*` - Your solution code
