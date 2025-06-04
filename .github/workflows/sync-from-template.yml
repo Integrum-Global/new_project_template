@@ -51,9 +51,13 @@ jobs:
             "data/samples"
             "data/configs"
             "CHANGELOG.md"
-            "CLAUDE.md"
             "README.md"
             "pyproject.toml"
+          )
+          
+          # Files that need special merge handling
+          MERGE_FILES=(
+            "CLAUDE.md"
           )
           
           # Sync each file/directory (always overwrite)
@@ -67,6 +71,45 @@ jobs:
           for item in "${SYNC_IF_MISSING[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item" && [ ! -e "$item" ]; then
               git checkout template/main -- "$item" 2>/dev/null || true
+            fi
+          done
+          
+          # Handle files that need merging
+          for item in "${MERGE_FILES[@]}"; do
+            if git ls-tree template/main --name-only | grep -q "^$item"; then
+              if [ -e "$item" ]; then
+                # File exists, need to merge
+                echo "Merging $item..."
+                
+                # Get the template version
+                git show template/main:"$item" > "${item}.template"
+                
+                # For CLAUDE.md, preserve project-specific instructions
+                if grep -q "## Project-Specific Instructions" "$item"; then
+                  # Extract project-specific section
+                  sed -n '/## Project-Specific Instructions/,$p' "$item" > "${item}.project"
+                  
+                  # Check if template already has project-specific section
+                  if ! grep -q "## Project-Specific Instructions" "${item}.template"; then
+                    # Append project section to template
+                    cat "${item}.template" > "$item"
+                    echo "" >> "$item"
+                    cat "${item}.project" >> "$item"
+                  else
+                    # Template already has the section, just use template version
+                    cp "${item}.template" "$item"
+                  fi
+                  rm -f "${item}.project"
+                else
+                  # No project-specific section, use template version
+                  cp "${item}.template" "$item"
+                fi
+                
+                rm -f "${item}.template"
+              else
+                # File doesn't exist, just sync from template
+                git checkout template/main -- "$item" 2>/dev/null || true
+              fi
             fi
           done
           

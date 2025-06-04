@@ -233,3 +233,10 @@ src/solutions/my_solution/
 - **Track progress** - Update todos
 
 For detailed guides, see the `guide/instructions/` directory.
+
+## Updating Template-Managed Files in Downstream Repositories
+
+When working in a downstream repository created from this template, certain files are managed by the template sync process. When asked to update these files, add new instructions under this section:
+```
+## Project-Specific Instructions
+```

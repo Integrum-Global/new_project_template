@@ -27,7 +27,7 @@ PRESERVE_PATTERNS = [
     "data/*",  # Project-specific data
     ".env*",  # Environment files
     "config.yaml",  # Project-specific config
-    "README.md",  # Project-specific readme (merge changes)
+    "README.md",  # Project-specific readme (preserve if exists)
     ".git/*",  # Git history
     ".github/workflows/*_custom.yml",  # Custom workflows
 ]
@@ -52,14 +52,12 @@ SYNC_PATTERNS = [
     "scripts/deploy.py",
     ".pre-commit-config.yaml",
     "CHANGELOG.md",
-    "pyproject.toml",  # Dependencies (merge)
+    "pyproject.toml",  # Dependencies (preserve if exists)
     "MANIFEST.in",
 ]
 
 # Files that require special merge handling
 MERGE_FILES = {
-    "README.md": "merge_readme",
-    "pyproject.toml": "merge_pyproject",
     "CLAUDE.md": "merge_claude_md",
 }
 
@@ -67,6 +65,7 @@ MERGE_FILES = {
 SYNC_IF_MISSING = [
     "README.md",
     "CLAUDE.md",
+    "pyproject.toml",
     "CHANGELOG.md",
     "data/configs/",
     "data/samples/",
@@ -286,91 +285,9 @@ class TemplateSyncer:
 
     def merge_file(self, src: Path, dst: Path, merge_method: str) -> bool:
         """Merge file with special handling."""
-        if merge_method == "merge_readme":
-            return self.merge_readme(src, dst)
-        elif merge_method == "merge_pyproject":
-            return self.merge_pyproject(src, dst)
-        elif merge_method == "merge_claude_md":
+        if merge_method == "merge_claude_md":
             return self.merge_claude_md(src, dst)
         return False
-
-    def merge_readme(self, src: Path, dst: Path) -> bool:
-        """Merge README files, preserving project-specific sections."""
-        if not dst.exists():
-            return self.copy_file(src, dst)
-
-        # Read both files
-        template_content = src.read_text()
-        downstream_content = dst.read_text()
-
-        # Look for project-specific section markers
-        start_marker = "<!-- PROJECT SPECIFIC START -->"
-        end_marker = "<!-- PROJECT SPECIFIC END -->"
-
-        if start_marker in downstream_content and end_marker in downstream_content:
-            # Extract project-specific content
-            start_idx = downstream_content.find(start_marker)
-            end_idx = downstream_content.find(end_marker) + len(end_marker)
-            project_specific = downstream_content[start_idx:end_idx]
-
-            # Insert into template content if markers exist
-            if start_marker in template_content and end_marker in template_content:
-                template_start = template_content.find(start_marker)
-                template_end = template_content.find(end_marker) + len(end_marker)
-                new_content = (
-                    template_content[:template_start]
-                    + project_specific
-                    + template_content[template_end:]
-                )
-
-                if new_content != downstream_content:
-                    dst.write_text(new_content)
-                    logger.info(f"Merged {dst.name}")
-                    return True
-
-        return False
-
-    def merge_pyproject(self, src: Path, dst: Path) -> bool:
-        """Merge pyproject.toml files, preserving project dependencies."""
-        if not dst.exists():
-            return self.copy_file(src, dst)
-
-        try:
-            import toml
-
-            template_data = toml.load(src)
-            downstream_data = toml.load(dst)
-
-            # Preserve project-specific dependencies
-            if (
-                "project" in downstream_data
-                and "dependencies" in downstream_data["project"]
-            ):
-                project_deps = set(downstream_data["project"]["dependencies"])
-                template_deps = set(
-                    template_data.get("project", {}).get("dependencies", [])
-                )
-
-                # Merge dependencies
-                merged_deps = sorted(project_deps.union(template_deps))
-                template_data["project"]["dependencies"] = merged_deps
-
-            # Preserve project metadata
-            if "project" in downstream_data:
-                for key in ["name", "description", "version"]:
-                    if key in downstream_data["project"]:
-                        template_data["project"][key] = downstream_data["project"][key]
-
-            # Write merged content
-            with open(dst, "w") as f:
-                toml.dump(template_data, f)
-
-            logger.info(f"Merged {dst.name}")
-            return True
-
-        except Exception as e:
-            logger.warning(f"Failed to merge pyproject.toml: {e}")
-            return False
 
     def merge_claude_md(self, src: Path, dst: Path) -> bool:
         """Merge CLAUDE.md files, appending project-specific instructions."""
