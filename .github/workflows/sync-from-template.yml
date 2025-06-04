@@ -80,23 +80,7 @@ jobs:
             
             gh pr create \
               --title "Sync template updates" \
-              --body "## Automated Template Sync
-
-This PR syncs the latest updates from the template repository: ${TEMPLATE_REPO}
-
-### Files Updated
-- GitHub workflows and configurations
-- Reference documentation  
-- Guides and instructions
-- Shared components
-- Core scripts
-
-### Review Checklist
-- [ ] Review changes for any conflicts
-- [ ] Ensure no project-specific code is affected
-- [ ] Test that existing functionality works
-
-This sync was triggered automatically at $(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ). Please review changes for conflicts and ensure existing functionality works." \
               --base main
           else
             echo "No changes to sync"
