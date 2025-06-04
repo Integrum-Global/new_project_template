@@ -30,21 +30,18 @@ from kailash.nodes.data import JSONWriterNode, CSVWriterNode
 def create_api_workflow(config: Dict[str, Any] = None):
     """
     Create API integration workflow.
-    
+
     Args:
         config: Configuration dictionary
-        
+
     Returns:
         Configured Workflow instance
     """
     if config is None:
         config = {}
-    
-    workflow = Workflow(
-        workflow_id="api_integration",
-        name="API Integration Workflow"
-    )
-    
+
+    workflow = Workflow(workflow_id="api_integration", name="API Integration Workflow")
+
     # 1. Make API request
     workflow.add_node(
         "api_call",
@@ -55,9 +52,9 @@ def create_api_workflow(config: Dict[str, Any] = None):
         params=config.get("params", {}),
         timeout=config.get("timeout", 30000),  # 30 seconds
         retry_count=config.get("retry_count", 3),
-        retry_delay=config.get("retry_delay", 1000)  # 1 second
+        retry_delay=config.get("retry_delay", 1000),  # 1 second
     )
-    
+
     # 2. Process API response
     workflow.add_node(
         "process_response",
@@ -89,9 +86,9 @@ def execute(api_response):
             "timestamp": datetime.now().isoformat()
         }
     }
-"""
+""",
     )
-    
+
     # 3. Validate and enrich data
     workflow.add_node(
         "validate",
@@ -134,30 +131,32 @@ def calculate_priority(record):
         return 2
     else:
         return 3
-"""
+""",
     )
-    
+
     # 4. Store results
     workflow.add_node(
         "save_json",
         JSONWriterNode,
         file_path=config.get("output_json", "data/api_results.json"),
-        pretty_print=True
+        pretty_print=True,
     )
-    
+
     workflow.add_node(
         "save_csv",
         CSVWriterNode,
         file_path=config.get("output_csv", "data/api_results.csv"),
-        write_header=True
+        write_header=True,
     )
-    
+
     # Connect workflow
-    workflow.connect("api_call", "process_response", mapping={"response": "api_response"})
+    workflow.connect(
+        "api_call", "process_response", mapping={"response": "api_response"}
+    )
     workflow.connect("process_response", "validate", mapping={"processed": "data"})
     workflow.connect("validate", "save_json", mapping={"validated": "data"})
     workflow.connect("validate", "save_csv", mapping={"validated": "data"})
-    
+
     return workflow
 
 
@@ -168,34 +167,32 @@ def main():
         config = {
             "api_url": "https://jsonplaceholder.typicode.com/users",
             "method": "GET",
-            "headers": {
-                "Accept": "application/json",
-                "User-Agent": "Kailash-SDK/1.0"
-            },
+            "headers": {"Accept": "application/json", "User-Agent": "Kailash-SDK/1.0"},
             "output_json": "data/users.json",
-            "output_csv": "data/users.csv"
+            "output_csv": "data/users.csv",
         }
-        
+
         # Add auth token if available
         import os
+
         if api_token := os.getenv("API_TOKEN"):
             config["headers"]["Authorization"] = f"Bearer {api_token}"
-        
+
         # Create and execute workflow
         workflow = create_api_workflow(config)
         runtime = LocalRuntime(debug=True)
-        
+
         print("Starting API Integration...")
         results, run_id = runtime.execute(workflow)
-        
+
         print(f"✅ API integration completed!")
         print(f"Run ID: {run_id}")
         print(f"Results saved to:")
         print(f"  - JSON: {config['output_json']}")
         print(f"  - CSV: {config['output_csv']}")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ API integration failed: {e}")
         return False

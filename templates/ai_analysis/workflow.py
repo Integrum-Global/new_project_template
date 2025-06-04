@@ -31,28 +31,27 @@ from kailash.nodes.transform import DataTransformerNode
 def create_ai_analysis_workflow(config: Dict[str, Any] = None):
     """
     Create AI analysis workflow.
-    
+
     Args:
         config: Configuration dictionary
-        
+
     Returns:
         Configured Workflow instance
     """
     if config is None:
         config = {}
-    
+
     workflow = Workflow(
-        workflow_id="ai_analysis",
-        name="AI-Powered Data Analysis Workflow"
+        workflow_id="ai_analysis", name="AI-Powered Data Analysis Workflow"
     )
-    
+
     # 1. Load input data
     workflow.add_node(
         "load_data",
         JSONReaderNode,
-        file_path=config.get("input_file", "data/documents.json")
+        file_path=config.get("input_file", "data/documents.json"),
     )
-    
+
     # 2. Prepare data for AI analysis
     workflow.add_node(
         "prepare_data",
@@ -102,9 +101,9 @@ def chunk_text(text, max_length):
         chunks.append(current_chunk.strip())
     
     return chunks
-"""
+""",
     )
-    
+
     # 3. AI Analysis - Extract insights
     workflow.add_node(
         "ai_extract",
@@ -121,9 +120,9 @@ def chunk_text(text, max_length):
         5. Action items or recommendations
         
         Provide structured output in JSON format.""",
-        max_tokens=config.get("max_tokens", 1000)
+        max_tokens=config.get("max_tokens", 1000),
     )
-    
+
     # 4. AI Analysis - Generate summary
     workflow.add_node(
         "ai_summarize",
@@ -138,9 +137,9 @@ def chunk_text(text, max_length):
         - Use clear, professional language
         - Keep summary under 200 words
         """,
-        max_tokens=300
+        max_tokens=300,
     )
-    
+
     # 5. Process and structure AI results
     workflow.add_node(
         "process_results",
@@ -215,17 +214,17 @@ def merge_entities(docs):
     
     # Convert sets to lists
     return {k: list(v) for k, v in all_entities.items()}
-"""
+""",
     )
-    
+
     # 6. Save results
     workflow.add_node(
         "save_analysis",
         JSONWriterNode,
         file_path=config.get("output_file", "data/ai_analysis_results.json"),
-        pretty_print=True
+        pretty_print=True,
     )
-    
+
     workflow.add_node(
         "save_summary_report",
         PythonCodeNode,
@@ -269,25 +268,33 @@ def generate_markdown_report(docs, analysis):
         report += f"**Topics**: {', '.join(doc['topics'][:5])}\\n\\n"
     
     return report
-"""
+""",
     )
-    
+
     # Connect workflow
     workflow.connect("load_data", "prepare_data", mapping={"documents": "data"})
-    workflow.connect("prepare_data", "ai_extract", mapping={"prepared_docs": "documents"})
-    workflow.connect("prepare_data", "ai_summarize", mapping={"prepared_docs": "documents"})
     workflow.connect(
-        ["prepare_data", "ai_extract", "ai_summarize"], 
+        "prepare_data", "ai_extract", mapping={"prepared_docs": "documents"}
+    )
+    workflow.connect(
+        "prepare_data", "ai_summarize", mapping={"prepared_docs": "documents"}
+    )
+    workflow.connect(
+        ["prepare_data", "ai_extract", "ai_summarize"],
         "process_results",
         mapping={
             "prepared_docs": "original_docs",
             "ai_extract": "insights",
-            "ai_summarize": "summaries"
-        }
+            "ai_summarize": "summaries",
+        },
     )
-    workflow.connect("process_results", "save_analysis", mapping={"analyzed_docs": "data"})
-    workflow.connect("process_results", "save_summary_report", mapping={"analyzed_docs": "data"})
-    
+    workflow.connect(
+        "process_results", "save_analysis", mapping={"analyzed_docs": "data"}
+    )
+    workflow.connect(
+        "process_results", "save_summary_report", mapping={"analyzed_docs": "data"}
+    )
+
     return workflow
 
 
@@ -301,32 +308,33 @@ def main():
             "ai_provider": "openai",
             "ai_model": "gpt-4",
             "temperature": 0.3,
-            "max_tokens": 1000
+            "max_tokens": 1000,
         }
-        
+
         # Check for API key
         import os
+
         if not os.getenv("OPENAI_API_KEY"):
             print("⚠️  Warning: OPENAI_API_KEY not set. Using mock mode.")
             config["ai_provider"] = "mock"
-        
+
         # Create and execute workflow
         workflow = create_ai_analysis_workflow(config)
         runtime = LocalRuntime(debug=True)
-        
+
         print("Starting AI Analysis Workflow...")
         print("=" * 50)
-        
+
         results, run_id = runtime.execute(workflow)
-        
+
         print(f"\n✅ AI analysis completed!")
         print(f"Run ID: {run_id}")
         print(f"\nResults saved to:")
         print(f"  - Analysis data: {config['output_file']}")
         print(f"  - Summary report: data/analysis_report.md")
-        
+
         return True
-        
+
     except Exception as e:
         print(f"❌ AI analysis failed: {e}")
         return False
