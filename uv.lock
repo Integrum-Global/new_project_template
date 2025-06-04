@@ -1483,7 +1483,7 @@ requires-dist = [
     { name = "fastapi", extras = ["all"], specifier = ">=0.115.12" },
     { name = "isort", specifier = ">=6.0.1" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.10" },
-    { name = "kailash", specifier = ">=0.1.1" },
+    { name = "kailash", specifier = ">=0.1.4" },
     { name = "matplotlib", specifier = ">=3.5" },
     { name = "mcp", extras = ["cli"], specifier = ">=1.9.2" },
     { name = "msal", specifier = ">=1.32.3" },

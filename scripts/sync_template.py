@@ -102,10 +102,17 @@ class TemplateSyncer:
         # Get from environment variable (comma-separated)
         downstream = os.environ.get("DOWNSTREAM_REPOS", "").strip()
         if downstream:
+            # Clean up the string - remove backticks, extra whitespace, and newlines
+            downstream = downstream.replace("`", "").replace("\n", ",").replace("\r", ",")
+            # Split by comma and filter out empty strings
             repos = [r.strip() for r in downstream.split(",") if r.strip()]
+            # Filter out any remaining invalid entries
+            repos = [r for r in repos if "/" in r and not r.startswith("http")]
+            logger.info(f"Parsed downstream repos: {repos}")
 
         # If no repos specified, find all repos with template topic
         if not repos:
+            logger.info("No downstream repos specified, searching for repos with kailash-template topic")
             repos = self.find_repos_with_template()
 
         return repos
