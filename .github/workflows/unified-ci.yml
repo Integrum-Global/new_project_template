@@ -123,7 +123,7 @@ jobs:
       - name: Run basic smoke tests
         run: |
           echo "Running basic smoke tests..."
-          uv run pytest tests/test_ci_setup.py -v
+          uv run pytest scripts/tests/test_template_setup.py -v
           uv run python -m kailash --version
 
   # Full test suite for PRs and manual triggers
@@ -152,16 +152,16 @@ jobs:
 
       - name: Check formatting with black
         run: |
-          uv run black --check src/ tests/
+          uv run black --check src/ scripts/tests/
 
       - name: Check import sorting with isort
         run: |
-          uv run isort --check-only src/ tests/
+          uv run isort --check-only src/ scripts/tests/
 
       - name: Lint with ruff
         run: |
           # Check for critical errors only (syntax errors, undefined names, etc.)
-          uv run ruff check src/ tests/ --select=E9,F63,F7,F82
+          uv run ruff check src/ scripts/tests/ --select=E9,F63,F7,F82
           echo "✅ No critical linting errors found"
 
   test-matrix:
@@ -195,7 +195,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          uv run pytest tests/ -v --cov=kailash --cov-report=xml --cov-report=term
+          uv run pytest scripts/tests/ -v --cov=src --cov-report=xml --cov-report=term
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5

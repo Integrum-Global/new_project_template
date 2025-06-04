@@ -24,21 +24,21 @@ from kailash.nodes.code.python import PythonCodeNode
 
 def create_advanced_etl_workflow():
     """Create an advanced ETL workflow with multiple transformations."""
-    
+
     workflow = Workflow(
         workflow_id="advanced_etl_pipeline",
-        name="Advanced ETL Pipeline with Custom Processing"
+        name="Advanced ETL Pipeline with Custom Processing",
     )
-    
+
     # 1. Extract data
     workflow.add_node(
         "extract",
         CSVReaderNode,
         file_path="examples/sample_data/sales.csv",
         delimiter=",",
-        has_header=True
+        has_header=True,
     )
-    
+
     # 2. Initial filtering and cleaning
     workflow.add_node(
         "clean",
@@ -48,10 +48,10 @@ def create_advanced_etl_workflow():
             {"type": "filter", "condition": "amount > 0"},
             {"type": "filter", "condition": "status != 'cancelled'"},
             # Standardize date format
-            {"type": "transform", "column": "date", "format": "YYYY-MM-DD"}
-        ]
+            {"type": "transform", "column": "date", "format": "YYYY-MM-DD"},
+        ],
     )
-    
+
     # 3. Custom business logic
     workflow.add_node(
         "calculate",
@@ -82,9 +82,9 @@ def execute(data):
     )
     
     return {"processed": df.to_dict('records')}
-"""
+""",
     )
-    
+
     # 4. Aggregate and summarize
     workflow.add_node(
         "aggregate",
@@ -93,10 +93,10 @@ def execute(data):
             # Sort by net amount
             {"type": "sort", "key": "net_amount", "reverse": True},
             # Group by performance category
-            {"type": "aggregate", "group_by": "performance", "agg_func": "sum"}
-        ]
+            {"type": "aggregate", "group_by": "performance", "agg_func": "sum"},
+        ],
     )
-    
+
     # 5. Final formatting
     workflow.add_node(
         "format",
@@ -111,24 +111,24 @@ def execute(data):
         record['total_net'] = f"${record['net_amount']:,.2f}"
     
     return {"formatted": data['aggregated']}
-"""
+""",
     )
-    
+
     # 6. Write results
     workflow.add_node(
         "save_detailed",
         CSVWriterNode,
         file_path="examples/sample_data/detailed_results.csv",
-        write_header=True
+        write_header=True,
     )
-    
+
     workflow.add_node(
         "save_summary",
         CSVWriterNode,
         file_path="examples/sample_data/summary_results.csv",
-        write_header=True
+        write_header=True,
     )
-    
+
     # Connect the workflow
     workflow.connect("extract", "clean", mapping={"data": "input"})
     workflow.connect("clean", "calculate", mapping={"cleaned": "data"})
@@ -136,46 +136,42 @@ def execute(data):
     workflow.connect("calculate", "save_detailed", mapping={"processed": "data"})
     workflow.connect("aggregate", "format", mapping={"aggregated": "data"})
     workflow.connect("format", "save_summary", mapping={"formatted": "data"})
-    
+
     return workflow
 
 
 def main():
     """Run the advanced ETL pipeline with error handling."""
-    
+
     try:
         # Create sample data if it doesn't exist
         sample_dir = Path("examples/sample_data")
         sample_dir.mkdir(parents=True, exist_ok=True)
-        
+
         # Create workflow
         workflow = create_advanced_etl_workflow()
-        
+
         # Configure runtime with monitoring
-        runtime = LocalRuntime(
-            debug=True,
-            max_retries=3,
-            retry_delay=1000  # 1 second
-        )
-        
+        runtime = LocalRuntime(debug=True, max_retries=3, retry_delay=1000)  # 1 second
+
         print("Starting Advanced ETL Pipeline...")
         print("=" * 50)
-        
+
         # Execute workflow
         results, run_id = runtime.execute(workflow)
-        
+
         print("\n✅ Pipeline completed successfully!")
         print(f"Run ID: {run_id}")
         print("\nOutputs created:")
         print("- Detailed results: examples/sample_data/detailed_results.csv")
         print("- Summary results: examples/sample_data/summary_results.csv")
-        
+
         # Display summary statistics
-        if 'save_summary' in results:
+        if "save_summary" in results:
             print("\nSummary by Performance Category:")
             print("-" * 30)
             # Would print actual summary here
-            
+
     except Exception as e:
         print(f"\n❌ Pipeline failed: {e}")
         print("\nTroubleshooting:")

@@ -82,7 +82,22 @@ The consolidated guide should only contain:
 - Quick fixes for frequent errors
 - Validation checklist items
 
-## Primary Workflows (MANDATORY FOR ALL USERS)
+## Primary Workflows (MANDATORY)
+
+### Migration Workflow
+
+When migrating existing projects to Kailash SDK:
+
+1. **Place project in**: `migrations/to_migrate/[project_name]/`
+2. **Follow migration guide**: See **[Migration Workflow Instructions](guide/instructions/migration-workflow.md)**
+3. **Use templates**: Check `migrations/templates/` for document templates
+4. **Update todos**: Add migration tasks to `todos/000-master.md`
+
+**Key Points:**
+- Manual analysis required - each project is unique
+- Create comprehensive documentation before coding
+- Ask questions when patterns are unclear
+- Think in Kailash workflows, not direct translation
 
 ### Solution Development Workflow
 
@@ -212,6 +227,3 @@ src/solutions/my_solution/
 - **Track progress** - Update todos
 
 For detailed guides, see the `guide/instructions/` directory.
-
-## Template Sync
-This is a template repository. See `reference/template-sync.md` for sync setup.
