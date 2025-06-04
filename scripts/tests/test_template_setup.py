@@ -24,7 +24,7 @@ def test_project_structure():
     # Essential files
     assert (root / "pyproject.toml").exists(), "pyproject.toml should exist"
     assert (root / "README.md").exists(), "README.md should exist"
-    assert (root / "CLAUDE.md").exists(), "CLAUDE.md should exist"
+    assert (root / "Claude.md").exists(), "Claude.md should exist"
 
 
 def test_github_workflows_exist():
