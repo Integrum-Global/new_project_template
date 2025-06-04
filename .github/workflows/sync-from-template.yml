@@ -73,9 +73,7 @@ jobs:
           # Check if there are changes
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
-            git commit -m "Sync template updates from ${TEMPLATE_REPO}
-            
-Automated sync at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git commit -m "Sync template updates from ${TEMPLATE_REPO} - Automated sync at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
             
             # Push and create PR
             git push origin HEAD
