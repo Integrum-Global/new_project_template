@@ -42,23 +42,32 @@ Python script to validate generated code:
 - Verifies import statements
 - Can be used programmatically or via CLI
 
-### 6. **[Node Catalog](node-catalog.md)** *(Coming Soon)*
-Detailed catalog of all available nodes with:
-- Categorized node listing
-- Required vs optional parameters
-- Common use cases and patterns
-- Performance considerations
+### 6. **[Node Catalog](node-catalog.md)**
+Comprehensive catalog of all 66 available nodes:
+- Complete node listing by category (AI, API, Code, Data, Logic, MCP, Transform)
+- Detailed parameter specifications for each node
+- Input/output schemas and validation
+- Usage examples and best practices
+- Node naming convention issues
 
-### 7. **[Pattern Library](patterns.md)** *(Coming Soon)*
-Pre-built workflow patterns for:
-- ETL pipelines
-- AI/ML workflows  
-- API integrations
-- Data processing
-- Error handling strategies
+### 7. **[Pattern Library](pattern-library.md)**
+Extensive collection of workflow patterns:
+- Core patterns (Linear Pipeline, Direct Execution)
+- Control flow patterns (Conditional Routing, Multi-Level Decisions)
+- Data processing patterns (Parallel, Batch, Stream)
+- Integration patterns (API Gateway, External Services)
+- Error handling patterns (Circuit Breaker, Retry with Backoff)
+- Performance patterns (Caching, Stream Processing)
+- Composition patterns (Nested Workflows, Dynamic Generation)
+- Deployment patterns with best practices
 
-### 8. **[Templates](templates/)** *(Coming Soon)*
-Copy-paste ready code templates for common scenarios
+### 8. **[Templates](templates/)**
+Ready-to-use code templates for common scenarios:
+- Workflow templates (ETL, conditional routing, parallel processing)
+- Custom node creation templates
+- API integration patterns
+- Data validation and processing templates
+- Error handling and monitoring patterns
 
 ## Usage
 
@@ -84,6 +93,7 @@ Copy-paste ready code templates for common scenarios
 5. **Two execution patterns**: `runtime.execute(workflow)` OR `workflow.execute(inputs={})`
 6. **Connection uses mapping**: `workflow.connect("from", "to", mapping={"out": "in"})`
 7. **Parameter order is STRICT**: Check actual implementation, not just documentation
+8. **Configuration vs Runtime parameters**: Config = HOW (file paths, settings), Runtime = WHAT (data flows through connections)
 
 ## Quick Start Example
 
@@ -94,8 +104,10 @@ from kailash.nodes.data import CSVReaderNode, CSVWriterNode
 
 # Create and execute a simple workflow
 workflow = Workflow("example_id", "example")
+# Configuration parameters: WHERE to read/write (static settings)
 workflow.add_node("reader", CSVReaderNode(), file_path="input.csv")
 workflow.add_node("writer", CSVWriterNode(), file_path="output.csv")
+# Runtime parameters: data flows through connections at execution
 workflow.connect("reader", "writer", mapping={"data": "data"})
 
 # Option 1: Execute through runtime
@@ -114,4 +126,4 @@ These references are extracted from the main codebase and should be updated when
 - New patterns emerge
 - Common use cases are identified
 
-Last Updated: Version 0.1.3
+Last Updated: Version 0.1.4 (2025-06-04)

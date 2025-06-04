@@ -1,0 +1,58 @@
+name: Template Cleanup
+
+# This workflow runs when someone uses this template
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  cleanup:
+    # Only run in repos that aren't the template
+    if: github.repository != 'Integrum-Global/new_project_template'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cleanup template-specific files
+        run: |
+          # Remove template-only workflows (keep sync-from-template.yml)
+          rm -f .github/workflows/sync-to-downstream.yml
+          rm -f .github/template-cleanup.yml
+          
+          # Remove template sync script (not needed in downstream)
+          rm -f scripts/sync_template.py
+          
+          # Update CODEOWNERS to use current repo maintainers
+          if [ -f .github/CODEOWNERS ]; then
+            # Try to detect organization name and update accordingly
+            ORG_NAME="${{ github.repository_owner }}"
+            sed -i "s|Integrum-Global/template-maintainers|${ORG_NAME}/maintainers|g" .github/CODEOWNERS
+          fi
+          
+          # Create empty solutions directory if it doesn't exist
+          mkdir -p src/solutions
+          touch src/solutions/.gitkeep
+          
+          # Ensure data directories exist
+          mkdir -p data/{samples,configs,outputs}
+          touch data/outputs/.gitkeep
+          
+          # Check if files were removed
+          if [[ -n $(git status --porcelain) ]]; then
+            git config user.name "GitHub Actions"
+            git config user.email "actions@github.com"
+            git add -A
+            git commit -m "Remove template-specific files after initialization"
+            git push
+          fi
+      
+      - name: Delete this workflow
+        run: |
+          git rm .github/workflows/template-cleanup.yml || true
+          if [[ -n $(git status --porcelain) ]]; then
+            git commit -m "Remove template cleanup workflow"
+            git push
+          fi

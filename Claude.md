@@ -27,14 +27,60 @@
 1. **ALL node classes end with "Node"**: `CSVReaderNode` ✓, `CSVReader` ✗
 2. **ALL methods use snake_case**: `add_node()` ✓, `addNode()` ✗
 3. **ALL config keys use underscores**: `file_path` ✓, `filePath` ✗
-4. **Workflow execution patterns**: `runtime.execute(workflow)` ✓, `workflow.execute(runtime)` ✗
+4. **Workflow execution pattern**: Always use `runtime.execute(workflow, parameters={...})` ✓
 5. **Parameter order is STRICT**: Check exact signatures in api-registry.yaml
+6. **Docstring examples use doctest format**: `>>> code` ✓, `:: code` ✗
+7. **get_parameters() defines ALL node parameters**: Both config AND runtime
+8. **Config vs Runtime**: Config=HOW (static), Runtime=WHAT (dynamic data)
+9. **Execution inputs**: Use `runtime.execute(workflow, parameters={...})` only
+10. **Initial workflow data**: Can use source nodes OR pass via parameters to ANY node
+11. **Use Workflow.connect()**: NOT WorkflowBuilder (different API, causes confusion)
 
 ## 📚 Documentation Guides
 - **[Solution Development Guide](guide/instructions/solution-development.md)** - Detailed workflow processes
 - **[Solution Templates](templates/README.md)** - Ready-to-use code templates
 - **[Development Checklists](guide/instructions/checklists.md)** - Quick reference checklists
 - **[Best Practices](guide/instructions/best-practices.md)** - Development best practices
+
+## 📋 TODO Management System (CRITICAL)
+
+The todo system in `todos/` at the root directory is the central task tracking system:
+
+### File Structure:
+- **`000-master.md`** - ACTIVE TODO LIST (Always check first!)
+  - Current tasks and priorities
+  - Tasks in progress
+  - Urgent client needs
+  - Recent achievements
+
+- **`completed-archive.md`** - Historical record
+  - All completed tasks from past sessions
+  - Detailed implementation notes
+  - Session summaries and statistics
+
+- **Numbered files** (001-xxx.md) - Session-specific logs
+  - How todos were approached and resolved
+  - Challenges faced and solutions found
+  - Lessons learned for future reference
+
+### When to Update:
+- **Start of session**: Check 000-master.md for priorities
+- **Starting a task**: Mark as "In Progress"
+- **Completing a task**: Mark as "Completed" immediately
+- **Finding new tasks**: Add to appropriate priority level
+- **End of session**: Move completed tasks to archive
+
+## Maintaining Mistakes Documentation
+
+When documenting mistakes:
+1. **Full Documentation** (`000-master.md`): Add complete details, code examples, impact, solution
+2. **Quick Reference** (`consolidated-guide.md`): Update if the mistake represents a common pattern that Claude Code needs to avoid
+
+The consolidated guide should only contain:
+- Critical API patterns (with ✅/❌ examples)
+- Common pitfalls by category
+- Quick fixes for frequent errors
+- Validation checklist items
 
 ## Primary Workflows (MANDATORY FOR ALL USERS)
 
@@ -158,8 +204,6 @@ src/solutions/my_solution/
 - [ ] Execution uses runtime.execute(workflow)
 - [ ] Import paths are complete and correct
 
-⚠️ **CRITICAL**: The pattern `workflow.execute(runtime)` does NOT exist. Always use `runtime.execute(workflow)`.
-
 ## Important Reminders
 - **Check references first** - Don't guess APIs
 - **Reuse shared components** - Check `shared/` directory in each solution
@@ -168,3 +212,6 @@ src/solutions/my_solution/
 - **Track progress** - Update todos
 
 For detailed guides, see the `guide/instructions/` directory.
+
+## Template Sync
+This is a template repository. See `reference/template-sync.md` for sync setup.

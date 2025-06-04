@@ -238,3 +238,28 @@ This template includes automated code quality tools:
 3. **Use the ADR process** for architectural decisions
 4. **Leverage automated testing** with `examples/_utils/test_all_examples.py`
 5. **Maintain code quality** with pre-commit hooks and automated formatting
+
+## Using as a Template Repository
+
+This repository is designed to be used as a template for new projects. It includes automatic synchronization to keep downstream repositories updated with improvements to the template.
+
+### Creating a New Project from Template
+
+1. **Use GitHub's Template Feature**:
+   - Click "Use this template" button on GitHub
+   - Create your new repository
+   - Clone and start developing
+
+2. **Template Updates**:
+   - Template improvements are automatically synced daily at 3am SGT
+   - Updates create pull requests for review (never auto-merged)
+   - Your project-specific code in `src/solutions/` and `data/` is preserved
+
+3. **Customization**:
+   - Add project-specific content in designated sections
+   - Create custom workflows with `_custom.yml` suffix
+   - See [Template Sync Guide](reference/template-sync.md) for details
+
+<!-- PROJECT SPECIFIC START -->
+<!-- Add your project-specific content here. This section is preserved during template updates -->
+<!-- PROJECT SPECIFIC END -->

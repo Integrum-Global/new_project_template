@@ -1,0 +1,105 @@
+name: Sync from Template
+
+on:
+  schedule:
+    # Run daily at 3:30am SGT (7:30pm UTC previous day)
+    - cron: '30 19 * * *'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Pull template updates
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TEMPLATE_REPO: Integrum-Global/new_project_template
+        run: |
+          # Add template as remote
+          git remote add template https://github.com/${TEMPLATE_REPO}.git || true
+          git fetch template main
+          
+          # Create sync branch
+          BRANCH_NAME="template-sync-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b $BRANCH_NAME
+          
+          # Get list of files to sync from template
+          SYNC_FILES=(
+            ".github"
+            "reference"
+            "guide" 
+            "templates"
+            "src/shared"
+            "src/__init__.py"
+            "scripts/setup_env.py"
+            "scripts/validate.py"
+            "scripts/deploy.py"
+            ".pre-commit-config.yaml"
+            "MANIFEST.in"
+          )
+          
+          # Files to sync only if missing (preserve existing)
+          SYNC_IF_MISSING=(
+            "todos"
+            "examples"
+            "docs"
+            "data/samples"
+            "data/configs"
+            "CHANGELOG.md"
+            "CLAUDE.md"
+            "README.md"
+            "pyproject.toml"
+          )
+          
+          # Sync each file/directory (always overwrite)
+          for item in "${SYNC_FILES[@]}"; do
+            if git ls-tree template/main --name-only | grep -q "^$item"; then
+              git checkout template/main -- "$item" 2>/dev/null || true
+            fi
+          done
+          
+          # Sync files only if they don't exist (preserve existing)
+          for item in "${SYNC_IF_MISSING[@]}"; do
+            if git ls-tree template/main --name-only | grep -q "^$item" && [ ! -e "$item" ]; then
+              git checkout template/main -- "$item" 2>/dev/null || true
+            fi
+          done
+          
+          # Check if there are changes
+          if [[ -n $(git status --porcelain) ]]; then
+            git add -A
+            git commit -m "Sync template updates from ${TEMPLATE_REPO}
+            
+Automated sync at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            
+            # Push and create PR
+            git push origin HEAD
+            
+            gh pr create \
+              --title "Sync template updates" \
+              --body "## Automated Template Sync
+
+This PR syncs the latest updates from the template repository: ${TEMPLATE_REPO}
+
+### Files Updated
+- GitHub workflows and configurations
+- Reference documentation  
+- Guides and instructions
+- Shared components
+- Core scripts
+
+### Review Checklist
+- [ ] Review changes for any conflicts
+- [ ] Ensure no project-specific code is affected
+- [ ] Test that existing functionality works
+
+This sync was triggered automatically at $(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              --base main
+          else
+            echo "No changes to sync"
+          fi
