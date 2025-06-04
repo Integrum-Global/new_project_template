@@ -130,7 +130,13 @@ When migrating existing projects to Kailash SDK:
    touch __init__.py __main__.py workflow.py config.py
    ```
 
-6. **Write Examples FIRST**
+6. **Write detailed docstrings**
+   - Follow guide/instructions/documentation-requirements.md
+   - Include all 8 required sections (design, dependencies, usage, implementation, etc.)
+   - Use Google-style format with doctest examples (>>> syntax)
+   - Document all parameters, returns, raises, and side effects
+   
+7. **Write Examples FIRST**
    - Start with basic template from `templates/`
    - Create `examples/` directory in your solution
    - Write `basic_usage.py` showing simple use case
@@ -138,57 +144,57 @@ When migrating existing projects to Kailash SDK:
    - Validate: `python reference/validate_kailash_code.py examples/*.py`
    - Test execution to ensure they work
 
-7. **Implement Full Solution**
+8. **Implement Full Solution**
    - Build on validated prototype
    - Add error handling and edge cases
    - Extract reusable parts to `src/shared/`
 
 #### TEST: Verify everything works
-8. **Write Tests**
+9. **Write Tests**
    - Create `tests/` directory in solution
    - Test core workflow logic
    - Test error handling
    - Run: `pytest src/solutions/my_solution/tests/`
 
-9. **Integration Testing**
-   - Test with real data samples
-   - Verify performance requirements
-   - Check memory usage for large datasets
+10. **Integration Testing**
+    - Test with real data samples
+    - Verify performance requirements
+    - Check memory usage for large datasets
 
-10. **Run Validation**
+11. **Run Validation**
     - Validate code: `python reference/validate_kailash_code.py src/solutions/my_solution/*.py`
     - Run linting: `black . && isort . && ruff check .`
 
 #### DOCUMENT: Update all docs
-11. **Update Task Tracking**
+12. **Update Task Tracking**
     - Update `todos/000-master.md` (mark completed)
     - Document issues in `guide/mistakes/000-master.md`
     - Create ADR if design decisions made
 
-12. **Solution Documentation**
+13. **Solution Documentation**
     - Create README.md in solution directory
     - Document configuration options
     - Include usage examples
     - Add troubleshooting guide
 
-13. **Update Project Docs**
+14. **Update Project Docs**
     - Update project structure in `guide/prd/000-project_structure.md`
     - Update main README.md if needed
     - Add to `CHANGELOG.md`
     - Update Sphinx docs: `cd docs && python build_docs.py`
 
 #### FINALIZE: Prepare for deployment
-14. **Code Review**
+15. **Code Review**
     - Review all changes
     - Ensure follows best practices
     - Check for hardcoded values
 
-15. **Final Testing**
+16. **Final Testing**
     - Run full test suite: `pytest`
     - Test in production-like environment
     - Verify all requirements met
 
-16. **Deploy**
+17. **Deploy**
     - Run deployment script: `python scripts/deploy.py`
     - Monitor initial execution
     - Document any post-deployment issues
