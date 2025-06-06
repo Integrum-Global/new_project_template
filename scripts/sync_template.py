@@ -148,6 +148,9 @@ class TemplateSyncer:
     def sync_repo(self, downstream_repo: str) -> bool:
         """Sync template changes to a downstream repository."""
         logger.info(f"Syncing to {downstream_repo}")
+        
+        # Save current directory to restore later
+        original_cwd = os.getcwd()
 
         try:
             # Create temporary directory
@@ -208,15 +211,22 @@ class TemplateSyncer:
                     # Push branch
                     subprocess.run(["git", "push", "origin", branch_name], check=True)
 
+                    # Change back to original directory before creating PR
+                    os.chdir(original_cwd)
+                    
                     # Create PR
                     self.create_pr(downstream_repo, branch_name)
                     logger.info(f"Successfully synced {downstream_repo}")
                     return True
                 else:
+                    # Change back to original directory
+                    os.chdir(original_cwd)
                     logger.info(f"No changes needed for {downstream_repo}")
                     return True
 
         except Exception as e:
+            # Ensure we restore the original directory on error
+            os.chdir(original_cwd)
             logger.error(f"Failed to sync {downstream_repo}: {e}")
             return False
 
