@@ -11,8 +11,9 @@ jobs:
     name: Template Sync Validation
     # Only run on PRs created by the template sync process
     if: |
-      github.event.pull_request.user.login == 'github-actions[bot]' &&
-      contains(github.event.pull_request.title, 'Sync template updates from')
+      contains(github.event.pull_request.title, 'Sync template updates from') ||
+      startsWith(github.event.pull_request.head.ref, 'template-sync-') ||
+      contains(github.event.pull_request.body, 'This PR automatically syncs updates from the template repository')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
