@@ -236,7 +236,8 @@ For detailed guides, see the `guide/instructions/` directory.
 
 ## Updating Template-Managed Files in Downstream Repositories
 
-When working in a downstream repository created from this template, certain files are managed by the template sync process. When asked to update these files, add new instructions under this section:
+When working in a downstream repository created from this template, certain files are managed by the template sync process. 
+Add new custom instructions under this section to preserve them during updates.
 ```
 ## Project-Specific Instructions
 ```
