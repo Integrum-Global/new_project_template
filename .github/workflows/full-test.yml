@@ -3,9 +3,10 @@ name: Full Test Suite
 on:
   push:
     branches: [ main ]
-  schedule:
-    # Run daily at 2 AM UTC
-    - cron: '0 2 * * *'
+  # Disabled scheduled runs to reduce costs
+  # schedule:
+  #   # Run daily at 2 AM UTC
+  #   - cron: '0 2 * * *'
   workflow_dispatch:
 
 jobs:
