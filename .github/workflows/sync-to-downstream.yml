@@ -15,9 +15,6 @@ on:
       - 'pyproject.toml'
       - 'CLAUDE.md'
       - 'README.md'
-  schedule:
-    # Run at 3am SGT (7pm UTC previous day)
-    - cron: '0 19 * * *'
   workflow_dispatch:
     inputs:
       target_repo:

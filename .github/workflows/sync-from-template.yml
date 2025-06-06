@@ -1,10 +1,14 @@
 name: Sync from Template
 
 on:
-  schedule:
-    # Run daily at 3:30am SGT (7:30pm UTC previous day)
-    - cron: '30 19 * * *'
+  # Manual trigger only - no automatic syncs
   workflow_dispatch:
+    inputs:
+      create_pr:
+        description: 'Create PR (true) or just show diff (false)'
+        required: false
+        type: boolean
+        default: true
 
 jobs:
   sync:

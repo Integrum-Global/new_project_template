@@ -349,9 +349,13 @@ This PR automatically syncs updates from the template repository: {self.template
 
 ### Changes included:
 - Updated reference documentation
-- Updated guides and instructions
+- Updated guides and instructions  
 - Updated shared components
 - Updated scripts and tools
+
+### CI/CD Note:
+✅ This PR will only run minimal validation checks (template-sync-check.yml)
+❌ Full CI pipeline is skipped for template sync PRs
 
 ### Review checklist:
 - [ ] Review changes for conflicts with project-specific code
