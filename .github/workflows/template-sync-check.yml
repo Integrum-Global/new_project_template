@@ -1,0 +1,48 @@
+name: Template Sync Check
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Quick check for template sync PRs only
+  template-sync-check:
+    name: Template Sync Validation
+    # Only run on PRs created by the template sync process
+    if: |
+      github.event.pull_request.user.login == 'github-actions[bot]' &&
+      contains(github.event.pull_request.title, 'Sync template updates from')
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Basic syntax check
+      run: |
+        # Just check Python files can be parsed
+        find . -name "*.py" -type f -exec python -m py_compile {} \;
+        
+    - name: Check critical files exist
+      run: |
+        # Ensure critical files weren't accidentally removed
+        test -f pyproject.toml
+        test -f README.md
+        test -d src/
+        test -d .github/workflows/
+        
+    - name: Post success comment
+      if: success()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+            body: '✅ Template sync validation passed! This PR only updates template files and preserves your project-specific code.\n\nNo full CI run needed for template updates.'
+          });

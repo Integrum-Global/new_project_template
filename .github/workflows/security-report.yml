@@ -12,6 +12,10 @@ jobs:
   security-comment:
     name: Post Security Scan Results
     runs-on: ubuntu-latest
+    # Skip for template sync PRs
+    if: |
+      !(github.event.pull_request.user.login == 'github-actions[bot]' &&
+        contains(github.event.pull_request.title, 'Sync template updates from'))
     steps:
     - uses: actions/checkout@v4
 

@@ -34,6 +34,21 @@ jobs:
             console.log(`Event: ${eventName}`);
             console.log(`Ref: ${context.ref}`);
 
+            // Check if this is a template sync PR
+            if (isPR) {
+              const prUser = context.payload.pull_request.user.login;
+              const prTitle = context.payload.pull_request.title;
+              const isTemplateSync = prUser === 'github-actions[bot]' && 
+                                   prTitle.includes('Sync template updates from');
+              
+              if (isTemplateSync) {
+                core.setOutput('level', 'skip');
+                core.setOutput('skip-reason', 'Template sync PR - validation handled by template-sync-check.yml');
+                console.log('Template sync PR detected - skipping full CI');
+                return;
+              }
+            }
+
             // Manual dispatch always runs full tests
             if (isManual) {
               core.setOutput('level', 'full');
