@@ -37,9 +37,17 @@ jobs:
             // Check if this is a template sync PR
             if (isPR) {
               const prUser = context.payload.pull_request.user.login;
-              const prTitle = context.payload.pull_request.title;
-              const isTemplateSync = prUser === 'github-actions[bot]' && 
-                                   prTitle.includes('Sync template updates from');
+              const prTitle = context.payload.pull_request.title || '';
+              const prBody = context.payload.pull_request.body || '';
+              
+              console.log(`PR User: ${prUser}`);
+              console.log(`PR Title: ${prTitle}`);
+              
+              // Check various indicators of template sync
+              const isTemplateSync = 
+                (prUser === 'github-actions[bot]' && prTitle.includes('Sync template updates from')) ||
+                (prUser === 'github-actions[bot]' && prTitle.includes('template-sync-')) ||
+                prBody.includes('Automated sync at');
               
               if (isTemplateSync) {
                 core.setOutput('level', 'skip');

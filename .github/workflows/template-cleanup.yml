@@ -1,6 +1,6 @@
 name: Template Cleanup
 
-# This workflow runs when someone uses this template
+# This workflow should only run once when creating a new repo from template
 on:
   push:
     branches:
@@ -13,46 +13,83 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
-      - uses: actions/checkout@v4
+      - name: Check if this is a new repo
+        id: check-new-repo
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              const { data: commits } = await github.rest.repos.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                per_page: 10
+              });
+              
+              // If repo has more than 5 commits, it's established
+              if (commits.length > 5) {
+                console.log('Established repository detected');
+                core.setOutput('is_new', 'false');
+              } else {
+                console.log('New repository detected');
+                core.setOutput('is_new', 'true');
+              }
+            } catch (error) {
+              console.log('Error checking commits:', error);
+              core.setOutput('is_new', 'false');
+            }
+
+      - name: Disable workflow in established repos
+        if: steps.check-new-repo.outputs.is_new == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Disable this workflow
+            await github.rest.actions.disableWorkflow({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'template-cleanup.yml'
+            });
+            console.log('Template cleanup workflow disabled in established repository');
+
+      - name: Checkout for new repos
+        if: steps.check-new-repo.outputs.is_new == 'true'
+        uses: actions/checkout@v4
 
       - name: Cleanup template-specific files
+        if: steps.check-new-repo.outputs.is_new == 'true'
         run: |
-          # Remove template-only workflows (keep sync-from-template.yml)
+          # Remove template-only workflows
           rm -f .github/workflows/sync-to-downstream.yml
-          rm -f .github/template-cleanup.yml
           
-          # Remove template sync script (not needed in downstream)
+          # Remove template sync script
           rm -f scripts/sync_template.py
           
-          # Update CODEOWNERS to use current repo maintainers
+          # Update CODEOWNERS if needed
           if [ -f .github/CODEOWNERS ]; then
-            # Try to detect organization name and update accordingly
             ORG_NAME="${{ github.repository_owner }}"
             sed -i "s|Integrum-Global/template-maintainers|${ORG_NAME}/maintainers|g" .github/CODEOWNERS
           fi
           
-          # Create empty solutions directory if it doesn't exist
+          # Create required directories
           mkdir -p src/solutions
           touch src/solutions/.gitkeep
-          
-          # Ensure data directories exist
           mkdir -p data/{samples,configs,outputs}
           touch data/outputs/.gitkeep
-          
-          # Check if files were removed
+
+      - name: Commit changes
+        if: steps.check-new-repo.outputs.is_new == 'true'
+        run: |
           if [[ -n $(git status --porcelain) ]]; then
             git config user.name "GitHub Actions"
             git config user.email "actions@github.com"
             git add -A
             git commit -m "Remove template-specific files after initialization"
             git push
+            
+            # Now disable this workflow
+            gh workflow disable "template-cleanup.yml"
           fi
-      
-      - name: Delete this workflow
-        run: |
-          git rm .github/workflows/template-cleanup.yml || true
-          if [[ -n $(git status --porcelain) ]]; then
-            git commit -m "Remove template cleanup workflow"
-            git push
-          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
