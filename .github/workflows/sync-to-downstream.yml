@@ -33,6 +33,8 @@ on:
 jobs:
   sync-template:
     runs-on: ubuntu-latest
+    # Only run this workflow in the template repository
+    if: github.repository == 'Integrum-Global/new_project_template'
     steps:
       - name: Checkout template repository
         uses: actions/checkout@v4

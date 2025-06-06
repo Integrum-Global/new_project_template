@@ -11,6 +11,10 @@ on:
 jobs:
   full-test:
     runs-on: ubuntu-latest
+    # Skip if this is a template sync commit
+    if: |
+      !contains(github.event.head_commit.message, 'Sync template updates from') &&
+      !contains(github.event.head_commit.message, 'template-sync-')
     strategy:
       matrix:
         python-version: ['3.11', '3.12']
