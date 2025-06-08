@@ -318,29 +318,41 @@ class TemplateSyncer:
         return False
 
     def merge_claude_md(self, src: Path, dst: Path) -> bool:
-        """Merge CLAUDE.md files, appending project-specific instructions."""
+        """Merge Claude.md files, preserving project-specific instructions."""
         if not dst.exists():
             return self.copy_file(src, dst)
 
         template_content = src.read_text()
         downstream_content = dst.read_text()
 
-        # Look for project-specific section
+        # Look for project-specific section in downstream
         project_marker = "## Project-Specific Instructions"
-
+        
         if project_marker in downstream_content:
-            # Extract project-specific section
-            idx = downstream_content.find(project_marker)
-            project_section = downstream_content[idx:]
-
-            # Append to template content if not already there
-            if project_marker not in template_content:
-                new_content = template_content.rstrip() + "\n\n" + project_section
-
-                if new_content != downstream_content:
-                    dst.write_text(new_content)
-                    logger.info(f"Merged {dst.name}")
-                    return True
+            # Extract project-specific section from downstream
+            downstream_idx = downstream_content.find(project_marker)
+            downstream_project_section = downstream_content[downstream_idx:]
+            
+            if project_marker in template_content:
+                # Template has project section - replace it with downstream version
+                template_idx = template_content.find(project_marker)
+                template_before_project = template_content[:template_idx].rstrip()
+                new_content = template_before_project + "\n\n" + downstream_project_section
+            else:
+                # Template doesn't have project section - append downstream version
+                new_content = template_content.rstrip() + "\n\n" + downstream_project_section
+            
+            # Only update if content actually changed
+            if new_content.strip() != downstream_content.strip():
+                dst.write_text(new_content)
+                logger.info(f"Merged {dst.name} with preserved project-specific instructions")
+                return True
+        else:
+            # No project-specific section in downstream, just use template
+            if template_content.strip() != downstream_content.strip():
+                dst.write_text(template_content)
+                logger.info(f"Updated {dst.name} from template")
+                return True
 
         return False
 
