@@ -37,10 +37,8 @@ SYNC_PATTERNS = [
     ".github/*",  # ALL GitHub configuration (protected)
     ".github/**/*",  # Including all workflows
     
-    # DOWNSTREAM REFERENCE FILES (limited set)
-    "reference/README.md",  # Main reference navigation
-    "reference/sync-files-reference.md",  # Sync file reference
-    "reference/template-sync.md",  # Template sync documentation
+    # COMPREHENSIVE REFERENCE STRUCTURE  
+    "reference/**/*",  # ALL reference files and subdirectories
     
     # ENHANCED GUIDE STRUCTURE
     "guide/README.md",  # Guide navigation
@@ -247,7 +245,7 @@ class TemplateSyncer:
         """Sync files from template to downstream, preserving specific files."""
         changes_made = False
 
-        # First, clean up unwanted files from previous syncs
+        # First, clean up specific unwanted files from previous syncs
         if self.cleanup_unwanted_files(downstream_path):
             changes_made = True
 
@@ -294,31 +292,30 @@ class TemplateSyncer:
         return changes_made
 
     def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
-        """Remove files that should no longer exist in downstream repositories."""
+        """Remove specific old files that should no longer exist in downstream repositories."""
         changes_made = False
         
-        # Define allowed reference files (only these should remain)
-        allowed_reference_files = {
-            "README.md",
-            "sync-files-reference.md", 
-            "template-sync.md"
+        # Define specific old files to remove (from previous incorrect syncs)
+        unwanted_reference_files = {
+            "api-registry.yaml",
+            "api-validation-schema.json", 
+            "cheatsheet.md",
+            "corrections-summary.md",
+            "mcp-ecosystem-design.md",
+            "node-catalog.md", 
+            "pattern-library.md",
+            "validation-guide.md",
+            "validation_report.md"
         }
         
-        # Check reference directory
+        # Check reference directory for specific unwanted files
         reference_dir = downstream_path / "reference"
         if reference_dir.exists():
-            # Remove unwanted files
-            for item in reference_dir.iterdir():
-                if item.is_file():
-                    if item.name not in allowed_reference_files:
-                        logger.info(f"Removing unwanted reference file: {item.relative_to(downstream_path)}")
-                        item.unlink()
-                        changes_made = True
-                elif item.is_dir():
-                    # Remove all subdirectories (api, cheatsheet, nodes, etc.)
-                    logger.info(f"Removing unwanted reference directory: {item.relative_to(downstream_path)}")
-                    import shutil
-                    shutil.rmtree(item)
+            for unwanted_file in unwanted_reference_files:
+                file_path = reference_dir / unwanted_file
+                if file_path.exists():
+                    logger.info(f"Removing old reference file: {file_path.relative_to(downstream_path)}")
+                    file_path.unlink()
                     changes_made = True
                     
         return changes_made
@@ -398,33 +395,35 @@ class TemplateSyncer:
                     "--base",
                     "main",
                     "--title",
-                    f"Sync template updates from {self.template_repo}",
+                    f"CORRECTIVE SYNC: Restore reference subdirectories from {self.template_repo}",
                     "--body",
-                    f"""## Template Sync
+                    f"""## CORRECTIVE Template Sync
 
-This PR automatically syncs updates from the template repository: {self.template_repo}
+This PR restores the complete reference structure that was accidentally removed in previous sync.
 
-### Changes included:
-- Updated reference documentation
-- Updated guides and instructions  
-- Updated shared components
-- Updated scripts and tools
+### 🔧 **Critical Fix Applied:**
+- **RESTORED**: All reference subdirectories (api/, cheatsheet/, nodes/, pattern-library/, etc.)
+- **REMOVED**: Only specific old files (api-registry.yaml, cheatsheet.md, etc.)
+- **PRESERVED**: All project-specific content and configurations
 
-### CI/CD Note:
-✅ This PR will only run minimal validation checks (template-sync-check.yml)
-❌ Full CI pipeline is skipped for template sync PRs
+### 📂 **Reference Structure Restored:**
+- `reference/api/` - Complete API documentation
+- `reference/cheatsheet/` - Quick reference patterns
+- `reference/nodes/` - Node documentation
+- `reference/pattern-library/` - Solution patterns
+- `reference/templates/` - Code templates
+- `reference/validation/` - Validation guides
 
-### Review checklist:
-- [ ] Review changes for conflicts with project-specific code
-- [ ] Test that existing functionality still works
-- [ ] Update project-specific documentation if needed
+### ⚠️ **IMPORTANT:**
+This corrects the overly aggressive cleanup from previous sync that removed needed files.
+All legitimate reference content is now properly restored.
 
-This is an automated sync triggered at {datetime.now().isoformat()}
+This is an automated corrective sync triggered at {datetime.now().isoformat()}
 """,
                 ],
                 check=True,
             )
-            logger.info(f"Created PR for {repo}")
+            logger.info(f"Created corrective PR for {repo}")
         except Exception as e:
             logger.error(f"Failed to create PR: {e}")
 
