@@ -247,18 +247,32 @@ This repository is designed to be used as a template for new projects. It includ
 
 1. **Use GitHub's Template Feature**:
    - Click "Use this template" button on GitHub
-   - Create your new repository
-   - Clone and start developing
+   - Create your new repository with your desired name
+   - **Automatic Setup**: Repository configures itself automatically! 🎉
 
-2. **Template Updates**:
-   - Template improvements are automatically synced daily at 3am SGT
-   - Updates create pull requests for review (never auto-merged)
-   - Your project-specific code in `src/solutions/` and `data/` is preserved
+2. **Automatic Template Setup** ✨:
+   - **Instant Configuration**: Adds `kailash-template` topic for auto-sync
+   - **Project Structure**: Creates solution directories and initial templates
+   - **Development Environment**: Sets up `.env.example`, `.gitignore`, labels
+   - **Ready to Code**: Working solution template based on repository name
+   - **Duration**: ~30 seconds after repository creation
 
-3. **Customization**:
-   - Add project-specific content in designated sections
-   - Create custom workflows with `_custom.yml` suffix
-   - See [Template Sync Guide](reference/template-sync.md) for details
+3. **Template Updates**:
+   - **Automatic Discovery**: Template finds your repository via `kailash-template` topic
+   - **Smart Sync**: Updates reference docs, guides, and shared components
+   - **Preservation**: Your solution code, data, and configs are never overwritten
+   - **Pull Request**: Updates create PRs for review (never auto-merged)
+
+4. **Getting Started After Creation**:
+   ```bash
+   git clone https://github.com/your-org/your-repo.git
+   cd your-repo
+   cp .env.example .env  # Add your API keys
+   uv sync               # Install dependencies
+   python -m solutions.your_repo  # Run initial solution
+   ```
+
+See [Template Usage Guide](docs/template-usage.md) for complete details.
 
 <!-- PROJECT SPECIFIC START -->
 <!-- Add your project-specific content here. This section is preserved during template updates -->
