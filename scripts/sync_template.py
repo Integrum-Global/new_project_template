@@ -269,7 +269,7 @@ class TemplateSyncer:
         """Sync files from template to downstream, preserving specific files."""
         changes_made = False
 
-        # First, clean up unwanted files from previous syncs
+        # First, clean up specific unwanted files from previous syncs
         if self.cleanup_unwanted_files(downstream_path):
             changes_made = True
 
@@ -430,6 +430,7 @@ This PR automatically syncs updates from the template repository: {self.template
 - Updated guides and instructions  
 - Updated shared components
 - Updated scripts and tools
+- **NEW**: GitHub metrics tracking system in scripts/metrics/
 
 ### CI/CD Note:
 ✅ This PR will only run minimal validation checks (template-sync-check.yml)
@@ -445,7 +446,7 @@ This is an automated sync triggered at {datetime.now().isoformat()}
                 ],
                 check=True,
             )
-            logger.info(f"Created PR for {repo}")
+            logger.info(f"Created corrective PR for {repo}")
         except Exception as e:
             logger.error(f"Failed to create PR: {e}")
 
