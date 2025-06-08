@@ -65,6 +65,7 @@ SYNC_PATTERNS = [
     "scripts/validate.py",
     "scripts/deploy.py",
     ".pre-commit-config.yaml",
+    "Claude.md",  # Template instructions for Claude Code
     "CHANGELOG.md",
     "pyproject.toml",  # Dependencies (preserve if exists)
     "MANIFEST.in",
@@ -72,13 +73,12 @@ SYNC_PATTERNS = [
 
 # Files that require special merge handling
 MERGE_FILES = {
-    "CLAUDE.md": "merge_claude_md",
+    "Claude.md": "merge_claude_md",
 }
 
 # Files to sync only if they don't exist (preserve existing)
 SYNC_IF_MISSING = [
     "README.md",
-    "CLAUDE.md",
     "pyproject.toml",
     "CHANGELOG.md",
     "data/configs/",
