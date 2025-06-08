@@ -1,208 +1,147 @@
 # Kailash SDK Solutions - Claude Code Instructions
 
-## 🚨 CRITICAL: Check These First!
+## 🚨 FIRST: Always Check These
+1. **CURRENT SESSION**: `guide/todos/000-master.md` - What's happening NOW & immediate priorities
+2. **TODO SYSTEM**: `guide/todos/README.md` - How to use the todos system & file navigation
+3. **API Reference**: `reference/api/` - Modular API docs by module (workflow, nodes, security)
+4. **VALIDATION**: `reference/validation/solution-validation-guide.md` - Critical rules to prevent mistakes
+5. **WORKFLOW GUIDE**: `guide/workflows/solution-development-phases.md` - Full 5-phase process details
+6. **MISTAKES GUIDE**: `guide/mistakes/README.md` - Quick reference for documented mistakes and solutions
+7. **CHEATSHEET**: `reference/cheatsheet/README.md` - Quick reference organized by topic with focused examples
 
-### 1. API Reference - NEVER GUESS!
-**STOP!** Before writing ANY code:
-1. Open `reference/api-registry.yaml` for exact APIs
-2. Check `reference/validation-guide.md` for rules
-3. Use `reference/cheatsheet.md` for common patterns
-4. Never guess method names, class names, or parameters
+## 🚀 Solution Development Workflow Phases
 
-### 2. Solution Planning
-**`todos/000-master.md`** - Track your solution progress
-- Break down requirements into tasks
-- Mark progress as you implement
-- Document any issues encountered
+### Phase 1: Discovery & Planning
+```
+PLAN MODE:
+1. Check: guide/todos/000-master.md (current session status & immediate priorities)
+2. Review: guide/todos/active/ (existing plans & implementation details)
+3. Research: reference/api/, reference/nodes/, reference/pattern-library/
+4. Review: guide/mistakes/README.md for known issues & patterns
+5. Output: Solution architecture plan with deliverables
+```
 
-## Quick Reference Links
-- **API Reference**: `reference/api-registry.yaml` ← EXACT APIs HERE
-- **Common Patterns**: `reference/cheatsheet.md` ← COPY THESE
-- **Validation Rules**: `reference/validation-guide.md` ← PREVENT ERRORS
-- **Shared Components**: `src/shared/` ← REUSE THESE
-- **Solution Templates**: `templates/` ← START HERE
-- **Project Todos**: `todos/000-master.md` ← TRACK PROGRESS
+### Phase 2: Implementation & Integration
+```
+EDIT MODE:
+6. Update TODOs → In Progress (in guide/todos/000-master.md)
+7. Check implementation details (in guide/todos/active/)
+8. Write solution examples → Debug → Learn
+9. Use reference/cheatsheet/ for quick patterns
+10. Reference mistakes from guide/mistakes/README.md when resolving issues
+11. Implement → Test → Learn more
+12. Track all mistakes in: guide/mistakes/current-session-mistakes.md
+```
+
+### Phase 3: Testing & Validation
+```
+VALIDATION MODE:
+13. List all mistakes from current-session-mistakes.md
+14. Identify patterns and root causes
+15. Plan which docs need updates
+16. Run validation checklist from reference/validation/
+17. Output: Validation report and documentation update plan
+```
+
+### Phase 4: Documentation & Deployment Prep
+```
+EDIT MODE:
+18. Update all docstrings to solution development standards
+19. Create guide/mistakes/XXX-mistake-name.md (detailed mistake file)
+20. Update guide/mistakes/README.md (add link to browse by category and index)
+21. Remove mistakes from current-session-mistakes.md
+22. Update relevant reference docs
+23. Complete deployment checklist from reference/validation/deployment-checklist.md
+```
+
+### Phase 5: Deployment & Monitoring
+```
+EDIT MODE:
+24. Run full validation suite
+25. Deploy using patterns from reference/cheatsheet/006-deployment-patterns.md
+26. Update TODOs → Complete (in guide/todos/000-master.md)
+27. Set up monitoring and alerting
+28. Document deployment and handover
+```
 
 ## Core Rules (MEMORIZE THESE)
 1. **ALL node classes end with "Node"**: `CSVReaderNode` ✓, `CSVReader` ✗
 2. **ALL methods use snake_case**: `add_node()` ✓, `addNode()` ✗
 3. **ALL config keys use underscores**: `file_path` ✓, `filePath` ✗
 4. **Workflow execution pattern**: Always use `runtime.execute(workflow, parameters={...})` ✓
-5. **Parameter order is STRICT**: Check exact signatures in api-registry.yaml
+5. **Parameter order is STRICT**: Check exact signatures in reference/api/
 6. **Docstring examples use doctest format**: `>>> code` ✓, `:: code` ✗
 7. **get_parameters() defines ALL node parameters**: Both config AND runtime
 8. **Config vs Runtime**: Config=HOW (static), Runtime=WHAT (dynamic data)
 9. **Execution inputs**: Use `runtime.execute(workflow, parameters={...})` only
 10. **Initial workflow data**: Can use source nodes OR pass via parameters to ANY node
 11. **Use Workflow.connect()**: NOT WorkflowBuilder (different API, causes confusion)
+12. **ASYNC is DEFAULT**: Use async/await patterns wherever possible, especially for I/O operations
+13. **Solution Focus**: Build for production deployment, not SDK development
 
-## 📚 Documentation Guides
-- **[Solution Development Guide](guide/instructions/solution-development.md)** - Detailed workflow processes
-- **[Solution Templates](templates/README.md)** - Ready-to-use code templates
-- **[Development Checklists](guide/instructions/checklists.md)** - Quick reference checklists
-- **[Best Practices](guide/instructions/best-practices.md)** - Development best practices
+## Common Pitfalls (Avoid These!)
+1. **Config vs Runtime** (#1 issue!): Config=HOW (code, paths), Runtime=WHAT (data)
+2. **Hardcoded Credentials**: Always use environment variables for secrets
+3. **Missing Error Handling**: Implement robust error handling for production
+4. **Unvalidated External Data**: Always validate data from external sources
+5. **Poor Resource Management**: Use connection pooling and proper cleanup
 
-## 📋 TODO Management System (CRITICAL)
+📋 **Quick reference guide**:
+- **Solution Patterns?** → `reference/pattern-library/`
+- **Code Snippets?** → `reference/cheatsheet/`
+- **API Specs?** → `reference/api/`
+- **Validation?** → `reference/validation/`
 
-The todo system in `todos/` at the root directory is the central task tracking system:
+## 📁 Context-Optimized Navigation
 
-### File Structure:
-- **`000-master.md`** - ACTIVE TODO LIST (Always check first!)
-  - Current tasks and priorities
-  - Tasks in progress
-  - Urgent client needs
-  - Recent achievements
+### For Planning (Phases 1 & 3):
+- `guide/todos/000-master.md` - Current state
+- `reference/api/` - API specs
+- `guide/mistakes/README.md` - Mistakes index & critical patterns
+- `reference/pattern-library/` - Solution patterns
+- `reference/nodes/` - Essential nodes for solutions
 
-- **`completed-archive.md`** - Historical record
-  - All completed tasks from past sessions
-  - Detailed implementation notes
-  - Session summaries and statistics
+### For Implementation (Phase 2):
+- `guide/todos/000-master.md` - Update task status
+- `guide/todos/active/` - Implementation details
+- `reference/cheatsheet/` - Quick code patterns and examples
+- `reference/templates/` - Ready-to-use code templates
+- `guide/mistakes/current-session-mistakes.md` - Track issues
+- `reference/validation/deployment-checklist.md` - Validation steps
 
-- **Numbered files** (001-xxx.md) - Session-specific logs
-  - How todos were approached and resolved
-  - Challenges faced and solutions found
-  - Lessons learned for future reference
+### For Documentation (Phase 4):
+- `guide/mistakes/` - Update mistake logs
+- `reference/api/` - Update API docs
+- `reference/nodes/` - Update node catalog
+- `reference/validation/` - Update validation rules
+- `reference/pattern-library/` - Update solution patterns
 
-### When to Update:
-- **Start of session**: Check 000-master.md for priorities
-- **Starting a task**: Mark as "In Progress"
-- **Completing a task**: Mark as "Completed" immediately
-- **Finding new tasks**: Add to appropriate priority level
-- **End of session**: Move completed tasks to archive
+### For Deployment (Phase 5):
+- `reference/cheatsheet/006-deployment-patterns.md` - Deployment implementation
+- `reference/validation/deployment-checklist.md` - Production readiness
+- `reference/cheatsheet/016-environment-variables.md` - Configuration management
 
-## Maintaining Mistakes Documentation
+## 🔄 Learning Loop
+Implementation → Mistakes → Analysis → Documentation → Better Solutions
 
-When documenting mistakes:
-1. **Full Documentation** (`000-master.md`): Add complete details, code examples, impact, solution
-2. **Quick Reference** (`consolidated-guide.md`): Update if the mistake represents a common pattern that Claude Code needs to avoid
-
-The consolidated guide should only contain:
-- Critical API patterns (with ✅/❌ examples)
-- Common pitfalls by category
-- Quick fixes for frequent errors
-- Validation checklist items
-
-## Primary Workflows (MANDATORY)
+## 📋 Solution Development Workflow
 
 ### Migration Workflow
-
 When migrating existing projects to Kailash SDK:
 
 1. **Place project in**: `migrations/to_migrate/[project_name]/`
-2. **Follow migration guide**: See **[Migration Workflow Instructions](guide/instructions/migration-workflow.md)**
+2. **Follow migration guide**: See **[Migration Workflow Instructions](guide/workflows/migration-workflow.md)**
 3. **Use templates**: Check `migrations/templates/` for document templates
-4. **Update todos**: Add migration tasks to `todos/000-master.md`
+4. **Update todos**: Add migration tasks to `guide/todos/000-master.md`
 
-**Key Points:**
-- Manual analysis required - each project is unique
-- Create comprehensive documentation before coding
-- Ask questions when patterns are unclear
-- Think in Kailash workflows, not direct translation
-
-### Solution Development Workflow
-
-#### PLAN: Define requirements
-1. **Check Current Priorities**
-   - Review `todos/000-master.md` for active requirements
-   - Document requirements in `guide/prd/`
-   - Check existing solutions in `src/solutions/`
-
-2. **Design Solution Architecture**
-   - Break down into workflow steps
-   - Identify reusable components in `src/shared/`
-   - Document decisions in `guide/adr/`
-
-3. **Create Task Plan**
-   - Update `todos/000-master.md` with subtasks
-   - Define success criteria
-   - Estimate effort and timeline
-
-#### IMPLEMENT: Write code
-4. **Use Reference Documentation**
-   - Check `reference/api-registry.yaml` for exact APIs
-   - Follow patterns from `reference/cheatsheet.md`
-   - Review `reference/validation-guide.md` for rules
-
-5. **Create Solution Structure**
-   ```bash
-   mkdir -p src/solutions/my_solution
-   cd src/solutions/my_solution
-   touch __init__.py __main__.py workflow.py config.py
-   ```
-
-6. **Write detailed docstrings**
-   - Follow guide/instructions/documentation-requirements.md
-   - Include all 8 required sections (design, dependencies, usage, implementation, etc.)
-   - Use Google-style format with doctest examples (>>> syntax)
-   - Document all parameters, returns, raises, and side effects
-   
-7. **Write Examples FIRST**
-   - Start with basic template from `templates/`
-   - Create `examples/` directory in your solution
-   - Write `basic_usage.py` showing simple use case
-   - Write `advanced_usage.py` showing all features
-   - Validate: `python reference/validate_kailash_code.py examples/*.py`
-   - Test execution to ensure they work
-
-8. **Implement Full Solution**
-   - Build on validated prototype
-   - Add error handling and edge cases
-   - Extract reusable parts to `src/shared/`
-
-#### TEST: Verify everything works
-9. **Write Tests**
-   - Create `tests/` directory in solution
-   - Test core workflow logic
-   - Test error handling
-   - Run: `pytest src/solutions/my_solution/tests/`
-
-10. **Integration Testing**
-    - Test with real data samples
-    - Verify performance requirements
-    - Check memory usage for large datasets
-
-11. **Run Validation**
-    - Validate code: `python reference/validate_kailash_code.py src/solutions/my_solution/*.py`
-    - Run linting: `black . && isort . && ruff check .`
-
-#### DOCUMENT: Update all docs
-12. **Update Task Tracking**
-    - Update `todos/000-master.md` (mark completed)
-    - Document issues in `guide/mistakes/000-master.md`
-    - Create ADR if design decisions made
-
-13. **Solution Documentation**
-    - Create README.md in solution directory
-    - Document configuration options
-    - Include usage examples
-    - Add troubleshooting guide
-
-14. **Update Project Docs**
-    - Update project structure in `guide/prd/000-project_structure.md`
-    - Update main README.md if needed
-    - Add to `CHANGELOG.md`
-    - Update Sphinx docs: `cd docs && python build_docs.py`
-
-#### FINALIZE: Prepare for deployment
-15. **Code Review**
-    - Review all changes
-    - Ensure follows best practices
-    - Check for hardcoded values
-
-16. **Final Testing**
-    - Run full test suite: `pytest`
-    - Test in production-like environment
-    - Verify all requirements met
-
-17. **Deploy**
-    - Run deployment script: `python scripts/deploy.py`
-    - Monitor initial execution
-    - Document any post-deployment issues
+### Quick Development Process
+1. **PLAN**: Check `guide/todos/000-master.md` → Use `reference/pattern-library/` → Design solution
+2. **IMPLEMENT**: Use `reference/cheatsheet/` → Build with `reference/templates/` → Track in todos
+3. **TEST**: Validate with `reference/validation/` → Test with realistic data → Document issues
+4. **DOCUMENT**: Update todos → Create solution docs → Track mistakes
+5. **DEPLOY**: Use `reference/cheatsheet/006-deployment-patterns.md` → Monitor → Handover
 
 ### Solution Structure
-See **[Full Project Structure](guide/prd/000-project_structure.md)** for complete repository organization.
-
-Quick reference for solution structure:
 ```
 src/solutions/my_solution/
 ├── __init__.py        # Package exports
@@ -210,34 +149,44 @@ src/solutions/my_solution/
 ├── workflow.py        # Main workflow logic
 ├── config.py          # Configuration management
 ├── README.md          # Solution documentation
-├── config.yaml        # Default configuration
 ├── examples/          # Working examples
-│   ├── basic_usage.py
-│   └── advanced_usage.py
 └── tests/             # Solution tests
 ```
 
-## Error Prevention
+## Error Prevention Checklist
 - [ ] All node class names end with "Node"
 - [ ] All method names use snake_case
-- [ ] Configuration passed as kwargs, NOT as dict
+- [ ] Environment variables used for all secrets
 - [ ] Connections use mapping={"output": "input"}
 - [ ] Execution uses runtime.execute(workflow)
-- [ ] Import paths are complete and correct
+- [ ] Error handling implemented for external systems
 
 ## Important Reminders
 - **Check references first** - Don't guess APIs
-- **Reuse shared components** - Check `shared/` directory in each solution
-- **Follow templates** - Start from `templates/`
-- **Test frequently** - Enable debug mode
-- **Track progress** - Update todos
+- **Use solution patterns** - Check `reference/pattern-library/`
+- **Follow deployment patterns** - Check `reference/cheatsheet/006-deployment-patterns.md`
+- **Track progress** - Update guide/todos/000-master.md
+- **Document mistakes** - Use guide/mistakes/current-session-mistakes.md
 
-For detailed guides, see the `guide/instructions/` directory.
+## Quick Reference Links
+- **TODO LIST (CRITICAL)**: `guide/todos/000-master.md` ← CHECK FIRST!
+- **API Reference**: `reference/api/` ← Modular API documentation
+- **Node Catalog**: `reference/nodes/` ← Essential nodes for solutions
+- **Pattern Library**: `reference/pattern-library/` ← Complete solution patterns
+- **Cheatsheet**: `reference/cheatsheet/` ← Quick code patterns
+- **Templates**: `reference/templates/` ← Ready-to-use code
+- **Validation**: `reference/validation/` ← Solution validation tools
+- **Deployment**: `reference/cheatsheet/006-deployment-patterns.md` ← Production deployment
+- **Mistakes Guide**: `guide/mistakes/README.md` ← Organized mistake patterns
+
+For detailed guides, see the `guide/` directory structure.
 
 ## Updating Template-Managed Files in Downstream Repositories
 
 When working in a downstream repository created from this template, certain files are managed by the template sync process. 
 Add new custom instructions under this section to preserve them during updates.
-```
+
 ## Project-Specific Instructions
-```
+
+<!-- Add your project-specific Claude Code instructions here -->
+<!-- These instructions will be preserved during template updates -->

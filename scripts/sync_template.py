@@ -36,12 +36,26 @@ PRESERVE_PATTERNS = [
 SYNC_PATTERNS = [
     ".github/*",  # ALL GitHub configuration (protected)
     ".github/**/*",  # Including all workflows
-    "reference/*",  # API references
-    "guide/*",  # Guides and instructions
-    "templates/*",  # Solution templates
+    
+    # NEW MODULAR REFERENCE STRUCTURE
+    "reference/README.md",  # Main reference navigation
+    "reference/api/**/*",  # Modular API documentation
+    "reference/nodes/**/*",  # Node catalog by category
+    "reference/cheatsheet/**/*",  # Quick reference guides
+    "reference/pattern-library/**/*",  # Solution patterns
+    "reference/validation/**/*",  # Validation tools and guides
+    "reference/templates/**/*",  # Code templates
+    "reference/design/**/*",  # Design documents
+    
+    # ENHANCED GUIDE STRUCTURE
+    "guide/README.md",  # Guide navigation
+    "guide/todos/**/*",  # Comprehensive todo system
+    "guide/workflows/**/*",  # Development workflows
+    "guide/mistakes/**/*",  # Mistake tracking system
+    
+    # SHARED COMPONENTS AND SCRIPTS
     "src/shared/*",  # Shared components
     "src/__init__.py",  # Root src init file
-    "todos/*",  # Todo management system
     "examples/*",  # Example implementations
     "docs/*",  # Documentation
     "data/samples/*",  # Sample data files
@@ -69,10 +83,10 @@ SYNC_IF_MISSING = [
     "CHANGELOG.md",
     "data/configs/",
     "data/samples/",
-    "todos/",
     "examples/",
     "docs/",
     "src/solutions/",
+    "guide/mistakes/current-session-mistakes.md",  # Preserve active session mistakes
 ]
 
 # Directories that should be merged (not overwritten)
@@ -80,6 +94,10 @@ MERGE_DIRECTORIES = [
     "src/shared/nodes/",
     "src/shared/utils/",
     "src/shared/workflows/",
+    "guide/todos/active/",  # Preserve active project tasks
+    "guide/todos/completed/",  # Preserve completed session history
+    "reference/templates/workflow/",  # Allow project-specific workflow templates
+    "reference/templates/nodes/",  # Allow project-specific node templates
 ]
 
 

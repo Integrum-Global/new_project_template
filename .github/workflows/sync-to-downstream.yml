@@ -9,7 +9,6 @@ on:
       - 'docs/**'
       - 'guide/**'
       - 'reference/**'
-      - 'templates/**'
       - 'src/shared/**'
       - 'scripts/*.py'
       - 'pyproject.toml'
