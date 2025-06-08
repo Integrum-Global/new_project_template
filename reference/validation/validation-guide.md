@@ -1,5 +1,10 @@
 # API Validation Guide for LLMs
 
+## See Also
+- **[Cheatsheet](cheatsheet/README.md)** - Quick code snippets and examples
+- **[Pattern Library](pattern-library/README.md)** - Complete workflow architectures
+- **[API Registry](api-registry.yaml)** - Full API specifications
+
 ## Critical Rules for Using Kailash SDK
 
 ### 1. **ALWAYS Use Exact Method Names**
@@ -551,6 +556,127 @@ workflow.add_node("analyzer", TextAnalyzer(),
 workflow.add_node("reader", TextReaderNode(), file_path="document.txt")
 workflow.add_node("analyzer", TextAnalyzer())
 workflow.connect("reader", "analyzer", mapping={"content": "text"})
+```
+
+## Cyclic Workflow Validation
+
+### Creating Marked Cycles
+
+Workflows support cycles when explicitly marked with `cycle=True`:
+
+```python
+# ✅ CORRECT - Marked cycle with safety controls
+workflow.connect("validator", "processor",
+    cycle=True,                           # Required for cycles
+    max_iterations=10,                    # Safety limit
+    convergence_check="quality >= 0.9",   # Stop condition
+    cycle_id="refinement_loop",          # Optional unique ID
+    timeout=300.0                        # Optional timeout in seconds
+)
+
+# ❌ WRONG - Unmarked cycle causes validation error
+workflow.connect("node_a", "node_b")
+workflow.connect("node_b", "node_c")
+workflow.connect("node_c", "node_a")  # Creates illegal cycle!
+# Error: WorkflowValidationError: Workflow contains unmarked cycles
+```
+
+### Cycle Parameters
+
+When creating cycles, the following parameters are available:
+
+- **cycle** (bool): Must be `True` to mark as a cycle
+- **max_iterations** (int): Maximum iterations before forced exit
+- **convergence_check** (str): Expression evaluated for early exit
+- **convergence_callback** (callable): Function for complex convergence logic
+- **cycle_id** (str): Unique identifier for the cycle (optional)
+- **timeout** (float): Maximum execution time in seconds (optional)
+
+### Convergence Check Expressions
+
+Convergence expressions have access to node outputs:
+
+```python
+# Simple convergence
+workflow.connect("evaluator", "optimizer",
+    cycle=True,
+    convergence_check="score >= 0.95"
+)
+
+# Complex convergence with multiple conditions
+workflow.connect("validator", "processor",
+    cycle=True,
+    convergence_check="quality >= 0.9 and error < 0.01 and iteration > 2"
+)
+
+# Using node-specific outputs
+workflow.connect("checker", "refiner",
+    cycle=True,
+    convergence_check="checker.converged == True"
+)
+```
+
+### Cycle State Management
+
+Nodes in cycles receive cycle context information:
+
+```python
+class CycleAwareNode(Node):
+    def run(self, **kwargs):
+        # Safe access to cycle state
+        context = kwargs.get('context', {})
+        cycle_info = context.get('cycle', {})
+        
+        # Always use 'or {}' pattern for safety
+        prev_state = cycle_info.get('node_state') or {}
+        iteration = cycle_info.get('iteration', 0)
+        
+        # Process based on iteration
+        if iteration == 0:
+            # First iteration logic
+            result = self.initialize_processing(kwargs.get('data'))
+        else:
+            # Refinement logic using previous state
+            result = self.refine_processing(kwargs.get('data'), prev_state)
+        
+        return {
+            'result': result,
+            'converged': self.check_convergence(result)
+        }
+```
+
+### Common Cycle Validation Errors
+
+1. **Unmarked Cycles**
+   ```python
+   # Error: WorkflowValidationError: Workflow contains unmarked cycles
+   # Solution: Add cycle=True to one of the connections
+   ```
+
+2. **Missing Safety Limits**
+   ```python
+   # Warning: Cycle without max_iterations or timeout may run forever
+   # Solution: Always set at least one safety limit
+   ```
+
+3. **Invalid Convergence Expression**
+   ```python
+   # Error: Invalid convergence expression syntax
+   # Solution: Use valid Python expressions with node output variables
+   ```
+
+### Testing Cyclic Workflows
+
+When testing cyclic workflows, use flexible assertions:
+
+```python
+# ❌ WRONG - Too specific for iterative processes
+assert results['processor']['iteration_count'] == 5  # May vary!
+
+# ✅ CORRECT - Flexible assertions
+assert 1 <= results['processor']['iteration_count'] <= 10
+assert results['processor']['converged'] is True
+assert results['validator']['quality'] >= 0.9
 ```
 
 ### How to Identify Parameter Type

@@ -1,20 +1,19 @@
-# Kailash SDK Solution Development Cheatsheet
+# Kailash SDK Cheatsheet Index
 
-**Version**: Template-adapted from Kailash SDK 0.1.4  
-**Focus**: Quick reference for building business solutions
+**Version**: 0.1.4 | **Last Updated**: 2025-01-06
 
-Quick reference guides organized by solution development topics. Each file contains focused, actionable code snippets and patterns.
+Quick reference guides organized by topic. Each file contains focused, actionable code snippets and patterns.
 
 ## 📁 Cheatsheet Files
 
 | File | Topic | Description |
 |------|-------|-------------|
-| [001-installation](001-installation.md) | Installation | Package installation for solution development |
-| [002-basic-imports](002-basic-imports.md) | Basic Imports | Essential imports for solution workflows |
-| [003-solution-workflow-creation](003-solution-workflow-creation.md) | Solution Workflow Creation | Fast workflow setup for business solutions |
-| [004-solution-node-patterns](004-solution-node-patterns.md) | Solution Node Patterns | Common node configurations for solutions |
-| [005-integration-patterns](005-integration-patterns.md) | Integration Patterns | API integration and data flow patterns |
-| [006-deployment-patterns](006-deployment-patterns.md) | Deployment Patterns | Production deployment and configuration |
+| [001-installation](001-installation.md) | Installation | Package installation instructions |
+| [002-basic-imports](002-basic-imports.md) | Basic Imports | Essential imports for workflow development |
+| [003-quick-workflow-creation](003-quick-workflow-creation.md) | Quick Workflow Creation | Fast workflow setup patterns |
+| [004-common-node-patterns](004-common-node-patterns.md) | Common Node Patterns | Frequently used node configurations |
+| [005-connection-patterns](005-connection-patterns.md) | Connection Patterns | Node connection and data flow patterns |
+| [006-execution-options](006-execution-options.md) | Execution Options | Workflow execution and parameter handling |
 | [007-error-handling](007-error-handling.md) | Error Handling | Error handling and validation patterns |
 | [008-security-configuration](008-security-configuration.md) | Security Configuration | Security setup and safe operations |
 | [009-export-workflows](009-export-workflows.md) | Export Workflows | Workflow export and serialization |
@@ -23,7 +22,7 @@ Quick reference guides organized by solution development topics. Each file conta
 | [012-common-workflow-patterns](012-common-workflow-patterns.md) | Common Workflow Patterns | Complete workflow examples |
 | [013-sharepoint-integration](013-sharepoint-integration.md) | SharePoint Integration | SharePoint connectivity patterns |
 | [014-access-control-multi-tenancy](014-access-control-multi-tenancy.md) | Access Control & Multi-Tenancy | Security and user management |
-| [015-workflow-as-rest-api](015-workflow-as-rest-api.md) | Workflow as REST API | Expose workflows as web services |
+| [015-workflow-as-rest-api](015-workflow-as-rest-api.md) | Workflow as REST API | API exposure patterns |
 | [016-environment-variables](016-environment-variables.md) | Environment Variables | Configuration and secrets management |
 | [017-quick-tips](017-quick-tips.md) | Quick Tips | Essential rules and best practices |
 | [018-common-mistakes-to-avoid](018-common-mistakes-to-avoid.md) | Common Mistakes to Avoid | What not to do with examples |
@@ -39,44 +38,29 @@ Quick reference guides organized by solution development topics. Each file conta
 | **Advanced Patterns** | | |
 | [025-mcp-integration](025-mcp-integration.md) | MCP Integration | MCP integration with LLMAgentNode |
 | [026-performance-optimization](026-performance-optimization.md) | Performance Optimization | Memory management, cycle optimization, debugging |
-
-## 🚀 Quick Start Path
-
-### 1. **New to Kailash?** 
-Start with [001-installation](001-installation.md) and [002-basic-imports](002-basic-imports.md)
-
-### 2. **Building solutions?** 
-See [003-solution-workflow-creation](003-solution-workflow-creation.md) and [004-solution-node-patterns](004-solution-node-patterns.md)
-
-### 3. **Need integrations?** 
-Check [005-integration-patterns](005-integration-patterns.md)
-
-### 4. **Ready for production?** 
-Review [006-deployment-patterns](006-deployment-patterns.md) and [016-environment-variables](016-environment-variables.md)
-
-## 🎯 Solution Development Focus
-
-These cheatsheets are specifically adapted for:
-- **Business solution development** (not SDK development)
-- **Production deployment** patterns
-- **API integration** with existing systems
-- **Data pipeline** creation
-- **AI/ML integration** for business value
+| [028-developer-tools-advanced](028-developer-tools-advanced.md) | Advanced Developer Tools | CycleDebugger, CycleProfiler, CycleAnalyzer (Phase 5.2) |
 
 ## 🔗 Related Resources
 
-- **[Node Catalog](../nodes/)** - Essential nodes for solution development
-- **[Pattern Library](../pattern-library/)** - Complete solution patterns
-- **[API Reference](../api/)** - Solution-relevant API specifications
+- **[Pattern Library](../pattern-library/README.md)** - Complete workflow patterns and architectural guidance
+- **[Validation Guide](../validation-guide.md)** - API rules and correct usage patterns
+- **[API Registry](../api-registry.yaml)** - Full API specifications
+- **[Node Catalog](../node-catalog.md)** - All 66 available nodes with parameters
 - **[Templates](../templates/)** - Ready-to-use code templates
-- **[Validation](../validation/)** - Solution validation and deployment checks
+
+## 🚀 Quick Start
+
+1. **New to Kailash?** Start with [001-installation](001-installation.md) and [002-basic-imports](002-basic-imports.md)
+2. **Building workflows?** See [003-quick-workflow-creation](003-quick-workflow-creation.md) and [004-common-node-patterns](004-common-node-patterns.md)
+3. **Need examples?** Check [012-common-workflow-patterns](012-common-workflow-patterns.md)
+4. **Debugging issues?** Review [018-common-mistakes-to-avoid](018-common-mistakes-to-avoid.md)
 
 ## 💡 Usage Tips
 
 - Each file is self-contained with working code examples
-- Copy-paste code snippets directly into your solution projects
-- All examples follow current best practices for solution development
-- Files are organized from basic setup to advanced deployment
+- Copy-paste code snippets directly into your projects
+- All examples follow current best practices and conventions
+- Files are organized from basic to advanced topics
 
 ---
-*For comprehensive SDK development documentation, see the main Kailash SDK repository*
+*For comprehensive documentation, see the main [docs/](../../docs/) directory*

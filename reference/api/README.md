@@ -1,57 +1,75 @@
-# API Reference - Solution Development
+# Kailash SDK API Reference
 
-**Version**: Template-adapted from Kailash SDK 0.1.4  
-**Focus**: Solution development using the Kailash SDK
+**Version**: 0.1.4 | **Last Updated**: 2025-01-06
 
-## 📁 API Documentation Files
+This directory contains the complete API reference for the Kailash Python SDK, organized by module and functionality.
 
-Quick navigation to solution-relevant API modules:
+## 📁 API Reference Files
 
 | File | Module | Description |
-|------|--------|-------------|
-| [01-core-workflow.yaml](01-core-workflow.yaml) | Workflow & Builder | Essential workflow creation and management |
-| [02-runtime.yaml](02-runtime.yaml) | Execution Runtimes | Local, async, and production execution |
-| [03-nodes-base.yaml](03-nodes-base.yaml) | Base Node Classes | Core node interfaces and base functionality |
-| [04-nodes-ai.yaml](04-nodes-ai.yaml) | AI/ML Nodes | LLM agents, embeddings, AI orchestration |
-| [05-nodes-data.yaml](05-nodes-data.yaml) | Data Processing | File I/O, databases, data transformation |
-| [06-nodes-logic.yaml](06-nodes-logic.yaml) | Logic & Control Flow | Switch, Merge, WorkflowNode, conditional routing |
-| [07-nodes-transform.yaml](07-nodes-transform.yaml) | Data Transformation | Chunkers, formatters, processors |
-| [08-nodes-api.yaml](08-nodes-api.yaml) | API Integration | REST, GraphQL, HTTP integrations |
-| [09-security-access.yaml](09-security-access.yaml) | Security & Access | Authentication, authorization, multi-tenancy |
-| [10-visualization.yaml](10-visualization.yaml) | Visualization & Dashboards | Charts, reports, real-time dashboards |
-| [11-tracking.yaml](11-tracking.yaml) | Performance Tracking | Metrics collection, monitoring, analytics |
-| [12-integrations.yaml](12-integrations.yaml) | System Integrations | MCP, Gateway, Studio integrations |
-| [13-utils.yaml](13-utils.yaml) | Utilities & Helpers | Export tools, templates, utility functions |
+|------|---------|-------------|
+| [01-core-workflow.yaml](01-core-workflow.yaml) | `kailash.workflow` | Core Workflow and WorkflowBuilder classes |
+| [02-runtime.yaml](02-runtime.yaml) | `kailash.runtime` | Execution runtimes (Local, Async, Parallel, Docker) |
+| [03-nodes-base.yaml](03-nodes-base.yaml) | `kailash.nodes.base*` | Base node classes and abstractions |
+| [04-nodes-ai.yaml](04-nodes-ai.yaml) | `kailash.nodes.ai` | AI/ML nodes (LLM, A2A, Self-organizing) |
+| [05-nodes-data.yaml](05-nodes-data.yaml) | `kailash.nodes.data` | Data I/O nodes (Readers, Writers, Sources) |
+| [06-nodes-logic.yaml](06-nodes-logic.yaml) | `kailash.nodes.logic` | Control flow nodes (Switch, Merge, Workflow) |
+| [07-nodes-transform.yaml](07-nodes-transform.yaml) | `kailash.nodes.transform` | Data transformation nodes |
+| [08-nodes-api.yaml](08-nodes-api.yaml) | `kailash.nodes.api` | API integration nodes (HTTP, REST, GraphQL) |
+| [09-security-access.yaml](09-security-access.yaml) | `kailash.security/access_control` | Security and access control |
+| [10-visualization.yaml](10-visualization.yaml) | `kailash.visualization` | Visualization and reporting |
+| [11-tracking.yaml](11-tracking.yaml) | `kailash.tracking` | Task tracking and metrics |
+| [12-integrations.yaml](12-integrations.yaml) | Various | MCP, SharePoint, API Gateway integrations |
+| [13-utils.yaml](13-utils.yaml) | `kailash.utils` | Utilities (Export, Templates) |
 
-## 🎯 Solution Development Focus
+## 🚀 Quick Navigation
 
-These API modules contain the essential interfaces for building business solutions with Kailash SDK:
+### By Use Case
+- **Building Workflows** → [01-core-workflow.yaml](01-core-workflow.yaml)
+- **Running Workflows** → [02-runtime.yaml](02-runtime.yaml)
+- **AI Integration** → [04-nodes-ai.yaml](04-nodes-ai.yaml)
+- **Data Processing** → [05-nodes-data.yaml](05-nodes-data.yaml)
+- **API Calls** → [08-nodes-api.yaml](08-nodes-api.yaml)
+- **Security** → [09-security-access.yaml](09-security-access.yaml)
 
-### Core Solution Building Blocks
-- **Workflow Creation**: Use `01-core-workflow.yaml` for basic workflow setup
-- **Data Processing**: Use `05-nodes-data.yaml` for ETL and data pipelines  
-- **AI Integration**: Use `04-nodes-ai.yaml` for LLM and AI functionality
-- **External APIs**: Use `08-nodes-api.yaml` for integrating with existing systems
+### By Module
+- `from kailash import Workflow` → [01-core-workflow.yaml](01-core-workflow.yaml)
+- `from kailash.runtime.local import LocalRuntime` → [02-runtime.yaml](02-runtime.yaml)
+- `from kailash.nodes.ai import LLMAgentNode` → [04-nodes-ai.yaml](04-nodes-ai.yaml)
+- `from kailash.nodes.data import CSVReaderNode` → [05-nodes-data.yaml](05-nodes-data.yaml)
 
-### Production Deployment
-- **Runtime Management**: Use `02-runtime.yaml` for execution strategies
-- **Security Setup**: Use `09-security-access.yaml` for production security
+## 📋 File Format
 
-## 🚀 Quick Start
+Each YAML file follows this structure:
 
-1. **Start here**: Review `01-core-workflow.yaml` for basic workflow APIs
-2. **Add data**: Check `05-nodes-data.yaml` for data source and sink options
-3. **Add intelligence**: Review `04-nodes-ai.yaml` for AI capabilities
-4. **Integrate**: Use `08-nodes-api.yaml` for external system connections
-5. **Secure**: Apply `09-security-access.yaml` for production security
+```yaml
+# Module name and description
+module_name:
+  module: full.python.module.path
+  description: "Module description"
+  
+  classes:
+    ClassName:
+      description: "Class description"
+      import: "from module import ClassName"
+      methods:
+        method_name:
+          signature: "method(params) -> return_type"
+          description: "What it does"
+          params:
+            param_name: "Description"
+          example: |
+            # Example code
+```
 
-## 📚 Related Resources
+## 🔍 Finding APIs
 
-- **[Node Catalog](../nodes/)** - Detailed node documentation by category
-- **[Cheatsheet](../cheatsheet/)** - Quick code patterns and examples
-- **[Pattern Library](../pattern-library/)** - Complete solution patterns
-- **[Templates](../templates/)** - Ready-to-use code templates
-- **[Validation](../validation/)** - Solution validation and deployment checks
+1. **Know the module?** → Check the corresponding file number
+2. **Know the use case?** → Use Quick Navigation above
+3. **Searching for a class?** → Check the table for the right category
+4. **Need examples?** → Each API includes usage examples
 
----
-*For comprehensive SDK development documentation, see the main Kailash SDK repository*
+## See Also
+- [Node Catalog](../nodes/README.md) - Detailed node documentation
+- [Validation Guide](../validation/validation-guide.md) - API usage rules
+- [Cheatsheet](../cheatsheet/README.md) - Quick code snippets

@@ -1,108 +1,74 @@
-# Workflow Documentation - Solution Development
+# Workflows Guide
 
-**Version**: Template-adapted from Kailash SDK 0.1.4  
-**Focus**: Development processes for business solution creation
+This directory contains comprehensive workflow documentation for development, validation, and release processes in the Kailash Python SDK.
 
-## 📁 Workflow Files
+## Contents
 
-| File | Purpose | Description |
-|------|---------|-------------|
-| [solution-development-phases.md](solution-development-phases.md) | Core Process | 5-phase solution development workflow |
-| [migration-workflow.md](migration-workflow.md) | Legacy Migration | Converting existing systems to Kailash |
-| [deployment-workflow.md](deployment-workflow.md) | Production Deployment | Deployment and release processes |
-| [mistake-tracking.md](mistake-tracking.md) | Learning Process | Capturing and documenting lessons learned |
-| [validation-checklist.md](validation-checklist.md) | Quality Assurance | Pre-deployment validation procedures |
+### Core Workflows
+- **[phases.md](phases.md)** - 🎯 The 5-phase development workflow (START HERE)
+- **[development-workflow.md](development-workflow.md)** - Legacy 23-step workflow (reference)
+- **[task-checklists.md](task-checklists.md)** - Task-specific checklists
 
-## 🎯 Solution Development Process Overview
+### Process Guides
+- **[mistake-tracking.md](mistake-tracking.md)** - 🐛 How to track and learn from mistakes
+- **[validation-checklist.md](validation-checklist.md)** - ✅ All validation commands
+- **[release-checklist.md](release-checklist.md)** - 🚀 Release process step-by-step
 
-### 5-Phase Workflow
-1. **Discovery & Planning** - Requirements analysis and solution design
-2. **Implementation & Integration** - Development and system integration
-3. **Testing & Validation** - Quality assurance and performance testing
-4. **Documentation & Deployment Prep** - Documentation and production preparation
-5. **Deployment & Monitoring** - Production deployment and monitoring setup
+## Quick Start: 5-Phase Workflow
 
-### Process Principles
-- **Solution-Focused**: Build for business value and production deployment
-- **Quality-First**: Comprehensive testing and validation at each phase
-- **Documentation-Heavy**: Document decisions, patterns, and lessons learned
-- **Iterative**: Learn from mistakes and continuously improve
+```
+Phase 1: Discovery & Planning (PLAN MODE)
+    ↓
+Phase 2: Implementation & Learning (EDIT MODE)
+    ↓
+Phase 3: Mistake Analysis (PLAN MODE)
+    ↓
+Phase 4: Documentation Updates (EDIT MODE)
+    ↓
+Phase 5: Final Release (EDIT MODE)
+```
 
-## 🔄 Workflow Integration
+See [phases.md](phases.md) for complete details.
 
-### With Todo Management
-- Each phase has corresponding tasks in `guide/todos/000-master.md`
-- Active tasks tracked in `guide/todos/active/` files
-- Completed sessions archived in `guide/todos/completed/`
+## Key Principles
 
-### With Mistake Tracking
-- Issues tracked in `guide/mistakes/current-session-mistakes.md`
-- Patterns documented in `guide/mistakes/README.md`
-- Solutions integrated into workflow improvements
+1. **Track Mistakes Immediately**: Use `guide/sessions/current-mistakes.md`
+2. **Clear Context Between Phases**: Optimize memory usage
+3. **Examples First**: Write and validate examples before implementation
+4. **Learn from Errors**: Analyze mistakes to improve documentation
+5. **Validate Continuously**: Run checks throughout development
 
-### With Reference Documentation
-- API usage guided by `reference/api/` specifications
-- Patterns from `reference/pattern-library/` inform solution design
-- Quick reference via `reference/cheatsheet/` during implementation
+## Quick Reference
 
-## 🚀 Quick Start
+### Starting a New Task
+1. Enter PLAN MODE
+2. Read [phases.md](phases.md)
+3. Check `guide/todos/000-master.md`
+4. Create implementation plan
 
-### For New Solutions
-1. Start with [solution-development-phases.md](solution-development-phases.md)
-2. Use `reference/pattern-library/` for solution patterns
-3. Track progress in `guide/todos/000-master.md`
-4. Follow deployment guide for production readiness
+### During Implementation
+1. Create `guide/sessions/current-mistakes.md`
+2. Write examples first
+3. Track all errors as they occur
+4. Run validation frequently
 
-### For Legacy Migration
-1. Start with [migration-workflow.md](migration-workflow.md)
-2. Assess existing system and plan migration strategy
-3. Use migration templates and patterns
-4. Follow gradual cutover procedures
+### Before Release
+1. Analyze all mistakes (Phase 3)
+2. Update documentation (Phase 4)
+3. Run full validation suite
+4. Follow [release-checklist.md](release-checklist.md)
 
-### For Deployment
-1. Follow [deployment-workflow.md](deployment-workflow.md)
-2. Complete [validation-checklist.md](validation-checklist.md)
-3. Use deployment patterns from `reference/cheatsheet/006-deployment-patterns.md`
-4. Set up monitoring and alerting
+## Context Management
 
-## 📊 Process Metrics
+### What to Load per Phase:
+- **Phase 1**: References, ADRs, existing features
+- **Phase 2**: Examples, source code, mistake tracker
+- **Phase 3**: All mistake logs, patterns
+- **Phase 4**: Documentation files
+- **Phase 5**: Validation tools, release checklist
 
-### Development Velocity
-- **Time to First Solution**: Target < 4 hours for standard patterns
-- **Deployment Frequency**: Target daily deployments for active projects
-- **Lead Time**: From requirements to production < 1 week
-
-### Quality Metrics
-- **Defect Rate**: < 5% of deployed solutions have critical issues
-- **Test Coverage**: > 90% for all solution components
-- **Documentation Coverage**: 100% of solutions have complete documentation
-
-### Learning Metrics
-- **Mistake Recurrence**: < 10% repeat of documented mistakes
-- **Process Improvement**: Monthly workflow refinements based on lessons learned
-- **Knowledge Sharing**: All lessons captured and documented
-
-## 🔧 Workflow Customization
-
-### Project-Specific Adaptations
-- Add project-specific phases for complex requirements
-- Customize validation criteria for different domains
-- Adapt deployment procedures for specific environments
-- Include domain-specific quality gates
-
-### Team-Specific Modifications
-- Adjust phase durations based on team size and experience
-- Customize documentation requirements for team needs
-- Adapt review processes for team structure
-- Include team-specific tools and technologies
-
-## 🔗 Related Resources
-
-- **[Todo System](../todos/README.md)** - Task tracking and progress management
-- **[Mistake Tracking](../mistakes/README.md)** - Learning from errors and issues
-- **[Pattern Library](../../reference/pattern-library/)** - Reusable solution patterns
-- **[Validation Tools](../../reference/validation/)** - Quality assurance and deployment readiness
-- **[Cheatsheet](../../reference/cheatsheet/)** - Quick reference for common patterns
-
----
-*For comprehensive workflow documentation including internal processes, see the main Kailash SDK repository*
+## See Also
+- `guide/reference/` - API references and patterns
+- `guide/features/` - Feature implementation guides
+- `guide/mistakes/` - Historical mistake database
+- `guide/sessions/` - Session-specific logs

@@ -36,31 +36,30 @@
         ]
       },
       "add_node": {
-        "signature": "add_node(self, node_id: str, node: Node, config: dict = None) -> Workflow",
+        "signature": "add_node(self, node_id: str, node_or_type: Any, **config) -> None",
         "params": [
           {"name": "node_id", "type": "str", "required": true, "position": 1},
-          {"name": "node", "type": "Node", "required": true, "position": 2},
-          {"name": "config", "type": "dict", "required": false, "position": 3, "default": null}
+          {"name": "node_or_type", "type": "Any", "required": true, "position": 2},
+          {"name": "config", "type": "kwargs", "required": false, "note": "Configuration as keyword arguments"}
         ],
-        "returns": "Workflow"
+        "returns": "None"
       },
       "connect": {
-        "signature": "connect(self, from_node: str, to_node: str, from_output: str = 'default', to_input: str = 'default') -> Workflow",
+        "signature": "connect(self, source_node: str, target_node: str, mapping: Optional[Dict[str, str]] = None) -> None",
         "params": [
-          {"name": "from_node", "type": "str", "required": true, "position": 1},
-          {"name": "to_node", "type": "str", "required": true, "position": 2},
-          {"name": "from_output", "type": "str", "required": false, "position": 3, "default": "default"},
-          {"name": "to_input", "type": "str", "required": false, "position": 4, "default": "default"}
+          {"name": "source_node", "type": "str", "required": true, "position": 1},
+          {"name": "target_node", "type": "str", "required": true, "position": 2},
+          {"name": "mapping", "type": "dict", "required": false, "position": 3, "default": null}
         ],
-        "returns": "Workflow"
+        "returns": "None"
       },
       "execute": {
-        "signature": "execute(self, runtime: Runtime, inputs: dict = None) -> dict",
+        "signature": "execute(self, inputs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]",
         "params": [
-          {"name": "runtime", "type": "Runtime", "required": true, "position": 1},
-          {"name": "inputs", "type": "dict", "required": false, "position": 2, "default": null}
+          {"name": "inputs", "type": "dict", "required": false, "position": 1, "default": null}
         ],
-        "returns": "dict"
+        "returns": "dict",
+        "note": "Direct execution. For runtime execution use runtime.execute(workflow, parameters={})"
       }
     }
   },

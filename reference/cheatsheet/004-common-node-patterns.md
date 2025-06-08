@@ -80,19 +80,79 @@ workflow.connect("router", "low_handler", mapping={"low": "input"})
 
 ## Custom Python Code
 ```python
-workflow.add_node("custom", PythonCodeNode(),
+# ✅ CORRECT: Raw statements with input_types
+workflow.add_node("custom", PythonCodeNode(
+    name="custom",  # Required first parameter
     code='''
-def execute(data):
-    # Custom processing logic
-    result = []
-    for item in data:
-        if item['score'] > 0.8:
-            result.append({
-                'id': item['id'],
-                'category': 'high_confidence',
-                'score': item['score']
-            })
-    return {'filtered': result}
+# Variables injected directly into namespace
+try:
+    data = data
+except:
+    data = []
+
+# Process data
+result = []
+for item in data:
+    if item.get('score', 0) > 0.8:
+        result.append({
+            'id': item['id'],
+            'category': 'high_confidence',
+            'score': item['score']
+        })
+
+result = {'filtered': result}
+''',
+    input_types={"data": list}  # Define expected parameters
+))
+
+# ❌ WRONG: Function definitions don't execute
+workflow.add_node("custom", PythonCodeNode(
+    name="custom",
+    code='''
+def execute(data):  # Returns function object, doesn't execute
+    return {'result': data}
 '''
+))
+```
+
+## PythonCodeNode in Cycles
+```python
+# Complete cycle pattern with all required elements
+workflow.add_node("processor", PythonCodeNode(
+    name="processor",
+    code='''
+# Use bare except - specific exceptions not available
+try:
+    value = value
+except:
+    value = 0
+
+try:
+    target = target
+except:
+    target = 100
+
+# Process and check convergence
+new_value = value + (target - value) * 0.1
+converged = abs(new_value - target) < 1.0
+
+result = {
+    "value": new_value,
+    "target": target,  # Pass constants through cycles
+    "converged": converged
+}
+''',
+    input_types={"value": float, "target": float}  # ALL parameters
+))
+
+# Map ALL parameters (variables + constants)
+workflow.connect("processor", "processor",
+    mapping={
+        "result.value": "value",    # Variable data
+        "result.target": "target"   # Constant (still required!)
+    },
+    cycle=True,
+    max_iterations=10,
+    convergence_check="converged == True"  # Direct field access
 )
 ```

@@ -34,35 +34,38 @@ PRESERVE_PATTERNS = [
 
 # Files and directories to always sync from template
 SYNC_PATTERNS = [
-    ".github/*",  # ALL GitHub configuration (protected)
-    ".github/**/*",  # Including all workflows
+    # GitHub configuration
+    ".github/*",
+    ".github/**/*",
     
-    # DOWNSTREAM REFERENCE FILES (limited set)
-    "reference/README.md",  # Main reference navigation
-    "reference/sync-files-reference.md",  # Sync file reference
-    "reference/template-sync.md",  # Template sync documentation
+    # Reference - always sync entire directory
+    "reference/*",
+    "reference/**/*",
     
-    # ENHANCED GUIDE STRUCTURE
-    "guide/README.md",  # Guide navigation
-    "guide/todos/**/*",  # Comprehensive todo system
-    "guide/workflows/**/*",  # Development workflows
-    "guide/mistakes/**/*",  # Mistake tracking system
+    # Guide - specific files/dirs to always sync
+    "guide/adr/0000-template.md",
+    "guide/adr/README.md",
+    "guide/frontend/*",
+    "guide/frontend/**/*",
+    "guide/instructions/*",
+    "guide/instructions/**/*",
+    "guide/mistakes/000-master.md",
+    "guide/mistakes/README.md", 
+    "guide/mistakes/template.md",
+    "guide/todos/README.md",
+    "guide/workflows/*",
+    "guide/workflows/**/*",
     
-    # SHARED COMPONENTS AND SCRIPTS
-    "src/shared/*",  # Shared components
-    "src/__init__.py",  # Root src init file
-    "examples/*",  # Example implementations
-    "docs/*",  # Documentation
-    "data/samples/*",  # Sample data files
-    "data/configs/*",  # Configuration templates
-    "data/outputs/.gitkeep",  # Output directory placeholder
-    "scripts/setup_env.py",
-    "scripts/validate.py",
-    "scripts/deploy.py",
+    # Scripts - always sync entire directory
+    "scripts/*",
+    "scripts/**/*",
+    
+    # Shared source code
+    "src/shared/*",
+    "src/shared/**/*",
+    
+    # Root configuration files
     ".pre-commit-config.yaml",
-    "Claude.md",  # Template instructions for Claude Code
-    "CHANGELOG.md",
-    "pyproject.toml",  # Dependencies (preserve if exists)
     "MANIFEST.in",
 ]
 
@@ -73,15 +76,34 @@ MERGE_FILES = {
 
 # Files to sync only if they don't exist (preserve existing)
 SYNC_IF_MISSING = [
+    # Root files
     "README.md",
     "pyproject.toml",
     "CHANGELOG.md",
+    "Claude.md",
+    
+    # Data directories
     "data/configs/",
     "data/samples/",
+    
+    # Code directories
     "examples/",
     "docs/",
     "src/solutions/",
-    "guide/mistakes/current-session-mistakes.md",  # Preserve active session mistakes
+    "todos/",
+    
+    # Guide files/dirs not in SYNC_PATTERNS (sync if missing)
+    "guide/*",  # Any other guide files not explicitly synced
+    "guide/**/*",  # Any subdirectories not explicitly synced
+    "guide/adr/*",  # Other ADR files (except 0000-template.md and README.md)
+    "guide/mistakes/*",  # Other mistake files (except specified ones)
+    "guide/todos/*",  # Other todo files (except README.md)
+    "guide/todos/active/",  # Active tasks
+    "guide/todos/completed/",  # Completed sessions
+    
+    # Reference files/dirs not in SYNC_PATTERNS (sync if missing)  
+    "reference/*",  # Already synced entirely, but kept for clarity
+    "reference/**/*",  # Already synced entirely, but kept for clarity
 ]
 
 # Directories that should be merged (not overwritten)
@@ -294,31 +316,30 @@ class TemplateSyncer:
         return changes_made
 
     def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
-        """Remove files that should no longer exist in downstream repositories."""
+        """Remove specific old files that should no longer exist in downstream repositories."""
         changes_made = False
         
-        # Define allowed reference files (only these should remain)
-        allowed_reference_files = {
-            "README.md",
-            "sync-files-reference.md", 
-            "template-sync.md"
+        # Define specific old files to remove (from previous incorrect syncs)
+        unwanted_reference_files = {
+            "api-registry.yaml",
+            "api-validation-schema.json", 
+            "cheatsheet.md",
+            "corrections-summary.md",
+            "mcp-ecosystem-design.md",
+            "node-catalog.md", 
+            "pattern-library.md",
+            "validation-guide.md",
+            "validation_report.md"
         }
         
-        # Check reference directory
+        # Check reference directory for specific unwanted files
         reference_dir = downstream_path / "reference"
         if reference_dir.exists():
-            # Remove unwanted files
-            for item in reference_dir.iterdir():
-                if item.is_file():
-                    if item.name not in allowed_reference_files:
-                        logger.info(f"Removing unwanted reference file: {item.relative_to(downstream_path)}")
-                        item.unlink()
-                        changes_made = True
-                elif item.is_dir():
-                    # Remove all subdirectories (api, cheatsheet, nodes, etc.)
-                    logger.info(f"Removing unwanted reference directory: {item.relative_to(downstream_path)}")
-                    import shutil
-                    shutil.rmtree(item)
+            for unwanted_file in unwanted_reference_files:
+                file_path = reference_dir / unwanted_file
+                if file_path.exists():
+                    logger.info(f"Removing old reference file: {file_path.relative_to(downstream_path)}")
+                    file_path.unlink()
                     changes_made = True
                     
         return changes_made

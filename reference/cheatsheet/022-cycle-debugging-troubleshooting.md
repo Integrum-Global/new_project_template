@@ -1,5 +1,188 @@
 # Cycle Debugging & Troubleshooting
 
+## 🔧 Phase 5.2 Developer Tools (NEW)
+
+### CycleDebugger - Real-time Execution Tracking
+```python
+from kailash.workflow import CycleDebugger
+
+# Create debugger with detailed tracking
+debugger = CycleDebugger(debug_level="detailed", enable_profiling=True)
+
+# Start debugging a cycle
+trace = debugger.start_cycle(
+    cycle_id="optimization_cycle",
+    workflow_id="my_workflow", 
+    max_iterations=100,
+    convergence_condition="error < 0.01"
+)
+
+# During cycle execution - track each iteration
+input_data = {"value": 10.0, "target": 100.0}
+iteration = debugger.start_iteration(trace, input_data)
+
+# After iteration completes
+output_data = {"value": 25.0, "error": 0.75}
+debugger.end_iteration(trace, iteration, output_data, convergence_value=0.75)
+
+# Complete cycle analysis
+debugger.end_cycle(trace, converged=True, termination_reason="convergence")
+
+# Generate comprehensive report
+report = debugger.generate_report(trace)
+print(f"Efficiency: {report['performance']['efficiency_score']:.3f}")
+```
+
+### CycleProfiler - Performance Analysis
+```python
+from kailash.workflow import CycleProfiler
+
+# Create profiler for performance analysis
+profiler = CycleProfiler(enable_advanced_metrics=True)
+
+# Add multiple traces for comparative analysis
+profiler.add_trace(trace1)  # Fast cycle
+profiler.add_trace(trace2)  # Slow cycle
+profiler.add_trace(trace3)  # Failed cycle
+
+# Analyze performance across all cycles
+metrics = profiler.analyze_performance()
+print(f"Average cycle time: {metrics.avg_cycle_time:.3f}s")
+print(f"Bottlenecks: {metrics.bottlenecks}")
+
+# Compare specific cycles
+comparison = profiler.compare_cycles(["fast_cycle", "slow_cycle"])
+print(f"Best cycle: {comparison['best_cycle']}")
+
+# Get optimization recommendations
+recommendations = profiler.get_optimization_recommendations()
+for rec in recommendations:
+    print(f"[{rec['priority']}] {rec['description']}")
+```
+
+### CycleAnalyzer - Comprehensive Analysis Framework
+```python
+from kailash.workflow import CycleAnalyzer
+
+# Create analyzer with comprehensive analysis
+analyzer = CycleAnalyzer(
+    analysis_level="comprehensive",
+    enable_profiling=True,
+    enable_debugging=True,
+    output_directory="./analysis_output"
+)
+
+# Start analysis session
+session = analyzer.start_analysis_session("optimization_study")
+
+# Analyze cycle with automatic tracking
+trace = analyzer.start_cycle_analysis("cycle_1", "workflow_1", max_iterations=50)
+
+# Track iterations (integrated with workflow execution)
+analyzer.track_iteration(trace, input_data, output_data, convergence_value=0.05)
+
+# Get real-time health metrics
+health = analyzer.get_real_time_metrics(trace)
+if health['health_score'] < 0.5:
+    print("⚠️ Cycle performance issue detected!")
+
+# Complete analysis with comprehensive reporting
+analyzer.complete_cycle_analysis(trace, converged=True, termination_reason="convergence")
+
+# Generate session report with insights
+session_report = analyzer.generate_session_report()
+print(f"Session quality: {session_report['insights']['session_quality']}")
+
+# Export all analysis data
+analyzer.export_analysis_data("comprehensive_analysis.json")
+```
+
+## 🎯 Developer Tools Integration Patterns
+
+### Pattern 1: Development-Time Cycle Optimization
+```python
+def optimize_cycle_performance(workflow, cycle_config):
+    """Optimize cycle using developer tools."""
+    
+    # 1. Start with comprehensive analysis
+    analyzer = CycleAnalyzer(analysis_level="comprehensive")
+    session = analyzer.start_analysis_session("optimization")
+    
+    # 2. Run cycle with analysis
+    trace = analyzer.start_cycle_analysis("target_cycle", workflow.workflow_id)
+    
+    # Execute workflow with tracking...
+    runtime = LocalRuntime()
+    results, run_id = runtime.execute(workflow, parameters=initial_params)
+    
+    # 3. Analyze results and get recommendations
+    cycle_report = analyzer.generate_cycle_report(trace)
+    
+    if cycle_report['performance']['efficiency_score'] < 0.5:
+        print("⚠️ Poor performance detected - applying optimizations...")
+        
+        # Apply recommended optimizations
+        recommendations = cycle_report['recommendations']
+        optimized_config = apply_optimizations(cycle_config, recommendations)
+        return optimized_config
+    
+    return cycle_config
+```
+
+### Pattern 2: Production Health Monitoring
+```python
+def monitor_cycle_health(workflow_execution):
+    """Monitor cycle health in production."""
+    
+    debugger = CycleDebugger(debug_level="basic", enable_profiling=True)
+    
+    # Start monitoring
+    trace = debugger.start_cycle("prod_cycle", "production_workflow")
+    
+    # During execution, check health periodically
+    for iteration_data in workflow_execution:
+        iteration = debugger.start_iteration(trace, iteration_data['input'])
+        
+        # Simulate processing...
+        
+        debugger.end_iteration(trace, iteration, iteration_data['output'])
+        
+        # Check for issues
+        if iteration.execution_time > 5.0:
+            alert_slow_iteration(iteration)
+        
+        if iteration.memory_usage_mb > 1000:
+            alert_high_memory(iteration)
+    
+    # Generate health report
+    report = debugger.generate_report(trace)
+    return report['performance']['efficiency_score']
+```
+
+### Pattern 3: Comparative Cycle Analysis
+```python
+def compare_cycle_implementations(cycle_variants):
+    """Compare different cycle implementations."""
+    
+    profiler = CycleProfiler(enable_advanced_metrics=True)
+    
+    # Test each variant
+    for variant_name, cycle_workflow in cycle_variants.items():
+        print(f"Testing {variant_name}...")
+        
+        # Execute and profile
+        trace = execute_and_profile(cycle_workflow)
+        profiler.add_trace(trace)
+    
+    # Generate comparative analysis
+    performance_report = profiler.generate_performance_report()
+    
+    best_cycle = performance_report['cycle_comparisons']['best_cycle']
+    print(f"Best performing cycle: {best_cycle['id']} (score: {best_cycle['score']:.3f})")
+    
+    return performance_report
+```
+
 ## Safe State Access Patterns
 
 ### ✅ Correct: Use .get() with defaults

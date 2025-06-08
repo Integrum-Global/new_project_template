@@ -189,7 +189,7 @@ workflow.add_node("id", Node(), param="value")  # Config as kwargs
 
 ### Immediate Actions
 1. ✅ Update all reference documentation (completed)
-2. ⏳ Update pattern-library.md with new workflow patterns
+2. ✅ Update pattern-library/ with new workflow patterns (reorganized into individual files)
 3. ⏳ Sync Sphinx documentation with updated reference files
 4. ⏳ Create migration guide for v0.1.3 to v0.1.4
 

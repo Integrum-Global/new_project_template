@@ -46,7 +46,6 @@ jobs:
       - name: Run template sync
         env:
           GITHUB_TOKEN: ${{ secrets.TEMPLATE_SYNC_TOKEN }}
-          DOWNSTREAM_REPOS: ${{ vars.DOWNSTREAM_REPOS }}
           TARGET_REPO: ${{ github.event.inputs.target_repo }}
           FORCE_SYNC: ${{ github.event.inputs.force_sync }}
         run: |

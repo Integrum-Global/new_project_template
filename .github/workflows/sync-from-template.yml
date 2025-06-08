@@ -34,29 +34,59 @@ jobs:
           
           # Get list of files to sync from template
           SYNC_FILES=(
+            # GitHub configuration
             ".github"
+            
+            # Reference - always sync entire directory
             "reference"
-            "guide" 
-            "templates"
+            
+            # Guide - specific files/dirs to always sync
+            "guide/adr/0000-template.md"
+            "guide/adr/README.md"
+            "guide/frontend"
+            "guide/instructions"
+            "guide/mistakes/000-master.md"
+            "guide/mistakes/README.md"
+            "guide/mistakes/template.md"
+            "guide/todos/README.md"
+            "guide/workflows"
+            
+            # Scripts - always sync entire directory
+            "scripts"
+            
+            # Shared source code
             "src/shared"
-            "src/__init__.py"
-            "scripts/setup_env.py"
-            "scripts/validate.py"
-            "scripts/deploy.py"
+            
+            # Root configuration files
             ".pre-commit-config.yaml"
             "MANIFEST.in"
           )
           
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
-            "todos"
-            "examples"
-            "docs"
-            "data/samples"
-            "data/configs"
-            "CHANGELOG.md"
+            # Root files
             "README.md"
             "pyproject.toml"
+            "CHANGELOG.md"
+            "Claude.md"
+            
+            # Data directories
+            "data/configs"
+            "data/samples"
+            
+            # Code directories
+            "examples"
+            "docs"
+            "src/solutions"
+            "todos"
+            
+            # Guide files/dirs not in SYNC_FILES
+            "guide/adr"  # Other ADR files
+            "guide/mistakes"  # Other mistake files
+            "guide/todos"  # Other todo files
+            
+            # Templates directory
+            "templates"
           )
           
           # Files that need special merge handling
