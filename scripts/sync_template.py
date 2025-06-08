@@ -37,15 +37,10 @@ SYNC_PATTERNS = [
     ".github/*",  # ALL GitHub configuration (protected)
     ".github/**/*",  # Including all workflows
     
-    # NEW MODULAR REFERENCE STRUCTURE
+    # DOWNSTREAM REFERENCE FILES (limited set)
     "reference/README.md",  # Main reference navigation
-    "reference/api/**/*",  # Modular API documentation
-    "reference/nodes/**/*",  # Node catalog by category
-    "reference/cheatsheet/**/*",  # Quick reference guides
-    "reference/pattern-library/**/*",  # Solution patterns
-    "reference/validation/**/*",  # Validation tools and guides
-    "reference/templates/**/*",  # Code templates
-    "reference/design/**/*",  # Design documents
+    "reference/sync-files-reference.md",  # Sync file reference
+    "reference/template-sync.md",  # Template sync documentation
     
     # ENHANCED GUIDE STRUCTURE
     "guide/README.md",  # Guide navigation
@@ -252,6 +247,10 @@ class TemplateSyncer:
         """Sync files from template to downstream, preserving specific files."""
         changes_made = False
 
+        # First, clean up unwanted files from previous syncs
+        if self.cleanup_unwanted_files(downstream_path):
+            changes_made = True
+
         # Copy files that should always be synced
         for pattern in SYNC_PATTERNS:
             for file_path in template_path.glob(pattern):
@@ -292,8 +291,36 @@ class TemplateSyncer:
                         if self.copy_file(file_path, dest_path):
                             changes_made = True
 
-        # No need to check for sync workflow - entire .github folder is synced
+        return changes_made
 
+    def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
+        """Remove files that should no longer exist in downstream repositories."""
+        changes_made = False
+        
+        # Define allowed reference files (only these should remain)
+        allowed_reference_files = {
+            "README.md",
+            "sync-files-reference.md", 
+            "template-sync.md"
+        }
+        
+        # Check reference directory
+        reference_dir = downstream_path / "reference"
+        if reference_dir.exists():
+            # Remove unwanted files
+            for item in reference_dir.iterdir():
+                if item.is_file():
+                    if item.name not in allowed_reference_files:
+                        logger.info(f"Removing unwanted reference file: {item.relative_to(downstream_path)}")
+                        item.unlink()
+                        changes_made = True
+                elif item.is_dir():
+                    # Remove all subdirectories (api, cheatsheet, nodes, etc.)
+                    logger.info(f"Removing unwanted reference directory: {item.relative_to(downstream_path)}")
+                    import shutil
+                    shutil.rmtree(item)
+                    changes_made = True
+                    
         return changes_made
 
     def copy_file(self, src: Path, dst: Path) -> bool:
