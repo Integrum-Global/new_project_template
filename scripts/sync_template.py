@@ -52,6 +52,10 @@ SYNC_PATTERNS = [
     "guide/workflows/*",
     "guide/workflows/**/*",
     
+    # README files with instructions (always update)
+    "*/README.md",
+    "**/README.md",
+    
     # Scripts - always sync entire directory
     "scripts/*",
     "scripts/**/*",
@@ -63,6 +67,10 @@ SYNC_PATTERNS = [
     # Root configuration files
     ".pre-commit-config.yaml",
     "MANIFEST.in",
+    
+    # Instruction files (always update with latest instructions)
+    "README.md",
+    # Note: CLAUDE.md has special merge handling to preserve project-specific sections
 ]
 
 # Files that require special merge handling
@@ -72,11 +80,9 @@ MERGE_FILES = {
 
 # Files to sync only if they don't exist (preserve existing)
 SYNC_IF_MISSING = [
-    # Root files
-    "README.md",
+    # Root files (excluding instruction files which are always synced)
     "pyproject.toml",
     "CHANGELOG.md",
-    "CLAUDE.md",
     
     # Data directories
     "data/configs/",
