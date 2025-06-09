@@ -45,8 +45,6 @@ SYNC_PATTERNS = [
     "guide/reference/**/*",
     
     # Guide - specific files/dirs to always sync
-    "guide/adr/0000-template.md",
-    "guide/adr/README.md",
     "guide/frontend/*",
     "guide/frontend/**/*",
     "guide/instructions/*",
@@ -105,10 +103,13 @@ SYNC_IF_MISSING = [
     "src/solutions/*/examples/__init__.py",
     
     # Guide files/dirs not in SYNC_PATTERNS (sync if missing)
-    "guide/*",  # Any other guide files not explicitly synced
-    "guide/**/*",  # Any subdirectories not explicitly synced
-    "guide/adr/*",  # Other ADR files (except 0000-template.md and README.md)
-    "mistakes/*",  # All mistake files (sync if missing only)  
+    "guide/adr/*",  # ADR files (sync if missing only)
+    "guide/adr/**/*",  # ADR subdirectories (sync if missing only)
+    "guide/prd/*",  # PRD files (sync if missing only)
+    "guide/prd/**/*",  # PRD subdirectories (sync if missing only)
+    "guide/mistakes/*",  # Mistake files (sync if missing only)
+    "guide/mistakes/**/*",  # Mistake subdirectories (sync if missing only)
+    "mistakes/*",  # Root mistake files (sync if missing only)  
     "todos/*",  # All todo files (sync if missing only)
     
     # Reference files are handled by SYNC_PATTERNS - removed from here to avoid conflicts

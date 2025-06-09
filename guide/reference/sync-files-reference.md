@@ -15,20 +15,21 @@
 
 ### 📚 Documentation & References
 ```
-reference/
-├── api-registry.yaml              ✅ Always updated
-├── validation-guide.md            ✅ Always updated
-├── cheatsheet.md                  ✅ Always updated
-└── template-sync.md               ✅ Always updated
-
 guide/
+├── reference/                     ✅ Always updated (entire directory)
+│   ├── api/
+│   ├── cheatsheet/
+│   ├── nodes/
+│   └── validation/
 ├── instructions/                  ✅ Always updated
 │   ├── solution-development.md
 │   ├── best-practices.md
 │   └── checklists.md
-├── adr/                          ✅ Always updated
-├── mistakes/                     ✅ Always updated
-└── prd/                          ✅ Always updated
+├── frontend/                      ✅ Always updated
+├── workflows/                     ✅ Always updated
+├── adr/                          🆕 ADDED IF MISSING (preserved if exists)
+├── prd/                          🆕 ADDED IF MISSING (preserved if exists)
+└── mistakes/                     🆕 ADDED IF MISSING (preserved if exists)
 ```
 
 ### 🎯 Solution Templates

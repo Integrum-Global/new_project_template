@@ -141,11 +141,21 @@ gh run list --workflow=sync-to-downstream.yml
 
 ### Files Always Updated (✅ Synced from Template)
 - `.github/**` - ALL GitHub Actions and workflows
-- `reference/*` - API documentation and guides
-- `guide/*` - Instructions, ADRs, mistakes
+- `guide/reference/*` - API documentation and guides (entire directory)
+- `guide/instructions/*` - Development instructions
+- `guide/frontend/*` - Frontend guidelines
+- `guide/workflows/*` - Process workflows
 - `templates/*` - Solution templates
 - `src/shared/*` - Shared components
 - Core scripts: `setup_env.py`, `validate.py`, `deploy.py`
+
+### Files Added If Missing (🆕 Preserved if exists)
+- `guide/adr/*` - Architecture Decision Records
+- `guide/prd/*` - Product Requirements Documents
+- `guide/mistakes/*` - Mistake tracking
+- `todos/*` - Task tracking
+- `examples/*` - Example code
+- `docs/*` - Documentation
 
 ### Files Merged (🔄 Smart Merge)
 - `README.md` - Template + your project sections
