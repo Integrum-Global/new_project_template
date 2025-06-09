@@ -340,6 +340,13 @@ class TemplateSyncer:
             shutil.rmtree(reference_dir)
             changes_made = True
         
+        # Remove sync-to-downstream.yml workflow (only for template repo)
+        sync_workflow = downstream_path / ".github" / "workflows" / "sync-to-downstream.yml"
+        if sync_workflow.exists():
+            logger.info(f"Removing sync-to-downstream.yml (only needed in template repo)")
+            sync_workflow.unlink()
+            changes_made = True
+        
         # Handle Claude.md → CLAUDE.md migration
         old_claude_file = downstream_path / "Claude.md"
         new_claude_file = downstream_path / "CLAUDE.md"

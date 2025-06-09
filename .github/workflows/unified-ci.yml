@@ -58,6 +58,19 @@ jobs:
                 console.log('Template sync PR detected - skipping full CI');
                 return;
               }
+              
+              // Check for CLAUDE.md fix PRs
+              const isClaudeFix = 
+                prTitle.toLowerCase().includes('claude.md') ||
+                prBranch.includes('claude-md') ||
+                prBody.includes('Fix CLAUDE.md Path References');
+              
+              if (isClaudeFix) {
+                core.setOutput('level', 'skip');
+                core.setOutput('skip-reason', 'CLAUDE.md documentation fix - no CI needed');
+                console.log('CLAUDE.md fix PR detected - skipping full CI');
+                return;
+              }
             }
 
             // Manual dispatch always runs full tests
