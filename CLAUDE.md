@@ -77,4 +77,5 @@ See detailed guides:
 ## Project-Specific Instructions
 
 <!-- Add your project-specific Claude Code instructions here -->
-<!-- These instructions will be preserved during template updates -->
+<!-- IMPORTANT: Template updates replace this entire file. When merging template updates, -->
+<!-- manually merge your project-specific instructions from this section into the new CLAUDE.md -->
