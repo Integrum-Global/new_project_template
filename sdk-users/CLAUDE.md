@@ -2,6 +2,13 @@
 
 *Building solutions WITH the Kailash SDK*
 
+## ⚠️ CRITICAL WARNING: DO NOT EDIT THIS DIRECTORY
+**The entire `sdk-users/` directory is automatically replaced during template sync.**
+- ❌ **ALL EDITS WILL BE LOST** - This directory is read-only
+- ❌ **DO NOT** modify, add, or fix ANY files here
+- ✅ **Report issues** to: https://github.com/Integrum-Global/new_project_template
+- ✅ **Your code belongs in** `src/solutions/` - NOT here!
+
 ## 🎯 Quick Decision Guide
 - **"Build from scratch"** → [developer/CLAUDE.md](developer/CLAUDE.md) - Node patterns, troubleshooting
 - **"Lift working example"** → [workflows/README.md](workflows/README.md) - End-to-end use cases

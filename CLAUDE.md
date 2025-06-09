@@ -7,6 +7,15 @@
 - **Project vision** → prd/ (your requirements)
 - **Migrate legacy** → migrations/ (convert existing projects)
 
+## ⚠️ CRITICAL: DO NOT EDIT sdk-users/ DIRECTORY
+**The entire `sdk-users/` directory is automatically synced from the template.**
+- ❌ **DO NOT** add, edit, or modify ANY files in `sdk-users/`
+- ❌ **DO NOT** create custom files or folders in `sdk-users/`
+- ❌ **DO NOT** fix bugs or typos directly in `sdk-users/`
+- ✅ **ALL changes will be LOST** during the next template sync
+- ✅ **Report issues** to the template repository instead
+- ✅ **Use `src/solutions/`** for your custom code and workflows
+
 ## ⚡ Critical Validation Rules
 1. **Node Names**: ALL end with "Node" (`CSVReaderNode` ✓)
 2. **PythonCodeNode**: Input variables EXCLUDED from outputs!

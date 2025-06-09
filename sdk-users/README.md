@@ -2,6 +2,13 @@
 
 *Everything you need to build solutions with the Kailash SDK*
 
+## ⚠️ WARNING: DO NOT EDIT THIS DIRECTORY
+**The entire `sdk-users/` directory is replaced during template sync.**
+- ❌ **ALL CHANGES WILL BE LOST** - Do not edit ANY files here
+- ❌ **DO NOT** add custom workflows, fix typos, or modify documentation
+- ✅ **Your code goes in** `src/solutions/` - NOT in sdk-users/
+- ✅ **Report issues** to the template repository, not by editing locally
+
 ## 🚨 Start Here: [CLAUDE.md](CLAUDE.md)
 Quick reference with critical rules, common patterns, and navigation guide.
 
