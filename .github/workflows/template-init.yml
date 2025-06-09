@@ -71,12 +71,11 @@ jobs:
           # Check if there are changes to commit
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
-            git commit -m "$(cat <<'EOF'
-feat: automatic template setup and configuration
+            git commit -m "feat: automatic template setup and configuration
 
 🤖 Automated template initialization:
 - Added kailash-template topic for automatic sync
-- Created default labels for issue tracking
+- Created default labels for issue tracking  
 - Setup environment files (.env.example, .gitignore)
 - Initialized project structure and solution template
 - Configured repository for Kailash SDK development
@@ -84,9 +83,7 @@ feat: automatic template setup and configuration
 This repository will now automatically receive template updates.
 See CLAUDE.md for development guidance.
 
-Generated with Template Setup Action
-EOF
-)"
+Generated with Template Setup Action"
             
             git push origin main
             echo "✅ Setup changes committed and pushed"
