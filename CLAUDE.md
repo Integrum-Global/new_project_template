@@ -8,7 +8,7 @@
 
 ### **Phase 1: Plan → Research**
 - **Requirements**: Define business needs and success criteria
-- **Research**: `guide/adr/` (architecture), `guide/workflows/` (process patterns)
+- **Research**: `adr/` (architecture), `guide/workflows/` (process patterns)
 - **Reference**: `guide/reference/CLAUDE.md` → cheatsheet, validation, patterns
 - **Development**: `guide/developer/` → custom nodes, tooling, SDK extensions
 - **Plan**: Clear solution approach with realistic timelines

@@ -28,8 +28,6 @@ guide/
 ├── developer/                     ✅ Always updated
 ├── frontend/                      ✅ Always updated
 ├── workflows/                     ✅ Always updated
-├── adr/                          🆕 ADDED IF MISSING (preserved if exists)
-├── prd/                          🆕 ADDED IF MISSING (preserved if exists)
 └── mistakes/                     🆕 ADDED IF MISSING (preserved if exists)
 ```
 
@@ -121,6 +119,13 @@ docs/                              🆕 ADDED IF MISSING
 ├── api/                           🛡️ Your docs preserved
 ├── guides/                        🛡️ Your guides preserved
 └── build_docs.py                  🆕 Added if missing
+
+adr/                               🆕 ADDED IF MISSING (project-specific)
+├── 0000-template.md               🛡️ Preserved if exists
+└── README.md                      🛡️ Preserved if exists
+
+prd/                               🆕 ADDED IF MISSING (project-specific)
+└── project-specific docs         🛡️ Preserved if exists
 
 CHANGELOG.md                       🆕 ADDED IF MISSING
 ```

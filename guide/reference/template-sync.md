@@ -152,8 +152,8 @@ gh run list --workflow=sync-to-downstream.yml
 - Core scripts: `setup_env.py`, `validate.py`, `deploy.py`
 
 ### Files Added If Missing (🆕 Preserved if exists)
-- `guide/adr/*` - Architecture Decision Records
-- `guide/prd/*` - Product Requirements Documents
+- `adr/*` - Architecture Decision Records (project-specific)
+- `prd/*` - Product Requirements Documents (project-specific)
 - `guide/mistakes/*` - Mistake tracking
 - `todos/*` - Task tracking
 - `examples/*` - Example code

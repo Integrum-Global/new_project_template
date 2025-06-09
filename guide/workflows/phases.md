@@ -20,7 +20,7 @@ The workflow is designed to:
 ### Steps
 1. **Check TODO List**: Review `todos/000-master.md` for context
 2. **Research Documentation**:
-   - Architecture decisions in `guide/adr/`
+   - Architecture decisions in `adr/`
    - Similar features in `guide/features/`
    - API patterns in `guide/reference/`
 3. **Review Mistakes**: Check `mistakes/consolidated-guide.md` for known pitfalls

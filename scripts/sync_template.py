@@ -93,11 +93,11 @@ SYNC_IF_MISSING = [
     "src/solutions/*/nodes/__init__.py",
     "src/solutions/*/examples/",
     "src/solutions/*/examples/__init__.py",
-    # Guide files/dirs not in SYNC_PATTERNS (sync if missing)
-    "guide/adr/*",  # ADR files (sync if missing only)
-    "guide/adr/**/*",  # ADR subdirectories (sync if missing only)
-    "guide/prd/*",  # PRD files (sync if missing only)
-    "guide/prd/**/*",  # PRD subdirectories (sync if missing only)
+    # Project-specific directories (sync if missing)
+    "adr/*",  # ADR files (sync if missing only)
+    "adr/**/*",  # ADR subdirectories (sync if missing only)
+    "prd/*",  # PRD files (sync if missing only)
+    "prd/**/*",  # PRD subdirectories (sync if missing only)
     "guide/mistakes/*",  # Mistake files (sync if missing only)
     "guide/mistakes/**/*",  # Mistake subdirectories (sync if missing only)
     "mistakes/*",  # Root mistake files (sync if missing only)

@@ -101,11 +101,11 @@ results = workflow.run()
 Claude Code provides structured development sessions that align with enterprise workflow requirements:
 
 1. **Document Requirements**: 
-   - Use Claude Code to create comprehensive PRDs in `guide/prd/`
+   - Use Claude Code to create comprehensive PRDs in `prd/`
    - Leverage AI to translate business requirements into technical specifications
 
 2. **Design Architecture**: 
-   - Claude Code helps document architectural decisions in `guide/adr/`
+   - Claude Code helps document architectural decisions in `adr/`
    - AI-assisted analysis of Kailash SDK patterns and best practices
 
 3. **Implement Nodes**: 
@@ -208,7 +208,7 @@ This template includes automated code quality tools:
 ## Documentation
 
 - **API Documentation**: Auto-generated with Sphinx
-- **Architecture Decisions**: Documented in `guide/adr/`
+- **Architecture Decisions**: Documented in `adr/`
 - **Development Guide**: See `CLAUDE.md` for detailed coding standards
 
 ## Contributing
@@ -226,7 +226,7 @@ This template includes automated code quality tools:
 - [Kailash SDK Documentation](https://integrum-global.github.io/kailash_python_sdk/) - Node-based workflow framework
 
 ### Project Documentation
-- [Project ADRs](guide/adr/) - Architecture Decision Records
+- [Project ADRs](adr/) - Architecture Decision Records
 - [Current Todos](todos/000-master.md) - Active development tasks
 - [Development Mistakes to Avoid](mistakes/000-master.md) - Common pitfalls
 - [Coding Standards](CLAUDE.md) - Comprehensive development guidelines
