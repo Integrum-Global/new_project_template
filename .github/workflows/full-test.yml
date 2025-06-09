@@ -1,13 +1,13 @@
 name: Full Test Suite
 
 on:
-  push:
-    branches: [ main ]
-  # Disabled scheduled runs to reduce costs
+  # Disabled automatic runs for downstream repos to reduce costs
+  # push:
+  #   branches: [ main ]
   # schedule:
   #   # Run daily at 2 AM UTC
   #   - cron: '0 2 * * *'
-  workflow_dispatch:
+  workflow_dispatch:  # Manual trigger only for downstream repos
 
 jobs:
   full-test:
