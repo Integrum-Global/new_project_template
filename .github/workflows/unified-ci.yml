@@ -157,6 +157,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv
+          # Check if dist/ exists and contains wheel files
+          if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+            echo "Found wheel files in dist/ directory"
+            # uv will use find-links from pyproject.toml automatically
+          fi
           uv sync
 
       - name: Run basic smoke tests
@@ -187,6 +192,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv
+          # Check if dist/ exists and contains wheel files
+          if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+            echo "Found wheel files in dist/ directory"
+            # uv will use find-links from pyproject.toml automatically
+          fi
           uv sync
 
       - name: Check formatting with black
@@ -230,6 +240,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv
+          # Check if dist/ exists and contains wheel files
+          if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+            echo "Found wheel files in dist/ directory"
+            # uv will use find-links from pyproject.toml automatically
+          fi
           uv sync
 
       - name: Run tests with coverage
@@ -290,6 +305,11 @@ jobs:
       - name: Install dependencies
         run: |
           uv venv
+          # Check if dist/ exists and contains wheel files
+          if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+            echo "Found wheel files in dist/ directory"
+            # uv will use find-links from pyproject.toml automatically
+          fi
           uv sync
 
       - name: Test all examples

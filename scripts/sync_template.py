@@ -32,6 +32,7 @@ PRESERVE_PATTERNS = [
     "README.md",  # Project-specific readme (preserve if exists)
     ".git/*",  # Git history
     ".github/workflows/*_custom.yml",  # Custom workflows
+    "dist/*",  # Local wheel distributions
 ]
 
 # Files and directories to always sync from template

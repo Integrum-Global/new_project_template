@@ -93,6 +93,7 @@ data/                              🛡️ YOUR FILES PRESERVED
 .env.local                         🛡️ NEVER TOUCHED
 .env.production                    🛡️ NEVER TOUCHED
 config.yaml                        🛡️ NEVER TOUCHED
+dist/                              🛡️ NEVER TOUCHED (local wheels)
 ```
 
 ### 🔧 Your Custom Workflows

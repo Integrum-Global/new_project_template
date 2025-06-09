@@ -30,7 +30,13 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -e .  # Install the package
+        # Check if dist/ exists and contains wheel files
+        if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+          echo "Found wheel files in dist/ directory"
+          pip install -e . --find-links dist  # Install with local wheels
+        else
+          pip install -e .  # Install the package normally
+        fi
         pip install -r docs/requirements.txt
 
     - name: Build documentation

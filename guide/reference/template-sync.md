@@ -135,6 +135,7 @@ gh run list --workflow=sync-to-downstream.yml
 - `src/solutions/*` - Your solution code
 - `data/*` - Project-specific data
 - `.env*` - Environment configurations
+- `dist/*` - Local wheel distributions
 - README.md sections between markers
 - Project-specific dependencies in pyproject.toml
 - Custom workflows ending with `_custom.yml`

@@ -35,8 +35,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pytest-asyncio pytest-timeout
         pip install black isort ruff
-        # Install the package with all dependencies
-        pip install -e ".[dev]" || pip install -e .
+        # Check if dist/ exists and contains wheel files
+        if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
+          echo "Found wheel files in dist/ directory"
+          # Install using find-links for local wheels
+          pip install -e ".[dev]" --find-links dist || pip install -e . --find-links dist
+        else
+          # Install the package with all dependencies normally
+          pip install -e ".[dev]" || pip install -e .
+        fi
 
     - name: Lint with ruff
       run: |

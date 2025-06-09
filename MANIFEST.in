@@ -5,6 +5,9 @@ include pyproject.toml
 include setup.py
 include setup.cfg
 
+# Include local wheel distributions
+recursive-include dist *.whl
+
 # Include source code
 recursive-include src *.py
 recursive-include src *.pyi

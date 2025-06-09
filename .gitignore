@@ -7,6 +7,7 @@ __pycache__/
 build/
 develop-eggs/
 dist/
+!dist/kailash-*.whl  # Keep kailash wheel for development
 downloads/
 eggs/
 .eggs/

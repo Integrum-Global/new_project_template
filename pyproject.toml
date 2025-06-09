@@ -2,6 +2,9 @@
 requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.uv]
+find-links = ["./dist"]
+
 [project]
 name = "new_project"
 version = "0.1.1"
@@ -50,7 +53,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "twine>=6.1.0",
     "ollama>=0.5.1",
-    "kailash>=0.2.1",
+    "kailash>=0.2.2",  # Will be installed from dist/ via find-links if not on PyPI
 ]
 
 [project.optional-dependencies]
