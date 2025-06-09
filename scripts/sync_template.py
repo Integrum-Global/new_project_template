@@ -332,28 +332,13 @@ class TemplateSyncer:
         """Remove specific old files that should no longer exist in downstream repositories."""
         changes_made = False
         
-        # Define specific old files to remove (from previous incorrect syncs)
-        unwanted_reference_files = {
-            "api-registry.yaml",
-            "api-validation-schema.json", 
-            "cheatsheet.md",
-            "corrections-summary.md",
-            "mcp-ecosystem-design.md",
-            "node-catalog.md", 
-            "pattern-library.md",
-            "validation-guide.md",
-            "validation_report.md"
-        }
-        
-        # Check reference directory for specific unwanted files
+        # Remove the entire reference directory at root level (it's now in guide/reference)
         reference_dir = downstream_path / "reference"
         if reference_dir.exists():
-            for unwanted_file in unwanted_reference_files:
-                file_path = reference_dir / unwanted_file
-                if file_path.exists():
-                    logger.info(f"Removing old reference file: {file_path.relative_to(downstream_path)}")
-                    file_path.unlink()
-                    changes_made = True
+            logger.info(f"Removing old reference directory from root level")
+            import shutil
+            shutil.rmtree(reference_dir)
+            changes_made = True
         
         # Handle Claude.md → CLAUDE.md migration
         old_claude_file = downstream_path / "Claude.md"
