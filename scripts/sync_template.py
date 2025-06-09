@@ -38,9 +38,9 @@ SYNC_PATTERNS = [
     ".github/*",
     ".github/**/*",
     
-    # Reference - always sync entire directory
-    "reference/*",
-    "reference/**/*",
+    # Reference - always sync entire directory (now in guide/)
+    "guide/reference/*",
+    "guide/reference/**/*",
     
     # Guide - specific files/dirs to always sync
     "guide/adr/0000-template.md",
@@ -102,8 +102,8 @@ SYNC_IF_MISSING = [
     "todos/completed/",  # Completed sessions
     
     # Reference files/dirs not in SYNC_PATTERNS (sync if missing)  
-    "reference/*",  # Already synced entirely, but kept for clarity
-    "reference/**/*",  # Already synced entirely, but kept for clarity
+    "guide/reference/*",  # Already synced entirely, but kept for clarity
+    "guide/reference/**/*",  # Already synced entirely, but kept for clarity
 ]
 
 # Directories that should be merged (not overwritten)
@@ -113,8 +113,8 @@ MERGE_DIRECTORIES = [
     "src/shared/workflows/",
     "todos/active/",  # Preserve active project tasks
     "todos/completed/",  # Preserve completed session history
-    "reference/templates/workflow/",  # Allow project-specific workflow templates
-    "reference/templates/nodes/",  # Allow project-specific node templates
+    "guide/reference/templates/workflow/",  # Allow project-specific workflow templates
+    "guide/reference/templates/nodes/",  # Allow project-specific node templates
 ]
 
 
