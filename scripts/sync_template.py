@@ -96,6 +96,14 @@ SYNC_IF_MISSING = [
     "src/solutions/",
     "todos/",
     
+    # Solution module structure (sync folder structure if missing)
+    "src/solutions/*/workflows/",
+    "src/solutions/*/workflows/__init__.py",
+    "src/solutions/*/nodes/",
+    "src/solutions/*/nodes/__init__.py",
+    "src/solutions/*/examples/", 
+    "src/solutions/*/examples/__init__.py",
+    
     # Guide files/dirs not in SYNC_PATTERNS (sync if missing)
     "guide/*",  # Any other guide files not explicitly synced
     "guide/**/*",  # Any subdirectories not explicitly synced
