@@ -49,10 +49,6 @@ SYNC_PATTERNS = [
     "guide/frontend/**/*",
     "guide/instructions/*",
     "guide/instructions/**/*",
-    "mistakes/000-master.md",
-    "mistakes/README.md", 
-    "mistakes/template.md",
-    "todos/README.md",
     "guide/workflows/*",
     "guide/workflows/**/*",
     
@@ -96,8 +92,12 @@ SYNC_IF_MISSING = [
     "guide/*",  # Any other guide files not explicitly synced
     "guide/**/*",  # Any subdirectories not explicitly synced
     "guide/adr/*",  # Other ADR files (except 0000-template.md and README.md)
-    "mistakes/*",  # Other mistake files (except specified ones)
-    "todos/*",  # Other todo files (except README.md)
+    "mistakes/*",  # All mistake files (sync if missing only)
+    "mistakes/000-master.md",  # Master mistakes file
+    "mistakes/README.md",  # Mistakes documentation  
+    "mistakes/template.md",  # Mistakes template
+    "todos/*",  # All todo files (sync if missing only)
+    "todos/README.md",  # Todo documentation
     "todos/active/",  # Active tasks
     "todos/completed/",  # Completed sessions
     
