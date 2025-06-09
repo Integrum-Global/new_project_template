@@ -38,7 +38,7 @@ SYNC_PATTERNS = [
     ".github/*",
     ".github/**/*",
     
-    # Reference - always sync entire directory (now in guide/)
+    # Reference - sync entire directory to downstream repos
     "guide/reference/*",
     "guide/reference/**/*",
     
@@ -92,18 +92,10 @@ SYNC_IF_MISSING = [
     "guide/*",  # Any other guide files not explicitly synced
     "guide/**/*",  # Any subdirectories not explicitly synced
     "guide/adr/*",  # Other ADR files (except 0000-template.md and README.md)
-    "mistakes/*",  # All mistake files (sync if missing only)
-    "mistakes/000-master.md",  # Master mistakes file
-    "mistakes/README.md",  # Mistakes documentation  
-    "mistakes/template.md",  # Mistakes template
+    "mistakes/*",  # All mistake files (sync if missing only)  
     "todos/*",  # All todo files (sync if missing only)
-    "todos/README.md",  # Todo documentation
-    "todos/active/",  # Active tasks
-    "todos/completed/",  # Completed sessions
     
-    # Reference files/dirs not in SYNC_PATTERNS (sync if missing)  
-    "guide/reference/*",  # Already synced entirely, but kept for clarity
-    "guide/reference/**/*",  # Already synced entirely, but kept for clarity
+    # Reference files are handled by SYNC_PATTERNS - removed from here to avoid conflicts
 ]
 
 # Directories that should be merged (not overwritten)
@@ -312,6 +304,19 @@ class TemplateSyncer:
                         # Simple copy
                         if self.copy_file(file_path, dest_path):
                             changes_made = True
+
+        # Process SYNC_IF_MISSING patterns (only sync if file doesn't exist)
+        for pattern in SYNC_IF_MISSING:
+            for file_path in template_path.glob(pattern):
+                if file_path.is_file():
+                    relative_path = file_path.relative_to(template_path)
+                    dest_path = downstream_path / relative_path
+                    
+                    # Only copy if destination doesn't exist
+                    if not dest_path.exists():
+                        if self.copy_file(file_path, dest_path):
+                            changes_made = True
+                            logger.info(f"Added missing file: {relative_path}")
 
         return changes_made
 
