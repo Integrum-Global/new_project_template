@@ -47,6 +47,7 @@ jobs:
             "sdk-users/CLAUDE.md"
             "sdk-users/README.md"
             "sdk-users/validation-guide.md"
+            "CLAUDE.md"
           )
           
           # Files to sync only if missing (preserve existing)
@@ -70,7 +71,6 @@ jobs:
           
           # Files that need special merge handling
           MERGE_FILES=(
-            "CLAUDE.md"
           )
           
           # Directories that should be merged (add new, preserve existing)

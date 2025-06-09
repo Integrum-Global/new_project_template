@@ -19,11 +19,11 @@ from typing import Dict, Any, List
 
 from kailash import Workflow
 from kailash.nodes.data import (
-    DirectoryReaderNode, 
-    CSVReaderNode, 
-    JSONReaderNode, 
+    DirectoryReaderNode,
+    CSVReaderNode,
+    JSONReaderNode,
     TextReaderNode,
-    JSONWriterNode
+    JSONWriterNode,
 )
 from kailash.nodes.code import PythonCodeNode
 from kailash.nodes.transform import DataTransformer
@@ -33,6 +33,7 @@ from kailash.runtime import LocalRuntime
 # Optional: AI enhancement
 try:
     from kailash.nodes.ai import LLMAgentNode
+
     AI_AVAILABLE = True
 except ImportError:
     AI_AVAILABLE = False
@@ -41,21 +42,21 @@ except ImportError:
 def create_document_processing_workflow(enable_ai: bool = False) -> Workflow:
     """
     Create a comprehensive document processing workflow.
-    
+
     Args:
         enable_ai: Whether to enable AI-powered analysis (requires Ollama/OpenAI)
-        
+
     Returns:
         Configured workflow ready for execution
     """
     workflow = Workflow(
         workflow_id="doc_processor_consolidated",
         name="Document Processing Workflow",
-        description="Comprehensive document processing with optional AI enhancement"
+        description="Comprehensive document processing with optional AI enhancement",
     )
-    
+
     # === STAGE 1: FILE DISCOVERY ===
-    
+
     # Use DirectoryReaderNode for robust file discovery
     file_discoverer = DirectoryReaderNode(
         name="file_discoverer",
@@ -63,12 +64,12 @@ def create_document_processing_workflow(enable_ai: bool = False) -> Workflow:
         recursive=True,
         file_patterns=["*.csv", "*.json", "*.txt", "*.xml", "*.md", "*.pdf"],
         include_hidden=False,
-        include_metadata=True
+        include_metadata=True,
     )
     workflow.add_node("file_discoverer", file_discoverer)
-    
+
     # === STAGE 2: FILE ROUTING ===
-    
+
     # Route files to appropriate processors based on type
     file_router = PythonCodeNode(
         name="file_router",
@@ -99,13 +100,13 @@ routing_info = {
 }
 
 result = routing_info
-"""
+""",
     )
     workflow.add_node("file_router", file_router)
     workflow.connect("file_discoverer", "file_router")
-    
+
     # === STAGE 3: TYPE-SPECIFIC PROCESSING ===
-    
+
     # CSV Processor - Extract statistics and patterns
     csv_processor = PythonCodeNode(
         name="csv_processor",
@@ -176,11 +177,11 @@ for file_info in csv_files:
         })
 
 result = {"processed_files": processed_files, "file_count": len(processed_files)}
-"""
+""",
     )
     workflow.add_node("csv_processor", csv_processor)
     workflow.connect("file_router", "csv_processor", mapping={"csv_files": "csv_files"})
-    
+
     # JSON Processor - Extract structure and validate
     json_processor = PythonCodeNode(
         name="json_processor",
@@ -194,7 +195,7 @@ print(f"Processing {len(json_files)} JSON files")
 processed_files = []
 
 def analyze_json_structure(data, path=""):
-"""Recursively analyze JSON structure."""
+    # Recursively analyze JSON structure.
     if isinstance(data, dict):
         return {
             "type": "object",
@@ -258,11 +259,13 @@ for file_info in json_files:
         })
 
 result = {"processed_files": processed_files, "file_count": len(processed_files)}
-"""
+""",
     )
     workflow.add_node("json_processor", json_processor)
-    workflow.connect("file_router", "json_processor", mapping={"json_files": "json_files"})
-    
+    workflow.connect(
+        "file_router", "json_processor", mapping={"json_files": "json_files"}
+    )
+
     # Text Processor - Extract content and metadata
     text_processor = PythonCodeNode(
         name="text_processor",
@@ -276,7 +279,7 @@ print(f"Processing {len(text_files)} text files")
 processed_files = []
 
 def analyze_text_content(content, file_type):
-    """Analyze text content based on file type."""
+    # Analyze text content based on file type.
     # Basic statistics
     stats = {
         "characters": len(content),
@@ -348,50 +351,51 @@ for file_info in text_files:
         })
 
 result = {"processed_files": processed_files, "file_count": len(processed_files)}
-"""
+""",
     )
     workflow.add_node("text_processor", text_processor)
-    workflow.connect("file_router", "text_processor", mapping={"text_files": "text_files"})
-    
-    # === STAGE 4: RESULT AGGREGATION ===
-    
-    # Merge all processing results
-    result_merger = MergeNode(
-        name="result_merger",
-        merge_strategy="concatenate"
+    workflow.connect(
+        "file_router", "text_processor", mapping={"text_files": "text_files"}
     )
+
+    # === STAGE 4: RESULT AGGREGATION ===
+
+    # Merge all processing results
+    result_merger = MergeNode(name="result_merger", merge_strategy="concatenate")
     workflow.add_node("result_merger", result_merger)
-    workflow.connect("csv_processor", "result_merger", mapping={"processed_files": "input1"})
-    workflow.connect("json_processor", "result_merger", mapping={"processed_files": "input2"})
-    workflow.connect("text_processor", "result_merger", mapping={"processed_files": "input3"})
-    
+    workflow.connect(
+        "csv_processor", "result_merger", mapping={"processed_files": "input1"}
+    )
+    workflow.connect(
+        "json_processor", "result_merger", mapping={"processed_files": "input2"}
+    )
+    workflow.connect(
+        "text_processor", "result_merger", mapping={"processed_files": "input3"}
+    )
+
     # === STAGE 5: OPTIONAL AI ENHANCEMENT ===
-    
+
     if enable_ai and AI_AVAILABLE:
         # AI-powered insights generator
         ai_analyzer = LLMAgentNode(
             name="ai_analyzer",
             model="llama3.2:3b",  # Use Ollama model
-            system_prompt="""You are a document analysis expert. Analyze the processed files and provide:
-1. Key insights about the data
-2. Potential data quality issues
-3. Recommendations for further processing
-4. Interesting patterns or anomalies
-
-Be concise and focus on actionable insights.""",
-            temperature=0.7
+            system_prompt="You are a document analysis expert. Analyze the processed files and provide:\n1. Key insights about the data\n2. Potential data quality issues\n3. Recommendations for further processing\n4. Interesting patterns or anomalies\n\nBe concise and focus on actionable insights.",
+            temperature=0.7,
         )
         workflow.add_node("ai_analyzer", ai_analyzer)
-        workflow.connect("result_merger", "ai_analyzer", mapping={"merged": "processed_files"})
-        
+        workflow.connect(
+            "result_merger", "ai_analyzer", mapping={"merged": "processed_files"}
+        )
+
         # Final report generator combines everything
         final_node = "ai_analyzer"
     else:
         # Skip AI if not available
         final_node = "result_merger"
-    
+
     # === STAGE 6: SUMMARY GENERATION ===
-    
+
     summary_generator = PythonCodeNode(
         name="summary_generator",
         code="""
@@ -473,27 +477,32 @@ if "csv_processor" in by_processor:
 summary["recommendations"] = recommendations
 
 result = summary
-"""
+""",
     )
     workflow.add_node("summary_generator", summary_generator)
-    
+
     if enable_ai and AI_AVAILABLE:
-        workflow.connect("ai_analyzer", "summary_generator", 
-                        mapping={"response": "response", "processed_files": "processed_files"})
+        workflow.connect(
+            "ai_analyzer",
+            "summary_generator",
+            mapping={"response": "response", "processed_files": "processed_files"},
+        )
     else:
-        workflow.connect("result_merger", "summary_generator", mapping={"merged": "merged"})
-    
+        workflow.connect(
+            "result_merger", "summary_generator", mapping={"merged": "merged"}
+        )
+
     # === STAGE 7: OUTPUT ===
-    
+
     # Write final summary
     summary_writer = JSONWriterNode(
         name="summary_writer",
         file_path="data/outputs/document_processing_summary.json",
-        pretty_print=True
+        pretty_print=True,
     )
     workflow.add_node("summary_writer", summary_writer)
     workflow.connect("summary_generator", "summary_writer", mapping={"result": "data"})
-    
+
     return workflow
 
 
@@ -501,7 +510,7 @@ def ensure_sample_files():
     """Create sample input files for testing."""
     os.makedirs("data/inputs", exist_ok=True)
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Sample CSV
     csv_content = """id,name,email,status,created_date
 1,John Doe,john@example.com,active,2024-01-15
@@ -509,30 +518,26 @@ def ensure_sample_files():
 3,Bob Wilson,bob@test.net,inactive,2024-01-10
 4,Alice Brown,alice@example.com,active,2024-03-05
 5,Charlie Davis,,pending,2024-03-12"""
-    
+
     with open("data/inputs/customers.csv", "w") as f:
         f.write(csv_content)
-    
+
     # Sample JSON
     json_content = {
         "config": {
             "version": "1.0",
-            "settings": {
-                "debug": False,
-                "timeout": 30,
-                "retry_count": 3
-            }
+            "settings": {"debug": False, "timeout": 30, "retry_count": 3},
         },
         "data": [
             {"id": 1, "value": 100},
             {"id": 2, "value": 200},
-            {"id": 3, "value": 150}
-        ]
+            {"id": 3, "value": 150},
+        ],
     }
-    
+
     with open("data/inputs/config.json", "w") as f:
         json.dump(json_content, f, indent=2)
-    
+
     # Sample text
     text_content = """# Project Documentation
 
@@ -552,10 +557,10 @@ python document_processor_consolidated.py
 For more information, visit https://example.com/docs
 Contact: support@example.com
 """
-    
+
     with open("data/inputs/readme.md", "w") as f:
         f.write(text_content)
-    
+
     print("✅ Created sample input files")
 
 
@@ -563,51 +568,52 @@ def main():
     """Run the document processing workflow."""
     # Ensure we have sample files
     ensure_sample_files()
-    
+
     # Check if AI is available
     enable_ai = AI_AVAILABLE and os.environ.get("OLLAMA_HOST") is not None
-    
+
     if enable_ai:
         print("🤖 AI enhancement enabled (using Ollama)")
     else:
         print("📝 Running in basic mode (AI not available)")
-    
+
     # Create and run workflow
     workflow = create_document_processing_workflow(enable_ai=enable_ai)
     runtime = LocalRuntime()
-    
+
     print("\n🔄 Starting document processing...")
-    
+
     try:
         result, run_id = runtime.execute(workflow)
         print(f"\n✅ Processing complete! Run ID: {run_id}")
-        
+
         # Display summary
         if "summary_writer" in result:
             summary_path = "data/outputs/document_processing_summary.json"
             print(f"\n📊 Summary written to: {summary_path}")
-            
+
             # Show brief stats
-            with open(summary_path, 'r') as f:
+            with open(summary_path, "r") as f:
                 summary = json.load(f)
                 stats = summary.get("processing_summary", {})
                 print(f"\n📈 Statistics:")
                 print(f"  - Total files: {stats.get('total_files_processed', 0)}")
                 print(f"  - Success rate: {stats.get('success_rate', 'N/A')}")
                 print(f"  - Processors: {', '.join(stats.get('processors_used', []))}")
-                
+
                 if summary.get("recommendations"):
                     print(f"\n💡 Recommendations:")
                     for rec in summary["recommendations"][:3]:
                         print(f"  - {rec}")
-                
+
                 if summary.get("ai_insights"):
                     print(f"\n🤖 AI Insights:")
                     print(f"  {summary['ai_insights'][:200]}...")
-        
+
     except Exception as e:
         print(f"\n❌ Processing failed: {e}")
         import traceback
+
         traceback.print_exc()
 
 

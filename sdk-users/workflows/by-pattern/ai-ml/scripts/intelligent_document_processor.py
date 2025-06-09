@@ -27,7 +27,9 @@ from kailash.runtime import LocalRuntime
 
 def create_document_processor_workflow() -> Workflow:
     """Create an intelligent document processing workflow."""
-    workflow = Workflow(workflow_id="intelligent_doc_processor", name="intelligent_doc_processor")
+    workflow = Workflow(
+        workflow_id="intelligent_doc_processor", name="intelligent_doc_processor"
+    )
 
     # Document ingestion
     doc_source = DocumentSourceNode(name="document_source")
@@ -36,7 +38,9 @@ def create_document_processor_workflow() -> Workflow:
     # Intelligent chunking
     chunker = HierarchicalChunkerNode(name="document_chunker")
     workflow.add_node("document_chunker", chunker)
-    workflow.connect("document_source", "document_chunker", mapping={"documents": "documents"})
+    workflow.connect(
+        "document_source", "document_chunker", mapping={"documents": "documents"}
+    )
 
     # Generate embeddings for chunks
     chunk_embedder = EmbeddingGeneratorNode(
@@ -54,7 +58,9 @@ def create_document_processor_workflow() -> Workflow:
     # Relevance scoring
     relevance_scorer = RelevanceScorerNode(name="relevance_scorer")
     workflow.add_node("relevance_scorer", relevance_scorer)
-    workflow.connect("document_chunker", "relevance_scorer", mapping={"chunks": "chunks"})
+    workflow.connect(
+        "document_chunker", "relevance_scorer", mapping={"chunks": "chunks"}
+    )
     workflow.connect(
         "query_embedder",
         "relevance_scorer",
@@ -186,7 +192,9 @@ Required JSON structure:
 
 def create_customer_support_workflow() -> Workflow:
     """Create a customer support document processor."""
-    workflow = Workflow(workflow_id="customer_support_processor", name="customer_support_processor")
+    workflow = Workflow(
+        workflow_id="customer_support_processor", name="customer_support_processor"
+    )
 
     # Load customer data
     customer_data = CSVReaderNode(

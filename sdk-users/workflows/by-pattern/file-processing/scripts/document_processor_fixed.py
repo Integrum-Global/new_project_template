@@ -18,7 +18,13 @@ import json
 import os
 
 from kailash import Workflow
-from kailash.nodes.data import DirectoryReaderNode, JSONWriterNode, CSVReaderNode, JSONReaderNode, TextReaderNode
+from kailash.nodes.data import (
+    DirectoryReaderNode,
+    JSONWriterNode,
+    CSVReaderNode,
+    JSONReaderNode,
+    TextReaderNode,
+)
 from kailash.nodes.transform import DataTransformer
 from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
@@ -40,7 +46,7 @@ def create_fixed_document_workflow() -> Workflow:
         directory_path="data/inputs",
         recursive=False,
         file_patterns=["*.csv", "*.json", "*.txt", "*.xml", "*.md"],
-        include_hidden=False
+        include_hidden=False,
     )
     workflow.add_node("file_discoverer", file_discoverer)
 
@@ -113,10 +119,14 @@ result = {
     "file_type": "csv"
 }
 """
-        ]
+        ],
     )
     workflow.add_node("csv_file_processor", csv_file_processor)
-    workflow.connect("file_discoverer", "csv_file_processor", mapping={"files_by_type": "files_by_type"})
+    workflow.connect(
+        "file_discoverer",
+        "csv_file_processor",
+        mapping={"files_by_type": "files_by_type"},
+    )
 
     # Process JSON files if found
     json_file_processor = DataTransformer(
@@ -195,10 +205,14 @@ result = {
     "file_type": "json"
 }
 """
-        ]
+        ],
     )
     workflow.add_node("json_file_processor", json_file_processor)
-    workflow.connect("file_discoverer", "json_file_processor", mapping={"files_by_type": "files_by_type"})
+    workflow.connect(
+        "file_discoverer",
+        "json_file_processor",
+        mapping={"files_by_type": "files_by_type"},
+    )
 
     # Process text files (txt, xml, md)
     text_file_processor = DataTransformer(
@@ -284,10 +298,14 @@ result = {
     "file_type": "text"
 }
 """
-        ]
+        ],
     )
     workflow.add_node("text_file_processor", text_file_processor)
-    workflow.connect("file_discoverer", "text_file_processor", mapping={"files_by_type": "files_by_type"})
+    workflow.connect(
+        "file_discoverer",
+        "text_file_processor",
+        mapping={"files_by_type": "files_by_type"},
+    )
 
     # === AGGREGATE RESULTS ===
 
@@ -295,8 +313,12 @@ result = {
     result_merger = MergeNode(id="result_merger", merge_type="concat")
     workflow.add_node("result_merger", result_merger)
     workflow.connect("csv_file_processor", "result_merger", mapping={"result": "data1"})
-    workflow.connect("json_file_processor", "result_merger", mapping={"result": "data2"})
-    workflow.connect("text_file_processor", "result_merger", mapping={"result": "data3"})
+    workflow.connect(
+        "json_file_processor", "result_merger", mapping={"result": "data2"}
+    )
+    workflow.connect(
+        "text_file_processor", "result_merger", mapping={"result": "data3"}
+    )
 
     # Generate comprehensive summary
     summary_generator = DataTransformer(
@@ -399,17 +421,18 @@ if total_failed > 0:
 
 result = summary
 """
-        ]
+        ],
     )
     workflow.add_node("summary_generator", summary_generator)
-    workflow.connect("result_merger", "summary_generator", mapping={"merged_data": "merged_data"})
+    workflow.connect(
+        "result_merger", "summary_generator", mapping={"merged_data": "merged_data"}
+    )
 
     # === OUTPUT ===
 
     # Save comprehensive summary
     summary_writer = JSONWriterNode(
-        id="summary_writer", 
-        file_path="data/outputs/fixed_processing_summary.json"
+        id="summary_writer", file_path="data/outputs/fixed_processing_summary.json"
     )
     workflow.add_node("summary_writer", summary_writer)
     workflow.connect("summary_generator", "summary_writer", mapping={"result": "data"})
@@ -443,12 +466,14 @@ def run_fixed_processing():
         if "summary_generator" in result:
             summary_result = result["summary_generator"]["result"]
             processing_summary = summary_result.get("processing_summary", {})
-            
+
             print(f"\n📈 Processing Results:")
-            print(f"   - Files processed: {processing_summary.get('total_files_discovered', 0)}")
+            print(
+                f"   - Files processed: {processing_summary.get('total_files_discovered', 0)}"
+            )
             print(f"   - Successful: {processing_summary.get('total_successful', 0)}")
             print(f"   - Failed: {processing_summary.get('total_failed', 0)}")
-            
+
             # Show recommendations
             recommendations = summary_result.get("recommendations", [])
             if recommendations:
@@ -471,7 +496,9 @@ def main():
     # Check if input directory exists
     if not os.path.exists("data/inputs"):
         print("❌ Input directory 'data/inputs' not found")
-        print("Please create the directory and add sample files, or run the original document_processor.py first")
+        print(
+            "Please create the directory and add sample files, or run the original document_processor.py first"
+        )
         return
 
     # Run the workflow

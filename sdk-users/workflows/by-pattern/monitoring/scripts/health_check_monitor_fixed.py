@@ -48,18 +48,18 @@ def create_health_monitoring_workflow() -> Workflow:
         method="GET",
         timeout=5,
         max_retries=2,
-        headers={"User-Agent": "Kailash-Health-Monitor/1.0"}
+        headers={"User-Agent": "Kailash-Health-Monitor/1.0"},
     )
     workflow.add_node("jsonplaceholder_health", jsonplaceholder_health)
 
     # Check GitHub API health (another reliable public endpoint)
     github_health = HTTPRequestNode(
-        id="github_health", 
+        id="github_health",
         url="https://api.github.com",
         method="GET",
         timeout=5,
         max_retries=2,
-        headers={"User-Agent": "Kailash-Health-Monitor/1.0"}
+        headers={"User-Agent": "Kailash-Health-Monitor/1.0"},
     )
     workflow.add_node("github_health", github_health)
 
@@ -67,10 +67,10 @@ def create_health_monitoring_workflow() -> Workflow:
     httpbin_health = HTTPRequestNode(
         id="httpbin_health",
         url="https://httpbin.org/status/200",
-        method="GET", 
+        method="GET",
         timeout=5,
         max_retries=2,
-        headers={"User-Agent": "Kailash-Health-Monitor/1.0"}
+        headers={"User-Agent": "Kailash-Health-Monitor/1.0"},
     )
     workflow.add_node("httpbin_health", httpbin_health)
 
@@ -217,18 +217,22 @@ result = {
         ],
     )
     workflow.add_node("health_aggregator", health_aggregator)
-    
+
     # Connect real HTTP health checks to aggregator via MergeNode first
     health_merger = MergeNode(id="health_merger", merge_type="merge_dict")
     workflow.add_node("health_merger", health_merger)
-    
+
     # Connect HTTP responses to merger
-    workflow.connect("jsonplaceholder_health", "health_merger", mapping={"response": "data1"})
+    workflow.connect(
+        "jsonplaceholder_health", "health_merger", mapping={"response": "data1"}
+    )
     workflow.connect("github_health", "health_merger", mapping={"response": "data2"})
     workflow.connect("httpbin_health", "health_merger", mapping={"response": "data3"})
-    
+
     # Connect merged data to aggregator
-    workflow.connect("health_merger", "health_aggregator", mapping={"merged_data": "data"})
+    workflow.connect(
+        "health_merger", "health_aggregator", mapping={"merged_data": "data"}
+    )
 
     # === REAL ALERT DETECTION ===
 
@@ -515,7 +519,9 @@ else:
         ],
     )
     workflow.add_node("metrics_calculator", metrics_calculator)
-    workflow.connect("health_aggregator", "metrics_calculator", mapping={"result": "data"})
+    workflow.connect(
+        "health_aggregator", "metrics_calculator", mapping={"result": "data"}
+    )
 
     # === REPORTING ===
 
@@ -683,7 +689,9 @@ result = report
         ],
     )
     workflow.add_node("report_generator", report_generator)
-    workflow.connect("report_merger", "report_generator", mapping={"merged_data": "data"})
+    workflow.connect(
+        "report_merger", "report_generator", mapping={"merged_data": "data"}
+    )
 
     # === OUTPUTS ===
 
@@ -727,11 +735,19 @@ def run_health_monitoring():
         monitoring_report = report_result.get("monitoring_report", {})
         executive_summary = monitoring_report.get("executive_summary", {})
 
-        print(f"\n📊 Real Endpoint Status: {executive_summary.get('system_status', 'UNKNOWN')}")
+        print(
+            f"\n📊 Real Endpoint Status: {executive_summary.get('system_status', 'UNKNOWN')}"
+        )
         print(f"   - Overall Health: {executive_summary.get('overall_health', 'N/A')}")
-        print(f"   - Critical Services: {executive_summary.get('critical_services_health', 'N/A')}")
-        print(f"   - Average Response: {executive_summary.get('average_response_time', 'N/A')}")
-        print(f"   - Response Success Rate: {executive_summary.get('response_success_rate', 'N/A')}")
+        print(
+            f"   - Critical Services: {executive_summary.get('critical_services_health', 'N/A')}"
+        )
+        print(
+            f"   - Average Response: {executive_summary.get('average_response_time', 'N/A')}"
+        )
+        print(
+            f"   - Response Success Rate: {executive_summary.get('response_success_rate', 'N/A')}"
+        )
         print(f"   - Endpoints Tested: {executive_summary.get('endpoints_tested', 0)}")
         print(f"   - Active Alerts: {executive_summary.get('active_alerts', 0)}")
 

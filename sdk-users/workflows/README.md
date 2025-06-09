@@ -99,10 +99,10 @@ All industry workflows use the AI Registry MCP Server as the foundation, providi
 
 ## 📚 Related Resources
 
-- **[Mistakes Archive](../../../mistakes/)** - Full historical record
-- **[Essentials Cheatsheets](../../essentials/cheatsheet/)** - Individual reference files
-- **[API Reference](../../api/)** - Detailed API specifications
-- **[Validation Guide](../../validation-guide.md)** - Comprehensive rules and patterns
+- **[Mistakes Archive](../../mistakes/)** - Full historical record
+- **[Essentials Cheatsheets](../essentials/cheatsheet/)** - Individual reference files
+- **[API Reference](../api/)** - Detailed API specifications
+- **[Validation Guide](../validation-guide.md)** - Comprehensive rules and patterns
 
 ---
 

@@ -18,7 +18,12 @@ import json
 import os
 
 from kailash import Workflow
-from kailash.nodes.data import JSONWriterNode, CSVReaderNode, JSONReaderNode, TextReaderNode
+from kailash.nodes.data import (
+    JSONWriterNode,
+    CSVReaderNode,
+    JSONReaderNode,
+    TextReaderNode,
+)
 from kailash.nodes.logic import MergeNode
 from kailash.nodes.transform import DataTransformer
 from kailash.nodes.code import PythonCodeNode
@@ -116,7 +121,7 @@ result = {
         file_type: len(files) for file_type, files in files_by_type.items()
     }
 }
-"""
+""",
     )
     workflow.add_node("file_discoverer", file_discoverer)
 
@@ -205,10 +210,12 @@ result = {
     "file_count": len(processed_csv),
     "total_records": sum(f["processing_result"]["total_records"] for f in processed_csv if "processing_result" in f)
 }
-"""
+""",
     )
     workflow.add_node("csv_processor", csv_processor)
-    workflow.connect("file_discoverer", "csv_processor", mapping={"result": "discovery_data"})
+    workflow.connect(
+        "file_discoverer", "csv_processor", mapping={"result": "discovery_data"}
+    )
 
     # Process JSON files using PythonCodeNode to read real files
     json_processor = PythonCodeNode(
@@ -300,10 +307,12 @@ result = {
     "file_count": len(processed_json),
     "total_transactions": sum(f["processing_result"].get("transaction_count", 0) for f in processed_json if "processing_result" in f)
 }
-"""
+""",
     )
     workflow.add_node("json_processor", json_processor)
-    workflow.connect("file_discoverer", "json_processor", mapping={"result": "discovery_data"})
+    workflow.connect(
+        "file_discoverer", "json_processor", mapping={"result": "discovery_data"}
+    )
 
     # Process text and other files using PythonCodeNode to read real files
     text_processor = PythonCodeNode(
@@ -412,10 +421,12 @@ result = {
     "file_count": len(processed_text),
     "total_words": sum(f["processing_result"]["word_count"] for f in processed_text if "processing_result" in f)
 }
-"""
+""",
     )
     workflow.add_node("text_processor", text_processor)
-    workflow.connect("file_discoverer", "text_processor", mapping={"result": "discovery_data"})
+    workflow.connect(
+        "file_discoverer", "text_processor", mapping={"result": "discovery_data"}
+    )
 
     # === MERGE PROCESSING RESULTS ===
 
@@ -444,12 +455,16 @@ print(f"Merged {len(all_results)} processor results")
 
 # Store results - PythonCodeNode automatically wraps in 'result' key
 result = all_results
-"""
+""",
     )
     workflow.add_node("result_merger", result_merger)
     workflow.connect("csv_processor", "result_merger", mapping={"result": "csv_result"})
-    workflow.connect("json_processor", "result_merger", mapping={"result": "json_result"})
-    workflow.connect("text_processor", "result_merger", mapping={"result": "text_result"})
+    workflow.connect(
+        "json_processor", "result_merger", mapping={"result": "json_result"}
+    )
+    workflow.connect(
+        "text_processor", "result_merger", mapping={"result": "text_result"}
+    )
 
     # === SUMMARY GENERATION ===
 
@@ -544,7 +559,7 @@ if "markdown" in files_by_type:
 
 # Store results - PythonCodeNode automatically wraps in 'result' key
 result = summary
-"""
+""",
     )
     workflow.add_node("summary_generator", summary_generator)
     workflow.connect(

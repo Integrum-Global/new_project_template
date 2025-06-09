@@ -17,7 +17,12 @@ import json
 import os
 
 from kailash import Workflow
-from kailash.nodes.data import JSONWriterNode, CSVReaderNode, JSONReaderNode, TextReaderNode
+from kailash.nodes.data import (
+    JSONWriterNode,
+    CSVReaderNode,
+    JSONReaderNode,
+    TextReaderNode,
+)
 from kailash.nodes.transform import DataTransformer
 from kailash.runtime import LocalRuntime
 
@@ -34,9 +39,7 @@ def create_simple_document_workflow() -> Workflow:
 
     # Read CSV file
     csv_reader = CSVReaderNode(
-        id="csv_reader",
-        file_path="data/inputs/customer_data.csv",
-        headers=True
+        id="csv_reader", file_path="data/inputs/customer_data.csv", headers=True
     )
     workflow.add_node("csv_reader", csv_reader)
 
@@ -68,15 +71,14 @@ result = {
     "sample_data": customers[:3] if customers else []
 }
 """
-        ]
+        ],
     )
     workflow.add_node("csv_processor", csv_processor)
     workflow.connect("csv_reader", "csv_processor", mapping={"data": "data"})
 
     # Read JSON file
     json_reader = JSONReaderNode(
-        id="json_reader",
-        file_path="data/inputs/transaction_log.json"
+        id="json_reader", file_path="data/inputs/transaction_log.json"
     )
     workflow.add_node("json_reader", json_reader)
 
@@ -124,15 +126,14 @@ result = {
     "sample_data": transactions[:3] if transactions else []
 }
 """
-        ]
+        ],
     )
     workflow.add_node("json_processor", json_processor)
     workflow.connect("json_reader", "json_processor", mapping={"data": "data"})
 
     # Read text file
     text_reader = TextReaderNode(
-        id="text_reader",
-        file_path="data/inputs/report_template.txt"
+        id="text_reader", file_path="data/inputs/report_template.txt"
     )
     workflow.add_node("text_reader", text_reader)
 
@@ -168,7 +169,7 @@ result = {
     "preview": content[:200] + "..." if len(content) > 200 else content
 }
 """
-        ]
+        ],
     )
     workflow.add_node("text_processor", text_processor)
     workflow.connect("text_reader", "text_processor", mapping={"text": "data"})
@@ -226,10 +227,10 @@ summary = {
 
 result = summary
 """
-        ]
+        ],
     )
     workflow.add_node("result_aggregator", result_aggregator)
-    
+
     # Connect one processor to trigger aggregation
     workflow.connect("csv_processor", "result_aggregator", mapping={"result": "data"})
 
@@ -237,8 +238,7 @@ result = summary
 
     # Save final summary
     summary_writer = JSONWriterNode(
-        id="summary_writer", 
-        file_path="data/outputs/simple_processing_summary.json"
+        id="summary_writer", file_path="data/outputs/simple_processing_summary.json"
     )
     workflow.add_node("summary_writer", summary_writer)
     workflow.connect("result_aggregator", "summary_writer", mapping={"result": "data"})
@@ -263,15 +263,21 @@ def run_simple_processing():
         # Show results from each processor
         if "csv_processor" in result and "result" in result["csv_processor"]:
             csv_stats = result["csv_processor"]["result"]["statistics"]
-            print(f"\nCSV: {csv_stats['total_records']} customers ({csv_stats['active_customers']} active)")
-        
+            print(
+                f"\nCSV: {csv_stats['total_records']} customers ({csv_stats['active_customers']} active)"
+            )
+
         if "json_processor" in result and "result" in result["json_processor"]:
             json_stats = result["json_processor"]["result"]["statistics"]
-            print(f"JSON: {json_stats['transaction_count']} transactions (${json_stats['total_amount']})")
-        
+            print(
+                f"JSON: {json_stats['transaction_count']} transactions (${json_stats['total_amount']})"
+            )
+
         if "text_processor" in result and "result" in result["text_processor"]:
             text_stats = result["text_processor"]["result"]["statistics"]
-            print(f"Text: {text_stats['word_count']} words, {text_stats['placeholder_count']} placeholders")
+            print(
+                f"Text: {text_stats['word_count']} words, {text_stats['placeholder_count']} placeholders"
+            )
 
         return result
 
@@ -289,7 +295,7 @@ def main():
     required_files = [
         "data/inputs/customer_data.csv",
         "data/inputs/transaction_log.json",
-        "data/inputs/report_template.txt"
+        "data/inputs/report_template.txt",
     ]
 
     missing_files = [f for f in required_files if not os.path.exists(f)]
@@ -297,7 +303,9 @@ def main():
         print("❌ Missing required input files:")
         for f in missing_files:
             print(f"   - {f}")
-        print("\nPlease run the original document_processor.py first to create sample files.")
+        print(
+            "\nPlease run the original document_processor.py first to create sample files."
+        )
         return
 
     # Run the workflow

@@ -68,7 +68,7 @@ processor = PythonCodeNode(name="processor", code="result = {'count': len(input_
 ## 🔗 Essential References
 - **Development**: `sdk-users/developer/CLAUDE.md` → API reference, patterns, validation
 - **Architecture**: `adr/` → Design decisions and rationale  
-- **Process**: `sdk-users/workflows/workflow-library/` → Development and deployment workflows
+- **Process**: `sdk-users/workflows/` → Development and deployment workflows
 - **Templates**: `sdk-users/templates/` → Ready-to-use solution starting points
 - **Migration**: `migrations/templates/` → Legacy project conversion guides
 

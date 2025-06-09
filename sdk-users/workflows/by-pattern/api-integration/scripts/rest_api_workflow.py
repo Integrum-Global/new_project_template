@@ -65,10 +65,12 @@ if isinstance(response, dict) and 'content' in response:
     result = response['content']
 else:
     result = response
-"""
+""",
     )
     workflow.add_node("user_content_extractor", user_content_extractor)
-    workflow.connect("users_api", "user_content_extractor", mapping={"response": "response"})
+    workflow.connect(
+        "users_api", "user_content_extractor", mapping={"response": "response"}
+    )
 
     post_content_extractor = PythonCodeNode(
         name="post_content_extractor",
@@ -78,10 +80,12 @@ if isinstance(response, dict) and 'content' in response:
     result = response['content']
 else:
     result = response
-"""
+""",
     )
     workflow.add_node("post_content_extractor", post_content_extractor)
-    workflow.connect("posts_api", "post_content_extractor", mapping={"response": "response"})
+    workflow.connect(
+        "posts_api", "post_content_extractor", mapping={"response": "response"}
+    )
 
     # Extract user data
     user_extractor = DataTransformer(
@@ -103,7 +107,9 @@ else:
         ],
     )
     workflow.add_node("user_extractor", user_extractor)
-    workflow.connect("user_content_extractor", "user_extractor", mapping={"result": "data"})
+    workflow.connect(
+        "user_content_extractor", "user_extractor", mapping={"result": "data"}
+    )
 
     # Extract post data
     post_extractor = DataTransformer(
@@ -129,13 +135,15 @@ result = [{
         ],
     )
     workflow.add_node("post_extractor", post_extractor)
-    workflow.connect("post_content_extractor", "post_extractor", mapping={"result": "data"})
+    workflow.connect(
+        "post_content_extractor", "post_extractor", mapping={"result": "data"}
+    )
 
     # Merge user and post data
     merger = MergeNode(
         id="user_post_merger",
         merge_type="merge_dict",  # Use merge_dict to join lists of dicts
-        key="user_id"  # Join on user_id field
+        key="user_id",  # Join on user_id field
     )
     workflow.add_node("merger", merger)
     workflow.connect("user_extractor", "merger", mapping={"result": "data1"})
@@ -143,8 +151,7 @@ result = [{
 
     # Save results
     writer = CSVWriterNode(
-        id="result_writer", 
-        file_path="data/outputs/user_analytics.csv"
+        id="result_writer", file_path="data/outputs/user_analytics.csv"
     )
     workflow.add_node("writer", writer)
     workflow.connect("merger", "writer", mapping={"merged_data": "data"})
@@ -217,19 +224,14 @@ result = post_counts
     workflow.add_node("post_source", post_source)
 
     # Merge user and post data
-    merger = MergeNode(
-        id="data_merger",
-        merge_type="merge_dict",
-        key="user_id"
-    )
+    merger = MergeNode(id="data_merger", merge_type="merge_dict", key="user_id")
     workflow.add_node("merger", merger)
     workflow.connect("user_extractor", "merger", mapping={"result": "data1"})
     workflow.connect("post_source", "merger", mapping={"result": "data2"})
 
     # Save results
     writer = CSVWriterNode(
-        id="result_writer",
-        file_path="data/outputs/merged_user_data.csv"
+        id="result_writer", file_path="data/outputs/merged_user_data.csv"
     )
     workflow.add_node("writer", writer)
     workflow.connect("merger", "writer", mapping={"merged_data": "data"})
@@ -248,7 +250,7 @@ def create_weather_api_workflow() -> Workflow:
     # Note: For weather API, you need an API key from OpenWeatherMap
     # For demo purposes, we'll use a free tier endpoint
     # Get your free API key at: https://openweathermap.org/api
-    
+
     # Create a data source node with city list
     city_source = DataTransformer(
         id="city_source",
@@ -293,9 +295,7 @@ result = weather_data
     workflow.connect("city_source", "weather_simulator", mapping={"result": "data"})
 
     # Filter for warm weather cities
-    warm_filter = FilterNode(
-        id="warm_weather_filter"
-    )
+    warm_filter = FilterNode(id="warm_weather_filter")
     workflow.add_node("warm_filter", warm_filter)
     workflow.connect("weather_simulator", "warm_filter", mapping={"result": "data"})
 
@@ -330,31 +330,34 @@ if isinstance(data, list) and len(data) > 0:
 else:
     result = []
 """
-        ]
+        ],
     )
     workflow.add_node("stats_calculator", stats_calculator)
-    workflow.connect("weather_simulator", "stats_calculator", mapping={"result": "data"})
+    workflow.connect(
+        "weather_simulator", "stats_calculator", mapping={"result": "data"}
+    )
 
     # Save all weather data
     all_weather_writer = CSVWriterNode(
-        id="all_weather_writer",
-        file_path="data/outputs/weather_data.csv"
+        id="all_weather_writer", file_path="data/outputs/weather_data.csv"
     )
     workflow.add_node("all_weather_writer", all_weather_writer)
-    workflow.connect("weather_simulator", "all_weather_writer", mapping={"result": "data"})
+    workflow.connect(
+        "weather_simulator", "all_weather_writer", mapping={"result": "data"}
+    )
 
     # Save warm weather cities
     warm_weather_writer = CSVWriterNode(
-        id="warm_weather_writer",
-        file_path="data/outputs/warm_weather_cities.csv"
+        id="warm_weather_writer", file_path="data/outputs/warm_weather_cities.csv"
     )
     workflow.add_node("warm_weather_writer", warm_weather_writer)
-    workflow.connect("warm_filter", "warm_weather_writer", mapping={"filtered_data": "data"})
-    
+    workflow.connect(
+        "warm_filter", "warm_weather_writer", mapping={"filtered_data": "data"}
+    )
+
     # Save weather statistics
     stats_writer = CSVWriterNode(
-        id="stats_writer",
-        file_path="data/outputs/weather_statistics.csv"
+        id="stats_writer", file_path="data/outputs/weather_statistics.csv"
     )
     workflow.add_node("stats_writer", stats_writer)
     workflow.connect("stats_calculator", "stats_writer", mapping={"result": "data"})
@@ -396,11 +399,7 @@ def run_weather_workflow():
     parameters = {
         "city_source": {},
         "weather_simulator": {},
-        "warm_filter": {
-            "field": "temperature_c",
-            "operator": ">=",
-            "value": 25
-        },
+        "warm_filter": {"field": "temperature_c", "operator": ">=", "value": 25},
         "stats_calculator": {},
     }
 

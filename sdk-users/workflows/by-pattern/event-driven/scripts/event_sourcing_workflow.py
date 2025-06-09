@@ -118,7 +118,7 @@ except FileNotFoundError:
 except Exception as e:
     print(f"Error reading event file: {e}")
     result = {"events": [], "error": str(e)}
-"""
+""",
     )
     workflow.add_node("event_reader", event_reader)
 
@@ -166,7 +166,7 @@ result = {
 }
 
 print(f"Validated {len(validated_events)} events, {len(invalid_events)} invalid")
-"""
+""",
     )
     workflow.add_node("event_validator", event_validator)
     workflow.connect("event_reader", "event_validator", mapping={"result": "result"})
@@ -526,7 +526,7 @@ result = {
 def main():
     """Main entry point."""
     import sys
-    
+
     # Create output directories
     os.makedirs("data/outputs", exist_ok=True)
 
@@ -534,10 +534,10 @@ def main():
         # Run simple workflow without file dependencies
         workflow = create_simple_event_workflow()
         runtime = LocalRuntime()
-        
+
         print("Running simple event workflow...")
         result, run_id = runtime.execute(workflow, parameters={})
-        
+
         counter_result = result.get("event_counter", {}).get("result", {})
         print(f"\nEvent counts: {counter_result.get('event_counts', {})}")
         print(f"Total events: {counter_result.get('total_events', 0)}")
@@ -547,7 +547,7 @@ def main():
         if not os.path.exists(input_file):
             print(f"❌ Input file not found: {input_file}")
             print("\nCreating sample event file...")
-            
+
             # Create sample file if it doesn't exist
             os.makedirs("data/inputs", exist_ok=True)
             sample_events = {
@@ -559,20 +559,26 @@ def main():
                         "timestamp": "2024-01-15T08:30:00Z",
                         "data": {
                             "customer_id": "CUST-101",
-                            "items": [{"product_id": "PROD-001", "quantity": 2, "price": 29.99}],
+                            "items": [
+                                {
+                                    "product_id": "PROD-001",
+                                    "quantity": 2,
+                                    "price": 29.99,
+                                }
+                            ],
                             "total_amount": 59.98,
-                            "status": "pending"
+                            "status": "pending",
                         },
-                        "metadata": {"source": "order-service", "version": 1}
+                        "metadata": {"source": "order-service", "version": 1},
                     }
                 ],
-                "metadata": {"version": "1.0", "total_events": 1}
+                "metadata": {"version": "1.0", "total_events": 1},
             }
-            
+
             with open(input_file, "w") as f:
                 json.dump(sample_events, f, indent=2)
             print(f"✅ Created sample file: {input_file}")
-        
+
         # Run the event sourcing workflow
         run_event_sourcing()
 

@@ -14,13 +14,13 @@ test1 = PythonCodeNode(
     code="""
 # Test simple result assignment
 result = {"message": "Hello", "value": 42}
-"""
+""",
 )
 workflow.add_node("test1", test1)
 
 # Test 2: Result with unwrapping
 test2 = PythonCodeNode(
-    name="test2", 
+    name="test2",
     code="""
 # Test unwrapping input - inputs are mapped to 'input_data'
 try:
@@ -40,7 +40,7 @@ result = {
 }
 
 print(f"Setting result to: {result}")
-"""
+""",
 )
 workflow.add_node("test2", test2)
 workflow.connect("test1", "test2", mapping={"result": "input_data"})
@@ -55,4 +55,5 @@ try:
 except Exception as e:
     print(f"❌ Test failed: {e}")
     import traceback
+
     traceback.print_exc()
