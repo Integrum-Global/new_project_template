@@ -410,35 +410,29 @@ class TemplateSyncer:
         # Look for project-specific section in downstream
         project_marker = "## Project-Specific Instructions"
         
-        if project_marker in downstream_content:
+        if project_marker in downstream_content and project_marker in template_content:
             # Extract project-specific section from downstream
             downstream_idx = downstream_content.find(project_marker)
             downstream_project_section = downstream_content[downstream_idx:]
             
-            if project_marker in template_content:
-                # Template has project section - replace it with downstream version
-                template_idx = template_content.find(project_marker)
-                template_before_project = template_content[:template_idx].rstrip()
-                new_content = template_before_project + "\n\n" + downstream_project_section
-            else:
-                # Template doesn't have project section - append downstream version
-                new_content = template_content.rstrip() + "\n\n" + downstream_project_section
+            # Template has project section - replace it with downstream version
+            template_idx = template_content.find(project_marker)
+            template_before_project = template_content[:template_idx].rstrip()
+            new_content = template_before_project + "\n\n" + downstream_project_section
             
-            # Only update if template content before project section changed
-            template_before_project = template_content[:template_content.find(project_marker)].strip()
-            downstream_before_project = downstream_content[:downstream_content.find(project_marker)].strip()
-            
-            if template_before_project != downstream_before_project:
+            # Always update if there are any differences in the main content
+            if new_content.strip() != downstream_content.strip():
                 dst.write_text(new_content)
                 logger.info(f"Merged {dst.name} with preserved project-specific instructions")
                 return True
         else:
-            # No project-specific section in downstream, just use template
+            # No project-specific section in downstream or template, just use template
             if template_content.strip() != downstream_content.strip():
                 dst.write_text(template_content)
                 logger.info(f"Updated {dst.name} from template")
                 return True
 
+        logger.info(f"No changes needed for {dst.name}")
         return False
 
     def create_pr(self, repo: str, branch: str):
