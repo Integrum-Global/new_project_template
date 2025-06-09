@@ -75,10 +75,9 @@ SYNC_PATTERNS = [
     "CLAUDE.md",  # Special merge handling to preserve project-specific sections
 ]
 
-# Files that require special merge handling
+# Files that require special merge handling  
 MERGE_FILES = {
-    # Temporarily removing CLAUDE.md from merge handling to test
-    # "CLAUDE.md": "merge_claude_md",
+    "CLAUDE.md": "merge_claude_md",
 }
 
 # Files to sync only if they don't exist (preserve existing)
@@ -402,16 +401,22 @@ class TemplateSyncer:
 
     def merge_claude_md(self, src: Path, dst: Path) -> bool:
         """Merge CLAUDE.md files, preserving project-specific instructions."""
+        logger.info(f"Processing CLAUDE.md merge: {src} -> {dst}")
+        
         if not dst.exists():
+            logger.info(f"Destination {dst} doesn't exist, copying template")
             return self.copy_file(src, dst)
 
         template_content = src.read_text()
         downstream_content = dst.read_text()
+        
+        logger.info(f"Template CLAUDE.md size: {len(template_content)}, Downstream size: {len(downstream_content)}")
 
         # Look for project-specific section in downstream
         project_marker = "## Project-Specific Instructions"
         
         if project_marker in downstream_content and project_marker in template_content:
+            logger.info("Both files have project-specific sections, merging...")
             # Extract project-specific section from downstream
             downstream_idx = downstream_content.find(project_marker)
             downstream_project_section = downstream_content[downstream_idx:]
@@ -421,20 +426,16 @@ class TemplateSyncer:
             template_before_project = template_content[:template_idx].rstrip()
             new_content = template_before_project + "\n\n" + downstream_project_section
             
-            # Always update if there are any differences in the main content
-            if new_content.strip() != downstream_content.strip():
-                dst.write_text(new_content)
-                logger.info(f"Merged {dst.name} with preserved project-specific instructions")
-                return True
+            # Force update to ensure changes are applied
+            dst.write_text(new_content)
+            logger.info(f"Successfully merged {dst.name} with preserved project-specific instructions")
+            return True
         else:
+            logger.info("Using template content directly")
             # No project-specific section in downstream or template, just use template
-            if template_content.strip() != downstream_content.strip():
-                dst.write_text(template_content)
-                logger.info(f"Updated {dst.name} from template")
-                return True
-
-        logger.info(f"No changes needed for {dst.name}")
-        return False
+            dst.write_text(template_content)
+            logger.info(f"Updated {dst.name} from template")
+            return True
 
     def create_pr(self, repo: str, branch: str):
         """Create pull request for template sync."""
