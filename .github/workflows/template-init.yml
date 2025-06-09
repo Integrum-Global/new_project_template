@@ -110,7 +110,7 @@ Generated with Template Setup Action"
           echo "1. **Review CLAUDE.md** for development guidance and workflows" >> $GITHUB_STEP_SUMMARY
           echo "2. **Configure environment**: Copy \`.env.example\` to \`.env\` and add your API keys" >> $GITHUB_STEP_SUMMARY
           echo "3. **Start developing**: Check \`src/solutions/\` for your initial solution template" >> $GITHUB_STEP_SUMMARY
-          echo "4. **Use todo system**: Track your tasks in \`guide/todos/000-master.md\`" >> $GITHUB_STEP_SUMMARY
+          echo "4. **Use todo system**: Track your tasks in \`todos/000-master.md\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### 🔄 Automatic Updates:" >> $GITHUB_STEP_SUMMARY
           echo "Your repository will automatically receive template updates via PR when the template is updated." >> $GITHUB_STEP_SUMMARY

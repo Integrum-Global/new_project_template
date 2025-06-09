@@ -139,7 +139,7 @@ gh workflow run template-init.yml --field force_setup=true
 
 After setup, follow the 5-phase development process:
 
-### 1. **Planning** (`guide/todos/000-master.md`)
+### 1. **Planning** (`todos/000-master.md`)
 - Add your solution requirements to the master todo list
 - Use `reference/pattern-library/` for solution architecture
 - Plan using established patterns and templates
@@ -156,7 +156,7 @@ After setup, follow the 5-phase development process:
 
 ### 4. **Documentation**
 - Update solution README and documentation
-- Track learnings in `guide/mistakes/`
+- Track learnings in `mistakes/`
 - Use established documentation patterns
 
 ### 5. **Deployment**

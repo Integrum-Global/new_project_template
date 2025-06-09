@@ -32,7 +32,7 @@ See [phases.md](phases.md) for complete details.
 
 ## Key Principles
 
-1. **Track Mistakes Immediately**: Use `guide/sessions/current-mistakes.md`
+1. **Track Mistakes Immediately**: Use `mistakes/current-session-mistakes.md`
 2. **Clear Context Between Phases**: Optimize memory usage
 3. **Examples First**: Write and validate examples before implementation
 4. **Learn from Errors**: Analyze mistakes to improve documentation
@@ -43,11 +43,11 @@ See [phases.md](phases.md) for complete details.
 ### Starting a New Task
 1. Enter PLAN MODE
 2. Read [phases.md](phases.md)
-3. Check `guide/todos/000-master.md`
+3. Check `todos/000-master.md`
 4. Create implementation plan
 
 ### During Implementation
-1. Create `guide/sessions/current-mistakes.md`
+1. Create `mistakes/current-session-mistakes.md`
 2. Write examples first
 3. Track all errors as they occur
 4. Run validation frequently
@@ -70,5 +70,5 @@ See [phases.md](phases.md) for complete details.
 ## See Also
 - `guide/reference/` - API references and patterns
 - `guide/features/` - Feature implementation guides
-- `guide/mistakes/` - Historical mistake database
-- `guide/sessions/` - Session-specific logs
+- `mistakes/` - Historical mistake database
+- `mistakes/` - Session-specific mistake logs

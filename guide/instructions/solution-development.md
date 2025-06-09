@@ -38,8 +38,8 @@ This guide provides detailed workflows for developing solutions with the Kailash
    touch workflow.py
    touch config.py
    
-   # Copy template (choose appropriate one)
-   cp -r ../../../templates/basic_etl/* ./
+   # Copy template (choose appropriate one from reference/templates/)
+   cp -r ../../../reference/templates/workflow/* ./
    
    # Update configuration
    cp ../../../.env.example ../../../.env
@@ -47,7 +47,7 @@ This guide provides detailed workflows for developing solutions with the Kailash
 
 4. **Implement Core Logic**
    - Use `reference/api-registry.yaml` for exact APIs
-   - Follow patterns from `reference/cheatsheet.md`
+   - Follow patterns from `reference/cheatsheet/README.md`
    - Reuse components from `shared/nodes/` and `shared/workflows/`
    - Validate with `python reference/validate_kailash_code.py`
 
@@ -134,7 +134,7 @@ Use batch processing with 15-minute intervals.
 ```
 
 ### Mistakes and Lessons Learned
-**`guide/mistakes/000-master.md`** - Track solution-specific issues
+**`mistakes/000-master.md`** - Track solution-specific issues
 - Common API integration problems
 - Data quality issues and fixes
 - Performance bottlenecks discovered
@@ -191,7 +191,7 @@ cd my_solution
 
 # Copy reference files
 cp -r /path/to/kailash_sdk/guide/reference ./
-cp -r /path/to/kailash_sdk/guide/todos ./
+cp -r /path/to/kailash_sdk/todos ./
 
 # Create solution file
 cp reference/CLAUDE_SOLUTIONS.md ./CLAUDE.md

@@ -40,7 +40,7 @@ Use this template:
 - **Solution**: [How you fixed it]
 - **Prevention**: [How to avoid in future]
 - **Docs to update**: 
-  - [ ] guide/mistakes/000-master.md
+  - [ ] mistakes/000-master.md
   - [ ] guide/reference/[relevant-doc].md
   - [ ] guide/features/[relevant-feature].md
 
@@ -113,7 +113,7 @@ List all documentation updates needed:
    - Add section on [specific issue]
    - Include examples of correct usage
 
-2. Update guide/mistakes/consolidated-guide.md
+2. Update mistakes/consolidated-guide.md
    - Add to "Common Pitfalls" section
    - Include quick fix
 
@@ -131,7 +131,7 @@ List all documentation updates needed:
 ## Documentation Updates (Phase 4)
 
 ### 1. Create Individual Mistake File
-Create a new file `guide/mistakes/NNN-short-description.md`:
+Create a new file `mistakes/NNN-short-description.md`:
 - Use next sequential number (check README.md)
 - Follow the template in `0000-template.md`
 - Include all sections: Problem, Symptoms, Example, etc.
@@ -139,7 +139,7 @@ Create a new file `guide/mistakes/NNN-short-description.md`:
 Example: `062-state-mutation-error.md`
 
 ### 2. Update Mistakes Registry
-Add entry to `guide/mistakes/README.md`:
+Add entry to `mistakes/README.md`:
 - Add to appropriate category section
 - Update error message quick reference if applicable
 - If it's a very common pattern, consider adding to "Common Fixes" section
@@ -182,7 +182,7 @@ Enhance relevant guides in `guide/features/`:
 - **Solution**: Changed to inherit from AsyncNode and implemented async_run() instead of run()
 - **Prevention**: Always use AsyncNode for any node doing async operations (MCP, API calls, etc.)
 - **Docs to update**: 
-  - [x] guide/mistakes/000-master.md - Added as issue #57
+  - [x] mistakes/000-master.md - Added as issue #57
   - [x] guide/features/mcp_ecosystem.md - Added async pattern section
   - [x] guide/reference/node-catalog.md - Noted async requirement
 ```

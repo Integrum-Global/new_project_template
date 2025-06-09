@@ -44,9 +44,7 @@ This template provides a foundation for building workflow-based solutions using 
    :maxdepth: 2
    :caption: Templates
 
-   templates/basic_etl
-   templates/api_integration
-   templates/ai_analysis
+   reference/templates
 
 .. toctree::
    :maxdepth: 1

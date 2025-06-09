@@ -45,10 +45,10 @@ jobs:
             "guide/adr/README.md"
             "guide/frontend"
             "guide/instructions"
-            "guide/mistakes/000-master.md"
-            "guide/mistakes/README.md"
-            "guide/mistakes/template.md"
-            "guide/todos/README.md"
+            "mistakes/000-master.md"
+            "mistakes/README.md"
+            "mistakes/template.md"
+            "todos/README.md"
             "guide/workflows"
             
             # Scripts - always sync entire directory
@@ -68,7 +68,7 @@ jobs:
             "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
-            "Claude.md"
+            "CLAUDE.md"
             
             # Data directories
             "data/configs"
@@ -82,8 +82,8 @@ jobs:
             
             # Guide files/dirs not in SYNC_FILES
             "guide/adr"  # Other ADR files
-            "guide/mistakes"  # Other mistake files
-            "guide/todos"  # Other todo files
+            "mistakes"  # Other mistake files
+            "todos"  # Other todo files
             
             # Templates directory
             "templates"

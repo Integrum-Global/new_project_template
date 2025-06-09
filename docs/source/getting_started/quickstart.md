@@ -104,24 +104,18 @@ This guide will help you get started with the Kailash SDK Template in just a few
 
 ## Using Templates
 
-The template includes several pre-built solutions you can use as starting points:
+The template includes code templates in `reference/templates/` you can use as starting points:
 
-### Basic ETL Template
-
-```bash
-# Copy the template
-cp -r templates/basic_etl src/solutions/my_etl
-
-# Run it
-python -m src.solutions.my_etl
-```
-
-### API Integration Template
+### Using Code Templates
 
 ```bash
-# Copy and customize
-cp -r templates/api_integration src/solutions/my_api
-# Edit the configuration in src/solutions/my_api/config.yaml
+# Copy workflow templates
+cp -r reference/templates/workflow/* src/solutions/my_solution/
+
+# Copy node templates  
+cp -r reference/templates/nodes/* src/solutions/my_solution/nodes/
+
+# Customize the templates for your specific needs
 ```
 
 ## Testing Your Solution

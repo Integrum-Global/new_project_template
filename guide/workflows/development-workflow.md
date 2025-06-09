@@ -3,13 +3,13 @@
 ## Complete Development Workflow (Any Task)
 
 ### START: Check todos and plan
-1. Check `guide/todos/000-master.md` for priorities
+1. Check `todos/000-master.md` for priorities
 2. Mark task as "In Progress"
 3. Check relevant ADRs and reference docs
 
 ### IMPLEMENT: Write code
 4. Use `guide/reference/api-registry.yaml` for exact APIs
-5. Follow patterns from `guide/reference/cheatsheet.md`
+5. Follow patterns from `reference/cheatsheet/README.md`
 6. Check `guide/features/` when:
    - Implementing multi-agent coordination (`agent_coordination_patterns.md`)
    - Adding authentication/permissions (`access_control.md`)
@@ -40,14 +40,14 @@
 14. Run linting: `black . && isort . && ruff check .`
 
 ### DOCUMENT: Update all docs
-15. Update `guide/todos/000-master.md` (mark completed, add new tasks)
+15. Update `todos/000-master.md` (mark completed, add new tasks)
 16. Document mistakes:
-    - Create new file in `guide/mistakes/NNN-description.md`
-    - Update `guide/mistakes/README.md` index
+    - Create new file in `mistakes/NNN-description.md`
+    - Update `mistakes/README.md` index
 17. Update reference docs if APIs changed:
     - `guide/reference/api-registry.yaml`
     - `guide/reference/api-validation-schema.json`
-    - `guide/reference/cheatsheet.md`
+    - `reference/cheatsheet/README.md`
     - `guide/reference/node-catalog.md` (if new nodes added)
     - `guide/reference/pattern-library/` (if new patterns discovered)
     - `guide/reference/templates/` (if new common use cases identified)

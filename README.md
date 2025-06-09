@@ -126,10 +126,10 @@ Claude Code provides structured development sessions that align with enterprise 
 
 ### Claude Code Integration Features
 
-- **Todo Management**: Integrated with `guide/todos/` system for session tracking
+- **Todo Management**: Integrated with `todos/` system for session tracking
 - **Quality Assurance**: Automatic code formatting, linting, and testing
 - **Documentation**: Auto-generation of docstrings, examples, and API docs
-- **Mistake Prevention**: References `guide/mistakes/` to avoid common pitfalls
+- **Mistake Prevention**: References `mistakes/` to avoid common pitfalls
 
 ## Project Structure
 
@@ -152,13 +152,12 @@ new_project_template/
 │   └── examples/             # Example usage
 ├── guide/                      # Solution development guides
 │   ├── adr/                   # Architecture Decision Records
-│   ├── mistakes/             # Mistakes and lessons learned
 │   └── prd/                  # Product Requirements Documents
+├── mistakes/                   # Mistakes and lessons learned
 ├── reference/                  # API references (from SDK)
 │   ├── api-registry.yaml     # Exact API specifications
 │   ├── validation-guide.md   # Error prevention rules
 │   └── cheatsheet.md        # Common patterns
-├── templates/                  # Solution templates
 ├── todos/                      # Solution tracking
 │   ├── 000-master.md         # Active solution priorities
 │   └── completed-archive.md  # Completed solutions
@@ -228,12 +227,12 @@ This template includes automated code quality tools:
 
 ### Project Documentation
 - [Project ADRs](guide/adr/) - Architecture Decision Records
-- [Current Todos](guide/todos/000-master.md) - Active development tasks
-- [Development Mistakes to Avoid](guide/mistakes/000-master.md) - Common pitfalls
+- [Current Todos](todos/000-master.md) - Active development tasks
+- [Development Mistakes to Avoid](mistakes/000-master.md) - Common pitfalls
 - [Coding Standards](CLAUDE.md) - Comprehensive development guidelines
 
 ### Claude Code Workflow Tips
-1. **Start each session** by reading current todos: `guide/todos/000-master.md`
+1. **Start each session** by reading current todos: `todos/000-master.md`
 2. **Follow the documentation structure** outlined in `CLAUDE.md`
 3. **Use the ADR process** for architectural decisions
 4. **Leverage automated testing** with `examples/_utils/test_all_examples.py`

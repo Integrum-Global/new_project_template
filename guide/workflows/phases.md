@@ -18,12 +18,12 @@ The workflow is designed to:
 - Create a comprehensive plan
 
 ### Steps
-1. **Check TODO List**: Review `guide/todos/000-master.md` for context
+1. **Check TODO List**: Review `todos/000-master.md` for context
 2. **Research Documentation**:
    - Architecture decisions in `guide/adr/`
    - Similar features in `guide/features/`
    - API patterns in `guide/reference/`
-3. **Review Mistakes**: Check `guide/mistakes/consolidated-guide.md` for known pitfalls
+3. **Review Mistakes**: Check `mistakes/consolidated-guide.md` for known pitfalls
 4. **Create Plan**: Develop architecture and implementation approach
 
 ### Output
@@ -89,8 +89,8 @@ The workflow is designed to:
 
 ### Steps
 1. **Update Mistake Logs**:
-   - Create new file `guide/mistakes/NNN-description.md` using template
-   - Update `guide/mistakes/README.md` index
+   - Create new file `mistakes/NNN-description.md` using template
+   - Update `mistakes/README.md` index
    - Add to "Common Fixes" in README if very common
 2. **Update References**:
    - `guide/reference/api-registry.yaml` for API changes
@@ -99,7 +99,7 @@ The workflow is designed to:
 3. **Update Feature Guides**:
    - Add learnings to relevant `guide/features/` docs
    - Create new guides if needed
-4. **Update Cheatsheet**: Add to `guide/reference/cheatsheet.md`
+4. **Update Cheatsheet**: Add to `reference/cheatsheet/README.md`
 
 ### Output
 - Updated mistake documentation

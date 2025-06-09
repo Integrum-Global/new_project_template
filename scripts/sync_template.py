@@ -49,10 +49,10 @@ SYNC_PATTERNS = [
     "guide/frontend/**/*",
     "guide/instructions/*",
     "guide/instructions/**/*",
-    "guide/mistakes/000-master.md",
-    "guide/mistakes/README.md", 
-    "guide/mistakes/template.md",
-    "guide/todos/README.md",
+    "mistakes/000-master.md",
+    "mistakes/README.md", 
+    "mistakes/template.md",
+    "todos/README.md",
     "guide/workflows/*",
     "guide/workflows/**/*",
     
@@ -71,7 +71,7 @@ SYNC_PATTERNS = [
 
 # Files that require special merge handling
 MERGE_FILES = {
-    "Claude.md": "merge_claude_md",
+    "CLAUDE.md": "merge_claude_md",
 }
 
 # Files to sync only if they don't exist (preserve existing)
@@ -80,7 +80,7 @@ SYNC_IF_MISSING = [
     "README.md",
     "pyproject.toml",
     "CHANGELOG.md",
-    "Claude.md",
+    "CLAUDE.md",
     
     # Data directories
     "data/configs/",
@@ -96,10 +96,10 @@ SYNC_IF_MISSING = [
     "guide/*",  # Any other guide files not explicitly synced
     "guide/**/*",  # Any subdirectories not explicitly synced
     "guide/adr/*",  # Other ADR files (except 0000-template.md and README.md)
-    "guide/mistakes/*",  # Other mistake files (except specified ones)
-    "guide/todos/*",  # Other todo files (except README.md)
-    "guide/todos/active/",  # Active tasks
-    "guide/todos/completed/",  # Completed sessions
+    "mistakes/*",  # Other mistake files (except specified ones)
+    "todos/*",  # Other todo files (except README.md)
+    "todos/active/",  # Active tasks
+    "todos/completed/",  # Completed sessions
     
     # Reference files/dirs not in SYNC_PATTERNS (sync if missing)  
     "reference/*",  # Already synced entirely, but kept for clarity
@@ -111,8 +111,8 @@ MERGE_DIRECTORIES = [
     "src/shared/nodes/",
     "src/shared/utils/",
     "src/shared/workflows/",
-    "guide/todos/active/",  # Preserve active project tasks
-    "guide/todos/completed/",  # Preserve completed session history
+    "todos/active/",  # Preserve active project tasks
+    "todos/completed/",  # Preserve completed session history
     "reference/templates/workflow/",  # Allow project-specific workflow templates
     "reference/templates/nodes/",  # Allow project-specific node templates
 ]
@@ -341,6 +341,22 @@ class TemplateSyncer:
                     logger.info(f"Removing old reference file: {file_path.relative_to(downstream_path)}")
                     file_path.unlink()
                     changes_made = True
+        
+        # Handle Claude.md → CLAUDE.md migration
+        old_claude_file = downstream_path / "Claude.md"
+        new_claude_file = downstream_path / "CLAUDE.md"
+        
+        if old_claude_file.exists():
+            if not new_claude_file.exists():
+                # Migrate content from Claude.md to CLAUDE.md
+                logger.info("Migrating Claude.md to CLAUDE.md")
+                old_claude_file.rename(new_claude_file)
+                changes_made = True
+            else:
+                # Both exist - remove the old one (CLAUDE.md takes precedence)
+                logger.info("Removing old Claude.md (CLAUDE.md already exists)")
+                old_claude_file.unlink()
+                changes_made = True
                     
         return changes_made
 
@@ -366,7 +382,7 @@ class TemplateSyncer:
         return False
 
     def merge_claude_md(self, src: Path, dst: Path) -> bool:
-        """Merge Claude.md files, preserving project-specific instructions."""
+        """Merge CLAUDE.md files, preserving project-specific instructions."""
         if not dst.exists():
             return self.copy_file(src, dst)
 

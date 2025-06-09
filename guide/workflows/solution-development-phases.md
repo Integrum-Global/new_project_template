@@ -47,7 +47,7 @@ The 5-phase solution development workflow ensures consistent, high-quality solut
 ### Tools & Resources
 - **Requirements**: Business analysis templates and interview guides
 - **Architecture**: `reference/pattern-library/` for solution patterns
-- **Planning**: `guide/todos/000-master.md` for task tracking
+- **Planning**: `todos/000-master.md` for task tracking
 
 ### Phase Exit Criteria
 - [ ] Stakeholder approval of requirements and design
@@ -251,7 +251,7 @@ The 5-phase solution development workflow ensures consistent, high-quality solut
 
 ## 🔗 Related Resources
 
-- **[Todo Management](../todos/README.md)** - Phase task tracking and progress management
+- **[Todo Management](../../todos/README.md)** - Phase task tracking and progress management
 - **[Mistake Tracking](mistake-tracking.md)** - Learning from errors across phases
 - **[Validation Checklist](validation-checklist.md)** - Quality gates and validation procedures
 - **[Deployment Workflow](deployment-workflow.md)** - Detailed deployment procedures

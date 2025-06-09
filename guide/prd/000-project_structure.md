@@ -111,11 +111,6 @@ solutions_repo/
 │       ├── checklists.md            # Quick checklists
 │       └── best-practices.md        # Best practices
 │
-├── templates/                  # Solution templates
-│   ├── basic_etl/            # Basic ETL pipeline template
-│   ├── api_integration/      # API integration template
-│   └── ai_analysis/          # AI/LLM analysis template
-│
 ├── todos/                      # Task tracking
 │   ├── 000-master.md         # Active priorities and tasks
 │   └── completed-archive.md  # Completed tasks archive

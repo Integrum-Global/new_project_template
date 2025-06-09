@@ -23,7 +23,7 @@
 ### □ Updating API
 - [ ] Update `guide/reference/api-registry.yaml`
 - [ ] Update `guide/reference/api-validation-schema.json`
-- [ ] Update examples in `guide/reference/cheatsheet.md`
+- [ ] Update examples in `reference/cheatsheet/README.md`
 - [ ] Run validation tests
 - [ ] Update CHANGELOG.md
 

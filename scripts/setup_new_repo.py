@@ -448,7 +448,7 @@ Brief description of what this solution does.
 
 - Follow the 5-phase development process outlined in `CLAUDE.md`
 - Use `reference/` documentation for API details and patterns
-- Track tasks in `guide/todos/000-master.md`
+- Track tasks in `todos/000-master.md`
 
 ## Testing
 

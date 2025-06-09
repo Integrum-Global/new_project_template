@@ -42,17 +42,13 @@ new_project_template/
 │   │   └── workflows/       # Workflow patterns
 │   └── solutions/            # Solution implementations
 │       └── [solution_name]/  # Individual solutions
-├── templates/                 # Solution templates
-│   ├── basic_etl/           # ETL workflow template
-│   ├── api_integration/     # API integration template
-│   └── ai_analysis/         # AI analysis template
 ├── todos/                     # Task management
 │   ├── 000-master.md        # Active todo list
 │   └── completed-archive.md  # Completed tasks
 ├── .env.example              # Environment variables example
 ├── .gitignore                # Git ignore rules
 ├── .pre-commit-config.yaml   # Pre-commit hooks configuration
-├── Claude.md                 # Claude Code instructions
+├── CLAUDE.md                 # Claude Code instructions
 ├── MANIFEST.in               # Package manifest
 ├── pyproject.toml            # Project configuration
 └── README.md                 # Project readme
