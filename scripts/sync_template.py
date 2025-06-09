@@ -77,7 +77,8 @@ SYNC_PATTERNS = [
 
 # Files that require special merge handling
 MERGE_FILES = {
-    "CLAUDE.md": "merge_claude_md",
+    # Temporarily removing CLAUDE.md from merge handling to test
+    # "CLAUDE.md": "merge_claude_md",
 }
 
 # Files to sync only if they don't exist (preserve existing)
