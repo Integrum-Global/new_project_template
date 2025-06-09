@@ -24,13 +24,12 @@ logger = logging.getLogger(__name__)
 
 # Files and directories to preserve in downstream repos
 PRESERVE_PATTERNS = [
-    "README.md",  # Project-specific readme (always preserve)
     ".env*",  # Environment files
     "config.yaml",  # Project-specific config
     ".git/*",  # Git history
     ".github/workflows/*_custom.yml",  # Custom workflows
     "dist/*",  # Local wheel distributions
-    # Note: Project-specific directories are handled by SYNC_IF_MISSING
+    # Note: Project-specific directories and README.md are handled by SYNC_IF_MISSING
     # They sync if missing but preserve if existing
 ]
 
@@ -82,6 +81,7 @@ MERGE_FILES = {
 # Files to sync only if they don't exist (preserve existing)
 SYNC_IF_MISSING = [
     # Root files (excluding instruction files which are always synced)
+    "README.md",
     "pyproject.toml",
     "CHANGELOG.md",
     # Project-specific directories - sync ALL content recursively if directory missing
