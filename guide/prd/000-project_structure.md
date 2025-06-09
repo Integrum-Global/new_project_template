@@ -50,9 +50,14 @@ solutions_repo/
 │       └── {solution_name}/    # Each solution follows this structure
 │           ├── __init__.py    # Package exports
 │           ├── __main__.py    # Entry point (python -m solutions.{name})
-│           ├── workflow.py    # Main workflow logic
 │           ├── config.py      # Configuration handling
-│           ├── processors.py  # Custom processors (if needed)
+│           ├── workflows/     # Main workflow logic
+│           │   ├── __init__.py
+│           │   └── workflow.py
+│           ├── nodes/         # Custom nodes (if needed)
+│           │   └── __init__.py
+│           ├── examples/      # Solution examples
+│           │   └── __init__.py
 │           ├── README.md      # Solution-specific documentation
 │           ├── config.yaml    # Default configuration file
 │           └── tests/         # Solution-specific tests
@@ -129,15 +134,17 @@ Each solution MUST follow this exact structure:
 src/solutions/{solution_name}/
 ├── __init__.py                 # Package initialization and exports
 ├── __main__.py                 # CLI entry point
-├── workflow.py                 # Main workflow implementation
 ├── config.py                   # Configuration management
-├── processors.py               # Custom data processors (optional)
-├── connectors.py              # External system connectors (optional)
-├── utils.py                   # Solution-specific utilities (optional)
-├── README.md                  # Solution documentation
-├── config.yaml                # Default configuration values
-├── requirements.txt           # Solution-specific dependencies (optional)
+├── workflows/                  # Main workflow logic
+│   ├── __init__.py
+│   └── workflow.py            # Main workflow implementation
+├── nodes/                     # Custom nodes (if needed)
+│   ├── __init__.py
+│   ├── processors.py          # Custom data processors (optional)
+│   ├── connectors.py          # External system connectors (optional)
+│   └── validators.py          # Custom validation nodes (optional)
 ├── examples/                  # Working examples for this solution
+│   ├── __init__.py
 │   ├── basic_usage.py        # Simple example
 │   ├── advanced_usage.py     # Complex example with all features
 │   ├── integration_example.py # Integration with other systems
@@ -147,13 +154,18 @@ src/solutions/{solution_name}/
 │   ├── __init__.py
 │   ├── test_workflow.py       # Workflow logic tests
 │   ├── test_config.py         # Configuration tests
-│   ├── test_processors.py     # Processor tests (if applicable)
+│   ├── test_nodes.py          # Node tests (if applicable)
 │   ├── test_integration.py    # End-to-end tests
 │   └── fixtures/              # Test data and fixtures
 │       └── sample_data.json
-└── docs/                      # Additional documentation (optional)
-    ├── architecture.md        # Solution architecture
-    └── troubleshooting.md     # Common issues and solutions
+├── utils.py                   # Solution-specific utilities (optional)
+├── README.md                  # Solution documentation
+├── config.yaml                # Default configuration values
+├── requirements.txt           # Solution-specific dependencies (optional)
+└── docs/                      # Implementation documentation (REQUIRED)
+    ├── implementation.md      # REQUIRED: Implementation details, considerations, steps
+    ├── architecture.md        # Solution architecture (optional)
+    └── troubleshooting.md     # Common issues and solutions (optional)
 ```
 
 ## File Purposes and Requirements
@@ -171,7 +183,7 @@ src/solutions/{solution_name}/
 - MUST provide help text
 - MUST handle errors gracefully
 
-**`workflow.py`** - Main logic
+**`workflows/workflow.py`** - Main logic
 - MUST contain workflow creation function
 - MUST follow Kailash SDK patterns
 - MUST use proper node naming (ending with "Node")
@@ -189,6 +201,14 @@ src/solutions/{solution_name}/
 - MUST provide usage examples
 - MUST list dependencies
 - MUST include troubleshooting
+
+**`docs/implementation.md`** - Implementation Documentation (REQUIRED)
+- MUST document business requirements and context
+- MUST explain design decisions and rationale
+- MUST detail implementation steps taken
+- MUST document key considerations and trade-offs
+- MUST include data flow and processing logic
+- MUST note performance characteristics and limitations
 
 ### Shared Components Structure
 
@@ -253,6 +273,8 @@ from kailash.nodes.data import CSVReaderNode
 # Local application imports
 from ..shared.nodes import CustomProcessorNode
 from .config import load_config
+from .workflows.workflow import create_workflow
+from .nodes.processors import CustomDataNode
 ```
 
 ## Testing Structure

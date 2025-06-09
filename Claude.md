@@ -12,9 +12,11 @@
 - **Reference**: `guide/reference/CLAUDE.md` → cheatsheet, validation, patterns
 - **Plan**: Clear solution approach with realistic timelines
 - **Create & start todos**: Add new tasks from plan → mark "in_progress" in `todos/000-master.md` (create from template if needed)
+- **Create implementation details**: Architecture and implementation plan with deliverables in `guide/todos/active/`
 
-### **Phase 2: Implement → Test → Learn**
+### **Phase 2: Implement → Example → Test → Learn**
 - **Implement**: Use `reference/templates/` and `reference/cheatsheet/` for copy-paste patterns
+- **Create Example**: MUST create working example in `examples/` directory and verify it runs successfully
 - **Validate**: Check `guide/reference/validation/validation-guide.md` for LLM rules
 - **Test**: Validate with real data, track issues in `mistakes/current-session-mistakes.md` (if present)
 - **Node Selection**: Use `guide/reference/nodes/comprehensive-node-catalog.md`
@@ -31,6 +33,13 @@
 3. **Config Keys**: ALL use underscores (`file_path` ✓)
 4. **Config vs Runtime**: Config=HOW (static), Runtime=WHAT (dynamic data)
 5. **Parameter Order**: Check exact signatures in `guide/reference/api/`
+
+## 📁 Solution Module Organization
+1. **Implementation Documentation**: Each solution MUST include implementation details in markdown files documenting considerations, steps, and design decisions
+2. **Nodes**: Custom nodes go in `nodes/` directory under the solution module
+3. **Workflows**: Main workflow logic organized in `workflows/` directory  
+4. **Examples**: Solution-specific examples stored in `examples/` directory
+5. **Tests**: Solution-specific tests organized in `tests/` directory
 
 ## 🔗 Essential References
 - **Development**: `guide/reference/CLAUDE.md` → API reference, patterns, validation
@@ -50,7 +59,7 @@ See detailed guides:
 ## Template Sync Information
 
 **This template preserves your work:**
-- `src/solutions/` - Your business solutions (never touched)
+- `src/solutions/` - Your business solutions with workflows/, nodes/, and examples/ directories (never touched)
 - `data/` - Your data files (preserved, template samples added if missing)
 - `.env*` files - Your environment configurations (never touched)
 - `todos/` - Your task tracking (preserved if exists)
