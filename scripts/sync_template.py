@@ -72,7 +72,7 @@ SYNC_PATTERNS = [
     
     # Instruction files (always update with latest instructions)
     "README.md",
-    # Note: CLAUDE.md has special merge handling to preserve project-specific sections
+    "CLAUDE.md",  # Special merge handling to preserve project-specific sections
 ]
 
 # Files that require special merge handling
