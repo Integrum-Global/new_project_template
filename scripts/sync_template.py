@@ -4,6 +4,8 @@ Template Synchronization Script
 
 Syncs template repository changes to all downstream repositories.
 Preserves downstream-specific files while updating template components.
+
+Last updated: 2025-06-09 - Force CLAUDE.md updates with correct paths
 """
 
 import os
