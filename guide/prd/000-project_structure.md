@@ -52,8 +52,7 @@ solutions_repo/
 │           ├── __main__.py    # Entry point (python -m solutions.{name})
 │           ├── config.py      # Configuration handling
 │           ├── workflows/     # Main workflow logic
-│           │   ├── __init__.py
-│           │   └── workflow.py
+│           │   └── __init__.py
 │           ├── nodes/         # Custom nodes (if needed)
 │           │   └── __init__.py
 │           ├── examples/      # Solution examples
@@ -136,8 +135,7 @@ src/solutions/{solution_name}/
 ├── __main__.py                 # CLI entry point
 ├── config.py                   # Configuration management
 ├── workflows/                  # Main workflow logic
-│   ├── __init__.py
-│   └── workflow.py            # Main workflow implementation
+│   └── __init__.py
 ├── nodes/                     # Custom nodes (if needed)
 │   ├── __init__.py
 │   ├── processors.py          # Custom data processors (optional)
@@ -183,8 +181,8 @@ src/solutions/{solution_name}/
 - MUST provide help text
 - MUST handle errors gracefully
 
-**`workflows/workflow.py`** - Main logic
-- MUST contain workflow creation function
+**`workflows/`** - Main workflow logic directory
+- MUST contain workflow implementation files
 - MUST follow Kailash SDK patterns
 - MUST use proper node naming (ending with "Node")
 - MUST validate inputs
@@ -273,7 +271,7 @@ from kailash.nodes.data import CSVReaderNode
 # Local application imports
 from ..shared.nodes import CustomProcessorNode
 from .config import load_config
-from .workflows.workflow import create_workflow
+from .workflows import create_workflow
 from .nodes.processors import CustomDataNode
 ```
 
