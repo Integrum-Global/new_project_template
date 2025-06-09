@@ -146,9 +146,9 @@ cp -r reference/templates/nodes/* src/solutions/my_solution/nodes/
 
 ## Next Steps
 
-- Read the [Solution Development Guide](../guide/solution_development.md)
-- Explore the [API Reference](../api/nodes.md)
-- Check out [Best Practices](../guide/best_practices.md)
+- Check the ``sdk-users/`` directory for solution development guidance
+- Explore the ``sdk-users/api/`` directory for API references
+- Read best practices in ``sdk-users/developer/``
 - Learn about [Migration](../migration/overview.md) if you have existing code
 
 ## Common Issues
@@ -169,6 +169,6 @@ chmod +x scripts/*.py
 
 ## Getting Help
 
-- Check the [troubleshooting guide](../guide/troubleshooting.md)
+- Check the ``sdk-users/developer/`` directory for troubleshooting guides
 - Open an issue on [GitHub](https://github.com/Integrum-Global/new_project_template/issues)
 - Review the [Kailash SDK documentation](https://kailash-sdk.readthedocs.io/)

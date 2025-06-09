@@ -34,64 +34,49 @@ jobs:
           
           # Get list of files to sync from template
           SYNC_FILES=(
-            # GitHub configuration
-            ".github"
-            
-            # Reference - always sync entire directory
-            "reference"
-            
-            # Guide - specific files/dirs to always sync
-            "guide/adr/0000-template.md"
-            "guide/adr/README.md"
-            "guide/frontend"
-            "guide/instructions"
-            "mistakes/000-master.md"
-            "mistakes/README.md"
-            "mistakes/template.md"
-            "todos/README.md"
-            "guide/workflows"
-            
-            # Scripts - always sync entire directory
-            "scripts"
-            
-            # Shared source code
-            "src/shared"
-            
-            # Root configuration files
-            ".pre-commit-config.yaml"
-            "MANIFEST.in"
+            # SDK guidance - sync specific subdirectories only
+            "sdk-users/api"
+            "sdk-users/developer" 
+            "sdk-users/essentials"
+            "sdk-users/features"
+            "sdk-users/instructions"
+            "sdk-users/nodes"
+            "sdk-users/patterns"
+            "sdk-users/templates"
+            "sdk-users/workflows"
+            "sdk-users/CLAUDE.md"
+            "sdk-users/README.md"
+            "sdk-users/validation-guide.md"
           )
           
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
-            # Root files
+            # Root files - create if missing but don't overwrite
             "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
-            "CLAUDE.md"
             
-            # Data directories
-            "data/configs"
-            "data/samples"
-            
-            # Code directories
-            "examples"
-            "docs"
-            "src/solutions"
+            # Project-specific directories - sync all content if directory missing
+            "adr"
+            "prd" 
+            "mistakes"
             "todos"
-            
-            # Guide files/dirs not in SYNC_FILES
-            "guide/adr"  # Other ADR files
-            "mistakes"  # Other mistake files
-            "todos"  # Other todo files
-            
-            # Templates directory
-            "templates"
+            "migrations"
+            "data"
+            "docs"
+            "examples"
+            "src/solutions"
           )
           
           # Files that need special merge handling
           MERGE_FILES=(
             "CLAUDE.md"
+          )
+          
+          # Directories that should be merged (add new, preserve existing)
+          MERGE_DIRS=(
+            "src/shared"
+            "scripts"
           )
           
           # Sync each file/directory (always overwrite)
@@ -101,10 +86,15 @@ jobs:
             fi
           done
           
-          # Sync files only if they don't exist (preserve existing)
+          # Sync files/directories only if they don't exist (preserve existing)
           for item in "${SYNC_IF_MISSING[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item" && [ ! -e "$item" ]; then
+              echo "Syncing missing item: $item"
               git checkout template/main -- "$item" 2>/dev/null || true
+              # If it's a directory, sync all its contents recursively
+              if [ -d "$item" ]; then
+                git checkout template/main -- "$item/**" 2>/dev/null || true
+              fi
             fi
           done
           
@@ -147,6 +137,15 @@ jobs:
             fi
           done
           
+          # Handle directories that need merging (add new files, preserve existing)
+          for item in "${MERGE_DIRS[@]}"; do
+            if git ls-tree template/main --name-only | grep -q "^$item"; then
+              echo "Merging directory: $item"
+              # Get new files from template without overwriting existing ones
+              git checkout template/main -- "$item" 2>/dev/null || true
+            fi
+          done
+          
           # Check if there are changes
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
@@ -157,7 +156,9 @@ jobs:
             
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ). Please review changes for conflicts and ensure existing functionality works." \
+              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ). Synced sdk-users/ (SDK reference) and CLAUDE.md. Project-specific content preserved: adr/, prd/, mistakes/, todos/, migrations/, docs/, src/solutions/. Please review changes.
+
+Note: This is a template sync PR - CI tests are automatically skipped." \
               --base main
           else
             echo "No changes to sync"

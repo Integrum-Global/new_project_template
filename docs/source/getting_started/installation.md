@@ -159,11 +159,10 @@ pip config set global.trusted-host "pypi.org files.pythonhosted.org"
 ### Getting Help
 
 - Check existing [GitHub Issues](https://github.com/Integrum-Global/new_project_template/issues)
-- Review the [FAQ](../faq.md)
 - Contact support
 
 ## Next Steps
 
 - Follow the [Quickstart Guide](quickstart.md)
 - Explore [Project Structure](project_structure.md)
-- Read about [Development Workflow](../guide/solution_development.md)
+- Check the ``sdk-users/`` directory for development guidance

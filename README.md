@@ -150,14 +150,14 @@ new_project_template/
 │   │   ├── checklists.md           # Quick reference checklists
 │   │   └── best-practices.md       # Development best practices
 │   └── examples/             # Example usage
-├── guide/                      # Solution development guides
-│   ├── adr/                   # Architecture Decision Records
-│   └── prd/                  # Product Requirements Documents
+├── sdk-users/                  # Solution development guides (SDK reference)
+│   ├── api/                   # API references
+│   ├── developer/             # Developer guides  
+│   ├── patterns/              # Pattern library
+│   └── workflows/             # Workflow examples
+├── adr/                        # Architecture Decision Records
+├── prd/                        # Product Requirements Documents
 ├── mistakes/                   # Mistakes and lessons learned
-├── reference/                  # API references (from SDK)
-│   ├── api-registry.yaml     # Exact API specifications
-│   ├── validation-guide.md   # Error prevention rules
-│   └── cheatsheet.md        # Common patterns
 ├── todos/                      # Solution tracking
 │   ├── 000-master.md         # Active solution priorities
 │   └── completed-archive.md  # Completed solutions

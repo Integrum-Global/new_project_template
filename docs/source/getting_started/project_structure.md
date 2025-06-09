@@ -208,6 +208,6 @@ nodes:
 
 ## Next Steps
 
-- Learn about [Solution Development](../guide/solution_development.md)
-- Explore [Templates](../templates/basic_etl.md)
-- Read [Best Practices](../guide/best_practices.md)
+- Check the ``sdk-users/`` directory for solution development guidance
+- Explore templates in ``sdk-users/templates/``
+- Read best practices in ``sdk-users/developer/``

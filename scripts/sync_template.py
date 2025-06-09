@@ -24,14 +24,13 @@ logger = logging.getLogger(__name__)
 
 # Files and directories to preserve in downstream repos
 PRESERVE_PATTERNS = [
-    "src/solutions/*",  # Solution-specific code
-    "data/*",  # Project-specific data
     ".env*",  # Environment files
     "config.yaml",  # Project-specific config
-    "README.md",  # Project-specific readme (preserve if exists)
     ".git/*",  # Git history
     ".github/workflows/*_custom.yml",  # Custom workflows
     "dist/*",  # Local wheel distributions
+    # Note: Project-specific directories are handled by SYNC_IF_MISSING
+    # They sync if missing but preserve if existing
 ]
 
 # Files and directories to always sync from template
@@ -39,27 +38,34 @@ SYNC_PATTERNS = [
     # GitHub configuration
     ".github/*",
     ".github/**/*",
-    # Reference - sync entire directory to downstream repos
-    "guide/reference/*",
-    "guide/reference/**/*",
-    # Guide - specific files/dirs to always sync
-    "guide/developer/*",
-    "guide/developer/**/*",
-    "guide/frontend/*",
-    "guide/frontend/**/*",
-    "guide/instructions/*",
-    "guide/instructions/**/*",
-    "guide/workflows/*",
-    "guide/workflows/**/*",
-    # README files with instructions (always update)
-    "*/README.md",
-    "**/README.md",
-    # Scripts - always sync entire directory
-    "scripts/*",
-    "scripts/**/*",
-    # Shared source code
-    "src/shared/*",
-    "src/shared/**/*",
+    # SDK Users - specific subdirectories only (preserve project-specific folders)
+    "sdk-users/api/*",
+    "sdk-users/api/**/*",
+    "sdk-users/developer/*",
+    "sdk-users/developer/**/*", 
+    "sdk-users/essentials/*",
+    "sdk-users/essentials/**/*",
+    "sdk-users/features/*",
+    "sdk-users/features/**/*",
+    "sdk-users/frontend/*",
+    "sdk-users/frontend/**/*",
+    "sdk-users/instructions/*",
+    "sdk-users/instructions/**/*",
+    "sdk-users/nodes/*",
+    "sdk-users/nodes/**/*",
+    "sdk-users/patterns/*",
+    "sdk-users/patterns/**/*",
+    "sdk-users/reference/*",
+    "sdk-users/reference/**/*",
+    "sdk-users/templates/*",
+    "sdk-users/templates/**/*",
+    "sdk-users/workflows/*",
+    "sdk-users/workflows/**/*",
+    # SDK Users root files
+    "sdk-users/CLAUDE.md",
+    "sdk-users/README.md", 
+    "sdk-users/validation-guide.md",
+    # Scripts moved to MERGE_ONLY_PATTERNS
     # Root configuration files
     ".pre-commit-config.yaml",
     "MANIFEST.in",
@@ -78,42 +84,47 @@ SYNC_IF_MISSING = [
     # Root files (excluding instruction files which are always synced)
     "pyproject.toml",
     "CHANGELOG.md",
-    # Data directories
-    "data/configs/",
-    "data/samples/",
-    # Code directories
-    "examples/",
-    "docs/",
-    "src/solutions/",
-    "todos/",
-    # Solution module structure (sync folder structure if missing)
-    "src/solutions/*/workflows/",
-    "src/solutions/*/workflows/__init__.py",
-    "src/solutions/*/nodes/",
-    "src/solutions/*/nodes/__init__.py",
-    "src/solutions/*/examples/",
-    "src/solutions/*/examples/__init__.py",
-    # Project-specific directories (sync if missing)
-    "adr/*",  # ADR files (sync if missing only)
-    "adr/**/*",  # ADR subdirectories (sync if missing only)
-    "prd/*",  # PRD files (sync if missing only)
-    "prd/**/*",  # PRD subdirectories (sync if missing only)
-    "guide/mistakes/*",  # Mistake files (sync if missing only)
-    "guide/mistakes/**/*",  # Mistake subdirectories (sync if missing only)
-    "mistakes/*",  # Root mistake files (sync if missing only)
-    "todos/*",  # All todo files (sync if missing only)
-    # Reference files are handled by SYNC_PATTERNS - removed from here to avoid conflicts
+    # Project-specific directories - sync ALL content recursively if directory missing
+    "adr/*",  # All ADR files and subdirectories
+    "adr/**/*",  # All nested ADR content
+    "prd/*",  # All PRD files and subdirectories  
+    "prd/**/*",  # All nested PRD content
+    "mistakes/*",  # All mistake tracking files and subdirectories
+    "mistakes/**/*",  # All nested mistake content
+    "todos/*",  # All todo files and subdirectories
+    "todos/**/*",  # All nested todo content
+    "migrations/*",  # All migration files and subdirectories
+    "migrations/**/*",  # All nested migration content
+    "data/*",  # All data files and subdirectories
+    "data/**/*",  # All nested data content
+    "docs/*",  # All documentation files and subdirectories
+    "docs/**/*",  # All nested docs content
+    "examples/*",  # All example files and subdirectories
+    "examples/**/*",  # All nested example content
+    # src/shared/* moved to MERGE_ONLY_PATTERNS
+    "src/solutions/*",  # All solution files and subdirectories
+    "src/solutions/**/*",  # All nested solution content
+    # scripts/* moved to MERGE_ONLY_PATTERNS
 ]
 
 # Directories that should be merged (not overwritten)
 MERGE_DIRECTORIES = [
+    "src/shared/",  # Merge new shared components while preserving existing
     "src/shared/nodes/",
-    "src/shared/utils/",
+    "src/shared/utils/", 
     "src/shared/workflows/",
     "todos/active/",  # Preserve active project tasks
     "todos/completed/",  # Preserve completed session history
-    "guide/reference/templates/workflow/",  # Allow project-specific workflow templates
-    "guide/reference/templates/nodes/",  # Allow project-specific node templates
+    "sdk-users/reference/templates/workflow/",  # Allow project-specific workflow templates
+    "sdk-users/reference/templates/nodes/",  # Allow project-specific node templates
+]
+
+# Special patterns for merge-only syncing (add new items, preserve existing)
+MERGE_ONLY_PATTERNS = [
+    "src/shared/*",
+    "src/shared/**/*",
+    "scripts/*",
+    "scripts/**/*",
 ]
 
 
@@ -322,11 +333,38 @@ class TemplateSyncer:
                             changes_made = True
 
         # Process SYNC_IF_MISSING patterns (only sync if file doesn't exist)
+        # Check directory-level existence first to avoid syncing individual files
+        # when the entire directory should be preserved
+        processed_dirs = set()
+        
         for pattern in SYNC_IF_MISSING:
+            # Check if this is a directory pattern (ends with /* or /**)
+            if pattern.endswith("/*") or pattern.endswith("/**/*"):
+                base_dir = pattern.split("/")[0] if "/" in pattern else pattern
+                
+                # Skip if we've already processed this directory
+                if base_dir in processed_dirs:
+                    continue
+                    
+                # Check if the base directory exists in downstream
+                base_dest = downstream_path / base_dir
+                if base_dest.exists():
+                    logger.info(f"Directory {base_dir} exists, preserving all content")
+                    processed_dirs.add(base_dir)
+                    continue
+                    
+                # Directory doesn't exist, sync all matching files
+                processed_dirs.add(base_dir)
+                
             for file_path in template_path.glob(pattern):
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
                     dest_path = downstream_path / relative_path
+
+                    # Check if parent directory should be preserved
+                    parent_dir = str(relative_path).split("/")[0]
+                    if parent_dir in processed_dirs and (downstream_path / parent_dir).exists():
+                        continue
 
                     # Only copy if destination doesn't exist
                     if not dest_path.exists():
@@ -334,13 +372,26 @@ class TemplateSyncer:
                             changes_made = True
                             logger.info(f"Added missing file: {relative_path}")
 
+        # Process MERGE_ONLY_PATTERNS (add new files, preserve existing)
+        for pattern in MERGE_ONLY_PATTERNS:
+            for file_path in template_path.glob(pattern):
+                if file_path.is_file():
+                    relative_path = file_path.relative_to(template_path)
+                    dest_path = downstream_path / relative_path
+
+                    # Only copy if destination doesn't exist (preserve existing files)
+                    if not dest_path.exists():
+                        if self.copy_file(file_path, dest_path):
+                            changes_made = True
+                            logger.info(f"Added new shared component: {relative_path}")
+
         return changes_made
 
     def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
         """Remove specific old files that should no longer exist in downstream repositories."""
         changes_made = False
 
-        # Remove the entire reference directory at root level (it's now in guide/reference)
+        # Remove the entire reference directory at root level (it's now in sdk-users/reference)
         reference_dir = downstream_path / "reference"
         if reference_dir.exists():
             logger.info("Removing old reference directory from root level")

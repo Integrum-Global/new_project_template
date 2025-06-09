@@ -205,10 +205,10 @@ def process_large_file(file_path):
 
 ## 🔗 Related Resources
 
-- **[Workflow Phases](guide/workflows/solution-development-phases.md)** - Integration with development process
-- **[Todo Management](todos/README.md)** - Task tracking for mistake resolution
-- **[Validation Tools](reference/validation/)** - Prevention strategies and validation
-- **[Pattern Library](reference/pattern-library/)** - Solution patterns incorporating lessons learned
+- **[Workflow Phases](../sdk-users/workflows/)** - Integration with development process
+- **[Todo Management](../todos/README.md)** - Task tracking for mistake resolution
+- **[Validation Tools](../sdk-users/validation-guide.md)** - Prevention strategies and validation
+- **[Pattern Library](../sdk-users/patterns/pattern-library/)** - Solution patterns incorporating lessons learned
 
 ---
 *Continuous learning from mistakes drives solution quality improvement*

@@ -96,7 +96,7 @@ Once configured, your repository will automatically receive updates:
 - **Method**: Automatic PR creation in your repository
 
 ### What Gets Updated
-- **Always Updated**: `reference/`, `guide/`, `.github/`, `scripts/`
+- **Always Updated**: `sdk-users/`, `.github/`, `scripts/`
 - **Merged**: `CLAUDE.md` (preserves project-specific instructions)
 - **Preserved**: Your solution code, data, custom configurations
 

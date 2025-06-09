@@ -13,46 +13,23 @@ This template provides a foundation for building workflow-based solutions using 
    getting_started/quickstart
    getting_started/project_structure
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Development Guide
-
-   guide/solution_development
-   guide/best_practices
-   guide/testing
-   guide/deployment
+.. note::
+   For detailed development guides, see the ``sdk-users/`` directory in the project root.
 
 .. toctree::
    :maxdepth: 2
    :caption: Migration Guide
 
    migration/overview
-   migration/workflow
-   migration/templates
-   migration/case_studies
 
-.. toctree::
-   :maxdepth: 2
-   :caption: API Reference
-
-   api/nodes
-   api/workflows
-   api/utils
-   api/shared_components
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Templates
-
-   reference/templates
+.. note::
+   For detailed development guides, API references, and templates, 
+   see the ``sdk-users/`` directory in the project root.
 
 .. toctree::
    :maxdepth: 1
    :caption: Additional Resources
 
-   changelog
-   contributing
-   license
 
 Indices and tables
 ==================
@@ -110,6 +87,6 @@ Getting Help
 ~~~~~~~~~~~~
 
 * Check the :doc:`getting_started/quickstart` for a tutorial
-* Read the :doc:`guide/solution_development` for detailed guidance
+* Check the ``sdk-users/`` directory for detailed development guidance
 * See :doc:`migration/overview` for migrating existing projects
-* Browse the :doc:`api/nodes` for component reference
+* Browse the ``sdk-users/api/`` directory for component reference

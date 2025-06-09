@@ -7,7 +7,7 @@ on:
     paths:
       - '.github/**'
       - 'docs/**'
-      - 'guide/**'
+      - 'sdk-users/**'
       - 'reference/**'
       - 'src/shared/**'
       - 'scripts/*.py'
