@@ -142,6 +142,7 @@ gh run list --workflow=sync-to-downstream.yml
 ### Files Always Updated (✅ Synced from Template)
 - `.github/**` - ALL GitHub Actions and workflows
 - `guide/reference/*` - API documentation and guides (entire directory)
+- `guide/developer/*` - Developer documentation and guides
 - `guide/instructions/*` - Development instructions
 - `guide/frontend/*` - Frontend guidelines
 - `guide/workflows/*` - Process workflows

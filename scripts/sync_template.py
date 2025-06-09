@@ -45,6 +45,8 @@ SYNC_PATTERNS = [
     "guide/reference/**/*",
     
     # Guide - specific files/dirs to always sync
+    "guide/developer/*",
+    "guide/developer/**/*",
     "guide/frontend/*",
     "guide/frontend/**/*",
     "guide/instructions/*",

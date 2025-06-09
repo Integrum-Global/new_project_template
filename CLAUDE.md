@@ -10,14 +10,14 @@
 - **Requirements**: Define business needs and success criteria
 - **Research**: `guide/adr/` (architecture), `guide/workflows/` (process patterns)
 - **Reference**: `guide/reference/CLAUDE.md` → cheatsheet, validation, patterns
-- **Development**: `guide/development/` → custom nodes, tooling, SDK extensions
+- **Development**: `guide/developer/` → custom nodes, tooling, SDK extensions
 - **Plan**: Clear solution approach with realistic timelines
 - **Create & start todos**: Add new tasks from plan → mark "in_progress" in `todos/000-master.md` (create from template if needed)
 - **Create implementation details**: Architecture and implementation plan with deliverables in `guide/todos/active/`
 
 ### **Phase 2: Implement → Example → Test → Learn**
 - **Implement**: Use `reference/templates/` and `reference/cheatsheet/` for copy-paste patterns
-- **Custom Nodes**: If creating new nodes → `guide/development/custom-nodes/CLAUDE.md`
+- **Custom Nodes**: If creating new nodes → `guide/developer/custom-nodes/CLAUDE.md`
 - **Create Example**: MUST create working example in `examples/` directory and verify it runs successfully
 - **Validate**: Check `guide/reference/validation/validation-guide.md` for LLM rules
 - **Test**: Validate with real data, track issues in `mistakes/current-session-mistakes.md` (if present)

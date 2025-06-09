@@ -25,6 +25,7 @@ guide/
 │   ├── solution-development.md
 │   ├── best-practices.md
 │   └── checklists.md
+├── developer/                     ✅ Always updated
 ├── frontend/                      ✅ Always updated
 ├── workflows/                     ✅ Always updated
 ├── adr/                          🆕 ADDED IF MISSING (preserved if exists)
