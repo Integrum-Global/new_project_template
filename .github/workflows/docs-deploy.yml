@@ -1,13 +1,7 @@
 name: Deploy Documentation
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - 'src/**'
-      - '.github/workflows/docs-deploy.yml'
-  workflow_dispatch:  # Allow manual trigger
+  workflow_dispatch:  # Manual trigger only for downstream repos
 
 # Prevent multiple deployments from running simultaneously
 # This ensures only the latest push to main gets deployed
