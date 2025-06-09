@@ -52,7 +52,6 @@ jobs:
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
             # Root files - create if missing but don't overwrite
-            "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
             

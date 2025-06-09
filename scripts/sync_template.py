@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Files and directories to preserve in downstream repos
 PRESERVE_PATTERNS = [
+    "README.md",  # Project-specific readme (always preserve)
     ".env*",  # Environment files
     "config.yaml",  # Project-specific config
     ".git/*",  # Git history
@@ -70,7 +71,6 @@ SYNC_PATTERNS = [
     ".pre-commit-config.yaml",
     "MANIFEST.in",
     # Instruction files (always update with latest instructions)
-    "README.md",
     "CLAUDE.md",  # Always replace with template version
 ]
 
