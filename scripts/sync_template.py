@@ -278,6 +278,11 @@ class TemplateSyncer:
             for file_path in template_path.glob(pattern):
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
+                    
+                    # Skip sync-to-downstream.yml - only for template repo
+                    if str(relative_path) == ".github/workflows/sync-to-downstream.yml":
+                        continue
+                    
                     dest_path = downstream_path / relative_path
 
                     # Check if file should be preserved if it exists
