@@ -424,8 +424,11 @@ class TemplateSyncer:
                 # Template doesn't have project section - append downstream version
                 new_content = template_content.rstrip() + "\n\n" + downstream_project_section
             
-            # Only update if content actually changed
-            if new_content.strip() != downstream_content.strip():
+            # Only update if template content before project section changed
+            template_before_project = template_content[:template_content.find(project_marker)].strip()
+            downstream_before_project = downstream_content[:downstream_content.find(project_marker)].strip()
+            
+            if template_before_project != downstream_before_project:
                 dst.write_text(new_content)
                 logger.info(f"Merged {dst.name} with preserved project-specific instructions")
                 return True
