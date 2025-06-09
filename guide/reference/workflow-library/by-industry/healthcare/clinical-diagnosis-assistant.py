@@ -6,7 +6,7 @@ This workflow demonstrates a complete AI-powered clinical decision support syste
 using the AI Registry MCP Server with real healthcare AI use cases.
 
 Business Value:
-- Reduces diagnostic errors by 25-40% 
+- Reduces diagnostic errors by 25-40%
 - Accelerates diagnosis time by 60%
 - Provides evidence-based recommendations
 - Ensures regulatory compliance and audit trails
@@ -35,42 +35,41 @@ Requirements:
 """
 
 import os
-import json
-from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, Any
 
 from kailash import Workflow
 from kailash.nodes.ai import IterativeLLMAgentNode
 from kailash.nodes.code import PythonCodeNode
 from kailash.nodes.data import JSONWriterNode
-from kailash.nodes.logic import SwitchNode, MergeNode
 from kailash.runtime.local import LocalRuntime
-from kailash.security import HealthcareSecurityMixin
 
 
 def create_clinical_diagnosis_workflow() -> Workflow:
     """
     Create a comprehensive clinical diagnosis assistant workflow.
-    
+
     Workflow Stages:
     1. Patient Data Validation & PHI Protection
     2. Initial Clinical Assessment with AI Registry
-    3. Risk Stratification and Severity Analysis  
+    3. Risk Stratification and Severity Analysis
     4. Evidence-Based Diagnosis Recommendations
     5. Treatment Protocol Suggestions
     6. Quality Assurance and Audit Trail
-    
+
     Returns:
         Configured workflow ready for clinical use
     """
-    
-    workflow = Workflow("clinical_diagnosis_assistant", 
-                       name="AI-Powered Clinical Diagnosis Assistant")
+
+    workflow = Workflow(
+        "clinical_diagnosis_assistant", name="AI-Powered Clinical Diagnosis Assistant"
+    )
 
     # Stage 1: Patient Data Validation & HIPAA Compliance
-    workflow.add_node("data_validator", PythonCodeNode(
-        name="data_validator",
-        code='''
+    workflow.add_node(
+        "data_validator",
+        PythonCodeNode(
+            name="data_validator",
+            code='''
 import re
 import hashlib
 from datetime import datetime
@@ -160,16 +159,19 @@ validator = HIPAADataValidator()
 validation_result = validator.validate_clinical_data(patient_data)
 
 result = validation_result
-'''
-    ))
+''',
+        ),
+    )
 
     # Stage 2: AI-Powered Clinical Assessment
     workflow.add_node("clinical_ai_agent", IterativeLLMAgentNode())
 
     # Stage 3: Risk Stratification
-    workflow.add_node("risk_stratifier", PythonCodeNode(
-        name="risk_stratifier",
-        code='''
+    workflow.add_node(
+        "risk_stratifier",
+        PythonCodeNode(
+            name="risk_stratifier",
+            code='''
 class ClinicalRiskAssessment:
     """Clinical risk stratification system."""
     
@@ -322,13 +324,16 @@ risk_assessment = assessor.calculate_risk_score(
 )
 
 result = risk_assessment
-'''
-    ))
+''',
+        ),
+    )
 
     # Stage 4: Treatment Recommendation Engine
-    workflow.add_node("treatment_advisor", PythonCodeNode(
-        name="treatment_advisor",
-        code='''
+    workflow.add_node(
+        "treatment_advisor",
+        PythonCodeNode(
+            name="treatment_advisor",
+            code='''
 class EvidenceBasedTreatmentAdvisor:
     """Evidence-based treatment recommendation system."""
     
@@ -494,13 +499,16 @@ treatment_recommendations = advisor.generate_recommendations(
 )
 
 result = treatment_recommendations
-'''
-    ))
+''',
+        ),
+    )
 
     # Stage 5: Quality Assurance and Audit
-    workflow.add_node("quality_assurance", PythonCodeNode(
-        name="quality_assurance",
-        code='''
+    workflow.add_node(
+        "quality_assurance",
+        PythonCodeNode(
+            name="quality_assurance",
+            code='''
 from datetime import datetime
 import json
 
@@ -669,13 +677,16 @@ result = {
         'evidence_based': True
     }
 }
-'''
-    ))
+''',
+        ),
+    )
 
     # Final Report Generator
-    workflow.add_node("report_generator", PythonCodeNode(
-        name="report_generator",
-        code='''
+    workflow.add_node(
+        "report_generator",
+        PythonCodeNode(
+            name="report_generator",
+            code='''
 from datetime import datetime
 
 class ClinicalReportGenerator:
@@ -803,30 +814,41 @@ final_report = {
 }
 
 result = final_report
-'''
-    ))
+''',
+        ),
+    )
 
     # Output node for saving results
     workflow.add_node("save_report", JSONWriterNode())
 
     # Connect workflow stages
-    workflow.connect("data_validator", "clinical_ai_agent", 
-                    mapping={"validated_data": "clinical_data"})
-    
-    workflow.connect("clinical_ai_agent", "risk_stratifier",
-                    mapping={"final_response": "ai_clinical_analysis"})
-    
-    workflow.connect("risk_stratifier", "treatment_advisor",
-                    mapping={"result": "risk_assessment"})
-    
-    workflow.connect("treatment_advisor", "quality_assurance",
-                    mapping={"result": "treatment_recommendations"})
-    
-    workflow.connect("quality_assurance", "report_generator",
-                    mapping={"result": "quality_and_audit"})
-    
-    workflow.connect("report_generator", "save_report",
-                    mapping={"result": "data"})
+    workflow.connect(
+        "data_validator",
+        "clinical_ai_agent",
+        mapping={"validated_data": "clinical_data"},
+    )
+
+    workflow.connect(
+        "clinical_ai_agent",
+        "risk_stratifier",
+        mapping={"final_response": "ai_clinical_analysis"},
+    )
+
+    workflow.connect(
+        "risk_stratifier", "treatment_advisor", mapping={"result": "risk_assessment"}
+    )
+
+    workflow.connect(
+        "treatment_advisor",
+        "quality_assurance",
+        mapping={"result": "treatment_recommendations"},
+    )
+
+    workflow.connect(
+        "quality_assurance", "report_generator", mapping={"result": "quality_and_audit"}
+    )
+
+    workflow.connect("report_generator", "save_report", mapping={"result": "data"})
 
     return workflow
 
@@ -840,41 +862,41 @@ def create_sample_patient_data() -> Dict[str, Any]:
         "chief_complaint": "Chest pain and shortness of breath for 2 hours",
         "symptoms": [
             "chest pain - substernal, crushing",
-            "shortness of breath on exertion", 
+            "shortness of breath on exertion",
             "diaphoresis",
-            "nausea"
+            "nausea",
         ],
         "medical_history": [
             "Type 2 Diabetes Mellitus",
-            "Hypertension", 
+            "Hypertension",
             "Hyperlipidemia",
-            "Former smoker (quit 5 years ago)"
+            "Former smoker (quit 5 years ago)",
         ],
         "medications": [
             "Metformin 1000mg BID",
             "Lisinopril 10mg daily",
-            "Atorvastatin 40mg daily"
+            "Atorvastatin 40mg daily",
         ],
         "vital_signs": {
             "blood_pressure": "165/95",
             "heart_rate": 92,
             "respiratory_rate": 22,
             "temperature": 98.6,
-            "oxygen_saturation": 94
+            "oxygen_saturation": 94,
         },
         "lab_results": {
             "troponin": 0.8,  # Elevated
             "creatinine": 1.2,
             "glucose": 180,
-            "hemoglobin": 13.5
+            "hemoglobin": 13.5,
         },
-        "presenting_context": "Brought to ED by family after sudden onset of symptoms while watching TV"
+        "presenting_context": "Brought to ED by family after sudden onset of symptoms while watching TV",
     }
 
 
 def run_clinical_workflow_demo():
     """Run the clinical diagnosis workflow with sample data."""
-    
+
     print("\n" + "=" * 80)
     print("CLINICAL DIAGNOSIS ASSISTANT - PRODUCTION HEALTHCARE AI")
     print("=" * 80)
@@ -887,20 +909,18 @@ def run_clinical_workflow_demo():
 
     # Create workflow
     workflow = create_clinical_diagnosis_workflow()
-    
+
     # Create sample patient data
     patient_data = create_sample_patient_data()
-    
-    print(f"\n📋 Analyzing patient case:")
+
+    print("\n📋 Analyzing patient case:")
     print(f"   Chief Complaint: {patient_data['chief_complaint']}")
     print(f"   Age: {patient_data['age']}, Gender: {patient_data['gender']}")
     print(f"   Medical History: {len(patient_data['medical_history'])} conditions")
-    
+
     # Configure runtime parameters
     parameters = {
-        "data_validator": {
-            "patient_data": patient_data
-        },
+        "data_validator": {"patient_data": patient_data},
         "clinical_ai_agent": {
             # LLM Configuration
             "provider": "ollama",
@@ -931,93 +951,97 @@ SAFETY REQUIREMENTS:
 - Ensure recommendations align with standard of care
 
 Use the AI Registry tools to find relevant healthcare AI use cases that can inform your clinical analysis.""",
-            
             # MCP Configuration for AI Registry
-            "mcp_servers": [{
-                "name": "ai-registry",
-                "transport": "stdio",
-                "command": "python",
-                "args": ["scripts/start-ai-registry-server.py"]
-            }],
+            "mcp_servers": [
+                {
+                    "name": "ai-registry",
+                    "transport": "stdio",
+                    "command": "python",
+                    "args": ["scripts/start-ai-registry-server.py"],
+                }
+            ],
             "auto_discover_tools": True,
             "mcp_context": ["registry://stats"],
-            
             # Iterative Analysis Configuration
             "max_iterations": 3,
             "convergence_criteria": {
                 "goal_satisfaction": {"threshold": 0.85},
-                "evidence_sufficiency": {"enabled": True}
+                "evidence_sufficiency": {"enabled": True},
             },
-            "enable_detailed_logging": True
+            "enable_detailed_logging": True,
         },
-        "save_report": {
-            "file_path": "outputs/clinical_diagnosis_report.json"
-        }
+        "save_report": {"file_path": "outputs/clinical_diagnosis_report.json"},
     }
-    
+
     print("\n🔄 Executing clinical analysis workflow...")
     print("⚙️  AI Configuration:")
     print(f"   Model: {parameters['clinical_ai_agent']['model']}")
-    print(f"   MCP Integration: AI Registry Server")
+    print("   MCP Integration: AI Registry Server")
     print(f"   Max Iterations: {parameters['clinical_ai_agent']['max_iterations']}")
-    print(f"   HIPAA Compliance: Enabled")
-    
+    print("   HIPAA Compliance: Enabled")
+
     try:
         # Execute workflow
         runtime = LocalRuntime()
         results, execution_id = runtime.execute(workflow, parameters)
-        
+
         if results.get("report_generator", {}).get("success"):
             print("\n✅ Clinical analysis completed successfully!")
-            
+
             # Extract key results
             final_report = results["report_generator"]["result"]
             executive_summary = final_report["executive_summary"]
-            
-            print(f"\n📊 CLINICAL ASSESSMENT SUMMARY")
+
+            print("\n📊 CLINICAL ASSESSMENT SUMMARY")
             print(f"   Patient ID: {executive_summary['patient_id']}")
             print(f"   Assessment Time: {executive_summary['assessment_timestamp']}")
             print(f"   Report Confidence: {executive_summary['report_confidence']}")
-            
-            print(f"\n🔍 KEY FINDINGS:")
-            for i, finding in enumerate(executive_summary['key_findings'], 1):
+
+            print("\n🔍 KEY FINDINGS:")
+            for i, finding in enumerate(executive_summary["key_findings"], 1):
                 print(f"   {i}. {finding}")
-            
-            if executive_summary['critical_actions']:
-                print(f"\n⚠️  CRITICAL ACTIONS:")
-                for action in executive_summary['critical_actions']:
+
+            if executive_summary["critical_actions"]:
+                print("\n⚠️  CRITICAL ACTIONS:")
+                for action in executive_summary["critical_actions"]:
                     print(f"   • {action}")
-            
-            print(f"\n💊 OVERALL RECOMMENDATION:")
+
+            print("\n💊 OVERALL RECOMMENDATION:")
             print(f"   {executive_summary['overall_recommendation']}")
-            
-            print(f"\n📋 NEXT STEPS:")
-            for i, step in enumerate(executive_summary['next_steps'], 1):
+
+            print("\n📋 NEXT STEPS:")
+            for i, step in enumerate(executive_summary["next_steps"], 1):
                 print(f"   {i}. {step}")
-            
+
             # Quality metrics
             quality_data = final_report["detailed_analysis"]["quality_assessment"]
-            print(f"\n📈 QUALITY METRICS:")
+            print("\n📈 QUALITY METRICS:")
             print(f"   Overall Quality Score: {quality_data['overall_quality_score']}%")
             print(f"   Quality Grade: {quality_data['quality_grade']}")
-            print(f"   Clinical Standards Met: {'Yes' if quality_data['meets_clinical_standards'] else 'No'}")
+            print(
+                f"   Clinical Standards Met: {'Yes' if quality_data['meets_clinical_standards'] else 'No'}"
+            )
             print(f"   Audit Ready: {'Yes' if quality_data['audit_ready'] else 'No'}")
-            
+
             # AI Analysis details
             ai_analysis = final_report["detailed_analysis"]["ai_clinical_analysis"]
-            print(f"\n🤖 AI ANALYSIS DETAILS:")
+            print("\n🤖 AI ANALYSIS DETAILS:")
             print(f"   Total Iterations: {ai_analysis.get('total_iterations', 0)}")
-            print(f"   Convergence Reason: {ai_analysis.get('convergence_reason', 'Unknown')}")
-            print(f"   Evidence-Based: Yes")
-            
-            print(f"\n💾 Report saved to: outputs/clinical_diagnosis_report.json")
-            print(f"🔒 HIPAA Compliance: Verified")
-            print(f"📝 Audit Trail: Complete")
-            
+            print(
+                f"   Convergence Reason: {ai_analysis.get('convergence_reason', 'Unknown')}"
+            )
+            print("   Evidence-Based: Yes")
+
+            print("\n💾 Report saved to: outputs/clinical_diagnosis_report.json")
+            print("🔒 HIPAA Compliance: Verified")
+            print("📝 Audit Trail: Complete")
+
         else:
             print("\n❌ Clinical analysis failed:")
-            print(f"   Error: {results.get('report_generator', {}).get('error', 'Unknown error')}")
-            
+            print(
+                f"   Error: {results.get('report_generator', {}).get('error', 'Unknown error')}"
+            )
+
     except Exception as e:
         print(f"\n❌ Workflow execution error: {e}")
         print("\nTroubleshooting:")
@@ -1029,32 +1053,32 @@ Use the AI Registry tools to find relevant healthcare AI use cases that can info
 
 def main():
     """Main entry point."""
-    
+
     print("=" * 80)
     print("HEALTHCARE AI WORKFLOW LIBRARY - CLINICAL DIAGNOSIS ASSISTANT")
     print("Production-Ready Healthcare AI with Regulatory Compliance")
     print("=" * 80)
-    
+
     # Ensure output directory exists
     os.makedirs("outputs", exist_ok=True)
-    
+
     print("\n🏥 Clinical Features:")
     print("• AI-powered diagnosis support using real medical AI use cases")
     print("• HIPAA-compliant patient data processing with automatic PHI protection")
     print("• Evidence-based risk stratification and treatment recommendations")
     print("• Comprehensive quality assurance and regulatory audit trails")
     print("• Integration-ready for EMR/EHR systems")
-    
+
     print("\n🔧 Technical Features:")
     print("• AI Registry MCP Server integration for real healthcare AI use cases")
     print("• Iterative LLM analysis with convergence criteria")
     print("• Multi-stage clinical decision support pipeline")
     print("• Automated quality scoring and compliance verification")
     print("• Production-ready error handling and monitoring")
-    
+
     # Run demonstration
     run_clinical_workflow_demo()
-    
+
     print("\n" + "=" * 80)
     print("Clinical Diagnosis Assistant Demo Complete!")
     print("\nNext Steps:")

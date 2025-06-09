@@ -16,11 +16,9 @@ Patterns demonstrated:
 
 import os
 import json
-from datetime import datetime
 from kailash import Workflow
 from kailash.nodes.transform import DataTransformer
-from kailash.nodes.logic import MergeNode
-from kailash.nodes.data import JSONWriterNode, JSONReaderNode
+from kailash.nodes.data import JSONWriterNode
 from kailash.runtime import LocalRuntime
 
 
@@ -29,11 +27,11 @@ def create_event_sourcing_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="event_sourcing_001",
         name="event_sourcing_workflow",
-        description="Event sourcing pattern for order management"
+        description="Event sourcing pattern for order management",
     )
-    
+
     # === EVENT GENERATION ===
-    
+
     # Simulate event stream (in production, this would be an event queue/topic)
     event_generator = DataTransformer(
         id="event_generator",
@@ -119,12 +117,12 @@ result = {
     "event_types": list(set(e["event_type"] for e in events))
 }
 """
-        ]
+        ],
     )
     workflow.add_node("event_generator", event_generator)
-    
+
     # === EVENT PROCESSING ===
-    
+
     # Process all events in a single processor (simplified approach)
     event_processor = DataTransformer(
         id="event_processor",
@@ -192,13 +190,13 @@ result = {
     "shipments_count": len(processed_shipments)
 }
 """
-        ]
+        ],
     )
     workflow.add_node("event_processor", event_processor)
     workflow.connect("event_generator", "event_processor", mapping={"result": "data"})
-    
+
     # === STATE RECONSTRUCTION ===
-    
+
     # Reconstruct current state from processed events
     state_builder = DataTransformer(
         id="state_builder",
@@ -311,29 +309,27 @@ result = {
     }
 }
 """
-        ]
+        ],
     )
     workflow.add_node("state_builder", state_builder)
     workflow.connect("event_processor", "state_builder", mapping={"result": "data"})
-    
+
     # === OUTPUTS ===
-    
+
     # Save event stream for audit trail
     event_store = JSONWriterNode(
-        id="event_store",
-        file_path="data/outputs/event_stream.json"
+        id="event_store", file_path="data/outputs/event_stream.json"
     )
     workflow.add_node("event_store", event_store)
     workflow.connect("event_generator", "event_store", mapping={"result": "data"})
-    
+
     # Save current state projection
     state_store = JSONWriterNode(
-        id="state_store",
-        file_path="data/outputs/current_state.json"
+        id="state_store", file_path="data/outputs/current_state.json"
     )
     workflow.add_node("state_store", state_store)
     workflow.connect("state_builder", "state_store", mapping={"result": "data"})
-    
+
     return workflow
 
 
@@ -341,38 +337,38 @@ def run_event_sourcing():
     """Execute the event sourcing workflow."""
     workflow = create_event_sourcing_workflow()
     runtime = LocalRuntime()
-    
+
     parameters = {}
-    
+
     try:
         print("Starting Event Sourcing Workflow...")
         print("🔄 Generating event stream...")
-        
+
         result, run_id = runtime.execute(workflow, parameters=parameters)
-        
+
         print("\n✅ Event Sourcing Complete!")
         print("📁 Outputs generated:")
         print("   - Event stream: data/outputs/event_stream.json")
         print("   - Current state: data/outputs/current_state.json")
-        
+
         # Show summary
         state_result = result.get("state_builder", {}).get("result", {})
         summary = state_result.get("summary", {})
-        
-        print(f"\n📊 Order Processing Summary:")
+
+        print("\n📊 Order Processing Summary:")
         print(f"   - Total orders processed: {summary.get('total_orders', 0)}")
         print(f"   - Total revenue: ${summary.get('total_revenue', 0):,.2f}")
         print(f"   - Status breakdown: {summary.get('status_breakdown', {})}")
-        
+
         # Show event stats
         event_result = result.get("event_generator", {}).get("result", {})
-        print(f"\n📈 Event Stream Stats:")
+        print("\n📈 Event Stream Stats:")
         print(f"   - Total events: {event_result.get('event_count', 0)}")
         print(f"   - Event types: {', '.join(event_result.get('event_types', []))}")
         print(f"   - Aggregates: {event_result.get('aggregate_count', 0)}")
-        
+
         return result
-        
+
     except Exception as e:
         print(f"❌ Event Sourcing failed: {str(e)}")
         raise
@@ -382,21 +378,21 @@ def main():
     """Main entry point."""
     # Create output directories
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Run the event sourcing workflow
     run_event_sourcing()
-    
+
     # Display generated files
     print("\n=== Generated Files ===")
     try:
         with open("data/outputs/event_stream.json", "r") as f:
             events = json.load(f)
             print(f"Event stream: {len(events.get('events', []))} events")
-            
+
         with open("data/outputs/current_state.json", "r") as f:
             state = json.load(f)
             print(f"Current state: {len(state.get('current_state', []))} orders")
-            
+
     except Exception as e:
         print(f"Could not read generated files: {e}")
 

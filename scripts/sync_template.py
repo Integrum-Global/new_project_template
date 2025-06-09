@@ -10,10 +10,9 @@ Last updated: 2025-06-09 - Force CLAUDE.md updates with correct paths
 
 import os
 import sys
-import json
 import subprocess
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import List
 import logging
 from datetime import datetime
 
@@ -40,11 +39,9 @@ SYNC_PATTERNS = [
     # GitHub configuration
     ".github/*",
     ".github/**/*",
-    
     # Reference - sync entire directory to downstream repos
     "guide/reference/*",
     "guide/reference/**/*",
-    
     # Guide - specific files/dirs to always sync
     "guide/developer/*",
     "guide/developer/**/*",
@@ -54,29 +51,24 @@ SYNC_PATTERNS = [
     "guide/instructions/**/*",
     "guide/workflows/*",
     "guide/workflows/**/*",
-    
     # README files with instructions (always update)
     "*/README.md",
     "**/README.md",
-    
     # Scripts - always sync entire directory
     "scripts/*",
     "scripts/**/*",
-    
     # Shared source code
     "src/shared/*",
     "src/shared/**/*",
-    
     # Root configuration files
     ".pre-commit-config.yaml",
     "MANIFEST.in",
-    
     # Instruction files (always update with latest instructions)
     "README.md",
     "CLAUDE.md",  # Always replace with template version
 ]
 
-# Files that require special merge handling  
+# Files that require special merge handling
 MERGE_FILES = {
     # CLAUDE.md removed from merge handling - will be replaced directly
 }
@@ -86,25 +78,21 @@ SYNC_IF_MISSING = [
     # Root files (excluding instruction files which are always synced)
     "pyproject.toml",
     "CHANGELOG.md",
-    
     # Data directories
     "data/configs/",
     "data/samples/",
-    
     # Code directories
     "examples/",
     "docs/",
     "src/solutions/",
     "todos/",
-    
     # Solution module structure (sync folder structure if missing)
     "src/solutions/*/workflows/",
     "src/solutions/*/workflows/__init__.py",
     "src/solutions/*/nodes/",
     "src/solutions/*/nodes/__init__.py",
-    "src/solutions/*/examples/", 
+    "src/solutions/*/examples/",
     "src/solutions/*/examples/__init__.py",
-    
     # Guide files/dirs not in SYNC_PATTERNS (sync if missing)
     "guide/adr/*",  # ADR files (sync if missing only)
     "guide/adr/**/*",  # ADR subdirectories (sync if missing only)
@@ -112,9 +100,8 @@ SYNC_IF_MISSING = [
     "guide/prd/**/*",  # PRD subdirectories (sync if missing only)
     "guide/mistakes/*",  # Mistake files (sync if missing only)
     "guide/mistakes/**/*",  # Mistake subdirectories (sync if missing only)
-    "mistakes/*",  # Root mistake files (sync if missing only)  
+    "mistakes/*",  # Root mistake files (sync if missing only)
     "todos/*",  # All todo files (sync if missing only)
-    
     # Reference files are handled by SYNC_PATTERNS - removed from here to avoid conflicts
 ]
 
@@ -134,7 +121,7 @@ class TemplateSyncer:
     def __init__(self, template_repo: str, github_token: str):
         self.template_repo = template_repo
         self.github_token = github_token
-        self.gh_api = f"https://api.github.com"
+        self.gh_api = "https://api.github.com"
 
     def get_downstream_repos(self) -> List[str]:
         """Get list of downstream repositories from environment or input."""
@@ -149,7 +136,9 @@ class TemplateSyncer:
         downstream = os.environ.get("DOWNSTREAM_REPOS", "").strip()
         if downstream:
             # Clean up the string - remove backticks, extra whitespace, and newlines
-            downstream = downstream.replace("`", "").replace("\n", ",").replace("\r", ",")
+            downstream = (
+                downstream.replace("`", "").replace("\n", ",").replace("\r", ",")
+            )
             # Split by comma and filter out empty strings
             repos = [r.strip() for r in downstream.split(",") if r.strip()]
             # Filter out any remaining invalid entries
@@ -158,7 +147,9 @@ class TemplateSyncer:
 
         # If no repos specified, find all repos with template topic
         if not repos:
-            logger.info("No downstream repos specified, searching for repos with kailash-template topic")
+            logger.info(
+                "No downstream repos specified, searching for repos with kailash-template topic"
+            )
             repos = self.find_repos_with_template()
 
         return repos
@@ -195,7 +186,7 @@ class TemplateSyncer:
     def sync_repo(self, downstream_repo: str) -> bool:
         """Sync template changes to a downstream repository."""
         logger.info(f"Syncing to {downstream_repo}")
-        
+
         # Save current directory to restore later
         original_cwd = os.getcwd()
 
@@ -260,7 +251,7 @@ class TemplateSyncer:
 
                     # Change back to original directory before creating PR
                     os.chdir(original_cwd)
-                    
+
                     # Create PR
                     self.create_pr(downstream_repo, branch_name)
                     logger.info(f"Successfully synced {downstream_repo}")
@@ -290,11 +281,11 @@ class TemplateSyncer:
             for file_path in template_path.glob(pattern):
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
-                    
+
                     # Skip sync-to-downstream.yml - only for template repo
                     if str(relative_path) == ".github/workflows/sync-to-downstream.yml":
                         continue
-                    
+
                     dest_path = downstream_path / relative_path
 
                     # Check if file should be preserved if it exists
@@ -336,7 +327,7 @@ class TemplateSyncer:
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
                     dest_path = downstream_path / relative_path
-                    
+
                     # Only copy if destination doesn't exist
                     if not dest_path.exists():
                         if self.copy_file(file_path, dest_path):
@@ -348,26 +339,31 @@ class TemplateSyncer:
     def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
         """Remove specific old files that should no longer exist in downstream repositories."""
         changes_made = False
-        
+
         # Remove the entire reference directory at root level (it's now in guide/reference)
         reference_dir = downstream_path / "reference"
         if reference_dir.exists():
-            logger.info(f"Removing old reference directory from root level")
+            logger.info("Removing old reference directory from root level")
             import shutil
+
             shutil.rmtree(reference_dir)
             changes_made = True
-        
+
         # Remove sync-to-downstream.yml workflow (only for template repo)
-        sync_workflow = downstream_path / ".github" / "workflows" / "sync-to-downstream.yml"
+        sync_workflow = (
+            downstream_path / ".github" / "workflows" / "sync-to-downstream.yml"
+        )
         if sync_workflow.exists():
-            logger.info(f"Removing sync-to-downstream.yml (only needed in template repo)")
+            logger.info(
+                "Removing sync-to-downstream.yml (only needed in template repo)"
+            )
             sync_workflow.unlink()
             changes_made = True
-        
+
         # Handle Claude.md → CLAUDE.md migration
         old_claude_file = downstream_path / "Claude.md"
         new_claude_file = downstream_path / "CLAUDE.md"
-        
+
         if old_claude_file.exists():
             if not new_claude_file.exists():
                 # Migrate content from Claude.md to CLAUDE.md
@@ -379,7 +375,7 @@ class TemplateSyncer:
                 logger.info("Removing old Claude.md (CLAUDE.md already exists)")
                 old_claude_file.unlink()
                 changes_made = True
-                    
+
         return changes_made
 
     def copy_file(self, src: Path, dst: Path) -> bool:

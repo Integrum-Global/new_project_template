@@ -16,12 +16,11 @@ Key Features:
 - Production-ready patterns
 """
 
-from datetime import datetime, timedelta
-from typing import Dict, Any, List
+from datetime import datetime
 from kailash import Workflow
 from kailash.nodes.data import CSVReaderNode, CSVWriterNode
 from kailash.nodes.transform import FilterNode, DataTransformer
-from kailash.nodes.logic import SwitchNode, MergeNode
+from kailash.nodes.logic import SwitchNode
 from kailash.runtime import LocalRuntime
 
 
@@ -30,96 +29,70 @@ def create_event_processor_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="event_processor_001",
         name="event_processor",
-        description="Real-time event processing with anomaly detection"
+        description="Real-time event processing with anomaly detection",
     )
-    
+
     # Event source (CSV for demo, replace with streaming source in production)
-    event_reader = CSVReaderNode(
-        id="event_reader",
-        file_path="data/events.csv"
-    )
+    event_reader = CSVReaderNode(id="event_reader", file_path="data/events.csv")
     workflow.add_node("event_reader", event_reader)
-    
+
     # Filter high-priority events
     priority_filter = FilterNode(id="priority_filter")
     workflow.add_node("priority_filter", priority_filter)
-    workflow.connect(
-        "event_reader",
-        "priority_filter",
-        mapping={"data": "data"}
-    )
-    
+    workflow.connect("event_reader", "priority_filter", mapping={"data": "data"})
+
     # Enrich events with metadata
     event_enricher = DataTransformer(
-        id="event_enricher",
-        transformations=[]  # Will be provided at runtime
+        id="event_enricher", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("event_enricher", event_enricher)
     workflow.connect(
-        "priority_filter",
-        "event_enricher",
-        mapping={"filtered_data": "data"}
+        "priority_filter", "event_enricher", mapping={"filtered_data": "data"}
     )
-    
+
     # Window aggregation for anomaly detection
     window_aggregator = DataTransformer(
-        id="window_aggregator",
-        transformations=[]  # Will be provided at runtime
+        id="window_aggregator", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("window_aggregator", window_aggregator)
-    workflow.connect(
-        "event_enricher",
-        "window_aggregator",
-        mapping={"result": "data"}
-    )
-    
+    workflow.connect("event_enricher", "window_aggregator", mapping={"result": "data"})
+
     # Anomaly detection routing
     anomaly_router = SwitchNode(id="anomaly_router")
     workflow.add_node("anomaly_router", anomaly_router)
     workflow.connect(
-        "window_aggregator",
-        "anomaly_router",
-        mapping={"result": "input_data"}
+        "window_aggregator", "anomaly_router", mapping={"result": "input_data"}
     )
-    
+
     # Alert processing (write to file for demo)
-    alert_writer = CSVWriterNode(
-        id="alert_writer",
-        file_path="data/outputs/alerts.csv"
-    )
+    alert_writer = CSVWriterNode(id="alert_writer", file_path="data/outputs/alerts.csv")
     workflow.add_node("alert_writer", alert_writer)
-    
+
     # Normal event processing
     normal_processor = DataTransformer(
-        id="normal_processor",
-        transformations=[]  # Will be provided at runtime
+        id="normal_processor", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("normal_processor", normal_processor)
-    
+
     # Connect router outputs
     workflow.connect(
         "anomaly_router",
         "alert_writer",
-        mapping={"true_output": "data"}  # For boolean switch
+        mapping={"true_output": "data"},  # For boolean switch
     )
     workflow.connect(
         "anomaly_router",
         "normal_processor",
-        mapping={"false_output": "data"}  # For boolean switch
+        mapping={"false_output": "data"},  # For boolean switch
     )
-    
+
     # Results storage
     results_writer = CSVWriterNode(
-        id="results_writer",
-        file_path="data/outputs/processed_events.csv"
+        id="results_writer", file_path="data/outputs/processed_events.csv"
     )
     workflow.add_node("results_writer", results_writer)
-    workflow.connect(
-        "normal_processor",
-        "results_writer",
-        mapping={"result": "data"}
-    )
-    
+    workflow.connect("normal_processor", "results_writer", mapping={"result": "data"})
+
     return workflow
 
 
@@ -127,13 +100,13 @@ def run_event_processor():
     """Execute the event processing workflow."""
     workflow = create_event_processor_workflow()
     runtime = LocalRuntime()
-    
+
     # Define runtime parameters
     parameters = {
         "priority_filter": {
             "field": "priority",
             "operator": ">=",
-            "value": 5  # Medium priority and above
+            "value": 5,  # Medium priority and above
         },
         "event_enricher": {
             "transformations": [
@@ -187,7 +160,7 @@ result = {
         "anomaly_router": {
             "condition_field": "is_anomaly",
             "operator": "==",
-            "value": True
+            "value": True,
         },
         "normal_processor": {
             "transformations": [
@@ -211,9 +184,9 @@ else:
     result = []
 """
             ]
-        }
+        },
     }
-    
+
     try:
         print("Starting event processor...")
         result, run_id = runtime.execute(workflow, parameters=parameters)
@@ -231,12 +204,12 @@ def generate_sample_events():
     import random
     import csv
     import os
-    
+
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     events = []
     event_types = ["login", "purchase", "error", "api_call", "update", "delete"]
-    
+
     for i in range(50):
         event = {
             "id": f"evt_{i:04d}",
@@ -245,10 +218,10 @@ def generate_sample_events():
             "priority": random.randint(1, 10),
             "user_id": f"user_{random.randint(1, 20)}",
             "source": random.choice(["web", "mobile", "api"]),
-            "status": "pending"
+            "status": "pending",
         }
         events.append(event)
-    
+
     # Add some anomalous events
     for i in range(5):
         event = {
@@ -258,17 +231,17 @@ def generate_sample_events():
             "priority": 9,
             "user_id": f"suspicious_{i}",
             "source": "system",
-            "status": "critical"
+            "status": "critical",
         }
         events.append(event)
-    
+
     # Write to CSV
     with open("data/events.csv", "w", newline="") as f:
         if events:
             writer = csv.DictWriter(f, fieldnames=events[0].keys())
             writer.writeheader()
             writer.writerows(events)
-    
+
     print(f"Generated {len(events)} sample events")
     return events
 
@@ -277,7 +250,7 @@ def main():
     """Main entry point."""
     # Generate sample data
     generate_sample_events()
-    
+
     # Run the processor
     run_event_processor()
 

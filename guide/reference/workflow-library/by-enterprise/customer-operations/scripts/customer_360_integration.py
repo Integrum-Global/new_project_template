@@ -19,10 +19,14 @@ This workflow demonstrates real enterprise patterns for:
 """
 
 import os
-from typing import Dict, Any
 from kailash import Workflow
-from kailash.nodes.data import CSVReaderNode, JSONReaderNode, CSVWriterNode, JSONWriterNode
-from kailash.nodes.transform import DataTransformer, FilterNode
+from kailash.nodes.data import (
+    CSVReaderNode,
+    JSONReaderNode,
+    CSVWriterNode,
+    JSONWriterNode,
+)
+from kailash.nodes.transform import DataTransformer
 from kailash.nodes.logic import MergeNode, SwitchNode
 from kailash.runtime import LocalRuntime
 
@@ -32,150 +36,167 @@ def create_customer_360_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="customer_360_001",
         name="customer_360_integration",
-        description="Enterprise Customer 360° data integration workflow"
+        description="Enterprise Customer 360° data integration workflow",
     )
-    
+
     # === DATA SOURCES ===
-    
+
     # CRM data (Salesforce/HubSpot export)
-    crm_data = CSVReaderNode(
-        id="crm_data",
-        file_path="data/crm_customers.csv"
-    )
+    crm_data = CSVReaderNode(id="crm_data", file_path="data/crm_customers.csv")
     workflow.add_node("crm_data", crm_data)
-    
+
     # Transaction data from e-commerce/billing system
     transaction_data = CSVReaderNode(
-        id="transaction_data", 
-        file_path="data/transactions.csv"
+        id="transaction_data", file_path="data/transactions.csv"
     )
     workflow.add_node("transaction_data", transaction_data)
-    
+
     # Support ticket data
     support_data = CSVReaderNode(
-        id="support_data",
-        file_path="data/support_tickets.csv"
+        id="support_data", file_path="data/support_tickets.csv"
     )
     workflow.add_node("support_data", support_data)
-    
+
     # Marketing engagement data
     marketing_data = JSONReaderNode(
-        id="marketing_data",
-        file_path="data/marketing_engagement.json"
+        id="marketing_data", file_path="data/marketing_engagement.json"
     )
     workflow.add_node("marketing_data", marketing_data)
-    
+
     # === DATA QUALITY & VALIDATION ===
-    
+
     # Validate CRM data quality
     crm_validator = DataTransformer(
-        id="crm_validator",
-        transformations=[]  # Will be provided at runtime
+        id="crm_validator", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("crm_validator", crm_validator)
     workflow.connect("crm_data", "crm_validator", mapping={"data": "data"})
-    
+
     # Clean and validate transaction data
     transaction_cleaner = DataTransformer(
-        id="transaction_cleaner",
-        transformations=[]  # Will be provided at runtime  
+        id="transaction_cleaner", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("transaction_cleaner", transaction_cleaner)
-    workflow.connect("transaction_data", "transaction_cleaner", mapping={"data": "data"})
-    
+    workflow.connect(
+        "transaction_data", "transaction_cleaner", mapping={"data": "data"}
+    )
+
     # Process support ticket data
     support_processor = DataTransformer(
-        id="support_processor", 
-        transformations=[]  # Will be provided at runtime
+        id="support_processor", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("support_processor", support_processor)
     workflow.connect("support_data", "support_processor", mapping={"data": "data"})
-    
+
     # === CUSTOMER SCORING & SEGMENTATION ===
-    
+
     # Calculate customer lifetime value and health scores
     customer_scoring = DataTransformer(
-        id="customer_scoring",
-        transformations=[]  # Will be provided at runtime
+        id="customer_scoring", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("customer_scoring", customer_scoring)
-    
+
     # === DATA INTEGRATION ===
-    
+
     # Merge CRM and transaction data
     crm_transaction_merge = MergeNode(id="crm_transaction_merge")
     workflow.add_node("crm_transaction_merge", crm_transaction_merge)
-    workflow.connect("crm_validator", "crm_transaction_merge", mapping={"result": "data1"})
-    workflow.connect("transaction_cleaner", "crm_transaction_merge", mapping={"result": "data2"})
-    
+    workflow.connect(
+        "crm_validator", "crm_transaction_merge", mapping={"result": "data1"}
+    )
+    workflow.connect(
+        "transaction_cleaner", "crm_transaction_merge", mapping={"result": "data2"}
+    )
+
     # Merge with support data
     customer_support_merge = MergeNode(id="customer_support_merge")
     workflow.add_node("customer_support_merge", customer_support_merge)
-    workflow.connect("crm_transaction_merge", "customer_support_merge", mapping={"merged_data": "data1"})
-    workflow.connect("support_processor", "customer_support_merge", mapping={"result": "data2"})
-    
+    workflow.connect(
+        "crm_transaction_merge",
+        "customer_support_merge",
+        mapping={"merged_data": "data1"},
+    )
+    workflow.connect(
+        "support_processor", "customer_support_merge", mapping={"result": "data2"}
+    )
+
     # Final merge with marketing data
     final_customer_merge = MergeNode(id="final_customer_merge")
     workflow.add_node("final_customer_merge", final_customer_merge)
-    workflow.connect("customer_support_merge", "final_customer_merge", mapping={"merged_data": "data1"})
-    workflow.connect("marketing_data", "final_customer_merge", mapping={"data": "data2"})
-    
+    workflow.connect(
+        "customer_support_merge",
+        "final_customer_merge",
+        mapping={"merged_data": "data1"},
+    )
+    workflow.connect(
+        "marketing_data", "final_customer_merge", mapping={"data": "data2"}
+    )
+
     # Connect to scoring
-    workflow.connect("final_customer_merge", "customer_scoring", mapping={"merged_data": "data"})
-    
+    workflow.connect(
+        "final_customer_merge", "customer_scoring", mapping={"merged_data": "data"}
+    )
+
     # === SEGMENTATION & ROUTING ===
-    
+
     # Route customers based on value and risk
     customer_router = SwitchNode(
         id="customer_router",
         condition_field="customer_segment",
-        cases=["VIP", "Premium"]
+        cases=["VIP", "Premium"],
     )
     workflow.add_node("customer_router", customer_router)
-    workflow.connect("customer_scoring", "customer_router", mapping={"result": "input_data"})
-    
+    workflow.connect(
+        "customer_scoring", "customer_router", mapping={"result": "input_data"}
+    )
+
     # High-value customer processing
     high_value_processor = DataTransformer(
-        id="high_value_processor",
-        transformations=[]  # Will be provided at runtime
+        id="high_value_processor", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("high_value_processor", high_value_processor)
-    workflow.connect("customer_router", "high_value_processor", mapping={"case_VIP": "data"})
-    
-    # Standard customer processing  
+    workflow.connect(
+        "customer_router", "high_value_processor", mapping={"case_VIP": "data"}
+    )
+
+    # Standard customer processing
     standard_processor = DataTransformer(
-        id="standard_processor",
-        transformations=[]  # Will be provided at runtime
+        id="standard_processor", transformations=[]  # Will be provided at runtime
     )
     workflow.add_node("standard_processor", standard_processor)
-    workflow.connect("customer_router", "standard_processor", mapping={"default": "data"})
-    
+    workflow.connect(
+        "customer_router", "standard_processor", mapping={"default": "data"}
+    )
+
     # === OUTPUT GENERATION ===
-    
+
     # High-value customer export
     high_value_output = JSONWriterNode(
-        id="high_value_output",
-        file_path="data/outputs/high_value_customers.json"
+        id="high_value_output", file_path="data/outputs/high_value_customers.json"
     )
     workflow.add_node("high_value_output", high_value_output)
-    workflow.connect("high_value_processor", "high_value_output", mapping={"result": "data"})
-    
+    workflow.connect(
+        "high_value_processor", "high_value_output", mapping={"result": "data"}
+    )
+
     # Standard customer export
     standard_output = CSVWriterNode(
-        id="standard_output", 
-        file_path="data/outputs/standard_customers.csv"
+        id="standard_output", file_path="data/outputs/standard_customers.csv"
     )
     workflow.add_node("standard_output", standard_output)
-    workflow.connect("standard_processor", "standard_output", mapping={"result": "data"})
-    
+    workflow.connect(
+        "standard_processor", "standard_output", mapping={"result": "data"}
+    )
+
     # Complete customer 360 export
     customer_360_output = JSONWriterNode(
-        id="customer_360_output",
-        file_path="data/outputs/customer_360_complete.json"
+        id="customer_360_output", file_path="data/outputs/customer_360_complete.json"
     )
     workflow.add_node("customer_360_output", customer_360_output)
-    workflow.connect("customer_scoring", "customer_360_output", mapping={"result": "data"})
-    
+    workflow.connect(
+        "customer_scoring", "customer_360_output", mapping={"result": "data"}
+    )
+
     return workflow
 
 
@@ -183,7 +204,7 @@ def run_customer_360_integration():
     """Execute the Customer 360° integration workflow."""
     workflow = create_customer_360_workflow()
     runtime = LocalRuntime()
-    
+
     # Enterprise-grade transformation parameters
     parameters = {
         "crm_validator": {
@@ -645,48 +666,48 @@ result = processed_standard
 """
             ]
         },
-        "crm_transaction_merge": {
-            "merge_type": "concat"
-        },
-        "customer_support_merge": {
-            "merge_type": "concat"
-        },
-        "final_customer_merge": {
-            "merge_type": "concat"
-        },
+        "crm_transaction_merge": {"merge_type": "concat"},
+        "customer_support_merge": {"merge_type": "concat"},
+        "final_customer_merge": {"merge_type": "concat"},
         "customer_router": {
             "condition_field": "customer_segment",
-            "cases": ["VIP", "Premium"]
-        }
+            "cases": ["VIP", "Premium"],
+        },
     }
-    
+
     try:
         print("Starting Customer 360° Integration...")
         print("📊 Integrating data from CRM, Transactions, Support, and Marketing...")
-        
+
         result, run_id = runtime.execute(workflow, parameters=parameters)
-        
+
         print("\n✅ Customer 360° Integration Complete!")
-        print(f"📁 Outputs generated:")
-        print(f"   - High-value customers: data/outputs/high_value_customers.json")
-        print(f"   - Standard customers: data/outputs/standard_customers.csv") 
-        print(f"   - Complete customer 360°: data/outputs/customer_360_complete.json")
-        
+        print("📁 Outputs generated:")
+        print("   - High-value customers: data/outputs/high_value_customers.json")
+        print("   - Standard customers: data/outputs/standard_customers.csv")
+        print("   - Complete customer 360°: data/outputs/customer_360_complete.json")
+
         # Summary statistics
         scoring_result = result.get("customer_scoring", {}).get("result", [])
         if scoring_result:
             total_customers = len(scoring_result)
-            vip_count = len([c for c in scoring_result if c.get('customer_segment') == 'VIP'])
-            premium_count = len([c for c in scoring_result if c.get('customer_segment') == 'Premium'])
-            
-            print(f"\n📈 Customer Analysis Summary:")
+            vip_count = len(
+                [c for c in scoring_result if c.get("customer_segment") == "VIP"]
+            )
+            premium_count = len(
+                [c for c in scoring_result if c.get("customer_segment") == "Premium"]
+            )
+
+            print("\n📈 Customer Analysis Summary:")
             print(f"   - Total customers processed: {total_customers}")
             print(f"   - VIP customers: {vip_count}")
             print(f"   - Premium customers: {premium_count}")
-            print(f"   - Average customer value score: {sum(c.get('customer_value_score', 0) for c in scoring_result) / total_customers:.1f}")
-        
+            print(
+                f"   - Average customer value score: {sum(c.get('customer_value_score', 0) for c in scoring_result) / total_customers:.1f}"
+            )
+
         return result
-        
+
     except Exception as e:
         print(f"❌ Customer 360° Integration failed: {str(e)}")
         raise
@@ -696,7 +717,7 @@ def main():
     """Main entry point."""
     # Create output directories
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Run the Customer 360° integration
     run_customer_360_integration()
 

@@ -16,11 +16,10 @@ Patterns demonstrated:
 
 import os
 import json
-from datetime import datetime, timedelta
 from kailash import Workflow
 from kailash.nodes.transform import DataTransformer
 from kailash.nodes.data import JSONWriterNode
-from kailash.nodes.logic import SwitchNode, MergeNode
+from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
 
 
@@ -29,11 +28,11 @@ def create_health_monitoring_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="health_monitoring_001",
         name="health_monitoring_workflow",
-        description="Monitor system health and generate alerts"
+        description="Monitor system health and generate alerts",
     )
-    
+
     # === HEALTH CHECK COLLECTION ===
-    
+
     # Simulate health checks for multiple services
     health_collector = DataTransformer(
         id="health_collector",
@@ -114,12 +113,12 @@ result = {
     "collection_timestamp": current_time.isoformat()
 }
 """
-        ]
+        ],
     )
     workflow.add_node("health_collector", health_collector)
-    
+
     # === ALERT DETECTION ===
-    
+
     # Analyze health data and generate alerts
     alert_detector = DataTransformer(
         id="alert_detector",
@@ -257,13 +256,13 @@ result = {
     "detection_timestamp": current_time.isoformat()
 }
 """
-        ]
+        ],
     )
     workflow.add_node("alert_detector", alert_detector)
     workflow.connect("health_collector", "alert_detector", mapping={"result": "data"})
-    
+
     # === PERFORMANCE METRICS ===
-    
+
     # Calculate performance metrics from health data
     metrics_calculator = DataTransformer(
         id="metrics_calculator",
@@ -394,22 +393,21 @@ else:
         }
     }
 """
-        ]
+        ],
     )
     workflow.add_node("metrics_calculator", metrics_calculator)
-    workflow.connect("health_collector", "metrics_calculator", mapping={"result": "data"})
-    
-    # === REPORTING ===
-    
-    # Merge alerts and metrics for comprehensive reporting
-    report_merger = MergeNode(
-        id="report_merger",
-        merge_type="merge_dict"
+    workflow.connect(
+        "health_collector", "metrics_calculator", mapping={"result": "data"}
     )
+
+    # === REPORTING ===
+
+    # Merge alerts and metrics for comprehensive reporting
+    report_merger = MergeNode(id="report_merger", merge_type="merge_dict")
     workflow.add_node("report_merger", report_merger)
     workflow.connect("alert_detector", "report_merger", mapping={"result": "data1"})
     workflow.connect("metrics_calculator", "report_merger", mapping={"result": "data2"})
-    
+
     # Generate comprehensive monitoring report
     report_generator = DataTransformer(
         id="report_generator",
@@ -557,29 +555,29 @@ report = {
 
 result = report
 """
-        ]
+        ],
     )
     workflow.add_node("report_generator", report_generator)
-    workflow.connect("report_merger", "report_generator", mapping={"merged_data": "data"})
-    
+    workflow.connect(
+        "report_merger", "report_generator", mapping={"merged_data": "data"}
+    )
+
     # === OUTPUTS ===
-    
+
     # Save monitoring report
     report_writer = JSONWriterNode(
-        id="report_writer",
-        file_path="data/outputs/monitoring_report.json"
+        id="report_writer", file_path="data/outputs/monitoring_report.json"
     )
     workflow.add_node("report_writer", report_writer)
     workflow.connect("report_generator", "report_writer", mapping={"result": "data"})
-    
+
     # Save alerts separately for alert management systems
     alert_writer = JSONWriterNode(
-        id="alert_writer",
-        file_path="data/outputs/active_alerts.json"
+        id="alert_writer", file_path="data/outputs/active_alerts.json"
     )
     workflow.add_node("alert_writer", alert_writer)
     workflow.connect("alert_detector", "alert_writer", mapping={"result": "data"})
-    
+
     return workflow
 
 
@@ -587,42 +585,50 @@ def run_health_monitoring():
     """Execute the health monitoring workflow."""
     workflow = create_health_monitoring_workflow()
     runtime = LocalRuntime()
-    
+
     parameters = {}
-    
+
     try:
         print("Starting Health Monitoring Workflow...")
         print("🔍 Collecting health status from services...")
-        
+
         result, run_id = runtime.execute(workflow, parameters=parameters)
-        
+
         print("\\n✅ Health Monitoring Complete!")
         print("📁 Outputs generated:")
         print("   - Monitoring report: data/outputs/monitoring_report.json")
         print("   - Active alerts: data/outputs/active_alerts.json")
-        
+
         # Show executive summary
         report_result = result.get("report_generator", {}).get("result", {})
         monitoring_report = report_result.get("monitoring_report", {})
         executive_summary = monitoring_report.get("executive_summary", {})
-        
-        print(f"\\n📊 System Status: {executive_summary.get('system_status', 'UNKNOWN')}")
+
+        print(
+            f"\\n📊 System Status: {executive_summary.get('system_status', 'UNKNOWN')}"
+        )
         print(f"   - Overall Health: {executive_summary.get('overall_health', 'N/A')}")
-        print(f"   - Critical Services: {executive_summary.get('critical_services_health', 'N/A')}")
-        print(f"   - Average Response: {executive_summary.get('average_response_time', 'N/A')}")
+        print(
+            f"   - Critical Services: {executive_summary.get('critical_services_health', 'N/A')}"
+        )
+        print(
+            f"   - Average Response: {executive_summary.get('average_response_time', 'N/A')}"
+        )
         print(f"   - Active Alerts: {executive_summary.get('active_alerts', 0)}")
-        print(f"   - Performance Score: {executive_summary.get('performance_score', 'N/A')}")
-        
+        print(
+            f"   - Performance Score: {executive_summary.get('performance_score', 'N/A')}"
+        )
+
         # Show immediate actions if any
         next_actions = report_result.get("next_actions", {})
         immediate_actions = next_actions.get("immediate_actions", [])
         if immediate_actions:
-            print(f"\\n🚨 IMMEDIATE ACTIONS REQUIRED:")
+            print("\\n🚨 IMMEDIATE ACTIONS REQUIRED:")
             for action in immediate_actions:
                 print(f"   - {action}")
-        
+
         return result
-        
+
     except Exception as e:
         print(f"❌ Health Monitoring failed: {str(e)}")
         raise
@@ -632,10 +638,10 @@ def main():
     """Main entry point."""
     # Create output directories
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Run the health monitoring workflow
     run_health_monitoring()
-    
+
     # Display generated reports
     print("\\n=== Monitoring Report Preview ===")
     try:
@@ -643,7 +649,7 @@ def main():
             report = json.load(f)
             executive_summary = report["monitoring_report"]["executive_summary"]
             print(json.dumps(executive_summary, indent=2))
-            
+
         print("\\n=== Active Alerts Preview ===")
         with open("data/outputs/active_alerts.json", "r") as f:
             alerts = json.load(f)

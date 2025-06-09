@@ -13,56 +13,52 @@ from kailash.nodes.base import Node, NodeParameter
 
 class BasicTransformNode(Node):
     """A simple node that transforms text."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         """Define node parameters using basic types only."""
         return {
-            'text': NodeParameter(
-                name='text',
+            "text": NodeParameter(
+                name="text",
                 type=str,  # ✅ Basic type, not Optional[str]
                 required=True,
-                description='Text to transform'
+                description="Text to transform",
             ),
-            'operation': NodeParameter(
-                name='operation',
+            "operation": NodeParameter(
+                name="operation",
                 type=str,
                 required=False,
-                default='uppercase',
-                description='Transform operation: uppercase, lowercase, title'
-            )
+                default="uppercase",
+                description="Transform operation: uppercase, lowercase, title",
+            ),
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         """Execute the transformation."""
-        text = kwargs['text']
-        operation = kwargs.get('operation', 'uppercase')
-        
-        if operation == 'uppercase':
+        text = kwargs["text"]
+        operation = kwargs.get("operation", "uppercase")
+
+        if operation == "uppercase":
             result = text.upper()
-        elif operation == 'lowercase':
+        elif operation == "lowercase":
             result = text.lower()
-        elif operation == 'title':
+        elif operation == "title":
             result = text.title()
         else:
             result = text
-            
-        return {
-            'transformed': result,
-            'original': text,
-            'operation': operation
-        }
+
+        return {"transformed": result, "original": text, "operation": operation}
 
 
 # Example usage
 if __name__ == "__main__":
     # Create node instance
     node = BasicTransformNode(name="text_transform")
-    
+
     # Check parameters
     print("Node parameters:")
     for name, param in node.get_parameters().items():
         print(f"  {name}: {param.type.__name__}, required={param.required}")
-    
+
     # Test execution
     result = node.run(text="Hello World", operation="lowercase")
     print("\nExecution result:")

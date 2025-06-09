@@ -16,11 +16,10 @@ Patterns demonstrated:
 
 import os
 import json
-from datetime import datetime, timedelta
 from kailash import Workflow
 from kailash.nodes.transform import DataTransformer
 from kailash.nodes.data import JSONWriterNode
-from kailash.nodes.logic import SwitchNode, MergeNode
+from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
 
 
@@ -29,11 +28,11 @@ def create_security_audit_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="security_audit_001",
         name="security_audit_workflow",
-        description="Perform comprehensive security assessment and compliance checking"
+        description="Perform comprehensive security assessment and compliance checking",
     )
-    
+
     # === SECURITY SCANNING ===
-    
+
     # Simulate vulnerability scanning across multiple components
     vulnerability_scanner = DataTransformer(
         id="vulnerability_scanner",
@@ -145,12 +144,12 @@ result = {
     }
 }
 """
-        ]
+        ],
     )
     workflow.add_node("vulnerability_scanner", vulnerability_scanner)
-    
+
     # === COMPLIANCE CHECKING ===
-    
+
     # Check compliance against security frameworks
     compliance_checker = DataTransformer(
         id="compliance_checker",
@@ -295,13 +294,15 @@ result = {
     "assessment_timestamp": datetime.now().isoformat()
 }
 """
-        ]
+        ],
     )
     workflow.add_node("compliance_checker", compliance_checker)
-    workflow.connect("vulnerability_scanner", "compliance_checker", mapping={"result": "data"})
-    
+    workflow.connect(
+        "vulnerability_scanner", "compliance_checker", mapping={"result": "data"}
+    )
+
     # === RISK ASSESSMENT ===
-    
+
     # Calculate risk scores and prioritize remediation
     risk_assessor = DataTransformer(
         id="risk_assessor",
@@ -466,22 +467,23 @@ else:
         "assessment_timestamp": datetime.datetime.now().isoformat()
     }
 """
-        ]
+        ],
     )
     workflow.add_node("risk_assessor", risk_assessor)
-    workflow.connect("vulnerability_scanner", "risk_assessor", mapping={"result": "data"})
-    
-    # === SECURITY REPORTING ===
-    
-    # Merge compliance and risk data for comprehensive reporting
-    security_merger = MergeNode(
-        id="security_merger",
-        merge_type="merge_dict"
+    workflow.connect(
+        "vulnerability_scanner", "risk_assessor", mapping={"result": "data"}
     )
+
+    # === SECURITY REPORTING ===
+
+    # Merge compliance and risk data for comprehensive reporting
+    security_merger = MergeNode(id="security_merger", merge_type="merge_dict")
     workflow.add_node("security_merger", security_merger)
-    workflow.connect("compliance_checker", "security_merger", mapping={"result": "data1"})
+    workflow.connect(
+        "compliance_checker", "security_merger", mapping={"result": "data1"}
+    )
     workflow.connect("risk_assessor", "security_merger", mapping={"result": "data2"})
-    
+
     # Generate comprehensive security report
     security_reporter = DataTransformer(
         id="security_reporter",
@@ -666,29 +668,29 @@ report = {
 
 result = report
 """
-        ]
+        ],
     )
     workflow.add_node("security_reporter", security_reporter)
-    workflow.connect("security_merger", "security_reporter", mapping={"merged_data": "data"})
-    
+    workflow.connect(
+        "security_merger", "security_reporter", mapping={"merged_data": "data"}
+    )
+
     # === OUTPUTS ===
-    
+
     # Save comprehensive security audit report
     audit_writer = JSONWriterNode(
-        id="audit_writer",
-        file_path="data/outputs/security_audit_report.json"
+        id="audit_writer", file_path="data/outputs/security_audit_report.json"
     )
     workflow.add_node("audit_writer", audit_writer)
     workflow.connect("security_reporter", "audit_writer", mapping={"result": "data"})
-    
+
     # Save vulnerability details for tracking
     vuln_writer = JSONWriterNode(
-        id="vuln_writer",
-        file_path="data/outputs/vulnerability_details.json"
+        id="vuln_writer", file_path="data/outputs/vulnerability_details.json"
     )
     workflow.add_node("vuln_writer", vuln_writer)
     workflow.connect("vulnerability_scanner", "vuln_writer", mapping={"result": "data"})
-    
+
     return workflow
 
 
@@ -696,42 +698,58 @@ def run_security_audit():
     """Execute the security audit workflow."""
     workflow = create_security_audit_workflow()
     runtime = LocalRuntime()
-    
+
     parameters = {}
-    
+
     try:
         print("Starting Security Audit Workflow...")
         print("🔍 Scanning for vulnerabilities...")
-        
+
         result, run_id = runtime.execute(workflow, parameters=parameters)
-        
+
         print("\\n✅ Security Audit Complete!")
         print("📁 Outputs generated:")
         print("   - Security audit report: data/outputs/security_audit_report.json")
         print("   - Vulnerability details: data/outputs/vulnerability_details.json")
-        
+
         # Show executive dashboard
         audit_result = result.get("security_reporter", {}).get("result", {})
         security_report = audit_result.get("security_audit_report", {})
         executive_dashboard = security_report.get("executive_dashboard", {})
-        
-        print(f"\\n📊 Security Posture: {executive_dashboard.get('security_posture', 'UNKNOWN')}")
-        print(f"   - Compliance Status: {'✅ Compliant' if executive_dashboard.get('overall_compliance') else '❌ Non-Compliant'}")
-        print(f"   - Compliance Score: {executive_dashboard.get('compliance_score', 'N/A')}")
-        print(f"   - Total Vulnerabilities: {executive_dashboard.get('total_vulnerabilities', 0)}")
-        print(f"   - Critical/High Risk: {executive_dashboard.get('critical_high_vulns', 0)}")
-        print(f"   - Highest Risk Score: {executive_dashboard.get('highest_risk_score', 0)}/10")
-        print(f"   - Remediation Budget: {executive_dashboard.get('remediation_budget_required', 'N/A')}")
-        
+
+        print(
+            f"\\n📊 Security Posture: {executive_dashboard.get('security_posture', 'UNKNOWN')}"
+        )
+        print(
+            f"   - Compliance Status: {'✅ Compliant' if executive_dashboard.get('overall_compliance') else '❌ Non-Compliant'}"
+        )
+        print(
+            f"   - Compliance Score: {executive_dashboard.get('compliance_score', 'N/A')}"
+        )
+        print(
+            f"   - Total Vulnerabilities: {executive_dashboard.get('total_vulnerabilities', 0)}"
+        )
+        print(
+            f"   - Critical/High Risk: {executive_dashboard.get('critical_high_vulns', 0)}"
+        )
+        print(
+            f"   - Highest Risk Score: {executive_dashboard.get('highest_risk_score', 0)}/10"
+        )
+        print(
+            f"   - Remediation Budget: {executive_dashboard.get('remediation_budget_required', 'N/A')}"
+        )
+
         # Show key findings
         key_findings = security_report.get("key_findings", [])
         if key_findings:
-            print(f"\\n🚨 KEY FINDINGS:")
+            print("\\n🚨 KEY FINDINGS:")
             for finding in key_findings[:3]:  # Show top 3 findings
-                print(f"   - [{finding.get('severity', 'unknown').upper()}] {finding.get('finding', 'N/A')}")
-        
+                print(
+                    f"   - [{finding.get('severity', 'unknown').upper()}] {finding.get('finding', 'N/A')}"
+                )
+
         return result
-        
+
     except Exception as e:
         print(f"❌ Security Audit failed: {str(e)}")
         raise
@@ -741,10 +759,10 @@ def main():
     """Main entry point."""
     # Create output directories
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Run the security audit workflow
     run_security_audit()
-    
+
     # Display generated reports
     print("\\n=== Security Audit Report Preview ===")
     try:
@@ -752,7 +770,7 @@ def main():
             report = json.load(f)
             executive_dashboard = report["security_audit_report"]["executive_dashboard"]
             print(json.dumps(executive_dashboard, indent=2))
-            
+
         print("\\n=== Vulnerability Summary ===")
         with open("data/outputs/vulnerability_details.json", "r") as f:
             vulns = json.load(f)

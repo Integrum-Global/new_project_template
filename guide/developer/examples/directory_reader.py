@@ -6,31 +6,27 @@ instead of manual file operations.
 """
 
 from kailash import Workflow
-from kailash.nodes.data import DirectoryReaderNode, CSVReaderNode, JSONWriterNode
+from kailash.nodes.data import DirectoryReaderNode, JSONWriterNode
 from kailash.nodes.code import PythonCodeNode
-from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
 
 
 def create_file_discovery_workflow():
     """Create a workflow that discovers and processes files."""
-    workflow = Workflow(
-        workflow_id="file_discovery",
-        name="File Discovery Example"
-    )
-    
+    workflow = Workflow(workflow_id="file_discovery", name="File Discovery Example")
+
     # Pattern 1: Basic File Discovery
     # ==============================
     discoverer = DirectoryReaderNode(
         name="discoverer",
         directory_path="data/inputs",  # Relative path
-        recursive=False,               # Don't scan subdirectories
+        recursive=False,  # Don't scan subdirectories
         file_patterns=["*.csv", "*.json", "*.txt"],  # Specific patterns
-        include_hidden=False,          # Skip hidden files
-        include_metadata=True          # Get file metadata
+        include_hidden=False,  # Skip hidden files
+        include_metadata=True,  # Get file metadata
     )
     workflow.add_node("discoverer", discoverer)
-    
+
     # Pattern 2: Process Discovery Results
     # ===================================
     file_router = PythonCodeNode(
@@ -63,14 +59,13 @@ result = {
     'json_files': files_by_type.get('.json', []),
     'text_files': files_by_type.get('.txt', [])
 }
-"""
+""",
     )
     workflow.add_node("file_router", file_router)
-    
+
     # Connect with different variable name (avoid PythonCodeNode exclusion)
-    workflow.connect("discoverer", "file_router", 
-                    mapping={"files": "discovered_files"})
-    
+    workflow.connect("discoverer", "file_router", mapping={"files": "discovered_files"})
+
     # Pattern 3: Filter Files by Criteria
     # ==================================
     large_file_filter = PythonCodeNode(
@@ -100,12 +95,11 @@ result = {
     'small_count': len(small_files),
     'processing_recommendation': 'batch' if len(large_files) > 10 else 'sequential'
 }
-"""
+""",
     )
     workflow.add_node("large_file_filter", large_file_filter)
-    workflow.connect("discoverer", "large_file_filter", 
-                    mapping={"files": "all_files"})
-    
+    workflow.connect("discoverer", "large_file_filter", mapping={"files": "all_files"})
+
     # Pattern 4: Recent File Detection
     # ===============================
     recent_file_detector = PythonCodeNode(
@@ -144,12 +138,13 @@ result = {
     'older_count': len(older_files),
     'alert': len(recent_files) > 0
 }
-"""
+""",
     )
     workflow.add_node("recent_file_detector", recent_file_detector)
-    workflow.connect("discoverer", "recent_file_detector", 
-                    mapping={"files": "file_list"})
-    
+    workflow.connect(
+        "discoverer", "recent_file_detector", mapping={"files": "file_list"}
+    )
+
     # Pattern 5: Prepare for Batch Processing
     # ======================================
     batch_preparer = PythonCodeNode(
@@ -177,12 +172,13 @@ result = {
     'files_per_batch': BATCH_SIZE,
     'ready_for_processing': len(batches) > 0
 }
-"""
+""",
     )
     workflow.add_node("batch_preparer", batch_preparer)
-    workflow.connect("file_router", "batch_preparer", 
-                    mapping={"result": "router_output"})
-    
+    workflow.connect(
+        "file_router", "batch_preparer", mapping={"result": "router_output"}
+    )
+
     # Pattern 6: Generate Processing Report
     # ====================================
     report_generator = PythonCodeNode(
@@ -213,40 +209,42 @@ report['generated_at'] = datetime.now().isoformat()
 report['status'] = 'ready'
 
 result = report
-"""
+""",
     )
     workflow.add_node("report_generator", report_generator)
-    
+
     # Connect all analyzers to report generator
-    workflow.connect("file_router", "report_generator", 
-                    mapping={"result": "router_data"})
-    workflow.connect("large_file_filter", "report_generator", 
-                    mapping={"result": "size_data"})
-    workflow.connect("recent_file_detector", "report_generator", 
-                    mapping={"result": "recent_data"})
-    workflow.connect("batch_preparer", "report_generator", 
-                    mapping={"result": "batch_data"})
-    
+    workflow.connect(
+        "file_router", "report_generator", mapping={"result": "router_data"}
+    )
+    workflow.connect(
+        "large_file_filter", "report_generator", mapping={"result": "size_data"}
+    )
+    workflow.connect(
+        "recent_file_detector", "report_generator", mapping={"result": "recent_data"}
+    )
+    workflow.connect(
+        "batch_preparer", "report_generator", mapping={"result": "batch_data"}
+    )
+
     # Save report
     report_writer = JSONWriterNode(
-        name="report_writer",
-        file_path="data/outputs/discovery_report.json"
+        name="report_writer", file_path="data/outputs/discovery_report.json"
     )
     workflow.add_node("report_writer", report_writer)
-    workflow.connect("report_generator", "report_writer", 
-                    mapping={"result": "data"})
-    
+    workflow.connect("report_generator", "report_writer", mapping={"result": "data"})
+
     return workflow
 
 
 def demonstrate_anti_patterns():
     """Show what NOT to do - manual file operations."""
-    
+
     print("\nANTI-PATTERN: Manual file discovery")
     print("=" * 50)
-    
+
     # WRONG: Manual file discovery in PythonCodeNode
-    bad_discovery = PythonCodeNode(
+    PythonCodeNode(
         name="bad_discovery",
         code="""
 import os
@@ -268,9 +266,9 @@ for file_path in files:
     })
 
 result = {'files': file_info}
-"""
+""",
     )
-    
+
     print("Problems with manual discovery:")
     print("- No built-in error handling")
     print("- No consistent metadata format")
@@ -283,34 +281,35 @@ def main():
     """Run the file discovery example."""
     print("DirectoryReaderNode Example")
     print("=" * 50)
-    
+
     workflow = create_file_discovery_workflow()
     runtime = LocalRuntime()
-    
+
     # Create sample directory structure
     import os
+
     os.makedirs("data/inputs", exist_ok=True)
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Create some sample files
     sample_files = [
         ("data/inputs/customers.csv", "id,name,email\n1,John,john@example.com"),
         ("data/inputs/config.json", '{"version": "1.0", "debug": true}'),
         ("data/inputs/readme.txt", "Sample readme file"),
     ]
-    
+
     for file_path, content in sample_files:
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             f.write(content)
-    
+
     print("\nRunning file discovery workflow...")
-    
+
     # Execute workflow
-    result = runtime.execute(workflow, parameters={})
-    
+    runtime.execute(workflow, parameters={})
+
     print("\nWorkflow completed!")
     print("\nCheck data/outputs/discovery_report.json for results")
-    
+
     # Show anti-patterns
     demonstrate_anti_patterns()
 

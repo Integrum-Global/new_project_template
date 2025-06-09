@@ -20,9 +20,9 @@ def create_working_api_workflow() -> Workflow:
     workflow = Workflow(
         workflow_id="working_api_001",
         name="working_api_workflow",
-        description="Working API integration example"
+        description="Working API integration example",
     )
-    
+
     # Step 1: Create mock API response (in production, use RateLimitedAPINode)
     api_response = DataTransformer(
         id="api_response",
@@ -44,10 +44,10 @@ result = {
     "timestamp": "2024-01-15T10:30:00Z"
 }
 """
-        ]
+        ],
     )
     workflow.add_node("api_response", api_response)
-    
+
     # Step 2: Extract and validate data
     extractor = DataTransformer(
         id="extractor",
@@ -60,11 +60,11 @@ if isinstance(data, dict) and data.get("status") == "success":
 else:
     result = {"products": [], "count": 0, "error": "Invalid response"}
 """
-        ]
+        ],
     )
     workflow.add_node("extractor", extractor)
     workflow.connect("api_response", "extractor", mapping={"result": "data"})
-    
+
     # Debug what extractor outputs
     debug = DataTransformer(
         id="debug",
@@ -74,11 +74,11 @@ print(f"DEBUG enricher input - type: {type(data)}")
 print(f"DEBUG enricher input - content: {data}")
 result = data
 """
-        ]
+        ],
     )
     workflow.add_node("debug", debug)
     workflow.connect("extractor", "debug", mapping={"result": "data"})
-    
+
     # Step 3: Filter and enrich products
     enricher = DataTransformer(
         id="enricher",
@@ -145,11 +145,11 @@ result = {
     "original_input": data
 }
 """
-        ]
+        ],
     )
     workflow.add_node("enricher", enricher)
     workflow.connect("debug", "enricher", mapping={"result": "data"})
-    
+
     # Step 4: Generate summary report
     reporter = DataTransformer(
         id="reporter",
@@ -216,19 +216,16 @@ result = {
     "workaround_applied": True
 }
 """
-        ]
+        ],
     )
     workflow.add_node("reporter", reporter)
     workflow.connect("enricher", "reporter", mapping={"result": "data"})
-    
+
     # Step 5: Save results
-    writer = JSONWriterNode(
-        id="writer",
-        file_path="data/outputs/inventory_report.json"
-    )
+    writer = JSONWriterNode(id="writer", file_path="data/outputs/inventory_report.json")
     workflow.add_node("writer", writer)
     workflow.connect("reporter", "writer", mapping={"result": "data"})
-    
+
     return workflow
 
 
@@ -236,28 +233,28 @@ def run_workflow():
     """Execute the workflow."""
     workflow = create_working_api_workflow()
     runtime = LocalRuntime()
-    
+
     # No parameters needed - api_response creates its own data
     parameters = {}
-    
+
     try:
         print("Running API integration workflow...")
         result, run_id = runtime.execute(workflow, parameters=parameters)
-        
+
         print("\n=== Workflow Complete ===")
-        print(f"Report saved to: data/outputs/inventory_report.json")
-        
+        print("Report saved to: data/outputs/inventory_report.json")
+
         # Show summary
         summary = result.get("reporter", {}).get("result", {}).get("summary", {})
-        print(f"\nInventory Summary:")
+        print("\nInventory Summary:")
         print(f"- Total Products: {summary.get('total_products', 0)}")
         print(f"- In Stock: {summary.get('in_stock', 0)}")
         print(f"- Out of Stock: {summary.get('out_of_stock', 0)}")
         print(f"- Total Value: ${summary.get('inventory_value', 0):,.2f}")
         print(f"- Average Price: ${summary.get('average_price', 0):.2f}")
-        
+
         return result
-        
+
     except Exception as e:
         print(f"Workflow failed: {str(e)}")
         raise
@@ -267,10 +264,10 @@ def main():
     """Main entry point."""
     # Create output directory
     os.makedirs("data/outputs", exist_ok=True)
-    
+
     # Run the workflow
     run_workflow()
-    
+
     # Display the saved report
     print("\n=== Saved Report Preview ===")
     try:
