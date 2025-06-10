@@ -22,6 +22,15 @@ prune data
 prune outputs
 prune workflow_executions
 
+# Exclude project management and workflows (not part of package)
+prune project-workflows
+prune sdk-users
+prune todos
+prune prd
+prune adr
+prune mistakes
+prune infrastructure
+
 # Exclude Sphinx build artifacts
 prune docs/_build
 prune guide/_build
@@ -34,6 +43,7 @@ exclude CHANGELOG.md
 exclude pytest.ini
 exclude Makefile
 exclude workflow_changes_summary.md
+exclude NEW_TEAM_MEMBER.md
 
 # Exclude build artifacts
 global-exclude __pycache__

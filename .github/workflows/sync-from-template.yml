@@ -47,7 +47,7 @@ jobs:
             "sdk-users/CLAUDE.md"
             "sdk-users/README.md"
             "sdk-users/validation-guide.md"
-            "CLAUDE.md"
+            # Note: CLAUDE.md moved to SYNC_IF_MISSING - contains user-specific workflow instructions
           )
           
           # Files to sync only if missing (preserve existing)
@@ -56,6 +56,7 @@ jobs:
             "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
+            "CLAUDE.md"  # User-specific workflow instructions
             
             # Project-specific directories - sync all content if directory missing
             "adr"

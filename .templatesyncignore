@@ -1,0 +1,61 @@
+# Files and directories that should NOT be synced from template
+# These are user-editable areas that should be preserved
+
+# User solution code
+src/solutions/
+examples/
+
+# User infrastructure
+infrastructure/
+
+# Environment files
+.env*
+*.env
+
+# Project-specific workflows (not SDK workflows)
+project-workflows/
+
+# User data
+data/
+
+# User configurations
+configs/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation builds
+docs/_build/
+docs/_static/
+docs/_templates/
+
+# User-specific project files
+*.local
+*.private
+
+# Backup files
+*.bak
+*.backup
+*~

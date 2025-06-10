@@ -63,6 +63,22 @@ This template provides a foundation for building node-based workflow architectur
    ```
    Claude Code will automatically detect the project structure and documentation framework.
 
+### Infrastructure Support (Optional)
+
+For advanced development with databases and services:
+```bash
+# Start full development environment
+./infrastructure/scripts/start-sdk-dev.sh
+
+# Check status
+./infrastructure/scripts/sdk-dev-status.sh
+
+# Stop services
+./infrastructure/scripts/stop-sdk-dev.sh
+```
+
+See [`infrastructure/README.md`](infrastructure/README.md) for detailed setup instructions including PostgreSQL, MongoDB, Redis, and mock API services.
+
 ## Enterprise Workflow Translation
 
 ### Core Concept

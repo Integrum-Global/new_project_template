@@ -48,7 +48,7 @@ processor = PythonCodeNode(name="processor", code="result = {'count': len(input_
 - **Research**: `sdk-users/patterns/` and `sdk-users/workflows/` for solutions
 - **Architecture**: Document decisions in `adr/`
 - **Plan**: Clear solution approach with deliverables
-- **Create & start todos**: Add tasks → mark "in_progress" in `todos/`
+- **Create & start todos**: Add tasks → mark "in_progress" in `todos/` and write the details into `todos/active`
 
 ### **Phase 2: Implement → Example → Test**
 - **Migration**: Follow `sdk-users/instructions/migration-workflow.md` for legacy conversion
@@ -60,7 +60,7 @@ processor = PythonCodeNode(name="processor", code="result = {'count': len(input_
 - **Test**: Validate with real data and scenarios
 
 ### **Phase 3: Document → Deploy → Learn**
-- **Update todos**: Mark completed in `todos/`
+- **Update todos**: Mark completed in `todos/`, update details from `todos/active` and move it to `todos/completed'
 - **Update mistakes**: Add learnings from current session
 - **Document architecture**: Update `adr/` with decisions made
 - **Migration completion**: Move completed projects in `migrations/completed/`
@@ -83,6 +83,27 @@ processor = PythonCodeNode(name="processor", code="result = {'count': len(input_
 
 ## 🔄 Learning Loop
 Implementation → Mistakes → Analysis → Documentation → Better Solutions
+
+## 🏗️ Infrastructure Patterns
+
+When developing with infrastructure services:
+1. **Setup**: Use `infrastructure/scripts/` for environment management
+2. **Patterns**: Reference `sdk-users/INFRASTRUCTURE_GUIDE.md` for best practices
+3. **Examples**: See `sdk-users/workflows/by-pattern/infrastructure/` for patterns
+4. **Configuration**: Keep configs in `infrastructure/` directory
+5. **Security**: Never commit credentials or .env files
+
+### Quick Infrastructure Commands
+```bash
+# Start services
+./infrastructure/scripts/start-sdk-dev.sh
+
+# Check status  
+./infrastructure/scripts/sdk-dev-status.sh
+
+# Stop services
+./infrastructure/scripts/stop-sdk-dev.sh
+```
 
 ## Project-Specific Instructions
 

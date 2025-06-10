@@ -69,13 +69,13 @@ SYNC_PATTERNS = [
     # Root configuration files
     ".pre-commit-config.yaml",
     "MANIFEST.in",
-    # Instruction files (always update with latest instructions)
-    "CLAUDE.md",  # Always replace with template version
+    # Note: CLAUDE.md removed from auto-sync - contains user-specific workflow instructions
 ]
 
 # Files that require special merge handling
 MERGE_FILES = {
-    # CLAUDE.md removed from merge handling - will be replaced directly
+    # Currently no files require special merge handling
+    # CLAUDE.md is user-specific and should be manually updated if needed
 }
 
 # Files to sync only if they don't exist (preserve existing)
@@ -84,6 +84,7 @@ SYNC_IF_MISSING = [
     "README.md",
     "pyproject.toml",
     "CHANGELOG.md",
+    "CLAUDE.md",  # User-specific workflow instructions - sync only if missing
     # Project-specific directories - sync ALL content recursively if directory missing
     "adr/*",  # All ADR files and subdirectories
     "adr/**/*",  # All nested ADR content
@@ -105,6 +106,9 @@ SYNC_IF_MISSING = [
     "src/solutions/*",  # All solution files and subdirectories
     "src/solutions/**/*",  # All nested solution content
     # scripts/* moved to MERGE_ONLY_PATTERNS
+    # Infrastructure - sync if missing, preserve if existing
+    "infrastructure/*",  # All infrastructure files and subdirectories
+    "infrastructure/**/*",  # All nested infrastructure content
 ]
 
 # Directories that should be merged (not overwritten)
