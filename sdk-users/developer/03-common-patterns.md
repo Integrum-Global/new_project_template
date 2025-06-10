@@ -2,6 +2,30 @@
 
 This guide covers frequently used patterns when creating custom nodes.
 
+## Session 062: Centralized Data Access Pattern
+
+Always use centralized data utilities for file operations:
+
+```python
+from examples.utils.data_paths import get_input_data_path, get_output_data_path, ensure_output_dir_exists
+
+class FileProcessorNode(Node):
+    """Process files using centralized data paths."""
+
+    def run(self, **kwargs) -> Dict[str, Any]:
+        # ✅ CORRECT: Use centralized data utilities
+        input_file = get_input_data_path("customers.csv")
+        output_dir = ensure_output_dir_exists("csv")
+        output_file = output_dir / "processed_customers.csv"
+
+        # Process file...
+        return {"output_path": str(output_file)}
+
+# ❌ WRONG: Hardcoded paths
+# input_file = "examples/data/customers.csv"
+# output_file = "outputs/processed.csv"
+```
+
 ## Data Processing Pattern
 
 Process data with validation and error handling:
@@ -12,7 +36,7 @@ from kailash.nodes.base import Node, NodeParameter
 
 class DataFilterNode(Node):
     """Filter data based on conditions."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         return {
             'data': NodeParameter(
@@ -41,28 +65,28 @@ class DataFilterNode(Node):
                 description='Comparison operation: equals, contains, greater, less'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         data = kwargs['data']
         field = kwargs['field']
         value = kwargs['value']
         operation = kwargs.get('operation', 'equals')
-        
+
         # Validate input
         if not isinstance(data, list):
             raise ValueError(f"Data must be a list, got {type(data)}")
-        
+
         # Filter logic
         filtered = []
         for item in data:
             if not isinstance(item, dict):
                 continue
-                
+
             if field not in item:
                 continue
-                
+
             item_value = item[field]
-            
+
             if operation == 'equals' and item_value == value:
                 filtered.append(item)
             elif operation == 'contains' and str(value) in str(item_value):
@@ -71,7 +95,7 @@ class DataFilterNode(Node):
                 filtered.append(item)
             elif operation == 'less' and item_value < value:
                 filtered.append(item)
-        
+
         return {
             'filtered_data': filtered,
             'original_count': len(data),
@@ -92,7 +116,7 @@ from kailash.nodes.base import Node, NodeParameter
 
 class APIRequestNode(Node):
     """Make HTTP API requests."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         return {
             'url': NodeParameter(
@@ -130,14 +154,14 @@ class APIRequestNode(Node):
                 description='Request timeout in seconds'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         url = kwargs['url']
         method = kwargs.get('method', 'GET')
         headers = kwargs.get('headers', {})
         data = kwargs.get('data')
         timeout = kwargs.get('timeout', 30)
-        
+
         # Prepare request
         if data and method in ['POST', 'PUT', 'PATCH']:
             if isinstance(data, dict):
@@ -145,32 +169,32 @@ class APIRequestNode(Node):
                 headers['Content-Type'] = 'application/json'
             elif isinstance(data, str):
                 data = data.encode('utf-8')
-        
+
         request = urllib.request.Request(
             url,
             data=data,
             headers=headers,
             method=method
         )
-        
+
         try:
             # Make request
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 response_data = response.read().decode('utf-8')
-                
+
                 # Try to parse JSON
                 try:
                     response_json = json.loads(response_data)
                 except json.JSONDecodeError:
                     response_json = None
-                
+
                 return {
                     'status_code': response.status,
                     'headers': dict(response.headers),
                     'data': response_json or response_data,
                     'success': True
                 }
-                
+
         except urllib.error.HTTPError as e:
             return {
                 'status_code': e.code,
@@ -197,7 +221,7 @@ from kailash.nodes.base import Node, NodeParameter
 
 class FormatConverterNode(Node):
     """Convert between data formats."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         return {
             'data': NodeParameter(
@@ -226,13 +250,13 @@ class FormatConverterNode(Node):
                 description='Format-specific options'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         data = kwargs['data']
         from_format = kwargs['from_format']
         to_format = kwargs['to_format']
         options = kwargs.get('options', {})
-        
+
         # Parse input based on format
         if from_format == 'json':
             if isinstance(data, str):
@@ -249,7 +273,7 @@ class FormatConverterNode(Node):
             parsed = str(data).split('\n')
         else:
             raise ValueError(f"Unknown from_format: {from_format}")
-        
+
         # Convert to target format
         if to_format == 'json':
             if isinstance(parsed, str):
@@ -272,7 +296,7 @@ class FormatConverterNode(Node):
                 result = str(parsed)
         else:
             raise ValueError(f"Unknown to_format: {to_format}")
-        
+
         return {
             'converted': result,
             'from_format': from_format,
@@ -290,7 +314,7 @@ from kailash.nodes.base import Node, NodeParameter
 
 class DataAggregatorNode(Node):
     """Aggregate data with various operations."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         return {
             'data': NodeParameter(
@@ -320,22 +344,22 @@ class DataAggregatorNode(Node):
                 description='Field to group by (for groupby operation)'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         data = kwargs['data']
         operation = kwargs['operation']
         field = kwargs.get('field')
         group_by = kwargs.get('group_by')
-        
+
         if not isinstance(data, list):
             raise ValueError("Data must be a list")
-        
+
         # Extract values
         if field and data and isinstance(data[0], dict):
             values = [item.get(field, 0) for item in data]
         else:
             values = data
-        
+
         # Perform aggregation
         if operation == 'sum':
             result = sum(values)
@@ -359,7 +383,7 @@ class DataAggregatorNode(Node):
             result = groups
         else:
             raise ValueError(f"Unknown operation: {operation}")
-        
+
         return {
             'result': result,
             'operation': operation,

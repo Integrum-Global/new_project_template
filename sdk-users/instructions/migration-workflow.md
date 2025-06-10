@@ -61,7 +61,7 @@ NEW: DataProcessorNode with APIInputNode and APIOutputNode
 
 #### Data Processing → Workflow Chains
 ```python
-# Example mapping  
+# Example mapping
 OLD: def process_data(input_data):
      cleaned = clean_data(input_data)
      transformed = transform_data(cleaned)

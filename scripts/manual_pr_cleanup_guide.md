@@ -15,7 +15,7 @@ The automated cleanup script identified duplicate template sync PRs that need ma
 - URL: https://github.com/Integrum-Global/ai_coaching/pull/42
 
 ### 2. tpc_core
-- **KEEP**: PR #28 (created: 2025-06-09T05:51:56Z) 
+- **KEEP**: PR #28 (created: 2025-06-09T05:51:56Z)
 - **CLOSE**: PR #27 (created: 2025-06-09T05:47:15Z)
 - URL: https://github.com/Integrum-Global/tpc_core/pull/27
 

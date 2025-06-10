@@ -45,7 +45,7 @@ uv run python -c "import kailash; print('Kailash SDK imported successfully')"
 # DO NOT EDIT these files - just read and reference
 sdk-users/
 ├── workflows/     # Complete workflow examples
-├── essentials/    # Quick reference guides  
+├── essentials/    # Quick reference guides
 ├── templates/     # Starter code patterns
 ├── nodes/         # Node documentation
 └── developer/     # Development guides

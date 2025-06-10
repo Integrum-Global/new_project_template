@@ -28,7 +28,7 @@ This template provides a foundation for building node-based workflow architectur
    ```bash
    # macOS/Linux
    curl -LsSf https://astral.sh/uv/install.sh | sh
-   
+
    # Windows
    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
    ```
@@ -116,27 +116,27 @@ results = workflow.run()
 ### Session-Based Development
 Claude Code provides structured development sessions that align with enterprise workflow requirements:
 
-1. **Document Requirements**: 
+1. **Document Requirements**:
    - Use Claude Code to create comprehensive PRDs in `prd/`
    - Leverage AI to translate business requirements into technical specifications
 
-2. **Design Architecture**: 
+2. **Design Architecture**:
    - Claude Code helps document architectural decisions in `adr/`
    - AI-assisted analysis of Kailash SDK patterns and best practices
 
-3. **Implement Nodes**: 
+3. **Implement Nodes**:
    - Generate custom nodes in `src/` with proper "Node" suffix naming
    - Claude Code ensures adherence to coding standards and patterns
 
-4. **Create Examples**: 
+4. **Create Examples**:
    - Auto-generate working examples in `examples/` with proper categorization
    - Claude Code creates comprehensive usage demonstrations
 
-5. **Write Tests**: 
+5. **Write Tests**:
    - Generate unit tests in `tests/` and integration tests for workflows
    - Automated test coverage and quality assurance
 
-6. **Update Documentation**: 
+6. **Update Documentation**:
    - Auto-update Sphinx docs in `docs/`
    - Maintain comprehensive API documentation with examples
 
@@ -168,7 +168,7 @@ new_project_template/
 │   └── examples/             # Example usage
 ├── sdk-users/                  # Solution development guides (SDK reference)
 │   ├── api/                   # API references
-│   ├── developer/             # Developer guides  
+│   ├── developer/             # Developer guides
 │   ├── patterns/              # Pattern library
 │   └── workflows/             # Workflow examples
 ├── adr/                        # Architecture Decision Records

@@ -3,8 +3,8 @@
 Rename Claude.md to CLAUDE.md in all downstream repositories.
 """
 
-import subprocess
 import json
+import subprocess
 from typing import List
 
 # Downstream repositories

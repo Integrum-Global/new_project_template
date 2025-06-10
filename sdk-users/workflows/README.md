@@ -21,13 +21,30 @@ A comprehensive, token-efficient library of production-ready workflows consolida
 | [manufacturing/](by-industry/manufacturing/) | IoT, Quality, Supply Chain | ✅ Production-Ready | AI Registry + Industrial APIs |
 | [professional-services/](by-industry/professional-services/) | Consulting, Legal, HR | ✅ Production-Ready | AI Registry + Service APIs |
 
+### 🔧 Workflow Patterns (Technical Patterns)
+| Pattern | Status | Scripts | Documentation |
+|---------|--------|---------|---------------|
+| [data-processing/](by-pattern/data-processing/) | ✅ Complete | ETL, analysis pipelines | Full documentation |
+| [ai-ml/](by-pattern/ai-ml/) | ✅ Complete | LLM, embeddings, document processing | Full documentation |
+| [api-integration/](by-pattern/api-integration/) | ✅ Complete | REST APIs, real endpoints | **✅ Session 063** |
+| [file-processing/](by-pattern/file-processing/) | ✅ Complete | Multi-format file workflows | **✅ Session 063** |
+| [monitoring/](by-pattern/monitoring/) | ✅ Complete | Health checks, real services | **✅ Session 063** |
+| [security/](by-pattern/security/) | ✅ Complete | Security audits, vulnerability scanning | **✅ Session 063** |
+| [event-driven/](by-pattern/event-driven/) | ✅ Complete | Event sourcing, state management | Full documentation |
+
+### 🏭 Enterprise Workflows (Business Functions)
+| Directory | Domain | Status | Scripts |
+|-----------|--------|--------|---------|
+| [data-processing/](by-enterprise/data-processing/) | Financial data, ETL | ✅ Complete | financial_processor_minimal.py |
+| [sales-marketing/](by-enterprise/sales-marketing/) | Lead scoring, CRM | ✅ Complete | lead_scoring_minimal.py |
+
 ### 🔧 Advanced Patterns (Feature-Specific)
-| File | Focus | Consolidates |
-|------|-------|--------------|
-| [cyclic-workflows-complete.md](advanced/cyclic-workflows-complete.md) | Complete cycle mastery | 8 cheatsheets + 15 mistakes |
-| [pythoncode-mastery.md](advanced/pythoncode-mastery.md) | PythonCodeNode expertise | 5 mistakes + data science patterns |
-| [ai-agent-coordination.md](advanced/ai-agent-coordination.md) | Multi-agent systems | A2A patterns + MCP integration |
-| [enterprise-integration.md](advanced/enterprise-integration.md) | Production deployment | Security + scaling + monitoring |
+| File | Focus | Status |
+|------|-------|--------|
+| [cyclic-workflows-complete.md](advanced/cyclic-workflows-complete.md) | Complete cycle mastery | 🔴 Planned |
+| [pythoncode-mastery.md](advanced/pythoncode-mastery.md) | PythonCodeNode expertise | 🔴 Planned |
+| [ai-agent-coordination.md](advanced/ai-agent-coordination.md) | Multi-agent systems | 🔴 Planned |
+| [enterprise-integration.md](advanced/enterprise-integration.md) | Production deployment | 🔴 Planned |
 
 ### 📋 Production Templates (Deployment-Ready)
 | Template | Description | Includes |
@@ -99,9 +116,9 @@ All industry workflows use the AI Registry MCP Server as the foundation, providi
 
 ## 📚 Related Resources
 
-- **[Mistakes Archive](../../mistakes/)** - Full historical record
-- **[Essentials Cheatsheets](../essentials/cheatsheet/)** - Individual reference files
-- **[API Reference](../api/)** - Detailed API specifications
+- **[SDK Essentials](../essentials/)** - Quick reference patterns and cheatsheets
+- **[Developer Guide](../developer/)** - Building workflows from scratch
+- **[Node Catalog](../nodes/comprehensive-node-catalog.md)** - Available nodes reference
 - **[Validation Guide](../validation-guide.md)** - Comprehensive rules and patterns
 
 ---

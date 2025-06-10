@@ -181,7 +181,7 @@ workflow.connect_sequence([reader, cleaner, transformer, writer])
 
 - **Challenge**: Monolithic Python application becoming unmaintainable
 - **Solution**: Phased migration to Kailash SDK over 3 months
-- **Results**: 
+- **Results**:
   - 60% reduction in bug reports
   - 3x faster feature development
   - Improved system visibility
@@ -197,7 +197,7 @@ workflow.connect_sequence([reader, cleaner, transformer, writer])
 
 ## Next Steps
 
-- Read the detailed [Migration Workflow](workflow.md)
-- Review [Migration Templates](templates.md)
-- See [Case Studies](case_studies.md) for real examples
-- Start with the [Architecture Analysis Template](templates.md#architecture-analysis)
+- Check the `sdk-users/workflows/` directory for workflow development patterns
+- Browse `sdk-users/templates/` for solution templates and examples
+- Review the `migrations/completed/` directory for real-world migration examples
+- Start with the `migrations/templates/architecture_analysis_template.md` for architecture analysis

@@ -3,9 +3,9 @@
 Fix CLAUDE.md via GitHub API without cloning.
 """
 
-import subprocess
 import base64
 import json
+import subprocess
 from typing import Dict, Optional
 
 DOWNSTREAM_REPOS = [
@@ -36,7 +36,7 @@ def run_gh_api(endpoint: str, method: str = "GET", data: Optional[Dict] = None) 
 
     try:
         return json.loads(result.stdout) if result.stdout else {}
-    except:
+    except json.JSONDecodeError:
         return {}
 
 

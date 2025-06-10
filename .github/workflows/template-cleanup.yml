@@ -26,7 +26,7 @@ jobs:
                 repo: context.repo.repo,
                 per_page: 10
               });
-              
+
               // If repo has more than 5 commits, it's established
               if (commits.length > 5) {
                 console.log('Established repository detected');
@@ -62,16 +62,16 @@ jobs:
         run: |
           # Remove template-only workflows
           rm -f .github/workflows/sync-to-downstream.yml
-          
+
           # Remove template sync script
           rm -f scripts/sync_template.py
-          
+
           # Update CODEOWNERS if needed
           if [ -f .github/CODEOWNERS ]; then
             ORG_NAME="${{ github.repository_owner }}"
             sed -i "s|Integrum-Global/template-maintainers|${ORG_NAME}/maintainers|g" .github/CODEOWNERS
           fi
-          
+
           # Create required directories
           mkdir -p src/solutions
           touch src/solutions/.gitkeep
@@ -87,7 +87,7 @@ jobs:
             git add -A
             git commit -m "Remove template-specific files after initialization"
             git push
-            
+
             # Now disable this workflow
             gh workflow disable "template-cleanup.yml"
           fi

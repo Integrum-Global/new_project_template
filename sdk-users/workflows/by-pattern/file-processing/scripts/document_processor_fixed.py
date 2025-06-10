@@ -18,15 +18,9 @@ import json
 import os
 
 from kailash import Workflow
-from kailash.nodes.data import (
-    DirectoryReaderNode,
-    JSONWriterNode,
-    CSVReaderNode,
-    JSONReaderNode,
-    TextReaderNode,
-)
-from kailash.nodes.transform import DataTransformer
+from kailash.nodes.data import DirectoryReaderNode, JSONWriterNode
 from kailash.nodes.logic import MergeNode
+from kailash.nodes.transform import DataTransformer
 from kailash.runtime import LocalRuntime
 
 
@@ -73,39 +67,39 @@ for file_info in csv_file_list:
     try:
         # Read CSV file manually since we can't chain readers dynamically
         import csv
-        
+
         file_path = file_info["file_path"]
         with open(file_path, 'r', encoding='utf-8') as f:
             reader = csv.DictReader(f)
             content = list(reader)
-        
+
         # Extract statistics
         total_records = len(content)
-        
+
         # Calculate specific statistics based on content
         stats = {
             "total_records": total_records,
             "columns": list(content[0].keys()) if content else [],
             "sample_records": content[:3] if content else []
         }
-        
+
         # Check for common patterns
         if any("status" in record for record in content):
             active_count = sum(1 for record in content if record.get("status") == "active")
             stats["active_records"] = active_count
             stats["inactive_records"] = total_records - active_count
-        
+
         if any("email" in record for record in content):
             emails = [r.get("email", "") for r in content if "@" in r.get("email", "")]
             domains = list(set(email.split("@")[1] for email in emails))
             stats["email_domains"] = domains
-        
+
         csv_files.append({
             "file_info": file_info,
             "processing_result": stats,
             "status": "success"
         })
-        
+
     except Exception as e:
         csv_files.append({
             "file_info": file_info,
@@ -136,7 +130,7 @@ result = {
 # Process JSON files from discovery results
 json_files = []
 
-# Get JSON files from discovery - use locals() to check available variables  
+# Get JSON files from discovery - use locals() to check available variables
 print(f"Available variables: {list(locals().keys())}")
 
 # Get files_by_type from input, with fallback to empty dict
@@ -148,21 +142,21 @@ print(f"Found {len(json_file_list)} JSON files to process")
 for file_info in json_file_list:
     try:
         import json as json_lib
-        
+
         file_path = file_info["file_path"]
         with open(file_path, 'r', encoding='utf-8') as f:
             content = json_lib.load(f)
-        
+
         # Extract statistics based on content structure
         stats = {
             "data_type": "json",
             "structure_type": type(content).__name__
         }
-        
+
         if isinstance(content, dict):
             stats["key_count"] = len(content)
             stats["keys"] = list(content.keys())
-            
+
             # Check for transaction patterns
             if "transactions" in content:
                 transactions = content["transactions"]
@@ -171,27 +165,27 @@ for file_info in json_file_list:
                     total_amount = sum(t.get("amount", 0) for t in transactions)
                     stats["total_amount"] = total_amount
                     stats["average_amount"] = total_amount / len(transactions)
-                    
+
                     customers = set(t.get("customer_id") for t in transactions if t.get("customer_id"))
                     stats["unique_customers"] = len(customers)
-            
+
             # Check for metadata
             if "metadata" in content:
                 stats["metadata"] = content["metadata"]
-                
+
         elif isinstance(content, list):
             stats["array_length"] = len(content)
             if content and isinstance(content[0], dict):
                 stats["sample_keys"] = list(content[0].keys())
-        
+
         stats["sample_content"] = str(content)[:200] + "..." if len(str(content)) > 200 else str(content)
-        
+
         json_files.append({
             "file_info": file_info,
             "processing_result": stats,
             "status": "success"
         })
-        
+
     except Exception as e:
         json_files.append({
             "file_info": file_info,
@@ -242,49 +236,49 @@ for file_info in all_text_files:
     try:
         file_path = file_info["file_path"]
         file_type = file_info["file_type"]
-        
+
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Basic text statistics
         lines = content.split("\\n")
         words = content.split()
-        
+
         stats = {
             "line_count": len(lines),
             "word_count": len(words),
             "character_count": len(content),
             "file_type": file_type
         }
-        
+
         # File-type specific processing
         if file_type == "txt":
             # Find placeholders in templates
             placeholders = re.findall(r'\\{([^}]+)\\}', content)
             stats["placeholders"] = placeholders
             stats["placeholder_count"] = len(placeholders)
-            
+
         elif file_type == "xml":
             # Extract XML elements
             tags = re.findall(r'<([^/>\\s]+)', content)
             unique_tags = list(set(tags))
             stats["xml_tags"] = unique_tags
             stats["tag_count"] = len(unique_tags)
-            
+
         elif file_type == "markdown":
             # Extract markdown headers
             headers = re.findall(r'^#+\\s+(.+)$', content, re.MULTILINE)
             stats["headers"] = headers
             stats["header_count"] = len(headers)
-        
+
         stats["preview"] = content[:200] + "..." if len(content) > 200 else content
-        
+
         text_files.append({
             "file_info": file_info,
             "processing_result": stats,
             "status": "success"
         })
-        
+
     except Exception as e:
         text_files.append({
             "file_info": file_info,
@@ -343,46 +337,46 @@ processing_stats = {}
 for processor_result in processor_results:
     if not isinstance(processor_result, dict):
         continue
-        
+
     processed_files = processor_result.get("processed_files", [])
     file_type = processor_result.get("file_type", "unknown")
-    
+
     all_processed_files.extend(processed_files)
-    
+
     # Count successes and failures
     successful = sum(1 for f in processed_files if f.get("status") == "success")
     failed = sum(1 for f in processed_files if f.get("status") == "error")
-    
+
     total_successful += successful
     total_failed += failed
-    
+
     # Group by type
     if file_type not in files_by_type:
         files_by_type[file_type] = 0
     files_by_type[file_type] += len(processed_files)
-    
+
     # Collect processing statistics
     processing_stats[file_type] = {
         "processed_count": len(processed_files),
         "successful_count": successful,
         "failed_count": failed
     }
-    
+
     # Add type-specific stats
     for file_data in processed_files:
         if file_data.get("status") == "success":
             proc_result = file_data.get("processing_result", {})
-            
+
             if file_type == "csv":
                 if "total_records" not in processing_stats[file_type]:
                     processing_stats[file_type]["total_records"] = 0
                 processing_stats[file_type]["total_records"] += proc_result.get("total_records", 0)
-                
+
             elif file_type == "json":
                 if "total_transactions" not in processing_stats[file_type]:
                     processing_stats[file_type]["total_transactions"] = 0
                 processing_stats[file_type]["total_transactions"] += proc_result.get("transaction_count", 0)
-                
+
             elif file_type == "text":
                 if "total_words" not in processing_stats[file_type]:
                     processing_stats[file_type]["total_words"] = 0
@@ -457,7 +451,7 @@ def run_fixed_processing():
         # Show discovery results
         if "file_discoverer" in result:
             discovery_stats = result["file_discoverer"]["directory_stats"]
-            print(f"\n📊 Discovery Results:")
+            print("\n📊 Discovery Results:")
             print(f"   - Total files found: {discovery_stats['total_files']}")
             print(f"   - File types: {', '.join(discovery_stats['file_types'])}")
             print(f"   - Files by type: {discovery_stats['files_by_type_count']}")
@@ -467,7 +461,7 @@ def run_fixed_processing():
             summary_result = result["summary_generator"]["result"]
             processing_summary = summary_result.get("processing_summary", {})
 
-            print(f"\n📈 Processing Results:")
+            print("\n📈 Processing Results:")
             print(
                 f"   - Files processed: {processing_summary.get('total_files_discovered', 0)}"
             )

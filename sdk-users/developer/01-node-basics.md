@@ -7,11 +7,13 @@ Custom nodes extend the Kailash SDK by adding new functionality. Every custom no
 ## Understanding the Node Base Class
 
 The `Node` base class provides:
-- Parameter validation
-- Configuration management  
-- Execution lifecycle
+- Parameter validation (improved in Session 061)
+- Configuration management
+- Execution lifecycle (construction → configuration → execution)
 - Error handling
 - Integration with workflows
+
+**IMPORTANT**: As of Session 061, parameter validation happens at execution time, not construction time. This allows more flexible node creation patterns.
 
 ## Required Abstract Methods
 
@@ -57,7 +59,7 @@ from kailash.nodes.base import Node, NodeParameter
 
 class TextUppercaseNode(Node):
     """Converts text to uppercase."""
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         """Define parameters for uppercase conversion."""
         return {
@@ -75,16 +77,16 @@ class TextUppercaseNode(Node):
                 description='Whether to add UPPERCASE: prefix'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         """Convert text to uppercase."""
         text = kwargs['text']
         add_prefix = kwargs.get('add_prefix', False)
-        
+
         result = text.upper()
         if add_prefix:
             result = f"UPPERCASE: {result}"
-            
+
         return {'result': result}
 ```
 
@@ -177,6 +179,58 @@ NodeParameter(type=List[str])  # Use 'list' or 'Any' instead
 - Learn about [Parameter Type Constraints](02-parameter-types.md)
 - Explore [Common Patterns](03-common-patterns.md)
 - See [Working Examples](examples/)
+
+## Session 061 Architecture Improvements
+
+### New Node Creation Patterns
+
+**NEW (Session 061+)**: Nodes can be created without all required parameters:
+
+```python
+# ✅ NEW: Create nodes without all required params
+kafka_consumer = KafkaConsumerNode()  # No validation error
+workflow.add_node("consumer", kafka_consumer)
+
+# Configuration happens at runtime via parameters
+runtime.execute(workflow, parameters={
+    "consumer": {"bootstrap_servers": "localhost:9092"}
+})
+```
+
+**OLD (Pre-Session 061)**: Required parameters at construction:
+
+```python
+# ❌ OLD: Required all parameters at construction
+kafka_consumer = KafkaConsumerNode(
+    bootstrap_servers="localhost:9092"  # Had to provide during construction
+)
+```
+
+### New Execution Methods
+
+**NEW**: Proper method separation:
+
+```python
+# 1. Configure the node
+node.configure({"provider": "openai", "model": "gpt-4"})
+
+# 2. Execute with runtime data
+results = node.run(input_text="Hello world")
+```
+
+**OLD**: Mixed execution patterns (deprecated):
+
+```python
+# ❌ DEPRECATED: Don't use node.execute() directly
+results = node.execute({"provider": "openai", "input_text": "Hello"})
+```
+
+### Migration Notes
+
+- All existing workflows continue to work (no breaking changes)
+- New validation timing prevents construction-time errors
+- Better separation of configuration vs runtime data
+- Improved error messages when parameters are missing
 
 ---
 

@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Pull template updates
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -27,16 +27,16 @@ jobs:
           # Add template as remote
           git remote add template https://github.com/${TEMPLATE_REPO}.git || true
           git fetch template main
-          
+
           # Create sync branch
           BRANCH_NAME="template-sync-$(date +%Y%m%d-%H%M%S)"
           git checkout -b $BRANCH_NAME
-          
+
           # Get list of files to sync from template
           SYNC_FILES=(
             # SDK guidance - sync specific subdirectories only
             "sdk-users/api"
-            "sdk-users/developer" 
+            "sdk-users/developer"
             "sdk-users/essentials"
             "sdk-users/features"
             "sdk-users/instructions"
@@ -49,7 +49,7 @@ jobs:
             "sdk-users/validation-guide.md"
             # Note: CLAUDE.md moved to SYNC_IF_MISSING - contains user-specific workflow instructions
           )
-          
+
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
             # Root files - create if missing but don't overwrite
@@ -57,10 +57,10 @@ jobs:
             "pyproject.toml"
             "CHANGELOG.md"
             "CLAUDE.md"  # User-specific workflow instructions
-            
+
             # Project-specific directories - sync all content if directory missing
             "adr"
-            "prd" 
+            "prd"
             "mistakes"
             "todos"
             "migrations"
@@ -69,24 +69,24 @@ jobs:
             "examples"
             "src/solutions"
           )
-          
+
           # Files that need special merge handling
           MERGE_FILES=(
           )
-          
+
           # Directories that should be merged (add new, preserve existing)
           MERGE_DIRS=(
             "src/shared"
             "scripts"
           )
-          
+
           # Sync each file/directory (always overwrite)
           for item in "${SYNC_FILES[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item"; then
               git checkout template/main -- "$item" 2>/dev/null || true
             fi
           done
-          
+
           # Sync files/directories only if they don't exist (preserve existing)
           for item in "${SYNC_IF_MISSING[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item" && [ ! -e "$item" ]; then
@@ -98,22 +98,22 @@ jobs:
               fi
             fi
           done
-          
+
           # Handle files that need merging
           for item in "${MERGE_FILES[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item"; then
               if [ -e "$item" ]; then
                 # File exists, need to merge
                 echo "Merging $item..."
-                
+
                 # Get the template version
                 git show template/main:"$item" > "${item}.template"
-                
+
                 # For CLAUDE.md, preserve project-specific instructions
                 if grep -q "## Project-Specific Instructions" "$item"; then
                   # Extract project-specific section
                   sed -n '/## Project-Specific Instructions/,$p' "$item" > "${item}.project"
-                  
+
                   # Check if template already has project-specific section
                   if ! grep -q "## Project-Specific Instructions" "${item}.template"; then
                     # Append project section to template
@@ -129,7 +129,7 @@ jobs:
                   # No project-specific section, use template version
                   cp "${item}.template" "$item"
                 fi
-                
+
                 rm -f "${item}.template"
               else
                 # File doesn't exist, just sync from template
@@ -137,7 +137,7 @@ jobs:
               fi
             fi
           done
-          
+
           # Handle directories that need merging (add new files, preserve existing)
           for item in "${MERGE_DIRS[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item"; then
@@ -146,15 +146,15 @@ jobs:
               git checkout template/main -- "$item" 2>/dev/null || true
             fi
           done
-          
+
           # Check if there are changes
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
             git commit -m "Sync template updates from ${TEMPLATE_REPO} - Automated sync at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            
+
             # Push and create PR
             git push origin HEAD
-            
+
             gh pr create \
               --title "Sync template updates" \
               --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ). Synced sdk-users/ (SDK reference) and CLAUDE.md. Project-specific content preserved: adr/, prd/, mistakes/, todos/, migrations/, docs/, src/solutions/. Please review changes.

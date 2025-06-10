@@ -36,9 +36,12 @@ def main():
     # Install dependencies
     print("\n1. Checking dependencies...")
     try:
-        import sphinx
+        import importlib.util
 
-        print("   ✓ Sphinx is installed")
+        if importlib.util.find_spec("sphinx"):
+            print("   ✓ Sphinx is installed")
+        else:
+            raise ImportError("Sphinx not found")
     except ImportError:
         print("   Installing Sphinx and dependencies...")
         run_command([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])

@@ -164,12 +164,12 @@ Each solution can have its own `config.yaml`:
 workflow:
   name: "data_processing"
   description: "Process daily data files"
-  
+
 parameters:
   input_path: "data/input/"
   output_path: "data/output/"
   batch_size: 1000
-  
+
 nodes:
   reader:
     file_pattern: "*.csv"

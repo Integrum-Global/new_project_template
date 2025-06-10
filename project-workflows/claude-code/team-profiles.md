@@ -7,7 +7,7 @@
 ### Project Lead (lead)
 - **Availability**: 100% (40 hours/week)
 - **Role**: Solution architect, requirements analysis, team coordination
-- **Expertise**: 
+- **Expertise**:
   - Business process analysis
   - Enterprise integration patterns
   - Solution architecture
@@ -19,7 +19,7 @@
 ---
 
 ### Senior Developer (dev1)
-- **Availability**: 100% (40 hours/week) 
+- **Availability**: 100% (40 hours/week)
 - **Skill Level**: Senior (5+ years)
 - **Technical Expertise**:
   - Kailash SDK expert

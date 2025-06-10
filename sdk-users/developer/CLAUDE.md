@@ -8,6 +8,8 @@
    - `mapping={"result": "input_data"}` ✓
    - `mapping={"result": "result"}` ✗
 5. **Always include name**: `PythonCodeNode(name="processor", code="...")`
+6. **Node Creation**: Can create without required params (validated at execution)
+7. **Data Files**: Use centralized `/data/` with `examples/utils/data_paths.py`
 
 ## 📋 Quick Node Selection
 | Task | Use | Don't Use |
@@ -45,26 +47,42 @@ class YourNode(Node):
                 description='Description'
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         return {'result': kwargs['param']}
 ```
 
-### PythonCodeNode (Correct Pattern)
+### PythonCodeNode (Best Practices)
+
+**🚀 DEFAULT: Use `.from_function()` for code > 3 lines**
+```python
+# BEST: Function-based for IDE support
+def process_files(input_data: dict) -> dict:
+    """Full IDE support: highlighting, completion, debugging!"""
+    files = input_data.get("files", [])
+    return {"processed": len(files), "status": "complete"}
+
+processor = PythonCodeNode.from_function(
+    func=process_files,
+    name="processor",
+    description="Process file data"
+)
+```
+
+**String code only for: dynamic generation, user input, templates, one-liners**
+```python
+# OK for simple one-liner
+node = PythonCodeNode(name="calc", code="result = value * 1.1")
+
+# OK for dynamic generation
+code = f"result = data['{user_field}'] > {threshold}"
+node = PythonCodeNode(name="filter", code=code)
+```
+
+**⚠️ Remember: Input variables EXCLUDED from outputs**
 ```python
 # CORRECT: Different variable names for mapping
 workflow.connect("discovery", "processor", mapping={"result": "input_data"})
-
-processor = PythonCodeNode(
-    name="processor",  # Always include name!
-    code="""
-# input_data is available, NOT result
-data = input_data.get("files", [])
-
-# Now result is a NEW variable, will be in outputs
-result = {"processed": len(data)}
-"""
-)
 ```
 
 ### DirectoryReaderNode (Best Practice)
@@ -81,9 +99,25 @@ file_discoverer = DirectoryReaderNode(
 )
 ```
 
+### Centralized Data Access
+```python
+from examples.utils.data_paths import get_input_data_path, get_output_data_path
+
+# CORRECT: Use centralized data utilities
+customer_file = get_input_data_path("customers.csv")
+output_file = get_output_data_path("processed_data.csv")
+
+reader = CSVReaderNode(name="reader", file_path=str(customer_file))
+
+# WRONG: Hardcoded paths
+reader = CSVReaderNode(name="reader", file_path="examples/data/customers.csv")
+```
+
 ## 🔴 Common Mistakes
 1. **Forgetting node suffix**: `CSVReader` → `CSVReaderNode`
 2. **Using generic types**: `List[str]` → `list`
 3. **Mapping to same variable**: `{"result": "result"}` → `{"result": "input_data"}`
 4. **Missing PythonCodeNode name**: `PythonCodeNode(code=...)` → `PythonCodeNode(name="x", code=...)`
 5. **Manual file operations**: Use `DirectoryReaderNode` not `os.listdir`
+6. **Hardcoded data paths**: `"examples/data/file.csv"` → Use `get_input_data_path("file.csv")`
+7. **Old execution pattern**: `node.run()` → Use `node.execute()` for complete lifecycle

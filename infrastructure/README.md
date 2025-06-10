@@ -126,7 +126,7 @@ cache = RedisCache(
    ```bash
    # Check what's using the port
    lsof -i :5432
-   
+
    # Or use different ports in docker-compose.override.yml
    ```
 

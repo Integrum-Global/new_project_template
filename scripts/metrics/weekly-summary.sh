@@ -48,7 +48,7 @@ draw_bar() {
     local max=$2
     local width=30
     local filled=$((value * width / max))
-    
+
     printf "["
     for ((i=0; i<filled; i++)); do printf "█"; done
     for ((i=filled; i<width; i++)); do printf "░"; done
@@ -68,19 +68,19 @@ max_commits=0
 current_date="$START_DATE"
 while [[ "$current_date" < "$END_DATE" ]] || [[ "$current_date" == "$END_DATE" ]]; do
     day_name=$(date -d "$current_date" +%a 2>/dev/null || date -jf "%Y-%m-%d" "$current_date" +%a 2>/dev/null)
-    
+
     # Get metrics for this day
     commits=$(git log --since="${current_date} 00:00" --until="${current_date} 23:59" --oneline 2>/dev/null | wc -l | tr -d ' ')
     prs=$(gh pr list --state merged --search "merged:${current_date}" --json number --jq '. | length' 2>/dev/null || echo "0")
     issues=$(gh issue list --state closed --search "closed:${current_date}" --json number --jq '. | length' 2>/dev/null || echo "0")
-    
+
     daily_commits["$current_date"]=$commits
     daily_prs["$current_date"]=$prs
     daily_issues["$current_date"]=$issues
-    
+
     # Track max for scaling
     [ $commits -gt $max_commits ] && max_commits=$commits
-    
+
     # Move to next day
     current_date=$(date -d "$current_date + 1 day" +%Y-%m-%d 2>/dev/null || \
                    date -v+1d -jf "%Y-%m-%d" "$current_date" +%Y-%m-%d 2>/dev/null)
@@ -93,18 +93,18 @@ while [[ "$current_date" < "$END_DATE" ]] || [[ "$current_date" == "$END_DATE" ]
     commits=${daily_commits["$current_date"]}
     prs=${daily_prs["$current_date"]}
     issues=${daily_issues["$current_date"]}
-    
+
     printf "${PURPLE}%s %s${NC} " "$day_name" "$current_date"
-    
+
     if [ $max_commits -gt 0 ]; then
         draw_bar $commits $max_commits
     else
         printf "[No activity]"
     fi
-    
+
     printf " ${GREEN}%2d${NC} commits, ${BLUE}%d${NC} PRs, ${YELLOW}%d${NC} issues\n" \
            "$commits" "$prs" "$issues"
-    
+
     # Move to next day
     current_date=$(date -d "$current_date + 1 day" +%Y-%m-%d 2>/dev/null || \
                    date -v+1d -jf "%Y-%m-%d" "$current_date" +%Y-%m-%d 2>/dev/null)

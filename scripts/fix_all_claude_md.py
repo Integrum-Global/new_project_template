@@ -50,8 +50,8 @@ def check_claude_needs_fix(repo: str) -> bool:
 
     try:
         content = base64.b64decode(stdout).decode("utf-8")
-    except:
-        print("  ❌ Failed to decode CLAUDE.md content")
+    except (Exception,) as e:
+        print(f"  ❌ Failed to decode CLAUDE.md content: {e}")
         return False
 
     # Check if it has old paths

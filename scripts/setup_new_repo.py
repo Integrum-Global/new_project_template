@@ -6,11 +6,11 @@ Automatically configures repositories created from this template to enable
 automatic template synchronization and proper development workflow.
 """
 
-import os
-import sys
 import json
-import subprocess
 import logging
+import os
+import subprocess
+import sys
 from pathlib import Path
 
 # Configure logging
@@ -225,7 +225,7 @@ DATABASE_NAME=solution_db
 DATABASE_USER=solution_user
 DATABASE_PASSWORD=your_password_here
 
-# External Service Configuration  
+# External Service Configuration
 SHAREPOINT_TENANT_ID=your_tenant_id
 SHAREPOINT_CLIENT_ID=your_client_id
 SHAREPOINT_CLIENT_SECRET=your_client_secret
@@ -362,13 +362,13 @@ from kailash.nodes.data import CSVReaderNode, CSVWriterNode
 def create_workflow() -> Workflow:
     """Create and configure the main workflow."""
     workflow = Workflow("{solution_name}_workflow", "Main {solution_name} workflow")
-    
+
     # TODO: Add your nodes and connections here
     # Example:
     # workflow.add_node("reader", CSVReaderNode(), file_path="data/inputs/input.csv")
     # workflow.add_node("writer", CSVWriterNode(), file_path="data/outputs/output.csv")
     # workflow.connect("reader", "writer", mapping={{"data": "data"}})
-    
+
     return workflow
 
 
@@ -376,11 +376,11 @@ def main():
     """Main entry point for the solution."""
     # Create workflow
     workflow = create_workflow()
-    
+
     # Execute workflow
     runtime = LocalRuntime()
     results, run_id = runtime.execute(workflow)
-    
+
     print(f"Workflow completed with run ID: {{run_id}}")
     print(f"Results: {{results}}")
 
@@ -503,7 +503,7 @@ Environment Variables:
 
 The script will:
 1. Add required topics for template sync discovery
-2. Create default labels for issue tracking  
+2. Create default labels for issue tracking
 3. Setup environment files (.env.example, .gitignore)
 4. Initialize project structure (directories, templates)
 5. Create initial solution template

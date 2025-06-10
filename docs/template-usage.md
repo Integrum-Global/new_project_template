@@ -8,7 +8,7 @@ This guide explains how to create new repositories from this template and how th
 
 1. **Navigate to the template**: Go to [new_project_template](https://github.com/Integrum-Global/new_project_template)
 2. **Use Template**: Click the green "Use this template" button
-3. **Create Repository**: 
+3. **Create Repository**:
    - Choose repository name (e.g., `customer-analytics`, `sales-automation`)
    - Select visibility (private recommended for business solutions)
    - Click "Create repository from template"
@@ -62,7 +62,7 @@ The setup script (`scripts/setup_new_repo.py`) automatically:
 ```
 src/solutions/[repo-name]/      # Main solution code
 ├── __init__.py                 # Package initialization
-├── workflow.py                 # Main workflow logic  
+├── workflow.py                 # Main workflow logic
 ├── config.py                   # Configuration management
 └── README.md                   # Solution documentation
 
@@ -204,7 +204,7 @@ These will be preserved during template updates.
 ## 📞 Support
 
 - **Documentation**: Check `reference/` directory for comprehensive guides
-- **Examples**: Review `examples/` for working implementations  
+- **Examples**: Review `examples/` for working implementations
 - **Issues**: Use repository issues with appropriate labels
 - **Template Issues**: Report at [new_project_template](https://github.com/Integrum-Global/new_project_template/issues)
 

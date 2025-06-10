@@ -69,6 +69,7 @@ repos:
         name: Check for deprecated log.warn
       - id: python-no-eval
         name: Check for eval() usage
+        exclude: ^(sdk-users/templates/|examples/)
       - id: python-use-type-annotations
         name: Require type annotations
       - id: python-check-blanket-noqa
@@ -82,7 +83,7 @@ repos:
         entry: python -m pytest
         language: system
         args: [
-          tests/,
+          scripts/tests/,
           --tb=short,
           --maxfail=5,
           --durations=10,

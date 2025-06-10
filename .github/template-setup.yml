@@ -15,7 +15,7 @@ init:
   # Automatically run setup script after template creation
   run_setup: true
   setup_script: "scripts/setup_new_repo.py"
-  
+
 # Features to enable on new repositories
 features:
   issues: true
@@ -23,7 +23,7 @@ features:
   wiki: false
   pages: false
   discussions: false
-  
+
 # Branch protection (applied after first commit)
 branch_protection:
   main:
@@ -33,7 +33,7 @@ branch_protection:
     required_status_checks:
       - "template-sync-check"
       - "basic-validation"
-    
+
 # Default labels for issue tracking
 default_labels:
   - name: "template-sync"

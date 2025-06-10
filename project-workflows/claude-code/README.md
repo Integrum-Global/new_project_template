@@ -46,7 +46,7 @@ graph TB
     D --> E[Implementation in src/solutions/]
     E --> F[Testing & Documentation]
     F --> G[Solution Delivery]
-    
+
     H[sdk-users/ Patterns] --> D
     I[todos/ Tracking] --> B
     I --> D

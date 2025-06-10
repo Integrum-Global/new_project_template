@@ -2,13 +2,6 @@
 
 *Building solutions WITH the Kailash SDK*
 
-## ⚠️ CRITICAL WARNING: DO NOT EDIT THIS DIRECTORY
-**The entire `sdk-users/` directory is automatically replaced during template sync.**
-- ❌ **ALL EDITS WILL BE LOST** - This directory is read-only
-- ❌ **DO NOT** modify, add, or fix ANY files here
-- ✅ **Report issues** to: https://github.com/Integrum-Global/new_project_template
-- ✅ **Your code belongs in** `src/solutions/` - NOT here!
-
 ## 🎯 Quick Decision Guide
 - **"Build from scratch"** → [developer/CLAUDE.md](developer/CLAUDE.md) - Node patterns, troubleshooting
 - **"Lift working example"** → [workflows/README.md](workflows/README.md) - End-to-end use cases
@@ -22,6 +15,12 @@
    - `mapping={"result": "result"}` ✗
 3. **Always include name**: `PythonCodeNode(name="processor", code="...")`
 4. **Parameter types**: ONLY `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
+5. **Node Creation**: Can create without required params (validated at execution)
+6. **Data Files**: Use centralized `/data/` with `examples/utils/data_paths.py`
+7. **Output Files**: NEVER create `outputs/` directories!
+   - ❌ `os.makedirs("outputs")` → ✅ `ensure_output_dir_exists()`
+   - ❌ `"outputs/report.json"` → ✅ `get_output_data_path("category/report.json")`
+   - All outputs → `/data/outputs/{category}/`
 
 ## 📁 Navigation Guide
 
@@ -68,21 +67,24 @@ result = runtime.execute(workflow, parameters={
 })
 ```
 
-### PythonCodeNode (Correct Pattern)
+### PythonCodeNode (Best Practices)
 ```python
-# CORRECT: Different variable names for mapping
-workflow.connect("discovery", "processor", mapping={"result": "input_data"})
+# 🚀 BEST: Use .from_function() for code > 3 lines
+def process_data(input_data: dict) -> dict:
+    """Full IDE support!"""
+    files = input_data.get("files", [])
+    return {"processed": len(files)}
 
-processor = PythonCodeNode(
-    name="processor",  # Always include name!
-    code="""
-# input_data is available, NOT result
-data = input_data.get("files", [])
-
-# Now result is a NEW variable, will be in outputs
-result = {"processed": len(data)}
-"""
+processor = PythonCodeNode.from_function(
+    func=process_data,
+    name="processor"
 )
+
+# ✅ String code only for: dynamic code, user input, simple one-liners
+node = PythonCodeNode(name="calc", code="result = value * 1.1")  # OK
+
+# ⚠️ Remember: Input variables EXCLUDED from outputs
+workflow.connect("discovery", "processor", mapping={"result": "input_data"})
 ```
 
 ## 🔗 Quick Links by Task
@@ -101,8 +103,15 @@ result = {"processed": len(data)}
 3. **Mapping to same variable**: `{"result": "result"}` → `{"result": "input_data"}`
 4. **Missing PythonCodeNode name**: `PythonCodeNode(code=...)` → `PythonCodeNode(name="x", code=...)`
 5. **Manual file operations**: Use `DirectoryReaderNode` not `os.listdir`
+6. **Hardcoded data paths**: `"examples/data/file.csv"` → Use `get_input_data_path("file.csv")`
+7. **Old execution pattern**: `node.run()` → Use `node.execute()` for complete lifecycle
+
+## 🤝 Team Assignments
+If user asks about getting work or tasks, they should use Claude Code workflow system.
+Guide them to `NEW_TEAM_MEMBER.md` at root level for onboarding.
 
 ---
 
-**For SDK development**: See [developer/CLAUDE.md](developer/CLAUDE.md)  
-**For shared resources**: See [../src/shared/](../src/shared/)
+**For SDK development**: See [../sdk-contributors/CLAUDE.md](../sdk-contributors/CLAUDE.md)
+**New to team**: See [../NEW_TEAM_MEMBER.md](../NEW_TEAM_MEMBER.md)
+**For shared resources**: See [../shared/](../shared/)

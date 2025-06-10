@@ -2,13 +2,6 @@
 
 *Everything you need to build solutions with the Kailash SDK*
 
-## ⚠️ WARNING: DO NOT EDIT THIS DIRECTORY
-**The entire `sdk-users/` directory is replaced during template sync.**
-- ❌ **ALL CHANGES WILL BE LOST** - Do not edit ANY files here
-- ❌ **DO NOT** add custom workflows, fix typos, or modify documentation
-- ✅ **Your code goes in** `src/solutions/` - NOT in sdk-users/
-- ✅ **Report issues** to the template repository, not by editing locally
-
 ## 🚨 Start Here: [CLAUDE.md](CLAUDE.md)
 Quick reference with critical rules, common patterns, and navigation guide.
 
@@ -89,7 +82,7 @@ Quick reference with critical rules, common patterns, and navigation guide.
 ### **Debugging Issues?**
 1. Check [developer/07-troubleshooting.md](developer/07-troubleshooting.md)
 2. Review [CLAUDE.md](CLAUDE.md) common mistakes
-3. Look up errors in [../mistakes/](../mistakes/)
+3. Look up errors in [../shared/mistakes/](../shared/mistakes/)
 4. Validate with [validation-guide.md](validation-guide.md)
 
 ## ⚠️ Critical Knowledge
@@ -115,10 +108,10 @@ Only use basic types: `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
 
 ## 📖 Related Resources
 
-- **SDK Development**: [developer/](developer/)
-- **Shared Resources**: [../src/shared/](../src/shared/)
-- **Error Lookup**: [../mistakes/CLAUDE.md](../mistakes/CLAUDE.md)
+- **SDK Development**: [../sdk-contributors/](../sdk-contributors/)
+- **Shared Resources**: [../shared/](../shared/)
+- **Error Lookup**: [../shared/mistakes/CLAUDE.md](../shared/mistakes/CLAUDE.md)
 
 ---
 
-*This guide focuses on using the SDK to build solutions. For extending the SDK itself, see [developer/README.md](developer/README.md)*
+*This guide focuses on using the SDK to build solutions. For extending the SDK itself, see [../sdk-contributors/README.md](../sdk-contributors/README.md)*

@@ -103,7 +103,7 @@ new_project_template/
 
 ## Remember
 
-✅ **DO**: 
+✅ **DO**:
 - Use Claude Code for all tasks
 - Build solutions in `src/solutions/`
 - Reference patterns from `sdk-users/`

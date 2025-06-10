@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     # Only run if this appears to be a new repository from template
     if: |
-      github.run_number == 1 || 
+      github.run_number == 1 ||
       github.event_name == 'workflow_dispatch' ||
       contains(github.event.head_commit.message, 'Initial commit')
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
         run: |
           # Check if repository already has kailash-template topic
           TOPICS=$(gh api /repos/${{ github.repository }} --jq '.topics[]' 2>/dev/null || echo "")
-          
+
           if echo "$TOPICS" | grep -q "kailash-template" && [ "${{ github.event.inputs.force_setup }}" != "true" ]; then
             echo "setup_needed=false" >> $GITHUB_OUTPUT
             echo "Repository already configured with kailash-template topic"
@@ -67,27 +67,27 @@ jobs:
           # Configure git
           git config --local user.email "action@github.com"
           git config --local user.name "Template Setup Action"
-          
+
           # Check if there are changes to commit
           if [[ -n $(git status --porcelain) ]]; then
             git add -A
             git commit -m "$(cat <<'EOF'
           feat: automatic template setup and configuration
-          
+
           🤖 Automated template initialization:
           - Added kailash-template topic for automatic sync
-          - Created default labels for issue tracking  
+          - Created default labels for issue tracking
           - Setup environment files (.env.example, .gitignore)
           - Initialized project structure and solution template
           - Configured repository for Kailash SDK development
-          
+
           This repository will now automatically receive template updates.
           See CLAUDE.md for development guidance.
-          
+
           Generated with Template Setup Action
           EOF
           )"
-            
+
             git push origin main
             echo "✅ Setup changes committed and pushed"
           else

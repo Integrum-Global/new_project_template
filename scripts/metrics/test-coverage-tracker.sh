@@ -43,14 +43,14 @@ echo "────────────────────────�
 for lang in "${!test_patterns[@]}"; do
     patterns="${test_patterns[$lang]}"
     count=0
-    
+
     for pattern in $patterns; do
         files=$(git log --since="${START_DATE}" --until="${END_DATE}" \
             --name-only --pretty=format: -- "$pattern" | \
             grep -E "${pattern//\*/.*}" | sort -u | wc -l | tr -d ' ')
         count=$((count + files))
     done
-    
+
     if [ $count -gt 0 ]; then
         printf "  %-15s: ${GREEN}%3d${NC} files\n" "$lang" "$count"
     fi

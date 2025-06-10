@@ -68,9 +68,9 @@ echo "────────────────────────�
 # Get merge times for features
 gh pr list --state merged --search "merged:${START_DATE}..${END_DATE}" \
     --json title,createdAt,mergedAt --limit 100 \
-    --jq '.[] | select(.title | test("^feat:|^feature:"; "i")) | 
+    --jq '.[] | select(.title | test("^feat:|^feature:"; "i")) |
     {created: .createdAt, merged: .mergedAt}' | \
-    jq -s 'map(((.merged | fromdateiso8601) - (.created | fromdateiso8601)) / 86400) | 
+    jq -s 'map(((.merged | fromdateiso8601) - (.created | fromdateiso8601)) / 86400) |
     {avg: (add/length), min: min, max: max}' 2>/dev/null | \
     jq -r '"  Average time to merge: \(.avg | floor) days\n  Fastest feature: \(.min | floor) days\n  Slowest feature: \(.max | floor) days"' || \
     echo "  Unable to calculate merge times"
@@ -111,7 +111,7 @@ echo "────────────────────────�
 
 gh pr list --state merged --search "merged:${START_DATE}..${END_DATE}" \
     --json title,number,mergedAt,author --limit 10 \
-    --jq '.[] | select(.title | test("^feat:|^feature:"; "i")) | 
+    --jq '.[] | select(.title | test("^feat:|^feature:"; "i")) |
     "  #\(.number) \(.title) (@\(.author.login))"' | head -5
 
 # Feature contributors
@@ -146,7 +146,7 @@ for pr in $feature_prs; do
         additions=$(echo "$stats" | jq '.additions // 0')
         deletions=$(echo "$stats" | jq '.deletions // 0')
         files=$(echo "$stats" | jq '.changedFiles // 0')
-        
+
         total_additions=$((total_additions + additions))
         total_deletions=$((total_deletions + deletions))
         total_files=$((total_files + files))

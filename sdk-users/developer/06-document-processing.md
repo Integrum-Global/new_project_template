@@ -19,21 +19,24 @@ from kailash.nodes.code import PythonCodeNode
 from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
 
+# Session 062: Use centralized data utilities
+from examples.utils.data_paths import get_input_data_path, get_output_data_path
+
 def create_document_processor():
     workflow = Workflow(
         workflow_id="doc_processor",
         name="Document Processing Pipeline"
     )
-    
-    # 1. Discover files
+
+    # 1. Discover files using centralized data path
     discoverer = DirectoryReaderNode(
         name="discoverer",
-        directory_path="data/inputs",
+        directory_path=str(get_input_data_path("")),  # Centralized input directory
         file_patterns=["*.csv", "*.json", "*.txt", "*.xml"],
         recursive=False
     )
     workflow.add_node("discoverer", discoverer)
-    
+
     # 2. Route by file type
     router = PythonCodeNode(
         name="router",
@@ -55,10 +58,10 @@ result = {
     )
     workflow.add_node("router", router)
     workflow.connect("discoverer", "router", mapping={"files": "discovered_files"})
-    
+
     # 3. Process each file type
     # ... processors for each type
-    
+
     return workflow
 ```
 

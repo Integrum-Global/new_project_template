@@ -71,19 +71,19 @@ yesterday_data=$(grep "^${YESTERDAY}," "$DAILY_CSV" 2>/dev/null || echo "")
 
 if [ -n "$yesterday_data" ]; then
     IFS=',' read -r _ y_commits y_prs y_issues y_tests y_docs y_contrib <<< "$yesterday_data"
-    
+
     # Calculate differences
     diff_commits=$((commits_today - y_commits))
     diff_prs=$((prs_today - y_prs))
     diff_issues=$((issues_today - y_issues))
-    
+
     # Display with color coding
     [ $diff_commits -ge 0 ] && color=$GREEN || color=$YELLOW
     echo -e "  Commits:     ${color}$(printf "%+d" $diff_commits)${NC} (Yesterday: $y_commits)"
-    
+
     [ $diff_prs -ge 0 ] && color=$GREEN || color=$YELLOW
     echo -e "  PRs:         ${color}$(printf "%+d" $diff_prs)${NC} (Yesterday: $y_prs)"
-    
+
     [ $diff_issues -ge 0 ] && color=$GREEN || color=$YELLOW
     echo -e "  Issues:      ${color}$(printf "%+d" $diff_issues)${NC} (Yesterday: $y_issues)"
 else
@@ -95,7 +95,7 @@ if [ $commits_today -gt 0 ]; then
     echo -e "\n${CYAN}Recent Commits:${NC}"
     git log --since="${TODAY} 00:00" --until="${TODAY} 23:59" \
         --pretty=format:"  %h %s (%an)" | head -5
-    
+
     if [ $commits_today -gt 5 ]; then
         echo -e "  ... and $((commits_today - 5)) more"
     fi

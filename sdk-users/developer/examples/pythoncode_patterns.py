@@ -13,13 +13,12 @@ from kailash.runtime import LocalRuntime
 def create_pythoncode_workflow():
     """Demonstrates correct PythonCodeNode patterns."""
     workflow = Workflow(
-        workflow_id="pythoncode_patterns",
-        name="PythonCodeNode Pattern Examples"
+        workflow_id="pythoncode_patterns", name="PythonCodeNode Pattern Examples"
     )
-    
+
     # Pattern 1: Correct Variable Mapping
     # ===================================
-    
+
     # Stage 1: Generate some data
     generator = PythonCodeNode(
         name="generator",  # Always include name!
@@ -28,10 +27,10 @@ result = {
     'files': ['a.csv', 'b.json', 'c.txt'],
     'metadata': {'count': 3, 'source': 'test'}
 }
-"""
+""",
     )
     workflow.add_node("generator", generator)
-    
+
     # Stage 2: Process data (CORRECT - different variable name)
     processor = PythonCodeNode(
         name="processor",
@@ -50,16 +49,16 @@ result = {
     'json_count': len(json_files),
     'total_count': metadata.get('count', 0)
 }
-"""
+""",
     )
     workflow.add_node("processor", processor)
-    
+
     # CORRECT: Map 'result' to 'input_data' (different names)
     workflow.connect("generator", "processor", mapping={"result": "input_data"})
-    
+
     # Pattern 2: DataFrame Serialization
     # ==================================
-    
+
     data_processor = PythonCodeNode(
         name="data_processor",
         code="""
@@ -97,13 +96,13 @@ result['array_stats'] = {
     'mean': float(arr.mean()),
     'std': float(arr.std())
 }
-"""
+""",
     )
     workflow.add_node("data_processor", data_processor)
-    
+
     # Pattern 3: Error Handling
     # ========================
-    
+
     safe_processor = PythonCodeNode(
         name="safe_processor",
         code="""
@@ -129,20 +128,19 @@ except Exception as e:
         'status': 'error',
         'traceback': str(e.__class__.__name__)
     }
-"""
+""",
     )
     workflow.add_node("safe_processor", safe_processor)
-    
+
     # Pattern 4: Multi-Stage Pipeline
     # ===============================
-    
+
     # Stage 1
     stage1 = PythonCodeNode(
-        name="stage1",
-        code="result = {'stage': 1, 'data': [1, 2, 3]}"
+        name="stage1", code="result = {'stage': 1, 'data': [1, 2, 3]}"
     )
     workflow.add_node("stage1", stage1)
-    
+
     # Stage 2 - Process stage 1 output
     stage2 = PythonCodeNode(
         name="stage2",
@@ -157,10 +155,10 @@ result = {
     'data': [x * 2 for x in data],
     'sum': sum(data)
 }
-"""
+""",
     )
     workflow.add_node("stage2", stage2)
-    
+
     # Stage 3 - Aggregate results
     stage3 = PythonCodeNode(
         name="stage3",
@@ -177,63 +175,60 @@ result = {
     'total': s2_sum,
     'report': f'Processed {len(s1_data)} items, sum: {s2_sum}'
 }
-"""
+""",
     )
     workflow.add_node("stage3", stage3)
-    
+
     # Connect with unique variable names
     workflow.connect("stage1", "stage2", mapping={"result": "stage1_output"})
     workflow.connect("stage1", "stage3", mapping={"result": "stage1_data"})
     workflow.connect("stage2", "stage3", mapping={"result": "stage2_data"})
-    
+
     return workflow
 
 
 def demonstrate_common_mistakes():
     """Shows what NOT to do with PythonCodeNode."""
-    
+
     # MISTAKE 1: Same variable name mapping
     # =====================================
     print("MISTAKE 1: Same variable name in mapping")
-    
+
     bad_workflow = Workflow("bad_example", "Common Mistakes")
-    
-    node1 = PythonCodeNode(
-        name="node1",
-        code="result = {'value': 42}"
-    )
+
+    node1 = PythonCodeNode(name="node1", code="result = {'value': 42}")
     bad_workflow.add_node("node1", node1)
-    
+
     node2 = PythonCodeNode(
         name="node2",
         code="""
 # This will FAIL because 'result' is an input variable
 value = result.get('value')
 result = {'doubled': value * 2}  # Won't be in output!
-"""
+""",
     )
     bad_workflow.add_node("node2", node2)
-    
+
     # WRONG: Mapping to same variable name
     bad_workflow.connect("node1", "node2", mapping={"result": "result"})
-    
+
     # This will fail with "Required output 'result' not provided"
-    
+
     # MISTAKE 2: Forgetting name parameter
     # ====================================
     print("\nMISTAKE 2: Missing name parameter")
-    
+
     try:
         # This will raise TypeError
-        bad_node = PythonCodeNode(code="result = {}")
+        _ = PythonCodeNode(code="result = {}")
     except TypeError as e:
         print(f"Error: {e}")
-    
+
     # MISTAKE 3: Non-serializable outputs
     # ===================================
     print("\nMISTAKE 3: Non-serializable data")
-    
-    bad_serialization = PythonCodeNode(
+
+    _ = PythonCodeNode(
         name="bad_serialization",
         code="""
 import pandas as pd
@@ -248,7 +243,7 @@ result = {
     'array': arr,         # Not JSON serializable!
     'set': {1, 2, 3},    # Not JSON serializable!
 }
-"""
+""",
     )
 
 
@@ -256,24 +251,22 @@ def main():
     """Run the examples."""
     print("PythonCodeNode Pattern Examples")
     print("=" * 50)
-    
+
     # Create and run the correct workflow
     workflow = create_pythoncode_workflow()
     runtime = LocalRuntime()
-    
+
     # Run with sample parameters
-    parameters = {
-        "safe_processor": {"input_value": 10}
-    }
-    
+    parameters = {"safe_processor": {"input_value": 10}}
+
     print("\nRunning workflow with correct patterns...")
     result = runtime.execute(workflow, parameters=parameters)
-    
+
     print("\nResults:")
     for node_id, node_result in result.items():
         print(f"\n{node_id}:")
         print(f"  {node_result}")
-    
+
     # Show common mistakes (commented out to avoid errors)
     # demonstrate_common_mistakes()
 

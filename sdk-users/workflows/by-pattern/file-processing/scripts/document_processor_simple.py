@@ -18,9 +18,9 @@ import os
 
 from kailash import Workflow
 from kailash.nodes.data import (
-    JSONWriterNode,
     CSVReaderNode,
     JSONReaderNode,
+    JSONWriterNode,
     TextReaderNode,
 )
 from kailash.nodes.transform import DataTransformer
@@ -206,7 +206,7 @@ summary = {
             "key_metric": "2 active customers"
         },
         {
-            "type": "json", 
+            "type": "json",
             "name": "transaction_log.json",
             "records": 3,
             "key_metric": "$529.48 total"

@@ -3,7 +3,8 @@
 Welcome to Kailash SDK Template Documentation
 ==============================================
 
-This template provides a foundation for building workflow-based solutions using the Kailash SDK.
+This template provides a foundation for building workflow-based solutions
+using the Kailash SDK.
 
 .. toctree::
    :maxdepth: 2
@@ -23,7 +24,7 @@ This template provides a foundation for building workflow-based solutions using 
    migration/overview
 
 .. note::
-   For detailed development guides, API references, and templates, 
+   For detailed development guides, API references, and templates,
    see the ``sdk-users/`` directory in the project root.
 
 .. toctree::
@@ -50,9 +51,12 @@ Overview
 
 The Kailash SDK Template provides:
 
-* **Structured Project Layout** - Organized directories for solutions, shared components, and documentation
-* **Pre-configured Tools** - Linting, testing, and deployment scripts ready to use
-* **Migration System** - Tools and templates for migrating existing projects to Kailash SDK
+* **Structured Project Layout** - Organized directories for solutions,
+  shared components, and documentation
+* **Pre-configured Tools** - Linting, testing, and deployment scripts
+  ready to use
+* **Migration System** - Tools and templates for migrating existing projects
+  to Kailash SDK
 * **Best Practices** - Built-in patterns and conventions for maintainable code
 * **CI/CD Integration** - GitHub Actions workflows for automated testing and deployment
 
@@ -60,25 +64,25 @@ Key Features
 ~~~~~~~~~~~~
 
 1. **Solution Templates**
-   
+
    - Basic ETL workflows
    - API integration patterns
    - AI analysis pipelines
 
 2. **Shared Components**
-   
+
    - Reusable nodes
    - Common utilities
    - Workflow patterns
 
 3. **Migration Tools**
-   
+
    - Architecture analysis templates
    - API mapping guides
    - Risk assessment frameworks
 
 4. **Development Workflow**
-   
+
    - Automated testing
    - Code quality checks
    - Documentation generation

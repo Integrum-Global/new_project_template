@@ -211,7 +211,7 @@ def process():
 def calculate_risk_score(base_score: float, modifier: float) -> float:
     """
     Calculate risk score using client's proprietary formula.
-    
+
     Formula: base * 2.4 + modifier / 3.7
     Documented in ADR-001: Risk Calculation Methodology
     """

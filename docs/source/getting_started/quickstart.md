@@ -58,28 +58,28 @@ This guide will help you get started with the Kailash SDK Template in just a few
 
    >>> def create_workflow():
    ...     workflow = Workflow("my_first_workflow")
-   ...     
+   ...
    ...     # Add nodes
    ...     reader = FileReaderNode(
    ...         name="csv_reader",
    ...         file_path="data/input.csv"
    ...     )
-   ...     
+   ...
    ...     transformer = DataTransformerNode(
    ...         name="data_processor",
    ...         operations=["clean", "normalize"]
    ...     )
-   ...     
+   ...
    ...     writer = FileWriterNode(
    ...         name="output_writer",
    ...         file_path="data/output.csv"
    ...     )
-   ...     
+   ...
    ...     # Connect nodes
    ...     workflow.add_nodes([reader, transformer, writer])
    ...     workflow.connect(reader, transformer)
    ...     workflow.connect(transformer, writer)
-   ...     
+   ...
    ...     return workflow
 
    >>> # Example usage
@@ -88,7 +88,7 @@ This guide will help you get started with the Kailash SDK Template in just a few
    'my_first_workflow'
    >>> len(workflow.nodes)
    3
-   
+
    >>> # Execute the workflow
    >>> runtime = Runtime()
    >>> result = runtime.execute(workflow)
@@ -112,7 +112,7 @@ The template includes code templates in `reference/templates/` you can use as st
 # Copy workflow templates
 cp -r reference/templates/workflow/* src/solutions/my_solution/
 
-# Copy node templates  
+# Copy node templates
 cp -r reference/templates/nodes/* src/solutions/my_solution/nodes/
 
 # Customize the templates for your specific needs

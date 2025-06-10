@@ -50,10 +50,10 @@ if [[ -n $(git status --porcelain) ]]; then
 - Add template sync workflow
 - Add CODEOWNERS for .github protection
 - Template updates will now sync automatically"
-    
+
     echo "Pushing to GitHub..."
     git push
-    
+
     echo "✅ Success! ${REPO_NAME} is now linked to the template."
     echo ""
     echo "Next steps:"

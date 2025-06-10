@@ -18,7 +18,7 @@ Instructions for using the todo tracking system in your Kailash-based project.
 - **Active details**: [active/](active/) - Directory for detailed task tracking files (empty in template)
 - **Templates**: Use `template.md` as starting point for new todo files
 
-### For Historical Reference  
+### For Historical Reference
 - **Sessions overview**: [completed/README.md](completed/README.md) - Entry point for all completed sessions
 - **Individual sessions**: [completed/XXX-session-name.md](completed/) - Specific session details
 
@@ -26,7 +26,7 @@ Instructions for using the todo tracking system in your Kailash-based project.
 
 ### At Session Start
 1. **Check current status**: Read [000-master.md](000-master.md) for immediate priorities
-2. **Get implementation details**: Check relevant files in [active/](active/) 
+2. **Get implementation details**: Check relevant files in [active/](active/)
 3. **Reference past work**: Check [completed/README.md](completed/README.md) for sessions overview
 
 ### During Development

@@ -2,7 +2,7 @@
 
 ## 🎯 Quick Navigation
 - **Build workflows** → sdk-users/ (synced from SDK, don't edit)
-- **Track project** → todos/, adr/, mistakes/ (project-specific)  
+- **Track project** → todos/, adr/, mistakes/ (project-specific)
 - **Business logic** → src/solutions/ (your implementations)
 - **Project vision** → prd/ (your requirements)
 - **Migrate legacy** → migrations/ (convert existing projects)
@@ -76,7 +76,7 @@ processor = PythonCodeNode(name="processor", code="result = {'count': len(input_
 
 ## 🔗 Essential References
 - **Development**: `sdk-users/developer/CLAUDE.md` → API reference, patterns, validation
-- **Architecture**: `adr/` → Design decisions and rationale  
+- **Architecture**: `adr/` → Design decisions and rationale
 - **Process**: `sdk-users/workflows/` → Development and deployment workflows
 - **Templates**: `sdk-users/templates/` → Ready-to-use solution starting points
 - **Migration**: `migrations/templates/` → Legacy project conversion guides
@@ -98,7 +98,7 @@ When developing with infrastructure services:
 # Start services
 ./infrastructure/scripts/start-sdk-dev.sh
 
-# Check status  
+# Check status
 ./infrastructure/scripts/sdk-dev-status.sh
 
 # Stop services

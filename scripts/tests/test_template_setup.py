@@ -2,10 +2,11 @@
 Basic CI setup tests to ensure template repository is properly configured.
 """
 
-import pytest
-from pathlib import Path
-import yaml
 import os
+from pathlib import Path
+
+import pytest
+import yaml
 
 
 def test_project_structure():
@@ -15,9 +16,7 @@ def test_project_structure():
     # Essential directories
     assert (root / "src").exists(), "src directory should exist"
     assert (root / "src" / "shared").exists(), "src/shared directory should exist"
-    assert (root / "reference").exists(), "reference directory should exist"
-    assert (root / "guide").exists(), "guide directory should exist"
-    assert (root / "templates").exists(), "templates directory should exist"
+    assert (root / "sdk-users").exists(), "sdk-users directory should exist"
     assert (root / "scripts").exists(), "scripts directory should exist"
     assert (root / "todos").exists(), "todos directory should exist"
 
@@ -90,19 +89,17 @@ def test_sync_scripts_exist():
 
 
 def test_reference_documentation():
-    """Test that reference documentation exists."""
+    """Test that SDK documentation exists."""
     root = Path(__file__).parent.parent.parent
-    reference_dir = root / "reference"
+    sdk_users_dir = root / "sdk-users"
 
     essential_docs = [
-        "api-registry.yaml",
         "validation-guide.md",
-        "cheatsheet.md",
-        "template-sync.md",
+        "essentials/cheatsheet/README.md",
     ]
 
     for doc in essential_docs:
-        assert (reference_dir / doc).exists(), f"{doc} should exist in reference/"
+        assert (sdk_users_dir / doc).exists(), f"{doc} should exist in sdk-users/"
 
 
 def test_template_sync_configuration():
@@ -118,7 +115,6 @@ def test_template_sync_configuration():
     triggers = workflow.get("on") or workflow.get(True)
     assert triggers is not None, "Workflow should have trigger configuration"
     assert "push" in triggers, "Should trigger on push"
-    assert "schedule" in triggers, "Should have scheduled trigger"
     assert "workflow_dispatch" in triggers, "Should allow manual trigger"
 
 

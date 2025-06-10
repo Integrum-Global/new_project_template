@@ -63,7 +63,7 @@ Generated: [Date]
   - Endpoints: [List]
   - Business logic: [Description]
   - Data models: [List]
-  
+
 - [ ] [Feature name] - [Complexity: High/Medium/Low]
   - Endpoints: [List]
   - Business logic: [Description]

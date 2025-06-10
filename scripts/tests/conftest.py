@@ -2,8 +2,9 @@
 pytest configuration for template repository tests.
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
 
 
 @pytest.fixture

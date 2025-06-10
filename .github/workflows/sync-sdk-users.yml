@@ -23,13 +23,13 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    
+
     steps:
       - name: Checkout template repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Checkout Kailash SDK
         uses: actions/checkout@v4
         with:
@@ -37,7 +37,7 @@ jobs:
           ref: ${{ inputs.source_ref || 'main' }}
           path: kailash-sdk-source
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Prepare sync
         id: prepare
         run: |
@@ -46,7 +46,7 @@ jobs:
             echo "Removing existing ${{ env.TARGET_PATH }} directory"
             rm -rf "${{ env.TARGET_PATH }}"
           fi
-          
+
           # Copy from source
           if [ -d "kailash-sdk-source/${{ env.SOURCE_PATH }}" ]; then
             echo "Copying from kailash-sdk-source/${{ env.SOURCE_PATH }}"
@@ -56,14 +56,14 @@ jobs:
             echo "Source directory not found"
             echo "sync_needed=false" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Check for changes
         id: changes
         if: steps.prepare.outputs.sync_needed == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          
+
           git add .
           if git diff --staged --quiet; then
             echo "No changes to sync"
@@ -72,7 +72,7 @@ jobs:
             echo "Changes detected"
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
-          
+
       - name: Create Pull Request
         if: steps.changes.outputs.has_changes == 'true'
         uses: peter-evans/create-pull-request@v5
@@ -80,9 +80,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: |
             chore: sync sdk-users from Kailash SDK
-            
+
             Automated sync from ${{ env.SOURCE_REPO }}@${{ inputs.source_ref || 'main' }}
-            
+
             This is an automated update of the sdk-users directory.
             DO NOT modify these files locally - changes should be made upstream.
           branch: sync/sdk-users
@@ -90,31 +90,31 @@ jobs:
           title: 'chore: Sync sdk-users documentation from Kailash SDK'
           body: |
             ## 🔄 Automated SDK Documentation Sync
-            
+
             This PR syncs the `sdk-users` directory from the Kailash Python SDK.
-            
+
             **Source**: `${{ env.SOURCE_REPO }}@${{ inputs.source_ref || 'main' }}`
             **Target**: `${{ env.TARGET_PATH }}/`
-            
+
             ### ⚠️ Important
             - This directory contains **read-only** SDK documentation
             - Any local modifications will be overwritten
             - These files are reference material for building solutions
             - To update documentation, submit PRs to the upstream SDK repository
-            
+
             ### 📚 What's Included
             - Workflow examples and patterns
             - Node documentation
             - Essential guides and cheatsheets
             - Developer templates
-            
+
             ---
             *This is an automated PR. Please review and merge to keep SDK documentation current.*
           labels: |
             automated
             sync
             documentation
-          
+
       - name: Clean up
         if: always()
         run: |

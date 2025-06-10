@@ -53,7 +53,7 @@ dependencies = [
     "pre-commit>=4.2.0",
     "twine>=6.1.0",
     "ollama>=0.5.1",
-    "kailash>=0.2.2",  # Will be installed from dist/ via find-links if not on PyPI
+    "kailash>=0.3.0",  # Will be installed from dist/ via find-links if not on PyPI
 ]
 
 [project.optional-dependencies]
@@ -71,7 +71,6 @@ dev = [
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["solutions"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

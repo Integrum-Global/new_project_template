@@ -13,11 +13,11 @@ We use **Claude Code** for ALL solution development. This isn't just a tool - it
 - **Zero manual** project management files
 
 ### What You'll Never Do
-❌ **Edit TODO files** manually in `todos/`  
-❌ **Modify SDK docs** in `sdk-users/` (it's read-only!)  
-❌ **Create tracking** spreadsheets or documents  
-❌ **Debug alone** without Claude Code assistance  
-❌ **Skip progress** updates in conversation  
+❌ **Edit TODO files** manually in `todos/`
+❌ **Modify SDK docs** in `sdk-users/` (it's read-only!)
+❌ **Create tracking** spreadsheets or documents
+❌ **Debug alone** without Claude Code assistance
+❌ **Skip progress** updates in conversation
 
 ## 📋 Your Daily Workflow
 
@@ -112,19 +112,19 @@ Claude Code: [Saves progress, updates todos, prepares tomorrow's plan]
 ## 🚨 Critical Success Factors
 
 ### 1. **Context is Everything**
-❌ Bad: "Help me code"  
+❌ Bad: "Help me code"
 ✅ Good: "Help me implement customer data validation for the onboarding workflow using DataTransformer"
 
 ### 2. **Reference, Don't Edit**
-❌ Bad: "I'll fix this bug in sdk-users/nodes/"  
+❌ Bad: "I'll fix this bug in sdk-users/nodes/"
 ✅ Good: "I found a pattern in sdk-users/, how do I adapt it for my solution?"
 
 ### 3. **Build in the Right Place**
-❌ Bad: Adding code to `sdk-users/` directory  
+❌ Bad: Adding code to `sdk-users/` directory
 ✅ Good: All custom code in `src/solutions/[your-module]/`
 
 ### 4. **Document Decisions**
-❌ Bad: "I'll remember why I did this"  
+❌ Bad: "I'll remember why I did this"
 ✅ Good: "Document: Chose APIClient over RESTClient because of retry requirements"
 
 ## 🔄 The Solution Development Cycle

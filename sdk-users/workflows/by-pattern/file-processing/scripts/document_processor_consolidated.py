@@ -14,20 +14,11 @@ This consolidates the best practices from all document processor variants.
 
 import json
 import os
-from datetime import datetime
-from typing import Dict, Any, List
 
 from kailash import Workflow
-from kailash.nodes.data import (
-    DirectoryReaderNode,
-    CSVReaderNode,
-    JSONReaderNode,
-    TextReaderNode,
-    JSONWriterNode,
-)
 from kailash.nodes.code import PythonCodeNode
-from kailash.nodes.transform import DataTransformer
-from kailash.nodes.logic import MergeNode, SwitchNode
+from kailash.nodes.data import DirectoryReaderNode, JSONWriterNode
+from kailash.nodes.logic import MergeNode
 from kailash.runtime import LocalRuntime
 
 # Optional: AI enhancement
@@ -122,11 +113,11 @@ processed_files = []
 
 for file_info in csv_files:
     file_path = file_info["file_path"]
-    
+
     try:
         # Read CSV with pandas for advanced processing
         df = pd.read_csv(file_path)
-        
+
         # Basic statistics
         stats = {
             "rows": len(df),
@@ -136,12 +127,12 @@ for file_info in csv_files:
             "dtypes": df.dtypes.astype(str).to_dict(),
             "null_counts": df.isnull().sum().to_dict()
         }
-        
+
         # Numeric column statistics
         numeric_cols = df.select_dtypes(include=['number']).columns
         if len(numeric_cols) > 0:
             stats["numeric_summary"] = df[numeric_cols].describe().to_dict()
-        
+
         # Categorical column analysis
         categorical_cols = df.select_dtypes(include=['object']).columns
         categorical_summary = {}
@@ -152,7 +143,7 @@ for file_info in csv_files:
                 "top_values": value_counts.to_dict()
             }
         stats["categorical_summary"] = categorical_summary
-        
+
         # Special field detection
         stats["detected_fields"] = {
             "has_email": any("email" in col.lower() for col in df.columns),
@@ -160,14 +151,14 @@ for file_info in csv_files:
             "has_status": any("status" in col.lower() for col in df.columns),
             "has_id": any("id" in col.lower() for col in df.columns)
         }
-        
+
         processed_files.append({
             "file_info": file_info,
             "processing_result": stats,
             "status": "success",
             "processor": "csv_processor"
         })
-        
+
     except Exception as e:
         processed_files.append({
             "file_info": file_info,
@@ -215,14 +206,14 @@ def analyze_json_structure(data, path=""):
 
 for file_info in json_files:
     file_path = file_info["file_path"]
-    
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
-        
+
         # Analyze structure
         structure = analyze_json_structure(data)
-        
+
         # Detect common patterns
         patterns = {
             "is_config": any(key in str(data).lower() for key in ["config", "settings", "options"]),
@@ -230,14 +221,14 @@ for file_info in json_files:
             "has_schema": "$schema" in data if isinstance(data, dict) else False,
             "has_version": "version" in data if isinstance(data, dict) else False
         }
-        
+
         # Sample data (for arrays or large objects)
         sample = None
         if isinstance(data, list) and len(data) > 0:
             sample = data[:3]
         elif isinstance(data, dict) and len(str(data)) > 1000:
             sample = {k: v for k, v in list(data.items())[:5]}
-        
+
         processed_files.append({
             "file_info": file_info,
             "processing_result": {
@@ -249,7 +240,7 @@ for file_info in json_files:
             "status": "success",
             "processor": "json_processor"
         })
-        
+
     except Exception as e:
         processed_files.append({
             "file_info": file_info,
@@ -287,14 +278,14 @@ def analyze_text_content(content, file_type):
         "lines": len(content.splitlines()),
         "paragraphs": len(re.split(r'\\n\\s*\\n', content.strip()))
     }
-    
+
     # File type specific analysis
     if file_type == "md":
         # Markdown analysis
         headers = re.findall(r'^#+\\s+(.+)$', content, re.MULTILINE)
         code_blocks = re.findall(r'```[\\s\\S]*?```', content)
         links = re.findall(r'\\[([^\\]]+)\\]\\(([^\\)]+)\\)', content)
-        
+
         stats.update({
             "markdown_headers": headers,
             "code_block_count": len(code_blocks),
@@ -305,32 +296,32 @@ def analyze_text_content(content, file_type):
         # Plain text analysis
         urls = re.findall(r'https?://[^\\s]+', content)
         emails = re.findall(r'[\\w\\.-]+@[\\w\\.-]+\\.\\w+', content)
-        
+
         stats.update({
             "url_count": len(urls),
             "email_count": len(emails),
             "has_code": any(marker in content for marker in ['def ', 'class ', 'function', 'import'])
         })
-    
+
     return stats
 
 for file_info in text_files:
     file_path = file_info["file_path"]
     file_type = file_info.get("file_type", "txt")
-    
+
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         # Analyze content
         analysis = analyze_text_content(content, file_type)
-        
+
         # Get preview
         preview_length = 500
         preview = content[:preview_length]
         if len(content) > preview_length:
             preview += "..."
-        
+
         processed_files.append({
             "file_info": file_info,
             "processing_result": {
@@ -341,7 +332,7 @@ for file_info in text_files:
             "status": "success",
             "processor": "text_processor"
         })
-        
+
     except Exception as e:
         processed_files.append({
             "file_info": file_info,
@@ -389,10 +380,10 @@ result = {"processed_files": processed_files, "file_count": len(processed_files)
         )
 
         # Final report generator combines everything
-        final_node = "ai_analyzer"
+        pass
     else:
         # Skip AI if not available
-        final_node = "result_merger"
+        pass
 
     # === STAGE 6: SUMMARY GENERATION ===
 
@@ -596,18 +587,18 @@ def main():
             with open(summary_path, "r") as f:
                 summary = json.load(f)
                 stats = summary.get("processing_summary", {})
-                print(f"\n📈 Statistics:")
+                print("\n📈 Statistics:")
                 print(f"  - Total files: {stats.get('total_files_processed', 0)}")
                 print(f"  - Success rate: {stats.get('success_rate', 'N/A')}")
                 print(f"  - Processors: {', '.join(stats.get('processors_used', []))}")
 
                 if summary.get("recommendations"):
-                    print(f"\n💡 Recommendations:")
+                    print("\n💡 Recommendations:")
                     for rec in summary["recommendations"][:3]:
                         print(f"  - {rec}")
 
                 if summary.get("ai_insights"):
-                    print(f"\n🤖 AI Insights:")
+                    print("\n🤖 AI Insights:")
                     print(f"  {summary['ai_insights'][:200]}...")
 
     except Exception as e:

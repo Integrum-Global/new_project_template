@@ -11,7 +11,7 @@ This template repository automatically syncs certain directories from the Kailas
 - **Sync**: Daily at 3 AM UTC
 
 ### project-workflows/
-- **Source**: Kailash Python SDK `project-workflows/` directory  
+- **Source**: Kailash Python SDK `project-workflows/` directory
 - **Purpose**: Claude Code workflow guides and templates
 - **Status**: READ-ONLY - Do not edit locally
 - **Sync**: Daily at 2 AM UTC
@@ -53,12 +53,32 @@ To customize:
 When building packages from this template:
 - `sdk-users/` is excluded (see MANIFEST.in)
 - `project-workflows/` is excluded
+- `infrastructure/` is excluded
 - Only `src/solutions/` is packaged
 
 This ensures:
 - Smaller package size
 - No duplicate documentation
 - Clean dependency on kailash SDK
+
+## 🔄 Version Synchronization
+
+The template automatically maintains version compatibility with the Kailash SDK:
+
+### Manual Version Update
+```bash
+# Update template to use latest SDK version
+python scripts/sync_version.py --commit
+
+# Check version compatibility
+python scripts/sync_version.py --dry-run
+```
+
+### Automatic Version Sync
+- Template version tracks SDK version
+- Dependency version uses exact pin: `kailash==X.Y.Z`
+- Version updates create separate commits
+- Downstream repos get notified of version changes
 
 ## 🚀 For Template Users
 

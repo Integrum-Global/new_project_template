@@ -39,7 +39,7 @@ check_gh() {
         echo "Install it from: https://cli.github.com/"
         exit 1
     fi
-    
+
     if ! gh auth status &>/dev/null; then
         echo -e "${RED}Error: Not authenticated with GitHub.${NC}"
         echo "Run: gh auth login"
@@ -56,19 +56,19 @@ get_repo_info() {
 track_features() {
     echo -e "\n${CYAN}📦 Features Completed${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     local count=$(gh pr list --state merged --search "merged:${START_DATE}..${END_DATE}" \
         --json title,number,mergedAt,author,labels --limit 1000 \
         --jq '[.[] | select(.title | test("^feat:|^feature:|^Feature:"; "i"))] | length')
-    
+
     echo -e "Total features merged: ${GREEN}${count}${NC}"
-    
+
     # List features
     gh pr list --state merged --search "merged:${START_DATE}..${END_DATE}" \
         --json title,number,mergedAt,author,labels --limit 1000 \
-        --jq '.[] | select(.title | test("^feat:|^feature:|^Feature:"; "i")) | 
+        --jq '.[] | select(.title | test("^feat:|^feature:|^Feature:"; "i")) |
         "  #\(.number) \(.title) (@\(.author.login))"' | head -10
-    
+
     if [ "$count" -gt 10 ]; then
         echo "  ... and $((count - 10)) more"
     fi
@@ -78,12 +78,12 @@ track_features() {
 track_issues() {
     echo -e "\n${CYAN}✅ Issues Resolved${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     local count=$(gh issue list --state closed --search "closed:${START_DATE}..${END_DATE}" \
         --json number --limit 1000 --jq '. | length')
-    
+
     echo -e "Total issues closed: ${GREEN}${count}${NC}"
-    
+
     # List recent issues
     gh issue list --state closed --search "closed:${START_DATE}..${END_DATE}" \
         --json number,title,closedAt,assignees --limit 10 \
@@ -94,24 +94,24 @@ track_issues() {
 track_tests() {
     echo -e "\n${CYAN}🧪 Test Coverage${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     # Count test files changed
     local test_files=$(git log --since="${START_DATE}" --until="${END_DATE}" \
         --name-only --pretty=format: -- "*test*.py" "*.test.js" "*.spec.js" "*test*.ts" \
         | grep -E '\.(py|js|ts)$' | sort | uniq | wc -l | tr -d ' ')
-    
+
     # Count test lines added/removed
     local test_stats=$(git log --since="${START_DATE}" --until="${END_DATE}" \
         --numstat --pretty=format: -- "*test*.py" "*.test.js" "*.spec.js" "*test*.ts" \
         | awk 'NF==3 {add+=$1; del+=$2} END {print add " " del}')
-    
+
     local lines_added=$(echo $test_stats | cut -d' ' -f1)
     local lines_removed=$(echo $test_stats | cut -d' ' -f2)
-    
+
     echo -e "Test files modified: ${GREEN}${test_files}${NC}"
     echo -e "Test lines added: ${GREEN}+${lines_added}${NC}"
     echo -e "Test lines removed: ${RED}-${lines_removed}${NC}"
-    
+
     # New test files
     echo -e "\nNew test files:"
     git log --since="${START_DATE}" --until="${END_DATE}" \
@@ -123,24 +123,24 @@ track_tests() {
 track_documentation() {
     echo -e "\n${CYAN}📚 Documentation Updates${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     # Count documentation files changed
     local doc_files=$(git log --since="${START_DATE}" --until="${END_DATE}" \
         --name-only --pretty=format: -- "*.md" "*.rst" "docs/**" "*.txt" \
         | grep -E '\.(md|rst|txt)$' | sort | uniq | wc -l | tr -d ' ')
-    
+
     # Count documentation lines
     local doc_stats=$(git log --since="${START_DATE}" --until="${END_DATE}" \
         --numstat --pretty=format: -- "*.md" "*.rst" "docs/**" \
         | awk 'NF==3 {add+=$1; del+=$2} END {print add " " del}')
-    
+
     local lines_added=$(echo $doc_stats | cut -d' ' -f1)
     local lines_removed=$(echo $doc_stats | cut -d' ' -f2)
-    
+
     echo -e "Documentation files modified: ${GREEN}${doc_files}${NC}"
     echo -e "Lines added: ${GREEN}+${lines_added}${NC}"
     echo -e "Lines removed: ${RED}-${lines_removed}${NC}"
-    
+
     # Most updated docs
     echo -e "\nMost updated documentation:"
     git log --since="${START_DATE}" --until="${END_DATE}" \
@@ -153,20 +153,20 @@ track_documentation() {
 track_code_quality() {
     echo -e "\n${CYAN}🔍 Code Quality${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     # PRs with review comments
     local reviewed_prs=$(gh pr list --state merged --search "merged:${START_DATE}..${END_DATE}" \
         --json number,reviewComments --limit 100 \
         --jq '[.[] | select(.reviewComments > 0)] | length')
-    
+
     echo -e "PRs with review comments: ${YELLOW}${reviewed_prs}${NC}"
-    
+
     # Check for linting/CI status if available
     local failed_checks=$(gh pr list --state all --search "created:${START_DATE}..${END_DATE}" \
         --json number,statusCheckRollup --limit 100 \
-        --jq '[.[] | select(.statusCheckRollup | length > 0) | 
+        --jq '[.[] | select(.statusCheckRollup | length > 0) |
         select(.statusCheckRollup | any(.conclusion == "FAILURE"))] | length' 2>/dev/null || echo "N/A")
-    
+
     echo -e "PRs with failed checks: ${RED}${failed_checks}${NC}"
 }
 
@@ -174,13 +174,13 @@ track_code_quality() {
 track_contributors() {
     echo -e "\n${CYAN}👥 Contributor Activity${NC}"
     echo "─────────────────────────────────────────────────────────"
-    
+
     # Unique contributors
     local contributors=$(git log --since="${START_DATE}" --until="${END_DATE}" \
         --pretty=format:"%an" | sort | uniq | wc -l | tr -d ' ')
-    
+
     echo -e "Active contributors: ${GREEN}${contributors}${NC}"
-    
+
     # Top contributors by commits
     echo -e "\nTop contributors by commits:"
     git log --since="${START_DATE}" --until="${END_DATE}" \
@@ -196,7 +196,7 @@ generate_json_output() {
         --jq '[.[] | select(.title | test("^feat:|^feature:|^Feature:"; "i"))] | length')
     local issues=$(gh issue list --state closed --search "closed:${START_DATE}..${END_DATE}" \
         --json number --limit 1000 --jq '. | length')
-    
+
     cat > "${REPORTS_DIR}/metrics-${START_DATE}-to-${END_DATE}.json" <<EOF
 {
     "repository": "${repo}",
@@ -221,21 +221,21 @@ EOF
 # Main execution
 main() {
     check_gh
-    
+
     track_features
     track_issues
     track_tests
     track_documentation
     track_code_quality
     track_contributors
-    
+
     if [ "$OUTPUT_FORMAT" = "json" ]; then
         generate_json_output
     fi
-    
+
     echo -e "\n${BLUE}═══════════════════════════════════════════════════════════${NC}"
     echo -e "${GREEN}Report generated: $(date)${NC}"
-    
+
     # Save a copy to logs
     local log_file="${LOGS_DIR}/metrics-$(date +%Y%m%d-%H%M%S).log"
     echo "Report saved to: ${log_file}"

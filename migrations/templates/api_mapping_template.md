@@ -148,19 +148,19 @@ def create_crud_workflow(resource_name, table_name):
     # CREATE
     create_workflow = Workflow(f"create_{resource_name}")
     # ... implementation
-    
+
     # READ
     read_workflow = Workflow(f"read_{resource_name}")
     # ... implementation
-    
+
     # UPDATE
     update_workflow = Workflow(f"update_{resource_name}")
     # ... implementation
-    
+
     # DELETE
     delete_workflow = Workflow(f"delete_{resource_name}")
     # ... implementation
-    
+
     return {
         "create": create_workflow,
         "read": read_workflow,
@@ -245,11 +245,11 @@ def api_wrapper(path):
         "users": "user_management",
         "data/process": "data_processing"
     }
-    
+
     workflow_name = workflow_mapping.get(path)
     if not workflow_name:
         return jsonify({"error": "Endpoint not found"}), 404
-    
+
     try:
         workflow = load_workflow(workflow_name)
         result = runtime.execute(workflow, parameters={
@@ -258,7 +258,7 @@ def api_wrapper(path):
             "request_headers": dict(request.headers),
             "path_params": path
         })
-        
+
         return jsonify(result.get("response", {})), result.get("status_code", 200)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -293,14 +293,14 @@ def api_wrapper(path):
 # Example unit test for endpoint
 def test_login_endpoint():
     workflow = load_workflow("user_authentication")
-    
+
     result = runtime.execute(workflow, parameters={
         "request_data": {
             "email": "test@example.com",
             "password": "testpass123"
         }
     })
-    
+
     assert result["status_code"] == 200
     assert "token" in result["response"]
     assert result["response"]["user"]["email"] == "test@example.com"

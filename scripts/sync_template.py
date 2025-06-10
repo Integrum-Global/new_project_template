@@ -8,13 +8,13 @@ Preserves downstream-specific files while updating template components.
 Last updated: 2025-06-09 - Force CLAUDE.md updates with correct paths
 """
 
+import logging
 import os
-import sys
 import subprocess
+import sys
+from datetime import datetime
 from pathlib import Path
 from typing import List
-import logging
-from datetime import datetime
 
 # Configure logging
 logging.basicConfig(
@@ -42,7 +42,7 @@ SYNC_PATTERNS = [
     "sdk-users/api/*",
     "sdk-users/api/**/*",
     "sdk-users/developer/*",
-    "sdk-users/developer/**/*", 
+    "sdk-users/developer/**/*",
     "sdk-users/essentials/*",
     "sdk-users/essentials/**/*",
     "sdk-users/features/*",
@@ -63,7 +63,7 @@ SYNC_PATTERNS = [
     "sdk-users/workflows/**/*",
     # SDK Users root files
     "sdk-users/CLAUDE.md",
-    "sdk-users/README.md", 
+    "sdk-users/README.md",
     "sdk-users/validation-guide.md",
     # Scripts moved to MERGE_ONLY_PATTERNS
     # Root configuration files
@@ -88,7 +88,7 @@ SYNC_IF_MISSING = [
     # Project-specific directories - sync ALL content recursively if directory missing
     "adr/*",  # All ADR files and subdirectories
     "adr/**/*",  # All nested ADR content
-    "prd/*",  # All PRD files and subdirectories  
+    "prd/*",  # All PRD files and subdirectories
     "prd/**/*",  # All nested PRD content
     "mistakes/*",  # All mistake tracking files and subdirectories
     "mistakes/**/*",  # All nested mistake content
@@ -115,7 +115,7 @@ SYNC_IF_MISSING = [
 MERGE_DIRECTORIES = [
     "src/shared/",  # Merge new shared components while preserving existing
     "src/shared/nodes/",
-    "src/shared/utils/", 
+    "src/shared/utils/",
     "src/shared/workflows/",
     "todos/active/",  # Preserve active project tasks
     "todos/completed/",  # Preserve completed session history
@@ -130,6 +130,9 @@ MERGE_ONLY_PATTERNS = [
     "scripts/*",
     "scripts/**/*",
 ]
+
+# Version sync configuration
+VERSION_CHECK_ENABLED = True  # Set to True to check version compatibility
 
 
 class TemplateSyncer:
@@ -340,26 +343,26 @@ class TemplateSyncer:
         # Check directory-level existence first to avoid syncing individual files
         # when the entire directory should be preserved
         processed_dirs = set()
-        
+
         for pattern in SYNC_IF_MISSING:
             # Check if this is a directory pattern (ends with /* or /**)
             if pattern.endswith("/*") or pattern.endswith("/**/*"):
                 base_dir = pattern.split("/")[0] if "/" in pattern else pattern
-                
+
                 # Skip if we've already processed this directory
                 if base_dir in processed_dirs:
                     continue
-                    
+
                 # Check if the base directory exists in downstream
                 base_dest = downstream_path / base_dir
                 if base_dest.exists():
                     logger.info(f"Directory {base_dir} exists, preserving all content")
                     processed_dirs.add(base_dir)
                     continue
-                    
+
                 # Directory doesn't exist, sync all matching files
                 processed_dirs.add(base_dir)
-                
+
             for file_path in template_path.glob(pattern):
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
@@ -367,7 +370,10 @@ class TemplateSyncer:
 
                     # Check if parent directory should be preserved
                     parent_dir = str(relative_path).split("/")[0]
-                    if parent_dir in processed_dirs and (downstream_path / parent_dir).exists():
+                    if (
+                        parent_dir in processed_dirs
+                        and (downstream_path / parent_dir).exists()
+                    ):
                         continue
 
                     # Only copy if destination doesn't exist
@@ -478,7 +484,7 @@ This PR automatically syncs updates from the template repository: {self.template
 
 ### Changes included:
 - Updated reference documentation
-- Updated guides and instructions  
+- Updated guides and instructions
 - Updated shared components
 - Updated scripts and tools
 - **NEW**: GitHub metrics tracking system in scripts/metrics/

@@ -6,9 +6,9 @@ Finds all template sync PRs in downstream repositories and closes older ones,
 keeping only the most recent PR in each repository.
 """
 
-import subprocess
 import json
-from typing import List, Dict, Optional
+import subprocess
+from typing import Dict, List, Optional
 
 
 def run_gh_command(cmd: List[str]) -> Optional[str]:

@@ -32,19 +32,19 @@ curl -s https://raw.githubusercontent.com/Integrum-Global/new_project_template/m
 if grep -q "## Project-Specific Instructions" CLAUDE.md; then
     # Extract everything after project-specific marker
     awk '/## Project-Specific Instructions/{p=1}p' CLAUDE.md > project_section.tmp
-    
+
     # Get template content before project-specific section (if it has one)
     if grep -q "## Project-Specific Instructions" CLAUDE_template.md; then
         awk '/## Project-Specific Instructions/{exit}1' CLAUDE_template.md > template_before.tmp
     else
         cp CLAUDE_template.md template_before.tmp
     fi
-    
+
     # Combine them
     cat template_before.tmp > CLAUDE.md
     echo "" >> CLAUDE.md
     cat project_section.tmp >> CLAUDE.md
-    
+
     rm -f project_section.tmp template_before.tmp
 else
     # No project-specific section, just use template
@@ -57,7 +57,7 @@ git add CLAUDE.md
 git commit -m "fix: update CLAUDE.md with correct todo and mistake paths
 
 - Updated all references from guide/todos/ to todos/
-- Updated all references from guide/mistakes/ to mistakes/  
+- Updated all references from guide/mistakes/ to mistakes/
 - Preserved project-specific instructions section"
 
 # Push and create PR
