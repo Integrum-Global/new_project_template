@@ -37,6 +37,28 @@ file_path = str(get_input_data_path("customers.csv"))
 
 **Migration**: Update hardcoded paths to use centralized utilities.
 
+### ✅ Session 064: PythonCodeNode Output Consistency Fix
+
+**Framework Fix**: All PythonCodeNode outputs now consistently wrapped in `"result"` key:
+
+```python
+# ✅ FIXED: Both dict and non-dict returns work consistently
+def returns_dict(data):
+    return {"processed": data, "count": len(data)}
+
+def returns_simple(x):
+    return x * 2
+
+# Both outputs are wrapped in {"result": ...}
+node1 = PythonCodeNode.from_function(func=returns_dict)
+node2 = PythonCodeNode.from_function(func=returns_simple)
+
+# ✅ Always connect using "result" key
+workflow.connect("node1", "node2", {"result": "input_data"})
+```
+
+**Previously**: Dict returns caused validation errors ("Required output 'result' not provided").
+
 ### ✅ Session 062: PythonCodeNode Best Practices
 
 **New Default**: Use `.from_function()` for code > 3 lines:
@@ -112,7 +134,7 @@ class MyNode(Node):
 class MyNode(Node):
     def get_parameters(self) -> Dict[str, NodeParameter]:
         return {}
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         return {}
 ```
@@ -165,11 +187,11 @@ from typing import Any, Dict, List, Tuple, Optional
 # When using Any type, validate at runtime
 def run(self, **kwargs):
     data = kwargs['data']  # type: Any
-    
+
     # ✅ Add runtime validation
     if not isinstance(data, list):
         raise ValueError(f"Expected list, got {type(data)}")
-    
+
     # Safe to use as list now
     for item in data:
         process(item)
@@ -399,7 +421,7 @@ def parse_json_field(field_value: str, default: dict = None) -> dict:
     """Safely parse JSON string from CSV field."""
     if default is None:
         default = {}
-    
+
     try:
         import json
         return json.loads(field_value)

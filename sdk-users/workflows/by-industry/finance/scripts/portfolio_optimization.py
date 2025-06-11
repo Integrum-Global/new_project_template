@@ -18,12 +18,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+import pandas as pd
+
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
-
-import numpy as np
-import pandas as pd
 
 from examples.utils.data_paths import (
     ensure_output_dir_exists,
@@ -369,7 +369,7 @@ def generate_investment_report(optimization_results: dict, ai_insights: Any) -> 
     if isinstance(ai_insights, str):
         try:
             insights = json.loads(ai_insights)
-        except:
+        except Exception:
             insights = {"analysis": ai_insights}
 
     # Extract key data
@@ -509,7 +509,7 @@ def create_portfolio_optimization_workflow() -> Workflow:
         3. Risk factors to monitor
         4. Alternative investment suggestions
         5. Tax-efficient rebalancing strategies
-        
+
         Consider current market conditions, economic indicators, and the investor's risk profile.
         Provide actionable insights in structured JSON format.""",
         prompt="Analyze this portfolio optimization plan: {{optimization_results}}",

@@ -19,7 +19,6 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-
 from examples.utils.data_paths import (
     ensure_output_dir_exists,
     get_input_data_path,
@@ -160,7 +159,7 @@ def process_ai_response(ai_response: str, risk_metrics: list) -> dict:
             analysis = json.loads(ai_response)
         else:
             analysis = ai_response
-    except:
+    except Exception:
         analysis = {"risk_score": 50, "category": "medium_risk"}
 
     # Ensure we have the risk metrics data
@@ -227,9 +226,9 @@ def create_credit_risk_workflow() -> Workflow:
         system_prompt="You are a financial risk assessment expert. Analyze customer risk data and provide insights.",
         prompt="""
         Analyze the following customer risk metrics and provide a comprehensive assessment:
-        
+
         Risk Data: {{risk_metrics}}
-        
+
         Please provide your analysis in JSON format with:
         {
             "risk_score": <overall_score_0_to_100>,

@@ -7,7 +7,7 @@
 ### Why `.from_function()` is Superior
 
 1. **IDE Support**: Full syntax highlighting, auto-completion, and type hints
-2. **Error Detection**: Immediate syntax and type errors in your IDE  
+2. **Error Detection**: Immediate syntax and type errors in your IDE
 3. **Debugging**: Set breakpoints and step through code
 4. **Refactoring**: Use IDE refactoring tools safely
 5. **Testing**: Functions can be unit tested independently
@@ -209,6 +209,37 @@ workflow.connect("stage1", "stage2", mapping={"result": "stage1_output"})
 workflow.connect("stage2", "stage3", mapping={"result": "stage2_output"})
 ```
 
+## 🔄 Output Handling (Framework Update)
+
+**Important**: As of the latest framework version, all PythonCodeNode outputs are consistently wrapped in a `"result"` key, regardless of whether your function returns a dict, list, or other type.
+
+### Consistent Behavior
+```python
+# Function returning a simple value
+def simple_func(x):
+    return x * 2
+
+# Function returning a dict
+def dict_func(data):
+    return {"processed": data, "count": len(data)}
+
+# Both are wrapped consistently in {"result": ...}
+node1 = PythonCodeNode.from_function(func=simple_func)  # Output: {"result": 42}
+node2 = PythonCodeNode.from_function(func=dict_func)    # Output: {"result": {"processed": [...], "count": 5}}
+```
+
+### Connection Patterns
+```python
+# Always connect using "result" key
+workflow.connect("node1", "node2", {"result": "input_data"})
+workflow.connect("node2", "node3", {"result": "processed_data"})
+```
+
+### Backward Compatibility
+- Existing workflows continue to work unchanged
+- String-based code nodes work as before
+- Only affects the internal wrapping logic for consistency
+
 ## Data Serialization
 
 ### DataFrame Handling
@@ -316,7 +347,7 @@ else:
 4. **Document your mappings**:
    ```python
    # Map discovery results to 'files_found' variable
-   workflow.connect("scanner", "processor", 
+   workflow.connect("scanner", "processor",
                    mapping={"discovered_files": "files_found"})
    ```
 
@@ -357,20 +388,20 @@ node = PythonCodeNode(
 # ✅ BEST: Use from_function for complex logic
 def process_loan_application(application_data: dict) -> dict:
     """Process loan with payment calculation."""
-    
+
     def calculate_payment(principal, rate, months):
         monthly_rate = rate / 12
         if monthly_rate == 0:
             return principal / months
         payment = principal * (monthly_rate * (1 + monthly_rate)**months) / ((1 + monthly_rate)**months - 1)
         return round(payment, 2)
-    
+
     amount = application_data['amount']
     rate = application_data['interest_rate']
     terms = application_data.get('terms_months', 36)
-    
+
     monthly_payment = calculate_payment(amount, rate, terms)
-    
+
     return {
         'approved_amount': amount,
         'monthly_payment': monthly_payment,

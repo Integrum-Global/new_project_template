@@ -4,7 +4,7 @@
 
 ## 🎯 Quick Decision Guide
 | I need to... | Go to | Purpose |
-|--------------|-------|---------|  
+|--------------|-------|---------|
 | Build from scratch | [developer/](developer/) | Technical guides, patterns |
 | Lift working example | [workflows/](workflows/) | Industry & enterprise solutions |
 | Quick code snippet | [essentials/cheatsheet/](essentials/cheatsheet/) | Copy-paste patterns |
@@ -44,14 +44,14 @@
 ### **Development Guides**
 - **[developer/](developer/)** - In-depth technical documentation
   - Node creation and patterns
-  - Parameter types and validation  
+  - Parameter types and validation
   - Common patterns and anti-patterns
   - Workflow design process (Session 064)
   - Data integration patterns (Session 064)
   - Production readiness checklist (Session 064)
   - Troubleshooting guide
 
-### **Working Examples**  
+### **Working Examples**
 - **[workflows/](workflows/)** - Complete production workflows
   - **by-industry/** - Finance, healthcare, manufacturing, retail
   - **by-enterprise/** - HR, marketing, operations, analytics
@@ -88,6 +88,6 @@ For validation rules and common mistakes, see:
 
 ---
 
-**Building workflows?** Start with [developer/](developer/) or [workflows/](workflows/)  
-**Need help?** Check [developer/07-troubleshooting.md](developer/07-troubleshooting.md)  
+**Building workflows?** Start with [developer/](developer/) or [workflows/](workflows/)
+**Need help?** Check [developer/07-troubleshooting.md](developer/07-troubleshooting.md)
 **For SDK development**: See [../sdk-contributors/CLAUDE.md](../sdk-contributors/CLAUDE.md)

@@ -18,12 +18,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+import pandas as pd
+
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
-
-import numpy as np
-import pandas as pd
 
 from examples.utils.data_paths import (
     ensure_output_dir_exists,
@@ -81,7 +81,7 @@ def calculate_technical_indicators(price_data: list, volume_data: list) -> dict:
                 new_price = prices[-1] * (1 + change)
                 prices.append(new_price)
 
-            for i, (date, price) in enumerate(zip(dates, prices)):
+            for i, (date, price) in enumerate(zip(dates, prices, strict=False)):
                 price_data.append(
                     {
                         "symbol": symbol,
@@ -366,7 +366,7 @@ def create_trading_alerts(trading_signals: dict, ai_analysis: Any) -> dict:
     if isinstance(ai_analysis, str):
         try:
             ai_insights = json.loads(ai_analysis)
-        except:
+        except Exception:
             ai_insights = {"analysis": ai_analysis}
 
     signals = trading_signals.get("signals", [])
@@ -521,7 +521,7 @@ def create_trading_signals_workflow() -> Workflow:
         3. Risk warnings and market conditions to watch
         4. Optimal entry/exit timing recommendations
         5. Portfolio-level risk assessment
-        
+
         Consider current market regime, sector rotation, and macro factors.
         Provide analysis in structured JSON format with actionable insights.""",
         prompt="Analyze these trading signals and provide market insights: {{trading_signals}}",

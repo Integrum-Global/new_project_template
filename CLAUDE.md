@@ -20,13 +20,17 @@
 2. **PythonCodeNode**: Input variables EXCLUDED from outputs!
    - `mapping={"result": "input_data"}` ✓
    - `mapping={"result": "result"}` ✗
-3. **Parameter types**: ONLY `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
-4. **Node Creation**: Can create without required params (validated at execution)
-5. **PythonCodeNode Best Practice**: ALWAYS use `.from_function()` for code > 3 lines!
+3. **PythonCodeNode Output Consistency**: ALL outputs wrapped in `"result"` key
+   - ✅ Functions returning dicts: `{"result": {"processed": data}}` 
+   - ✅ Functions returning values: `{"result": 42}`
+   - ✅ Always connect using: `{"result": "input_param"}`
+4. **Parameter types**: ONLY `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
+5. **Node Creation**: Can create without required params (validated at execution)
+6. **PythonCodeNode Best Practice**: ALWAYS use `.from_function()` for code > 3 lines!
    - ❌ `PythonCodeNode(name="x", code="...100 lines...")` → Inline strings = NO IDE support
    - ✅ `PythonCodeNode.from_function(name="x", func=my_func)` → Full IDE support
    - String code ONLY for: one-liners, dynamic generation, user input
-6. **Enhanced MCP Server**: Production-ready features enabled by default
+7. **Enhanced MCP Server**: Production-ready features enabled by default
    - ✅ `from kailash.mcp import MCPServer` → Gets caching, metrics, config management
    - ✅ `@server.tool(cache_key="name", cache_ttl=600)` → Automatic caching with TTL
    - ✅ `@server.tool(format_response="markdown")` → LLM-friendly formatting

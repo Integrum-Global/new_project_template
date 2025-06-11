@@ -18,12 +18,12 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+import pandas as pd
+
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
-
-import numpy as np
-import pandas as pd
 
 from examples.utils.data_paths import (
     ensure_output_dir_exists,
@@ -237,7 +237,7 @@ def generate_fraud_alerts(transaction_summary: dict, ai_response: Any) -> dict:
     if isinstance(ai_response, str):
         try:
             ai_analysis = json.loads(ai_response)
-        except:
+        except Exception:
             ai_analysis = {"analysis": ai_response}
 
     # Generate alerts for high-risk transactions
@@ -323,13 +323,13 @@ def create_fraud_detection_workflow() -> Workflow:
         2. Specific fraud pattern identification (account takeover, card testing, etc.)
         3. Recommended actions (block, review, allow with monitoring)
         4. Additional investigation points
-        
+
         Consider factors like:
         - Transaction velocity and amounts
         - Time patterns and geographic indicators
         - Historical customer behavior
         - Known fraud patterns
-        
+
         Provide your analysis in structured JSON format.""",
         prompt="Analyze these high-risk transactions for fraud patterns: {{high_risk_transactions}}",
     )
