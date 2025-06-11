@@ -69,7 +69,7 @@ SYNC_PATTERNS = [
     # Root configuration files
     ".pre-commit-config.yaml",
     "MANIFEST.in",
-    # Note: CLAUDE.md removed from auto-sync - contains user-specific workflow instructions
+    "CLAUDE.md",  # Now syncs to all downstream repos to ensure consistent instructions
 ]
 
 # Files that require special merge handling
@@ -84,7 +84,6 @@ SYNC_IF_MISSING = [
     "README.md",
     "pyproject.toml",
     "CHANGELOG.md",
-    "CLAUDE.md",  # User-specific workflow instructions - sync only if missing
     # Project-specific directories - sync ALL content recursively if directory missing
     "adr/*",  # All ADR files and subdirectories
     "adr/**/*",  # All nested ADR content
