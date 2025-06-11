@@ -44,8 +44,8 @@ See the SDK documentation: `sdk-users/INFRASTRUCTURE_NO_DOCKER.md`
 
 ### Credentials
 Default credentials (for development only):
-- PostgreSQL: `postgres/postgres`
-- MongoDB: `admin/admin`
+- PostgreSQL: `kailash/kailash123`
+- MongoDB: `kailash/kailash123`
 - Redis: No authentication
 
 ## 🔧 Configuration
@@ -56,15 +56,15 @@ Create a `.env` file in your project root:
 # Database
 DB_HOST=localhost
 DB_PORT=5432
-DB_USER=postgres
-DB_PASSWORD=postgres
+DB_USER=kailash
+DB_PASSWORD=kailash123
 DB_NAME=kailash_dev
 
 # MongoDB
 MONGO_HOST=localhost
 MONGO_PORT=27017
-MONGO_USER=admin
-MONGO_PASSWORD=admin
+MONGO_USER=kailash
+MONGO_PASSWORD=kailash123
 
 # Redis
 REDIS_HOST=localhost
@@ -91,8 +91,8 @@ storage = PostgreSQLStorage(
     host="localhost",
     port=5432,
     database="kailash_dev",
-    user="postgres",
-    password="postgres"
+    user="kailash",
+    password="kailash123"
 )
 ```
 
@@ -102,7 +102,7 @@ from kailash.nodes.data import MongoDBReaderNode
 
 mongo_reader = MongoDBReaderNode(
     name="mongo_reader",
-    connection_string="mongodb://admin:admin@localhost:27017",
+    connection_string="mongodb://kailash:kailash123@localhost:27017",
     database="workflow_data",
     collection="documents"
 )
