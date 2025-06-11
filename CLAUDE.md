@@ -31,6 +31,15 @@
    - ✅ `@server.tool(cache_key="name", cache_ttl=600)` → Automatic caching with TTL
    - ✅ `@server.tool(format_response="markdown")` → LLM-friendly formatting
 
+## 🔧 Core Node Quick Reference (80+ total)
+**AI**: LLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, MCPAgentNode, SelfOrganizingAgentNode
+**Data**: CSVReaderNode, JSONReaderNode, SQLDatabaseNode, SharePointGraphReader, DirectoryReaderNode
+**API**: HTTPRequestNode, RESTClientNode, OAuth2Node, GraphQLClientNode
+**Logic**: SwitchNode, MergeNode, WorkflowNode, ConvergenceCheckerNode
+**Transform**: FilterNode, Map, DataTransformer, HierarchicalChunkerNode
+**Code**: PythonCodeNode (use only when no specialized node exists)
+**Full catalog**: sdk-users/nodes/comprehensive-node-catalog.md
+
 ## ⚠️ CRITICAL: DO NOT EDIT sdk-users/ DIRECTORY
 **The entire `sdk-users/` directory is automatically synced from the template.**
 - ❌ **DO NOT** add, edit, or modify ANY files in `sdk-users/`
