@@ -9,7 +9,7 @@ This guide explains how to set up and use the SDK development infrastructure for
 Run the setup script which will install Docker if needed and start all services:
 
 ```bash
-./scripts/setup-sdk-environment.sh
+./infrastructure/scripts/setup-sdk-environment.sh
 ```
 
 Choose option 1 for full installation.

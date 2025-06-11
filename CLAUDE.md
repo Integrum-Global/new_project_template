@@ -1,11 +1,35 @@
 # Solution Development with Kailash SDK
 
+## 📁 Quick Directory Access by Role
+
+| **SDK Users** (Building with SDK) |
+|-----------------------------------|
+| [sdk-users/developer/](sdk-users/developer/) - Build from scratch |
+| [sdk-users/workflows/](sdk-users/workflows/) - Production workflows |
+| [sdk-users/essentials/](sdk-users/essentials/) - Quick patterns |
+| | [examples/feature-tests/](examples/feature-tests/) - Feature validation |
+
 ## 🎯 Quick Navigation
-- **Build workflows** → sdk-users/ (synced from SDK, don't edit)
 - **Track project** → todos/, adr/, mistakes/ (project-specific)
 - **Business logic** → src/solutions/ (your implementations)
 - **Project vision** → prd/ (your requirements)
 - **Migrate legacy** → migrations/ (convert existing projects)
+- 
+## ⚡ Critical Validation Rules
+1. **Node Names**: ALL end with "Node" (`CSVReaderNode` ✓)
+2. **PythonCodeNode**: Input variables EXCLUDED from outputs!
+   - `mapping={"result": "input_data"}` ✓
+   - `mapping={"result": "result"}` ✗
+3. **Parameter types**: ONLY `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
+4. **Node Creation**: Can create without required params (validated at execution)
+5. **PythonCodeNode Best Practice**: ALWAYS use `.from_function()` for code > 3 lines!
+   - ❌ `PythonCodeNode(name="x", code="...100 lines...")` → Inline strings = NO IDE support
+   - ✅ `PythonCodeNode.from_function(name="x", func=my_func)` → Full IDE support
+   - String code ONLY for: one-liners, dynamic generation, user input
+6. **Enhanced MCP Server**: Production-ready features enabled by default
+   - ✅ `from kailash.mcp import MCPServer` → Gets caching, metrics, config management
+   - ✅ `@server.tool(cache_key="name", cache_ttl=600)` → Automatic caching with TTL
+   - ✅ `@server.tool(format_response="markdown")` → LLM-friendly formatting
 
 ## ⚠️ CRITICAL: DO NOT EDIT sdk-users/ DIRECTORY
 **The entire `sdk-users/` directory is automatically synced from the template.**
@@ -15,13 +39,6 @@
 - ✅ **ALL changes will be LOST** during the next template sync
 - ✅ **Report issues** to the template repository instead
 - ✅ **Use `src/solutions/`** for your custom code and workflows
-
-## ⚡ Critical Validation Rules
-1. **Node Names**: ALL end with "Node" (`CSVReaderNode` ✓)
-2. **PythonCodeNode**: Input variables EXCLUDED from outputs!
-   - `mapping={"result": "input_data"}` ✓
-   - `mapping={"result": "result"}` ✗
-3. **Parameter types**: ONLY `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
 
 ## 🚀 Quick Code Patterns
 ```python
