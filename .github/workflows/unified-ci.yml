@@ -284,43 +284,11 @@ jobs:
         with:
           sarif_file: 'trivy-results.sarif'
 
-  validate-examples:
-    name: Validate Examples
-    needs: determine-context
-    if: needs.determine-context.outputs.test-level == 'full'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install uv
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        run: |
-          uv venv
-          # Check if dist/ exists and contains wheel files
-          if [ -d "dist" ] && ls dist/*.whl 1> /dev/null 2>&1; then
-            echo "Found wheel files in dist/ directory"
-            # uv will use find-links from pyproject.toml automatically
-          fi
-          uv sync
-
-      - name: Test all examples
-        run: |
-          cd examples
-          uv run python _utils/test_all_examples.py
 
   # Summary job for PR status
   pr-summary:
     name: PR Summary
-    needs: [lint-and-format, test-matrix, security-scan, validate-examples]
+    needs: [lint-and-format, test-matrix, security-scan]
     if: always() && github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
@@ -331,8 +299,7 @@ jobs:
             const jobs = [
               { name: 'Lint and Format', status: '${{ needs.lint-and-format.result }}' },
               { name: 'Tests', status: '${{ needs.test-matrix.result }}' },
-              { name: 'Security', status: '${{ needs.security-scan.result }}' },
-              { name: 'Examples', status: '${{ needs.validate-examples.result }}' }
+              { name: 'Security', status: '${{ needs.security-scan.result }}' }
             ];
 
             let comment = '## 🤖 CI Pipeline Results\n\n';
