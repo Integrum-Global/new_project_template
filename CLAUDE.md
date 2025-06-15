@@ -120,81 +120,15 @@ solutions/
 - ✅ **No shared files** that multiple teams modify
 - ✅ **Clear ownership** boundaries between apps and solutions
 
-### Multi-Developer Workflow
-```bash
-# Team A works on user management
-cd apps/user_management
-echo "- [ ] Add password reset" >> todos/000-master.md
-
-# Team B works on analytics (no conflicts!)
-cd apps/analytics  
-echo "- [ ] Add real-time dashboard" >> todos/000-master.md
-
-# Solutions architect coordinates cross-app work
-cd solutions
-echo "- [ ] Integrate user events with analytics" >> todos/000-master.md
-```
-
-## 🔧 Quick Node Reference
-**AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, MCPAgentNode
+## 🔧 Core Nodes (110+ available)
+**AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, SelfOrganizingAgentNode
 **Data**: CSVReaderNode, JSONReaderNode, SQLDatabaseNode, AsyncSQLDatabaseNode, DirectoryReaderNode
+**RAG**: 47+ specialized nodes - see [comprehensive guide](sdk-users/developer/20-comprehensive-rag-guide.md)
 **API**: HTTPRequestNode, RESTClientNode, OAuth2Node, GraphQLClientNode
 **Logic**: SwitchNode, MergeNode, WorkflowNode, ConvergenceCheckerNode
-**Transform**: FilterNode, DataTransformer, HierarchicalChunkerNode
-**Security**: CredentialManagerNode, AccessControlManager, AuditLogNode
+**Auth/Security**: MultiFactorAuthNode, ThreatDetectionNode, AccessControlManager, GDPRComplianceNode
+**Middleware**: AgentUIMiddleware, RealtimeMiddleware, APIGateway, AIChatMiddleware
 **Full catalog**: [sdk-users/nodes/comprehensive-node-catalog.md](sdk-users/nodes/comprehensive-node-catalog.md)
-
-## 🚀 Development Workflow
-
-### 1. Creating New Apps
-```bash
-# Copy the template
-cp -r apps/_template apps/my_new_app
-cd apps/my_new_app
-
-# Customize
-# Edit setup.py, config.py, README.md
-
-# Start isolated project management
-echo "# Initial App Architecture" > adr/001-setup.md
-echo "- [ ] Define core models" > todos/000-master.md
-```
-
-### 2. Building with SDK
-```python
-from kailash.nodes.data import CSVReaderNode
-from kailash.nodes.ai import LLMAgentNode
-from kailash.workflow import Workflow
-from kailash.runtime import LocalRuntime
-
-class MyAppWorkflow(Workflow):
-    def __init__(self):
-        super().__init__("my_app_workflow")
-        
-        # Use SDK nodes
-        self.data_reader = CSVReaderNode(name="reader")
-        self.ai_processor = LLMAgentNode(name="processor")
-        
-        # Connect workflow
-        self.add_edge(self.data_reader, self.ai_processor)
-    
-    def execute(self, inputs):
-        runtime = LocalRuntime(enable_async=True)
-        return runtime.execute(self, inputs)
-```
-
-### 3. Cross-App Coordination
-```python
-# In solutions/tenant_orchestration/
-from apps.user_management.workflows import CreateUserWorkflow
-from apps.analytics.workflows import TrackUserWorkflow
-
-def complete_user_onboarding(user_data):
-    # Coordinate across multiple apps
-    user = CreateUserWorkflow().execute(user_data)
-    TrackUserWorkflow().execute({"user_id": user.id})
-    return user
-```
 
 ## 📚 Key Documentation
 
@@ -211,8 +145,11 @@ def complete_user_onboarding(user_data):
 ### Every Development Session:
 1. **Check app todos**: `cat apps/my_app/todos/000-master.md`
 2. **Update task status**: Mark `[~]` when starting, `[x]` when completing
-3. **Document decisions**: Add to `apps/my_app/adr/` for app-specific choices
-4. **Track learnings**: Add to `apps/my_app/mistakes/` when you solve issues
+3. **Plan**: Check ADRs, use `sdk-users/essentials/` for patterns
+4. **Document decisions**: Add to `apps/my_app/adr/` for app-specific choices
+5. **Implement**: Use node catalog, create tests in `examples/`
+6. **Document all the time**: Update todos, add to workflows, align docs
+7. **Track learnings**: Add to `apps/my_app/mistakes/` when you solve issues
 
 ### Multi-App Coordination:
 1. **Solutions planning**: Use `solutions/todos/000-master.md` for cross-app work

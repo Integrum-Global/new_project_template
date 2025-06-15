@@ -1,0 +1,37 @@
+name: template-api
+version: 0.1.0
+type: api
+description: Template for pure API applications
+
+capabilities:
+  api:
+    enabled: true
+    port: 8000
+    framework: fastapi
+    endpoints:
+      - /health
+      - /api/v1/
+    docs_url: /docs
+    openapi_url: /openapi.json
+  
+  mcp:
+    enabled: false
+
+dependencies:
+  required: []
+  optional:
+    - postgres
+    - redis
+
+deployment:
+  dockerfile: Dockerfile
+  health_check: /health
+  environment:
+    - LOG_LEVEL=INFO
+    - API_HOST=0.0.0.0
+    - API_PORT=8000
+
+tags:
+  - api
+  - template
+  - rest

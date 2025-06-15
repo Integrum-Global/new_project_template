@@ -28,7 +28,20 @@ cp .env.template .env
 # Edit .env with your project-specific settings
 ```
 
-### 2. Create Your First App
+### 2. Try the Centralized Deployment (NEW!)
+```bash
+# Start the entire platform with one command
+./deployment/scripts/start.sh
+
+# Access the unified gateway
+curl http://localhost:8000/api/v1/discovery
+curl http://localhost:8000/api/v1/tools
+
+# Stop when done
+./deployment/scripts/stop.sh
+```
+
+### 3. Create Your First App
 ```bash
 # Copy the app template
 cp -r apps/_template apps/my_first_app
@@ -38,12 +51,13 @@ cd apps/my_first_app
 # 1. Edit setup.py (change app name, description)
 # 2. Update README.md
 # 3. Modify config.py with your settings
+# 4. Update manifest.yaml with your app's capabilities
 
 # Install your app
 pip install -e .
 ```
 
-### 3. Start Development
+### 4. Start Development
 ```bash
 # Your app has isolated project management
 echo "# Initial Architecture Decision" > adr/001-app-setup.md
@@ -202,27 +216,52 @@ The `sdk-users/` folder contains curated guidance from the Kailash team:
 - **Production Workflows**: `sdk-users/workflows/by-pattern/`
 - **Node Catalog**: `sdk-users/nodes/comprehensive-node-catalog.md`
 
-## 🚢 Deployment
+## 🚢 Centralized Deployment Architecture
 
-### Development
+This template includes a **centralized deployment system** that unifies traditional APIs and MCP servers through an enterprise gateway with service discovery.
+
+### ✨ Features
+- **🔍 Auto-Discovery**: Apps declare capabilities in `manifest.yaml`
+- **🔗 Unified Gateway**: Single entry point for all services
+- **📊 Tool Aggregation**: Combines MCP tools from multiple apps
+- **🏥 Health Monitoring**: Real-time service health and metrics
+- **🐳 Multi-Platform**: Docker, Kubernetes, and Helm support
+
+### Quick Deployment
 ```bash
-# Run individual apps
-cd apps/my_app
-python -m api.main  # Start API server
-python -m cli.main --help  # See CLI commands
+# Start entire platform
+./deployment/scripts/start.sh
+
+# Access unified services
+curl http://localhost:8000/api/v1/discovery  # Service discovery
+curl http://localhost:8000/api/v1/tools      # Aggregated tools
+curl http://localhost:8000/docs              # API documentation
+
+# Stop when done
+./deployment/scripts/stop.sh
 ```
 
-### Production
+### Production Deployment
 ```bash
-# Docker deployment
-docker-compose up -d
+# Docker Compose
+cd deployment/docker && docker-compose up -d
 
-# Kubernetes deployment  
-kubectl apply -f infrastructure/kubernetes/
+# Kubernetes
+cd deployment/kubernetes
+kubectl apply -f infrastructure/
+kubectl apply -f apps/
 
-# Monitor all apps
-./infrastructure/scripts/monitor-all-apps.sh
+# Helm Charts
+cd deployment/helm && helm install mcp-platform .
 ```
+
+### Adding New Apps
+1. Create app with `manifest.yaml`
+2. Gateway automatically discovers it
+3. Tools appear in unified catalog
+4. No manual configuration required!
+
+See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for complete details.
 
 ## 🛡️ Security & Best Practices
 
