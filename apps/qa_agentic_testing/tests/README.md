@@ -5,7 +5,7 @@
 ```
 tests/
 ├── unit/                    # Unit tests for individual components
-├── integration/             # Integration tests for component interactions  
+├── integration/             # Integration tests for component interactions
 ├── functional/              # Functional tests for complete features
 ├── performance/             # Performance and load tests
 └── run_all_tests.py        # Main test runner with HTML report generation
@@ -88,7 +88,7 @@ The HTML report includes:
 1. **Always save results to qa_results/**
    ```python
    from tests import get_results_path
-   
+
    results_file = get_results_path("my_test_results.json")
    ```
 

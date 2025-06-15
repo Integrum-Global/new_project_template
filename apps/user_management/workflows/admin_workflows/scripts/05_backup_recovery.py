@@ -10,13 +10,13 @@ This workflow handles backup and disaster recovery including:
 - Business continuity operations
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
 from workflow_runner import WorkflowRunner, create_user_context_node
 
@@ -25,11 +25,11 @@ class BackupRecoveryWorkflow:
     """
     Complete backup and recovery workflow for administrators.
     """
-    
+
     def __init__(self, admin_user_id: str = "admin"):
         """
         Initialize the backup and recovery workflow.
-        
+
         Args:
             admin_user_id: ID of the administrator performing backup operations
         """
@@ -39,39 +39,48 @@ class BackupRecoveryWorkflow:
             user_id=admin_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def manage_backup_operations(self, backup_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def manage_backup_operations(
+        self, backup_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Manage comprehensive backup operations.
-        
+
         Args:
             backup_config: Backup configuration parameters
-            
+
         Returns:
             Backup management results
         """
         print("💾 Managing Backup Operations...")
-        
+
         if not backup_config:
             backup_config = {
                 "backup_type": "full",
                 "include_validation": True,
-                "retention_policy": "standard"
+                "retention_policy": "standard",
             }
-        
+
         builder = self.runner.create_workflow("backup_management")
-        
+
         # Add admin context for backup operations
-        builder.add_node("PythonCodeNode", "admin_context", 
-                        create_user_context_node(self.admin_user_id, "admin", 
-                                                ["system_admin", "backup_admin"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "admin_context",
+            create_user_context_node(
+                self.admin_user_id, "admin", ["system_admin", "backup_admin"]
+            ),
+        )
+
         # Execute comprehensive backup operations
-        builder.add_node("PythonCodeNode", "execute_backup", {
-            "name": "execute_comprehensive_backup",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "execute_backup",
+            {
+                "name": "execute_comprehensive_backup",
+                "code": f"""
 from datetime import datetime, timedelta
 
 # Execute comprehensive backup operations
@@ -96,7 +105,7 @@ database_backup = {{
             "table_count": 2,
             "record_count": 45823,
             "size_mb": 89.4,
-            "backup_status": "completed", 
+            "backup_status": "completed",
             "checksum": "f6e5d4c3b2a1",
             "compression_ratio": 0.81
         }},
@@ -257,18 +266,22 @@ result = {{
         "backup_summary": backup_summary
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Validate backup integrity
-        builder.add_node("PythonCodeNode", "validate_backup_integrity", {
-            "name": "validate_backup_integrity_and_consistency",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_backup_integrity",
+            {
+                "name": "validate_backup_integrity_and_consistency",
+                "code": """
 # Validate backup integrity and consistency
 backup_results = backup_execution_results
 
 if backup_results.get("backup_completed") and backup_results.get("backup_summary", {}).get("validation_required"):
-    
+
     # Database backup validation
     db_backup = backup_results.get("database_backup", {})
     db_validation = {
@@ -276,11 +289,11 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
         "consistency_checks": {},
         "performance_tests": {}
     }
-    
+
     # Validate each database component
     for component, details in db_backup.get("database_components", {}).items():
         checksum = details.get("checksum")
-        
+
         # Integrity validation
         db_validation["integrity_checks"][component] = {
             "checksum_verified": True,  # Simulated verification
@@ -288,7 +301,7 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "record_count_verified": True,
             "status": "passed"
         }
-        
+
         # Consistency validation
         db_validation["consistency_checks"][component] = {
             "foreign_key_integrity": True,
@@ -296,7 +309,7 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "index_consistency": True,
             "status": "passed"
         }
-    
+
     # File system backup validation
     fs_backup = backup_results.get("filesystem_backup", {})
     fs_validation = {
@@ -304,7 +317,7 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
         "directory_structure": {},
         "permissions_preserved": {}
     }
-    
+
     for component, details in fs_backup.get("filesystem_components", {}).items():
         fs_validation["file_integrity"][component] = {
             "checksum_verified": True,
@@ -312,25 +325,25 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "size_verified": True,
             "status": "passed"
         }
-        
+
         fs_validation["directory_structure"][component] = {
             "structure_preserved": True,
             "symlinks_preserved": True,
             "hidden_files_included": True,
             "status": "passed"
         }
-        
+
         fs_validation["permissions_preserved"][component] = {
             "file_permissions": True,
             "ownership_preserved": True,
             "acl_preserved": True,
             "status": "passed"
         }
-    
+
     # Configuration backup validation
     config_backup = backup_results.get("configuration_backup", {})
     config_validation = {}
-    
+
     for component, details in config_backup.get("configuration_components", {}).items():
         config_validation[component] = {
             "syntax_validation": True,
@@ -338,11 +351,11 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "version_compatibility": True,
             "status": "passed"
         }
-    
+
     # Security backup validation
     security_backup = backup_results.get("security_backup", {})
     security_validation = {}
-    
+
     for component, details in security_backup.get("security_components", {}).items():
         security_validation[component] = {
             "encryption_verified": True,
@@ -350,7 +363,7 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "access_controls": True,
             "status": "passed"
         }
-    
+
     # Recovery testing (limited test)
     recovery_test = {
         "test_database_restore": {
@@ -374,7 +387,7 @@ if backup_results.get("backup_completed") and backup_results.get("backup_summary
             "status": "passed"
         }
     }
-    
+
     # Overall validation summary
     validation_summary = {
         "validation_completed": True,
@@ -407,47 +420,58 @@ result = {
         "validation_summary": validation_summary
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect backup nodes
         builder.add_connection("admin_context", "result", "execute_backup", "context")
-        builder.add_connection("execute_backup", "result.result", "validate_backup_integrity", "backup_execution_results")
-        
+        builder.add_connection(
+            "execute_backup",
+            "result.result",
+            "validate_backup_integrity",
+            "backup_execution_results",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, backup_config, "backup_management"
         )
-        
+
         return results
-    
-    def plan_disaster_recovery(self, recovery_scenario: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def plan_disaster_recovery(
+        self, recovery_scenario: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Plan and validate disaster recovery procedures.
-        
+
         Args:
             recovery_scenario: Recovery scenario parameters
-            
+
         Returns:
             Disaster recovery planning results
         """
         print("🚨 Planning Disaster Recovery...")
-        
+
         if not recovery_scenario:
             recovery_scenario = {
                 "scenario_type": "complete_system_failure",
                 "recovery_tier": "tier_1",  # Critical business function
-                "target_rto": "4_hours",    # Recovery Time Objective
-                "target_rpo": "1_hour"     # Recovery Point Objective
+                "target_rto": "4_hours",  # Recovery Time Objective
+                "target_rpo": "1_hour",  # Recovery Point Objective
             }
-        
+
         builder = self.runner.create_workflow("disaster_recovery_planning")
-        
+
         # Analyze disaster recovery requirements
-        builder.add_node("PythonCodeNode", "analyze_recovery_requirements", {
-            "name": "analyze_disaster_recovery_requirements",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_recovery_requirements",
+            {
+                "name": "analyze_disaster_recovery_requirements",
+                "code": f"""
 # Analyze disaster recovery requirements and scenarios
 recovery_scenario = {recovery_scenario}
 scenario_type = recovery_scenario.get("scenario_type", "complete_system_failure")
@@ -661,13 +685,17 @@ result = {{
         "analysis_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate recovery testing plan
-        builder.add_node("PythonCodeNode", "generate_recovery_testing", {
-            "name": "generate_disaster_recovery_testing_plan",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_recovery_testing",
+            {
+                "name": "generate_disaster_recovery_testing_plan",
+                "code": """
 # Generate comprehensive disaster recovery testing plan
 recovery_requirements = recovery_planning_analysis
 
@@ -676,7 +704,7 @@ if recovery_requirements.get("analysis_completed"):
     scenario_type = recovery_requirements.get("scenario_analyzed")
     target_rto = recovery_requirements.get("target_rto")
     target_rpo = recovery_requirements.get("target_rpo")
-    
+
     # Testing methodology
     testing_methodology = {
         "testing_types": {
@@ -710,10 +738,10 @@ if recovery_requirements.get("analysis_completed"):
             }
         }
     }
-    
+
     # Test scenarios for each recovery procedure
     test_scenarios = {}
-    
+
     for procedure_name, procedure_details in recovery_procedures.items():
         test_scenarios[procedure_name] = {
             "scenario_description": f"Test {procedure_name} under controlled conditions",
@@ -737,7 +765,7 @@ if recovery_requirements.get("analysis_completed"):
                 "monitoring": "continuous_observation"
             }
         }
-    
+
     # Testing schedule and calendar
     testing_schedule = {
         "annual_testing_calendar": [
@@ -747,7 +775,7 @@ if recovery_requirements.get("analysis_completed"):
                 "focus_areas": ["new_procedures", "staff_training", "vendor_coordination"]
             },
             {
-                "quarter": "Q2", 
+                "quarter": "Q2",
                 "scheduled_tests": ["full_recovery_simulation", "application_recovery_test", "network_failover_test"],
                 "focus_areas": ["rto_rpo_validation", "automation_testing", "performance_optimization"]
             },
@@ -769,7 +797,7 @@ if recovery_requirements.get("analysis_completed"):
             "vendor_response_validation"
         ]
     }
-    
+
     # Test metrics and KPIs
     test_metrics = {
         "recovery_time_metrics": {
@@ -797,12 +825,12 @@ if recovery_requirements.get("analysis_completed"):
             "training_completion": "percentage_of_required_training"
         }
     }
-    
+
     # Continuous improvement process
     improvement_process = {
         "post_test_review": {
             "immediate_debrief": "within_24_hours",
-            "detailed_analysis": "within_1_week", 
+            "detailed_analysis": "within_1_week",
             "action_plan_creation": "within_2_weeks",
             "procedure_updates": "within_1_month"
         },
@@ -838,45 +866,56 @@ result = {
         "plan_creation_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect disaster recovery planning nodes
-        builder.add_connection("analyze_recovery_requirements", "result.result", "generate_recovery_testing", "recovery_planning_analysis")
-        
+        builder.add_connection(
+            "analyze_recovery_requirements",
+            "result.result",
+            "generate_recovery_testing",
+            "recovery_planning_analysis",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, recovery_scenario, "disaster_recovery_planning"
         )
-        
+
         return results
-    
-    def execute_recovery_testing(self, test_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def execute_recovery_testing(
+        self, test_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Execute disaster recovery testing procedures.
-        
+
         Args:
             test_config: Recovery testing configuration
-            
+
         Returns:
             Recovery testing results
         """
         print("🧪 Executing Recovery Testing...")
-        
+
         if not test_config:
             test_config = {
                 "test_type": "partial_recovery",
                 "components": ["database", "application"],
-                "test_environment": "staging"
+                "test_environment": "staging",
             }
-        
+
         builder = self.runner.create_workflow("recovery_testing")
-        
+
         # Execute recovery test procedures
-        builder.add_node("PythonCodeNode", "execute_recovery_test", {
-            "name": "execute_disaster_recovery_test",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "execute_recovery_test",
+            {
+                "name": "execute_disaster_recovery_test",
+                "code": f"""
 # Execute disaster recovery testing procedures
 test_config = {test_config}
 test_type = test_config.get("test_type", "partial_recovery")
@@ -927,7 +966,7 @@ for component in components:
             "issues_identified": [],
             "recommendations": ["Consider parallel restoration for faster recovery"]
         }}
-    
+
     if component == "application":
         component_test_results["application"] = {{
             "test_started": datetime.now().isoformat(),
@@ -963,7 +1002,7 @@ for component in components:
             "issues_identified": ["Minor delay in external service connections"],
             "recommendations": ["Implement connection retry logic", "Consider health check timeout adjustment"]
         }}
-    
+
     if component == "infrastructure":
         component_test_results["infrastructure"] = {{
             "test_started": datetime.now().isoformat(),
@@ -1082,98 +1121,124 @@ result = {{
         "test_completion_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, test_config, "recovery_testing"
         )
-        
+
         return results
-    
+
     def run_comprehensive_backup_recovery_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all backup and recovery operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Backup and Recovery Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Execute backup operations
             print("\n1. Executing Backup Operations...")
             backup_config = {
                 "backup_type": "full",
                 "include_validation": True,
-                "retention_policy": "standard"
+                "retention_policy": "standard",
             }
-            demo_results["backup_operations"] = self.manage_backup_operations(backup_config)
-            
+            demo_results["backup_operations"] = self.manage_backup_operations(
+                backup_config
+            )
+
             # 2. Plan disaster recovery
             print("\n2. Planning Disaster Recovery...")
             recovery_scenario = {
                 "scenario_type": "complete_system_failure",
                 "recovery_tier": "tier_1",
                 "target_rto": "4_hours",
-                "target_rpo": "1_hour"
+                "target_rpo": "1_hour",
             }
-            demo_results["disaster_recovery_planning"] = self.plan_disaster_recovery(recovery_scenario)
-            
+            demo_results["disaster_recovery_planning"] = self.plan_disaster_recovery(
+                recovery_scenario
+            )
+
             # 3. Execute recovery testing
             print("\n3. Executing Recovery Testing...")
             test_config = {
                 "test_type": "partial_recovery",
                 "components": ["database", "application"],
-                "test_environment": "staging"
+                "test_environment": "staging",
             }
-            demo_results["recovery_testing"] = self.execute_recovery_testing(test_config)
-            
+            demo_results["recovery_testing"] = self.execute_recovery_testing(
+                test_config
+            )
+
             # Print comprehensive summary
             self.print_backup_recovery_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Backup and recovery demonstration failed: {str(e)}")
             raise
-    
+
     def print_backup_recovery_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive backup and recovery summary.
-        
+
         Args:
             results: Backup and recovery results from all workflows
         """
         print("\n" + "=" * 70)
         print("BACKUP AND RECOVERY DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Backup operations summary
-        backup_result = results.get("backup_operations", {}).get("execute_backup", {}).get("result", {}).get("result", {})
+        backup_result = (
+            results.get("backup_operations", {})
+            .get("execute_backup", {})
+            .get("result", {})
+            .get("result", {})
+        )
         backup_summary = backup_result.get("backup_summary", {})
-        print(f"💾 Backup: {backup_summary.get('total_data_size', 'N/A')} backed up in {backup_summary.get('total_backup_time', 'N/A')}")
-        
+        print(
+            f"💾 Backup: {backup_summary.get('total_data_size', 'N/A')} backed up in {backup_summary.get('total_backup_time', 'N/A')}"
+        )
+
         # Disaster recovery planning summary
-        dr_result = results.get("disaster_recovery_planning", {}).get("analyze_recovery_requirements", {}).get("result", {}).get("result", {})
+        dr_result = (
+            results.get("disaster_recovery_planning", {})
+            .get("analyze_recovery_requirements", {})
+            .get("result", {})
+            .get("result", {})
+        )
         scenario = dr_result.get("scenario_analyzed", "unknown")
         target_rto = dr_result.get("target_rto", "unknown")
         print(f"🚨 DR Plan: {scenario} scenario, {target_rto} RTO target")
-        
+
         # Recovery testing summary
-        test_result = results.get("recovery_testing", {}).get("execute_recovery_test", {}).get("result", {}).get("result", {})
+        test_result = (
+            results.get("recovery_testing", {})
+            .get("execute_recovery_test", {})
+            .get("result", {})
+            .get("result", {})
+        )
         test_summary = test_result.get("test_summary", {})
         success_rate = test_summary.get("test_success_rate", 0)
-        print(f"🧪 Testing: {success_rate}% success rate, {test_summary.get('components_tested', 0)} components tested")
-        
+        print(
+            f"🧪 Testing: {success_rate}% success rate, {test_summary.get('components_tested', 0)} components tested"
+        )
+
         print("\n🎉 All backup and recovery operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1181,27 +1246,32 @@ result = {{
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the backup and recovery workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Backup and Recovery Workflow...")
-        
+
         # Create test workflow
         backup_recovery = BackupRecoveryWorkflow("test_admin")
-        
+
         # Test backup operations
         result = backup_recovery.manage_backup_operations()
-        if not result.get("execute_backup", {}).get("result", {}).get("result", {}).get("backup_completed"):
+        if (
+            not result.get("execute_backup", {})
+            .get("result", {})
+            .get("result", {})
+            .get("backup_completed")
+        ):
             return False
-        
+
         print("✅ Backup and recovery workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Backup and recovery workflow test failed: {str(e)}")
         return False
@@ -1215,7 +1285,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         backup_recovery = BackupRecoveryWorkflow()
-        
+
         try:
             results = backup_recovery.run_comprehensive_backup_recovery_demo()
             print("🎉 Backup and recovery demonstration completed successfully!")

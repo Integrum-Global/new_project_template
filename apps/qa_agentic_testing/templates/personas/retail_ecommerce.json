@@ -9,7 +9,7 @@
     ],
     "goals": [
       "Resolve customer issues",
-      "Process returns efficiently", 
+      "Process returns efficiently",
       "Maintain customer satisfaction",
       "Handle order inquiries",
       "Escalate complex problems"
@@ -30,7 +30,7 @@
     "name": "Ian Inventory",
     "role": "Inventory Management Specialist",
     "permissions": [
-      "inventory:manage", "stock:monitor", "orders:place", 
+      "inventory:manage", "stock:monitor", "orders:place",
       "suppliers:coordinate", "forecasting:access", "reports:generate"
     ],
     "goals": [

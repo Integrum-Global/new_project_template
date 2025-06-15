@@ -24,7 +24,7 @@ Refactor all user management workflows to use the app's own components and servi
 ### **1. Service Node Integration**
 Created custom service wrapper nodes:
 - `UserServiceNode` - Wraps UserService operations
-- `RoleServiceNode` - Wraps RoleService operations  
+- `RoleServiceNode` - Wraps RoleService operations
 - `SecurityServiceNode` - Wraps SecurityService operations
 - `ComplianceServiceNode` - Wraps ComplianceService operations
 
@@ -68,9 +68,9 @@ python <workflow>_refactored.py --test
 ```
 ✅ Manager User Management (Refactored):
   - Service Nodes: Yes
-  - HTTP API: Yes  
+  - HTTP API: Yes
   - Inline Code: No
-  - Node Types: AuditLogNode, DataTransformer, HTTPRequestNode, 
+  - Node Types: AuditLogNode, DataTransformer, HTTPRequestNode,
                 RoleServiceNode, SwitchNode, UserServiceNode
 
 ✅ User Profile Setup (Refactored):

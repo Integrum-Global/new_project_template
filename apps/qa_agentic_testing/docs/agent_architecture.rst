@@ -98,7 +98,7 @@ A2A (Agent-to-Agent) Communication (``A2AAgentNode``)
 
    # Functional agent
    functional_agent = A2AAgentNode(
-       name="functional_tester", 
+       name="functional_tester",
        role="functional_analyst",
        capabilities=["workflow_validation", "usability_testing"]
    )
@@ -228,7 +228,7 @@ The framework automatically selects agents based on analysis type and scenario c
    │   ├── AgentPool: Register with security capabilities
    │   └── Outcome: Deep multi-pass security validation
    │
-   ├── PERFORMANCE Analysis  
+   ├── PERFORMANCE Analysis
    │   ├── Primary Agent: SelfOrganizingAgent (team optimization)
    │   ├── Secondary Agent: MCPAgent (tool-enhanced analysis)
    │   ├── AgentPool: Register with performance capabilities
@@ -264,7 +264,7 @@ Orchestration Patterns
 Pattern 1: Sequential Analysis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Use Case**: Step-by-step validation where each phase depends on the previous  
+**Use Case**: Step-by-step validation where each phase depends on the previous
 **Agents**: Basic LLM → Iterative LLM → Validation Agent
 
 .. code-block:: python
@@ -272,7 +272,7 @@ Pattern 1: Sequential Analysis
    # Discovery phase
    discovery_results = basic_agent.analyze_app_structure(app_path)
 
-   # Deep analysis phase  
+   # Deep analysis phase
    optimization_plan = iterative_agent.optimize_performance(discovery_results)
 
    # Validation phase
@@ -281,7 +281,7 @@ Pattern 1: Sequential Analysis
 Pattern 2: Parallel Consensus
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Use Case**: Multiple independent analyses that need consensus  
+**Use Case**: Multiple independent analyses that need consensus
 **Agents**: Multiple A2A Agents → Consensus Coordinator
 
 .. code-block:: python
@@ -299,7 +299,7 @@ Pattern 2: Parallel Consensus
 Pattern 3: Hierarchical Coordination
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Use Case**: Complex scenarios requiring specialized teams  
+**Use Case**: Complex scenarios requiring specialized teams
 **Agents**: Team Leaders → Specialist Agents → Orchestration Manager
 
 .. code-block:: python
@@ -315,7 +315,7 @@ Pattern 3: Hierarchical Coordination
 Pattern 4: Iterative Refinement
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Use Case**: Complex problems requiring multiple improvement cycles  
+**Use Case**: Complex problems requiring multiple improvement cycles
 **Agents**: Problem Analyzer → Solution Generator → Validator → Optimizer
 
 .. code-block:: python
@@ -325,10 +325,10 @@ Pattern 4: Iterative Refinement
        problems = analyzer_agent.identify_issues(current_state)
        solutions = generator_agent.propose_solutions(problems)
        validation = validator_agent.validate_solutions(solutions)
-       
+
        if validation.confidence > threshold:
            break
-           
+
        current_state = optimizer_agent.apply_improvements(validation.recommendations)
 
 Performance Optimization

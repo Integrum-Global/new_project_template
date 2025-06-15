@@ -2,8 +2,9 @@
 Setup configuration for Kailash Studio API
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 # Read the README file
 this_directory = Path(__file__).parent
@@ -23,33 +24,26 @@ setup(
     install_requires=[
         # Core Kailash SDK
         "kailash-sdk>=1.0.0",
-        
         # FastAPI and async support
         "fastapi>=0.104.0",
         "uvicorn[standard]>=0.24.0",
         "websockets>=12.0",
         "pydantic>=2.0.0",
-        
         # Database and async operations
         "aiosqlite>=0.19.0",
         "asyncpg>=0.29.0",  # For PostgreSQL support
-        
         # CLI interface
         "click>=8.0.0",
         "rich>=13.0.0",  # For beautiful CLI output
-        
         # Authentication and security
         "python-jose[cryptography]>=3.3.0",
         "passlib[bcrypt]>=1.7.4",
         "python-multipart>=0.0.6",
-        
         # Data processing
         "pyyaml>=6.0",
         "orjson>=3.9.0",  # Fast JSON processing
-        
         # HTTP client
         "httpx>=0.25.0",
-        
         # Logging and monitoring
         "structlog>=23.0.0",
     ],
@@ -78,7 +72,7 @@ setup(
             "pytest-cov>=4.0.0",
             "httpx>=0.25.0",
             "factory-boy>=3.3.0",
-        ]
+        ],
     },
     entry_points={
         "console_scripts": [
@@ -102,8 +96,16 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     keywords=[
-        "workflow", "automation", "api", "fastapi", "websocket",
-        "ai", "llm", "real-time", "enterprise", "kailash"
+        "workflow",
+        "automation",
+        "api",
+        "fastapi",
+        "websocket",
+        "ai",
+        "llm",
+        "real-time",
+        "enterprise",
+        "kailash",
     ],
     project_urls={
         "Documentation": "https://github.com/kailash-sdk/kailash-python-sdk/tree/main/apps/studio",

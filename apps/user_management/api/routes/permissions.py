@@ -5,33 +5,36 @@ This module implements advanced permission management using pure Kailash SDK.
 Supports ABAC with 16+ operators, dynamic evaluation, and data masking.
 """
 
-from typing import List, Optional, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 
-from apps.user_management.core.startup import agent_ui, runtime
 from apps.user_management.core.repositories import permission_repository
-from kailash.middleware import WorkflowEvent, EventType
-from kailash.workflow import WorkflowBuilder
+from apps.user_management.core.startup import agent_ui, runtime
+from kailash.middleware import EventType, WorkflowEvent
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow import WorkflowBuilder
 
 
 # Pydantic models
 class PermissionCreateRequest(BaseModel):
     """Permission creation request model."""
+
     name: str = Field(..., min_length=1, max_length=100)
-    resource: str = Field(..., description="Resource type (users, roles, documents, etc.)")
-    action: str = Field(..., description="Action (create, read, update, delete, execute, etc.)")
+    resource: str = Field(
+        ..., description="Resource type (users, roles, documents, etc.)"
+    )
+    action: str = Field(
+        ..., description="Action (create, read, update, delete, execute, etc.)"
+    )
     description: Optional[str] = Field(None, max_length=500)
     conditions: Optional[Dict[str, Any]] = Field(
-        None, 
-        description="ABAC conditions using 16+ operators"
+        None, description="ABAC conditions using 16+ operators"
     )
     data_mask_rules: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Field-level data masking rules"
+        None, description="Field-level data masking rules"
     )
     requires_mfa: bool = Field(False, description="Require MFA for this permission")
     risk_level: int = Field(1, ge=1, le=10, description="Risk level (1-10)")
@@ -39,6 +42,7 @@ class PermissionCreateRequest(BaseModel):
 
 class PermissionUpdateRequest(BaseModel):
     """Permission update request model."""
+
     description: Optional[str] = None
     conditions: Optional[Dict[str, Any]] = None
     data_mask_rules: Optional[Dict[str, Any]] = None
@@ -48,21 +52,21 @@ class PermissionUpdateRequest(BaseModel):
 
 class PermissionCheckRequest(BaseModel):
     """Permission check request model."""
+
     user_id: str
     resource: str
     action: str
     resource_attributes: Optional[Dict[str, Any]] = Field(
-        None, 
-        description="Resource-specific attributes for ABAC evaluation"
+        None, description="Resource-specific attributes for ABAC evaluation"
     )
     context: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Request context (IP, time, location, etc.)"
+        None, description="Request context (IP, time, location, etc.)"
     )
 
 
 class PermissionResponse(BaseModel):
     """Permission response model."""
+
     id: str
     name: str
     resource: str
@@ -80,6 +84,7 @@ class PermissionResponse(BaseModel):
 
 class PermissionCheckResponse(BaseModel):
     """Permission check response model."""
+
     allowed: bool
     reason: Optional[str]
     requires_mfa: bool
@@ -91,6 +96,7 @@ class PermissionCheckResponse(BaseModel):
 
 class PermissionListResponse(BaseModel):
     """Permission list response model."""
+
     permissions: List[PermissionResponse]
     total: int
     page: int
@@ -111,7 +117,7 @@ async_runtime = LocalRuntime(enable_async=True, debug=False)
 async def create_permission(permission_data: PermissionCreateRequest):
     """
     Create a new permission with ABAC conditions.
-    
+
     Features beyond Django:
     - 16+ ABAC operators
     - Field-level data masking
@@ -122,11 +128,14 @@ async def create_permission(permission_data: PermissionCreateRequest):
     try:
         # Create a workflow using pure SDK components
         builder = WorkflowBuilder("create_permission_workflow")
-        
+
         # Add validation node
-        builder.add_node("PythonCodeNode", "validate_permission", {
-            "name": "validate_permission_data",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_permission",
+            {
+                "name": "validate_permission_data",
+                "code": """
 # Validate permission structure and conditions
 import re
 
@@ -149,7 +158,7 @@ if permission.get('conditions'):
         'matches', 'hierarchical_match', 'security_level_meets',
         'security_level_below', 'matches_data_region', 'contains_any'
     ]
-    
+
     def validate_condition(cond):
         if 'type' not in cond:
             return 'Condition missing type'
@@ -157,7 +166,7 @@ if permission.get('conditions'):
             if cond['value']['operator'] not in valid_operators:
                 return f"Invalid operator: {cond['value']['operator']}"
         return None
-    
+
     # Recursively validate conditions
     cond_error = validate_condition(permission['conditions'])
     if cond_error:
@@ -170,20 +179,24 @@ result = {
         "permission_data": permission
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add permission check node
-        builder.add_node("ABACPermissionEvaluatorNode", "check_create_permission", {
-            "resource": "permissions",
-            "action": "create",
-            "require_admin": True
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "check_create_permission",
+            {"resource": "permissions", "action": "create", "require_admin": True},
+        )
+
         # Add creation node using PythonCodeNode
-        builder.add_node("PythonCodeNode", "create_in_db", {
-            "name": "create_permission_in_db",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_in_db",
+            {
+                "name": "create_permission_in_db",
+                "code": """
 # Create permission in database
 import uuid
 from datetime import datetime
@@ -208,20 +221,28 @@ created_permission = {
 }
 
 result = {"result": created_permission}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_creation", {
-            "operation": "log_event",
-            "event_type": "permission_created",
-            "severity": "high"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_creation",
+            {
+                "operation": "log_event",
+                "event_type": "permission_created",
+                "severity": "high",
+            },
+        )
+
         # Add notification node
-        builder.add_node("PythonCodeNode", "prepare_notification", {
-            "name": "prepare_creation_notification",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "prepare_notification",
+            {
+                "name": "prepare_creation_notification",
+                "code": """
 # Prepare real-time notification
 from datetime import datetime
 
@@ -233,40 +254,50 @@ result = {
         "timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect the nodes
-        builder.add_connection("validate_permission", "result", "check_create_permission", "validation")
-        builder.add_connection("check_create_permission", "allowed", "create_in_db", "proceed")
-        builder.add_connection("validate_permission", "result.permission_data", "create_in_db", "permission_data")
+        builder.add_connection(
+            "validate_permission", "result", "check_create_permission", "validation"
+        )
+        builder.add_connection(
+            "check_create_permission", "allowed", "create_in_db", "proceed"
+        )
+        builder.add_connection(
+            "validate_permission",
+            "result.permission_data",
+            "create_in_db",
+            "permission_data",
+        )
         builder.add_connection("create_in_db", "result", "audit_creation", "resource")
-        builder.add_connection("create_in_db", "result", "prepare_notification", "created_permission")
-        
+        builder.add_connection(
+            "create_in_db", "result", "prepare_notification", "created_permission"
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         results, execution_id = await async_runtime.execute(
-            workflow,
-            parameters={"permission_data": permission_data.dict()}
+            workflow, parameters={"permission_data": permission_data.dict()}
         )
-        
+
         # Check validation results
         validation = results.get("validate_permission", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(
-                status_code=400,
-                detail={"errors": validation.get("errors", [])}
+                status_code=400, detail={"errors": validation.get("errors", [])}
             )
-        
+
         # Get created permission
         created = results.get("create_in_db", {}).get("result", {})
         if not created:
             raise HTTPException(status_code=500, detail="Permission creation failed")
-        
+
         # Save to database using repository
         db_permission = await permission_repository.create_permission(created)
-        
+
         # Broadcast event
         notification_data = results.get("prepare_notification", {}).get("result", {})
         await agent_ui.realtime.broadcast_event(
@@ -274,12 +305,12 @@ result = {
                 type=EventType.PERMISSION_CREATED,
                 workflow_id="create_permission_workflow",
                 execution_id=execution_id,
-                data=notification_data
+                data=notification_data,
             )
         )
-        
+
         return PermissionResponse(**db_permission)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -290,7 +321,7 @@ result = {
 async def check_permission(check_request: PermissionCheckRequest):
     """
     Check if user has permission with ABAC evaluation.
-    
+
     This endpoint demonstrates Kailash's superior ABAC system:
     - Dynamic attribute evaluation
     - Hierarchical matching
@@ -302,39 +333,52 @@ async def check_permission(check_request: PermissionCheckRequest):
     try:
         # Create advanced permission check workflow
         builder = WorkflowBuilder("check_permission_workflow")
-        
+
         # Add user context enrichment
-        builder.add_node("UserManagementNode", "get_user_context", {
-            "operation": "get_user_with_attributes",
-            "user_id": check_request.user_id
-        })
-        
+        builder.add_node(
+            "UserManagementNode",
+            "get_user_context",
+            {"operation": "get_user_with_attributes", "user_id": check_request.user_id},
+        )
+
         # Add ABAC evaluation node
-        builder.add_node("ABACPermissionEvaluatorNode", "evaluate_permission", {
-            "resource": check_request.resource,
-            "action": check_request.action,
-            "user_id": check_request.user_id,
-            "context": check_request.context or {}
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "evaluate_permission",
+            {
+                "resource": check_request.resource,
+                "action": check_request.action,
+                "user_id": check_request.user_id,
+                "context": check_request.context or {},
+            },
+        )
+
         # Add risk assessment
-        builder.add_node("BehaviorAnalysisNode", "assess_risk", {
-            "operation": "analyze_access_request",
-            "user_id": check_request.user_id,
-            "resource": check_request.resource,
-            "action": check_request.action
-        })
-        
+        builder.add_node(
+            "BehaviorAnalysisNode",
+            "assess_risk",
+            {
+                "operation": "analyze_access_request",
+                "user_id": check_request.user_id,
+                "resource": check_request.resource,
+                "action": check_request.action,
+            },
+        )
+
         # Add MFA check if required
-        builder.add_node("MultiFactorAuthNode", "check_mfa", {
-            "operation": "check_requirement",
-            "user_id": check_request.user_id
-        })
-        
+        builder.add_node(
+            "MultiFactorAuthNode",
+            "check_mfa",
+            {"operation": "check_requirement", "user_id": check_request.user_id},
+        )
+
         # Add result processing
-        builder.add_node("PythonCodeNode", "process_results", {
-            "name": "process_permission_results",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "process_results",
+            {
+                "name": "process_permission_results",
+                "code": """
 # Process permission check results
 from datetime import datetime
 
@@ -359,33 +403,46 @@ result = {
         "matched_rules": permission_result.get("matched_rules", [])
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_check", {
-            "operation": "log_event",
-            "event_type": "permission_checked",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_check",
+            {
+                "operation": "log_event",
+                "event_type": "permission_checked",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("get_user_context", "user", "evaluate_permission", "user_context")
+        builder.add_connection(
+            "get_user_context", "user", "evaluate_permission", "user_context"
+        )
         builder.add_connection("get_user_context", "user", "assess_risk", "user_data")
-        builder.add_connection("evaluate_permission", "result", "process_results", "evaluate_result")
-        builder.add_connection("assess_risk", "result", "process_results", "risk_result")
+        builder.add_connection(
+            "evaluate_permission", "result", "process_results", "evaluate_result"
+        )
+        builder.add_connection(
+            "assess_risk", "result", "process_results", "risk_result"
+        )
         builder.add_connection("check_mfa", "result", "process_results", "mfa_result")
-        builder.add_connection("process_results", "result", "audit_check", "check_result")
-        
+        builder.add_connection(
+            "process_results", "result", "audit_check", "check_result"
+        )
+
         # Build and execute
         workflow = builder.build()
-        
+
         start_time = datetime.now()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         # Extract final result
         final_result = results.get("process_results", {}).get("result", {})
-        
+
         # Log high-risk denials
         if not final_result.get("allowed") and final_result.get("risk_score", 0) > 7.0:
             await agent_ui.realtime.broadcast_event(
@@ -397,13 +454,13 @@ result = {
                         "user_id": check_request.user_id,
                         "resource": check_request.resource,
                         "action": check_request.action,
-                        "risk_score": final_result.get("risk_score")
-                    }
+                        "risk_score": final_result.get("risk_score"),
+                    },
                 )
             )
-        
+
         return PermissionCheckResponse(**final_result)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -414,12 +471,14 @@ async def list_permissions(
     limit: int = Query(50, ge=1, le=200, description="Items per page"),
     resource: Optional[str] = Query(None, description="Filter by resource"),
     action: Optional[str] = Query(None, description="Filter by action"),
-    risk_level_min: Optional[int] = Query(None, ge=1, le=10, description="Minimum risk level"),
-    requires_mfa: Optional[bool] = Query(None, description="Filter by MFA requirement")
+    risk_level_min: Optional[int] = Query(
+        None, ge=1, le=10, description="Minimum risk level"
+    ),
+    requires_mfa: Optional[bool] = Query(None, description="Filter by MFA requirement"),
 ):
     """
     List permissions with advanced filtering and analytics.
-    
+
     Features beyond Django:
     - Risk level filtering
     - Usage analytics
@@ -429,14 +488,17 @@ async def list_permissions(
     try:
         # Get permissions from repository
         all_permissions = await permission_repository.list_permissions(resource, action)
-        
+
         # Create analytics workflow
         builder = WorkflowBuilder("analyze_permissions_workflow")
-        
+
         # Add analytics node
-        builder.add_node("PythonCodeNode", "analyze_permissions", {
-            "name": "permission_analytics",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_permissions",
+            {
+                "name": "permission_analytics",
+                "code": f"""
 # Analyze permission distribution
 permissions = all_permissions
 
@@ -473,20 +535,20 @@ result = {{
         "by_action": by_action
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={"all_permissions": all_permissions}
+            workflow, parameters={"all_permissions": all_permissions}
         )
-        
+
         analytics = results.get("analyze_permissions", {}).get("result", {})
-        
+
         return PermissionListResponse(**analytics)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -497,17 +559,20 @@ async def get_permission(permission_id: str):
     try:
         # Get permission from repository
         permission = await permission_repository.get_permission(permission_id)
-        
+
         if not permission:
             raise HTTPException(status_code=404, detail="Permission not found")
-        
+
         # Create usage stats workflow
         builder = WorkflowBuilder("get_usage_stats_workflow")
-        
+
         # Add usage analysis node
-        builder.add_node("PythonCodeNode", "analyze_usage", {
-            "name": "analyze_permission_usage",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_usage",
+            {
+                "name": "analyze_permission_usage",
+                "code": """
 # Analyze permission usage
 # In real implementation, would query audit logs
 import random
@@ -523,20 +588,21 @@ result = {
         "last_used": last_used
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         usage_stats = results.get("analyze_usage", {}).get("result", {})
-        
+
         # Combine permission with usage stats
         permission.update(usage_stats)
-        
+
         return PermissionResponse(**permission)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -551,13 +617,16 @@ async def update_permission(permission_id: str, update_data: PermissionUpdateReq
         current = await permission_repository.get_permission(permission_id)
         if not current:
             raise HTTPException(status_code=404, detail="Permission not found")
-        
+
         builder = WorkflowBuilder("update_permission_workflow")
-        
+
         # Add validation node
-        builder.add_node("PythonCodeNode", "validate_changes", {
-            "name": "validate_permission_changes",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_changes",
+            {
+                "name": "validate_permission_changes",
+                "code": """
 # Validate permission changes
 errors = []
 changed_fields = []
@@ -581,13 +650,17 @@ result = {
         "changed_fields": changed_fields
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add update node
-        builder.add_node("PythonCodeNode", "apply_updates", {
-            "name": "apply_permission_updates",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "apply_updates",
+            {
+                "name": "apply_permission_updates",
+                "code": """
 # Apply updates to permission
 from datetime import datetime
 
@@ -599,44 +672,50 @@ for field, value in update_data.items():
 updated['updated_at'] = datetime.now()
 
 result = {"result": updated}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit node
-        builder.add_node("AuditLogNode", "audit_update", {
-            "operation": "log_event",
-            "event_type": "permission_updated",
-            "severity": "medium"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_update",
+            {
+                "operation": "log_event",
+                "event_type": "permission_updated",
+                "severity": "medium",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_changes", "result", "apply_updates", "validation")
+        builder.add_connection(
+            "validate_changes", "result", "apply_updates", "validation"
+        )
         builder.add_connection("apply_updates", "result", "audit_update", "resource")
-        
+
         # Execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(
             workflow,
             parameters={
                 "current": current,
-                "update_data": update_data.dict(exclude_unset=True)
-            }
+                "update_data": update_data.dict(exclude_unset=True),
+            },
         )
-        
+
         # Check validation
         validation = results.get("validate_changes", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(
-                status_code=400,
-                detail={"errors": validation.get("errors", [])}
+                status_code=400, detail={"errors": validation.get("errors", [])}
             )
-        
+
         # Get updated permission
         updated = results.get("apply_updates", {}).get("result", {})
-        
+
         # Save to database (in real implementation)
         # For now, just return the updated data
-        
+
         # Broadcast update if risk level changed
         if "risk_level" in validation.get("changed_fields", []):
             await agent_ui.realtime.broadcast_event(
@@ -647,13 +726,13 @@ result = {"result": updated}
                     data={
                         "permission_id": permission_id,
                         "old_risk": current.get("risk_level", 1),
-                        "new_risk": updated.get("risk_level", 1)
-                    }
+                        "new_risk": updated.get("risk_level", 1),
+                    },
                 )
             )
-        
+
         return PermissionResponse(**updated)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -664,7 +743,7 @@ result = {"result": updated}
 async def delete_permission(permission_id: str):
     """
     Delete permission with impact analysis.
-    
+
     Features beyond Django:
     - Impact analysis before deletion
     - Automatic role cleanup
@@ -672,11 +751,14 @@ async def delete_permission(permission_id: str):
     """
     try:
         builder = WorkflowBuilder("delete_permission_workflow")
-        
+
         # Add impact analysis node
-        builder.add_node("PythonCodeNode", "analyze_impact", {
-            "name": "analyze_deletion_impact",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_impact",
+            {
+                "name": "analyze_deletion_impact",
+                "code": """
 # Analyze impact of deleting this permission
 # In real implementation, would query role_permissions table
 impact = {
@@ -693,13 +775,17 @@ result = {
         "impact": impact
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add deletion confirmation node
-        builder.add_node("PythonCodeNode", "confirm_deletion", {
-            "name": "confirm_and_delete",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "confirm_deletion",
+            {
+                "name": "confirm_and_delete",
+                "code": """
 # Confirm and execute deletion
 from datetime import datetime
 
@@ -715,30 +801,38 @@ result = {
         "impact": impact_analysis.get("impact", {})
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit deletion
-        builder.add_node("AuditLogNode", "audit_deletion", {
-            "operation": "log_event",
-            "event_type": "permission_deleted",
-            "severity": "high"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_deletion",
+            {
+                "operation": "log_event",
+                "event_type": "permission_deleted",
+                "severity": "high",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("analyze_impact", "result", "confirm_deletion", "impact_analysis")
-        builder.add_connection("confirm_deletion", "result", "audit_deletion", "deletion_result")
-        
+        builder.add_connection(
+            "analyze_impact", "result", "confirm_deletion", "impact_analysis"
+        )
+        builder.add_connection(
+            "confirm_deletion", "result", "audit_deletion", "deletion_result"
+        )
+
         # Execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(
-            workflow,
-            parameters={"permission_id": permission_id}
+            workflow, parameters={"permission_id": permission_id}
         )
-        
+
         impact = results.get("analyze_impact", {}).get("result", {})
         deletion = results.get("confirm_deletion", {}).get("result", {})
-        
+
         # Broadcast high-impact deletions
         if impact.get("impact", {}).get("affected_users", 0) > 10:
             await agent_ui.realtime.broadcast_event(
@@ -746,20 +840,17 @@ result = {
                     type=EventType.HIGH_IMPACT_PERMISSION_DELETED,
                     workflow_id="delete_permission_workflow",
                     execution_id=execution_id,
-                    data={
-                        "permission_id": permission_id,
-                        "impact": impact["impact"]
-                    }
+                    data={"permission_id": permission_id, "impact": impact["impact"]},
                 )
             )
-        
+
         return {
             "success": True,
             "message": "Permission deleted successfully",
             "impact": impact.get("impact", {}),
-            "deleted_at": deletion.get("deleted_at")
+            "deleted_at": deletion.get("deleted_at"),
         }
-        
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -767,32 +858,36 @@ result = {
 
 
 @router.post("/evaluate-conditions")
-async def evaluate_conditions(
-    conditions: Dict[str, Any],
-    test_context: Dict[str, Any]
-):
+async def evaluate_conditions(conditions: Dict[str, Any], test_context: Dict[str, Any]):
     """
     Test ABAC conditions with sample context.
-    
+
     This is a developer tool to test complex ABAC rules
     before applying them to permissions.
     """
     try:
         builder = WorkflowBuilder("test_conditions_workflow")
-        
+
         # Add ABAC test node
-        builder.add_node("ABACPermissionEvaluatorNode", "test_conditions", {
-            "resource": "test",
-            "action": "evaluate",
-            "conditions": conditions,
-            "context": test_context,
-            "test_mode": True
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "test_conditions",
+            {
+                "resource": "test",
+                "action": "evaluate",
+                "conditions": conditions,
+                "context": test_context,
+                "test_mode": True,
+            },
+        )
+
         # Add result processing
-        builder.add_node("PythonCodeNode", "format_results", {
-            "name": "format_evaluation_results",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "format_results",
+            {
+                "name": "format_evaluation_results",
+                "code": """
 # Format evaluation results
 from datetime import datetime
 
@@ -807,20 +902,23 @@ result = {
         "time_ms": eval_result.get("evaluation_time_ms", 0)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("test_conditions", "result", "format_results", "test_result")
-        
+        builder.add_connection(
+            "test_conditions", "result", "format_results", "test_result"
+        )
+
         # Execute
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         formatted = results.get("format_results", {}).get("result", {})
-        
+
         return formatted
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -829,11 +927,11 @@ result = {
 async def get_permission_matrix(
     user_id: str,
     resources: List[str] = Query(None, description="Resources to check"),
-    actions: List[str] = Query(None, description="Actions to check")
+    actions: List[str] = Query(None, description="Actions to check"),
 ):
     """
     Get permission matrix for a user.
-    
+
     Shows all permissions for specified resources and actions in a matrix format.
     This is a feature Django Admin lacks - comprehensive permission visualization.
     """
@@ -843,13 +941,16 @@ async def get_permission_matrix(
             resources = ["users", "roles", "permissions", "documents", "reports"]
         if not actions:
             actions = ["create", "read", "update", "delete", "execute"]
-        
+
         builder = WorkflowBuilder("permission_matrix_workflow")
-        
+
         # Add matrix generation node
-        builder.add_node("PythonCodeNode", "generate_matrix", {
-            "name": "generate_permission_matrix",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_matrix",
+            {
+                "name": "generate_permission_matrix",
+                "code": f"""
 # Generate permission matrix
 matrix = {{}}
 resources_list = {resources}
@@ -877,16 +978,17 @@ result = {{
         "generated_at": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         matrix_data = results.get("generate_matrix", {}).get("result", {})
-        
+
         return matrix_data
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

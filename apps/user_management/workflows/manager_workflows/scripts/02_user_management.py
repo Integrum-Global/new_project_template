@@ -9,26 +9,30 @@ This workflow handles team member administration including:
 - Role changes and permissions
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class UserManagementWorkflow:
     """
     Complete user management workflow for department managers.
     """
-    
+
     def __init__(self, manager_user_id: str = "manager"):
         """
         Initialize the user management workflow.
-        
+
         Args:
             manager_user_id: ID of the manager performing operations
         """
@@ -38,40 +42,48 @@ class UserManagementWorkflow:
             user_id=manager_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def manage_team_member_profile(self, user_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
+
+    def manage_team_member_profile(
+        self, user_id: str, updates: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Manage team member profile information.
-        
+
         Args:
             user_id: ID of the team member
             updates: Profile updates to apply
-            
+
         Returns:
             Profile management results
         """
         print(f"👤 Managing profile for team member: {user_id}")
-        
+
         builder = self.runner.create_workflow("team_member_profile_management")
-        
+
         # Profile validation
         validation_rules = {
             "email": {"required": False, "type": str, "min_length": 5},
             "first_name": {"required": False, "type": str, "min_length": 1},
             "last_name": {"required": False, "type": str, "min_length": 1},
             "department": {"required": False, "type": str, "min_length": 2},
-            "position": {"required": False, "type": str}
+            "position": {"required": False, "type": str},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_profile_updates", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_profile_updates",
+            create_validation_node(validation_rules),
+        )
+
         # Profile management operations
-        builder.add_node("PythonCodeNode", "manage_profile", {
-            "name": "manage_team_member_profile",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "manage_profile",
+            {
+                "name": "manage_team_member_profile",
+                "code": f"""
 from datetime import datetime, timedelta
 import random
 import string
@@ -102,7 +114,7 @@ for field, new_value in profile_updates.items():
         old_value = current_profile[field]
         current_profile[field] = new_value
         updated_fields.append(field)
-        
+
         change_log.append({{
             "field": field,
             "old_value": old_value,
@@ -141,13 +153,17 @@ result = {{
         "next_review_date": employment_data["performance_review_date"]
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Track profile changes
-        builder.add_node("PythonCodeNode", "track_profile_changes", {
-            "name": "track_team_member_changes",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "track_profile_changes",
+            {
+                "name": "track_team_member_changes",
+                "code": """
 # Track and audit profile changes
 tracking_info = {
     "change_tracking": {
@@ -190,40 +206,53 @@ result = {
         "change_tracking": tracking_info["change_tracking"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect profile management nodes
-        builder.add_connection("validate_profile_updates", "result", "manage_profile", "validation_result")
-        builder.add_connection("manage_profile", "result.result", "track_profile_changes", "profile_management")
-        
+        builder.add_connection(
+            "validate_profile_updates", "result", "manage_profile", "validation_result"
+        )
+        builder.add_connection(
+            "manage_profile",
+            "result.result",
+            "track_profile_changes",
+            "profile_management",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, updates, "team_member_profile_management"
         )
-        
+
         return results
-    
-    def review_and_modify_access(self, user_id: str, access_request: Dict[str, Any]) -> Dict[str, Any]:
+
+    def review_and_modify_access(
+        self, user_id: str, access_request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Review and modify team member access permissions.
-        
+
         Args:
             user_id: ID of the team member
             access_request: Access modification request
-            
+
         Returns:
             Access modification results
         """
         print(f"🔐 Reviewing access for team member: {user_id}")
-        
+
         builder = self.runner.create_workflow("access_review_modification")
-        
+
         # Access review process
-        builder.add_node("PythonCodeNode", "review_current_access", {
-            "name": "review_team_member_access",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "review_current_access",
+            {
+                "name": "review_team_member_access",
+                "code": f"""
 from datetime import datetime, timedelta
 
 # Review current access permissions
@@ -258,7 +287,7 @@ for permission in access_request_data.get("permissions_to_add", []):
 
 for permission in access_request_data.get("permissions_to_remove", []):
     requested_changes.append({{
-        "action": "remove", 
+        "action": "remove",
         "permission": permission,
         "justification": "Access cleanup",
         "risk_level": "none",
@@ -291,13 +320,17 @@ result = {{
         "review_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Apply access modifications
-        builder.add_node("PythonCodeNode", "apply_access_changes", {
-            "name": "apply_access_modifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "apply_access_changes",
+            {
+                "name": "apply_access_modifications",
+                "code": """
 # Apply approved access changes
 access_review = access_review_result.get("current_access", {})
 changes_applied = []
@@ -314,7 +347,7 @@ for change in access_review_result.get("requested_changes", []):
                 "applied_by": access_review["last_review_by"],
                 "status": "completed"
             }
-            
+
             # Handle temporary access
             if change["action"] == "temp_grant":
                 temp_details = change["details"]
@@ -322,7 +355,7 @@ for change in access_review_result.get("requested_changes", []):
                     "expiry_date": temp_details["expiry_date"],
                     "auto_revoke_enabled": temp_details["auto_revoke"]
                 })
-            
+
             changes_applied.append(change_record)
         else:
             failed_changes.append({
@@ -356,39 +389,50 @@ result = {
         "notifications_sent": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect access review nodes
-        builder.add_connection("review_current_access", "result.result", "apply_access_changes", "access_review_result")
-        
+        builder.add_connection(
+            "review_current_access",
+            "result.result",
+            "apply_access_changes",
+            "access_review_result",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, access_request, "access_review_modification"
         )
-        
+
         return results
-    
-    def track_team_performance(self, department_id: str, tracking_period: str = "monthly") -> Dict[str, Any]:
+
+    def track_team_performance(
+        self, department_id: str, tracking_period: str = "monthly"
+    ) -> Dict[str, Any]:
         """
         Track and monitor team performance metrics.
-        
+
         Args:
             department_id: ID of the department to track
             tracking_period: Period for tracking (daily, weekly, monthly)
-            
+
         Returns:
             Performance tracking results
         """
         print(f"📊 Tracking team performance for department: {department_id}")
-        
+
         builder = self.runner.create_workflow("team_performance_tracking")
-        
+
         # Collect performance data
-        builder.add_node("PythonCodeNode", "collect_performance_data", {
-            "name": "collect_team_performance_metrics",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_performance_data",
+            {
+                "name": "collect_team_performance_metrics",
+                "code": f"""
 # Collect comprehensive team performance data
 tracking_period = "{tracking_period}"
 department_id = "{department_id}"
@@ -405,7 +449,7 @@ team_members = [
         "collaboration_score": 85
     }},
     {{
-        "user_id": "user_002", 
+        "user_id": "user_002",
         "name": "Jane Smith",
         "login_frequency": 4.9,
         "system_usage_hours": 6.8,
@@ -415,7 +459,7 @@ team_members = [
     }},
     {{
         "user_id": "user_003",
-        "name": "Bob Johnson", 
+        "name": "Bob Johnson",
         "login_frequency": 4.2,
         "system_usage_hours": 6.5,
         "task_completion_rate": 88,
@@ -458,24 +502,28 @@ result = {{
         "tracking_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate performance insights
-        builder.add_node("PythonCodeNode", "generate_performance_insights", {
-            "name": "generate_team_performance_insights",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_performance_insights",
+            {
+                "name": "generate_team_performance_insights",
+                "code": """
 # Generate actionable performance insights
 performance_data = performance_tracking.get("department_metrics", {})
 individual_data = performance_tracking.get("individual_metrics", [])
 
 # Identify top performers
-top_performers = sorted(individual_data, 
-                       key=lambda x: (x["task_completion_rate"] + x["quality_score"] * 20 + x["collaboration_score"]) / 3, 
+top_performers = sorted(individual_data,
+                       key=lambda x: (x["task_completion_rate"] + x["quality_score"] * 20 + x["collaboration_score"]) / 3,
                        reverse=True)[:2]
 
 # Identify areas needing attention
-attention_needed = [member for member in individual_data 
+attention_needed = [member for member in individual_data
                    if member["task_completion_rate"] < 90 or member["quality_score"] < 4.0]
 
 # Performance insights
@@ -500,7 +548,7 @@ insights = {
         {
             "action": "team_training",
             "topic": "quality_assurance",
-            "timeline": "within_2_weeks", 
+            "timeline": "within_2_weeks",
             "priority": "medium"
         },
         {
@@ -531,39 +579,52 @@ result = {
         "insights_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect performance tracking nodes
-        builder.add_connection("collect_performance_data", "result.result", "generate_performance_insights", "performance_tracking")
-        
+        builder.add_connection(
+            "collect_performance_data",
+            "result.result",
+            "generate_performance_insights",
+            "performance_tracking",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
-            workflow, {"department_id": department_id, "period": tracking_period}, "team_performance_tracking"
+            workflow,
+            {"department_id": department_id, "period": tracking_period},
+            "team_performance_tracking",
         )
-        
+
         return results
-    
-    def handle_role_changes(self, user_id: str, role_change_request: Dict[str, Any]) -> Dict[str, Any]:
+
+    def handle_role_changes(
+        self, user_id: str, role_change_request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Handle role changes and promotions for team members.
-        
+
         Args:
             user_id: ID of the team member
             role_change_request: Role change details
-            
+
         Returns:
             Role change results
         """
         print(f"🎯 Processing role change for team member: {user_id}")
-        
+
         builder = self.runner.create_workflow("role_change_management")
-        
+
         # Role change processing
-        builder.add_node("PythonCodeNode", "process_role_change", {
-            "name": "process_team_member_role_change",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_role_change",
+            {
+                "name": "process_team_member_role_change",
+                "code": f"""
 import random
 import string
 
@@ -657,13 +718,17 @@ result = {{
         "effective_date": role_change_details["effective_date"]
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Update permissions for new role
-        builder.add_node("PythonCodeNode", "update_role_permissions", {
-            "name": "update_permissions_for_new_role",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "update_role_permissions",
+            {
+                "name": "update_permissions_for_new_role",
+                "code": """
 # Update permissions based on new role
 role_change = role_change_processing.get("new_roles", [])
 new_position = role_change_processing.get("new_position", "")
@@ -720,32 +785,38 @@ result = {
         "role_activation_ready": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect role change nodes
-        builder.add_connection("process_role_change", "result.result", "update_role_permissions", "role_change_processing")
-        
+        builder.add_connection(
+            "process_role_change",
+            "result.result",
+            "update_role_permissions",
+            "role_change_processing",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, role_change_request, "role_change_management"
         )
-        
+
         return results
-    
+
     def run_comprehensive_user_management_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all user management operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive User Management Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Manage team member profile
             print("\n1. Managing Team Member Profile...")
@@ -753,10 +824,12 @@ result = {
                 "first_name": "John",
                 "last_name": "Smith",
                 "position": "Senior Software Developer",
-                "work_phone": "+1-555-0199"
+                "work_phone": "+1-555-0199",
             }
-            demo_results["profile_management"] = self.manage_team_member_profile("user_001", profile_updates)
-            
+            demo_results["profile_management"] = self.manage_team_member_profile(
+                "user_001", profile_updates
+            )
+
             # 2. Review and modify access
             print("\n2. Reviewing and Modifying Access...")
             access_request = {
@@ -765,16 +838,20 @@ result = {
                 "temporary_access": {
                     "permissions": ["admin_panel"],
                     "duration_days": 7,
-                    "justification": "Emergency debugging access"
+                    "justification": "Emergency debugging access",
                 },
-                "justification": "Promotion to senior developer role"
+                "justification": "Promotion to senior developer role",
             }
-            demo_results["access_management"] = self.review_and_modify_access("user_001", access_request)
-            
+            demo_results["access_management"] = self.review_and_modify_access(
+                "user_001", access_request
+            )
+
             # 3. Track team performance
             print("\n3. Tracking Team Performance...")
-            demo_results["performance_tracking"] = self.track_team_performance("dept_engineering", "monthly")
-            
+            demo_results["performance_tracking"] = self.track_team_performance(
+                "dept_engineering", "monthly"
+            )
+
             # 4. Handle role changes
             print("\n4. Processing Role Change...")
             role_change_request = {
@@ -783,49 +860,75 @@ result = {
                 "additional_roles": ["senior_developer", "mentor"],
                 "salary_increase_percent": 12,
                 "justification": "Excellent performance and leadership skills",
-                "effective_date": "2024-07-01"
+                "effective_date": "2024-07-01",
             }
-            demo_results["role_management"] = self.handle_role_changes("user_001", role_change_request)
-            
+            demo_results["role_management"] = self.handle_role_changes(
+                "user_001", role_change_request
+            )
+
             # Print comprehensive summary
             self.print_user_management_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ User management demonstration failed: {str(e)}")
             raise
-    
+
     def print_user_management_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive user management summary.
-        
+
         Args:
             results: User management results from all workflows
         """
         print("\n" + "=" * 70)
         print("USER MANAGEMENT DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Profile management summary
-        profile_result = results.get("profile_management", {}).get("manage_profile", {}).get("result", {}).get("result", {})
-        print(f"👤 Profile: {len(profile_result.get('fields_updated', []))} fields updated")
-        
+        profile_result = (
+            results.get("profile_management", {})
+            .get("manage_profile", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"👤 Profile: {len(profile_result.get('fields_updated', []))} fields updated"
+        )
+
         # Access management summary
-        access_result = results.get("access_management", {}).get("apply_access_changes", {}).get("result", {}).get("result", {})
+        access_result = (
+            results.get("access_management", {})
+            .get("apply_access_changes", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"🔐 Access: {access_result.get('changes_applied', 0)} changes applied")
-        
+
         # Performance tracking summary
-        performance_result = results.get("performance_tracking", {}).get("collect_performance_data", {}).get("result", {}).get("result", {})
-        print(f"📊 Performance: {performance_result.get('team_members_tracked', 0)} team members tracked")
-        
+        performance_result = (
+            results.get("performance_tracking", {})
+            .get("collect_performance_data", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📊 Performance: {performance_result.get('team_members_tracked', 0)} team members tracked"
+        )
+
         # Role management summary
-        role_result = results.get("role_management", {}).get("process_role_change", {}).get("result", {}).get("result", {})
+        role_result = (
+            results.get("role_management", {})
+            .get("process_role_change", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"🎯 Role Change: {role_result.get('new_position', 'N/A')} role assigned")
-        
+
         print("\n🎉 All user management operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -833,32 +936,34 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the user management workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing User Management Workflow...")
-        
+
         # Create test workflow
         user_mgmt = UserManagementWorkflow("test_manager")
-        
+
         # Test profile management
-        test_updates = {
-            "first_name": "Test",
-            "position": "Test Developer"
-        }
-        
+        test_updates = {"first_name": "Test", "position": "Test Developer"}
+
         result = user_mgmt.manage_team_member_profile("test_user", test_updates)
-        if not result.get("manage_profile", {}).get("result", {}).get("result", {}).get("profile_updated"):
+        if (
+            not result.get("manage_profile", {})
+            .get("result", {})
+            .get("result", {})
+            .get("profile_updated")
+        ):
             return False
-        
+
         print("✅ User management workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ User management workflow test failed: {str(e)}")
         return False
@@ -872,7 +977,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         user_mgmt = UserManagementWorkflow()
-        
+
         try:
             results = user_mgmt.run_comprehensive_user_management_demo()
             print("🎉 User management demonstration completed successfully!")

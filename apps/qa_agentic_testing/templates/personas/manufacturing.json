@@ -10,7 +10,7 @@
     "goals": [
       "Optimize production efficiency",
       "Ensure workplace safety",
-      "Maintain quality standards", 
+      "Maintain quality standards",
       "Manage production schedules",
       "Control operational costs"
     ],
@@ -28,7 +28,7 @@
   {
     "key": "quality_inspector",
     "name": "Quincy Quality",
-    "role": "Quality Control Inspector", 
+    "role": "Quality Control Inspector",
     "permissions": [
       "quality:inspect", "defects:report", "standards:enforce",
       "testing:perform", "documentation:create", "batches:approve"

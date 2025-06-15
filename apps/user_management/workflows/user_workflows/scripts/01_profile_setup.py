@@ -10,26 +10,30 @@ This workflow handles personal profile management including:
 - Profile preferences configuration
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class ProfileSetupWorkflow:
     """
     Complete profile setup and management workflow for end users.
     """
-    
+
     def __init__(self, user_id: str = "user"):
         """
         Initialize the profile setup workflow.
-        
+
         Args:
             user_id: ID of the user performing profile operations
         """
@@ -39,23 +43,23 @@ class ProfileSetupWorkflow:
             user_id=user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def setup_initial_profile(self, profile_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Set up initial user profile with complete information.
-        
+
         Args:
             profile_data: User profile information
-            
+
         Returns:
             Profile setup results
         """
         print(f"👤 Setting up profile for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("initial_profile_setup")
-        
+
         # Profile validation
         validation_rules = {
             "first_name": {"required": True, "type": "str", "min_length": 1},
@@ -63,17 +67,23 @@ class ProfileSetupWorkflow:
             "email": {"required": True, "type": "str", "min_length": 5},
             "phone": {"required": False, "type": "str"},
             "department": {"required": True, "type": "str", "min_length": 2},
-            "position": {"required": False, "type": "str"}
+            "position": {"required": False, "type": "str"},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_profile_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_profile_input",
+            create_validation_node(validation_rules),
+        )
+
         # Complete profile setup
-        builder.add_node("PythonCodeNode", "setup_profile", {
-            "name": "setup_complete_user_profile",
-            "auto_map_primary": True,
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_profile",
+            {
+                "name": "setup_complete_user_profile",
+                "auto_map_primary": True,
+                "code": """
 from datetime import datetime
 import random
 import string
@@ -176,7 +186,7 @@ completion_checklist = [
         "description": "Basic personal details provided"
     },
     {
-        "step": "contact_information", 
+        "step": "contact_information",
         "completed": bool(phone),
         "description": "Contact details verification"
     },
@@ -208,13 +218,17 @@ result = {
         "next_steps": ["setup_emergency_contact", "configure_security", "verify_email"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Setup notifications and welcome
-        builder.add_node("PythonCodeNode", "setup_notifications", {
-            "name": "setup_user_notifications_and_welcome",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_notifications",
+            {
+                "name": "setup_user_notifications_and_welcome",
+                "code": """
 # Configure user notifications and welcome sequence
 profile_info = profile_setup.get("profile_data", {})
 personal_details = profile_info.get("personal_details", {})
@@ -239,7 +253,7 @@ welcome_sequence = [
         "title": "Explore Your Dashboard",
         "features": [
             "Personal analytics and activity tracking",
-            "Self-service password and security management", 
+            "Self-service password and security management",
             "Data export and privacy controls",
             "Support ticket creation and tracking"
         ]
@@ -292,7 +306,7 @@ onboarding_tracking = {
         },
         {
             "action": "complete_emergency_contact",
-            "priority": "medium", 
+            "priority": "medium",
             "estimated_time": "2 minutes",
             "url": "/profile/emergency-contact"
         },
@@ -314,45 +328,53 @@ result = {
         "user_ready": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect profile setup nodes - pass both validation and profile data
-        builder.add_connection("validate_profile_input", "result", "setup_profile", "validation_result")
-        builder.add_connection("setup_profile", "result.result", "setup_notifications", "profile_setup")
-        
+        builder.add_connection(
+            "validate_profile_input", "result", "setup_profile", "validation_result"
+        )
+        builder.add_connection(
+            "setup_profile", "result.result", "setup_notifications", "profile_setup"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, profile_data, "initial_profile_setup"
         )
-        
+
         return results
-    
+
     def update_personal_information(self, updates: Dict[str, Any]) -> Dict[str, Any]:
         """
         Update personal information in user profile.
-        
+
         Args:
             updates: Personal information updates
-            
+
         Returns:
             Update results
         """
         print(f"✏️ Updating personal information for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("personal_information_update")
-        
+
         # Process personal information updates
-        builder.add_node("PythonCodeNode", "update_personal_info", {
-            "name": "update_user_personal_information",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "update_personal_info",
+            {
+                "name": "update_user_personal_information",
+                "code": """
 # Current user profile (simulated lookup)
 current_profile = {
     "user_id": email,
     "personal_details": {
         "first_name": "John",
-        "last_name": "Doe", 
+        "last_name": "Doe",
         "email": "john.doe@company.com",
         "phone": "+1-555-0123",
         "preferred_name": "John",
@@ -379,7 +401,7 @@ for field, new_value in updates_data.items():
             if old_value != new_value:
                 current_profile["personal_details"][field] = new_value
                 updated_fields.append(field)
-                
+
                 change_log.append({
                     "field": field,
                     "old_value": old_value,
@@ -422,19 +444,23 @@ result = {
         "requires_verification": "phone" in updated_fields or "email" in updated_fields
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Send update notifications
-        builder.add_node("PythonCodeNode", "send_update_notifications", {
-            "name": "send_profile_update_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "send_update_notifications",
+            {
+                "name": "send_profile_update_notifications",
+                "code": """
 # Send notifications for profile updates
 update_results = personal_info_update
 
 if update_results.get("update_successful"):
     updated_fields = update_results.get("fields_updated", [])
-    
+
     # User confirmation notification
     user_notification = {
         "type": "profile_update_confirmation",
@@ -444,7 +470,7 @@ if update_results.get("update_successful"):
         "fields_updated": updated_fields,
         "timestamp": datetime.now().isoformat()
     }
-    
+
     # Security notification for sensitive changes
     security_notification = None
     sensitive_fields = ["phone", "email", "emergency_contact"]
@@ -459,7 +485,7 @@ if update_results.get("update_successful"):
             "user_agent": "Mozilla/5.0...",  # Would be actual user agent
             "timestamp": datetime.now().isoformat()
         }
-    
+
     # Verification required notification
     verification_notification = None
     if update_results.get("requires_verification"):
@@ -471,7 +497,7 @@ if update_results.get("update_successful"):
             "verification_methods": ["email", "sms"],
             "verification_deadline": (datetime.now() + timedelta(days=7)).isoformat()
         }
-    
+
     notifications_sent = 1
     if security_notification:
         notifications_sent += 1
@@ -497,38 +523,47 @@ result = {
         "notification_delivery_confirmed": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect update nodes
-        builder.add_connection("update_personal_info", "result.result", "send_update_notifications", "personal_info_update")
-        
+        builder.add_connection(
+            "update_personal_info",
+            "result.result",
+            "send_update_notifications",
+            "personal_info_update",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, updates, "personal_information_update"
         )
-        
+
         return results
-    
+
     def manage_preferences(self, preference_updates: Dict[str, Any]) -> Dict[str, Any]:
         """
         Manage user preferences and settings.
-        
+
         Args:
             preference_updates: Preference updates to apply
-            
+
         Returns:
             Preference management results
         """
         print(f"⚙️ Managing preferences for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("preference_management")
-        
+
         # Process preference updates
-        builder.add_node("PythonCodeNode", "update_preferences", {
-            "name": "update_user_preferences",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "update_preferences",
+            {
+                "name": "update_user_preferences",
+                "code": """
 # Current user preferences
 current_preferences = {
     "notification_preferences": {
@@ -542,7 +577,7 @@ current_preferences = {
     },
     "ui_preferences": {
         "theme": "light",
-        "language": "en", 
+        "language": "en",
         "date_format": "MM/DD/YYYY",
         "time_format": "12_hour",
         "dashboard_layout": "standard",
@@ -584,7 +619,7 @@ for category, updates in preference_updates_data.items():
                         "old_value": old_value,
                         "new_value": new_value
                     })
-        
+
         if category_changes:
             updated_categories.append(category)
             change_summary[category] = category_changes
@@ -631,19 +666,23 @@ result = {
         "effective_immediately": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Apply preference changes to system
-        builder.add_node("PythonCodeNode", "apply_system_changes", {
-            "name": "apply_preference_system_changes",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "apply_system_changes",
+            {
+                "name": "apply_preference_system_changes",
+                "code": """
 # Apply preference changes to system configurations
 preference_results = preference_update_results
 
 if preference_results.get("preferences_updated"):
     updated_preferences = preference_results.get("updated_preferences", {})
-    
+
     # System configuration updates
     system_updates = {
         "user_settings_updated": True,
@@ -652,11 +691,11 @@ if preference_results.get("preferences_updated"):
         "privacy_controls_updated": False,
         "accessibility_features_enabled": False
     }
-    
+
     # Update notification routing if needed
     if "notification_preferences" in preference_results.get("categories_updated", []):
         system_updates["notification_routing_updated"] = True
-        
+
         # Configure notification channels
         notification_config = {
             "email_enabled": updated_preferences["notification_preferences"]["email_notifications"],
@@ -664,11 +703,11 @@ if preference_results.get("preferences_updated"):
             "browser_enabled": updated_preferences["notification_preferences"]["browser_notifications"],
             "marketing_enabled": updated_preferences["notification_preferences"]["marketing_communications"]
         }
-    
+
     # Apply UI customizations
     if "ui_preferences" in preference_results.get("categories_updated", []):
         system_updates["ui_customization_applied"] = True
-        
+
         # UI configuration updates
         ui_config = {
             "theme": updated_preferences["ui_preferences"]["theme"],
@@ -676,29 +715,29 @@ if preference_results.get("preferences_updated"):
             "layout": updated_preferences["ui_preferences"]["dashboard_layout"],
             "accessibility_mode": any(updated_preferences["accessibility"].values())
         }
-    
+
     # Update privacy controls
     if "privacy_settings" in preference_results.get("categories_updated", []):
         system_updates["privacy_controls_updated"] = True
-        
+
         # Privacy configuration
         privacy_config = {
             "data_sharing_enabled": updated_preferences["privacy_settings"]["data_analytics"],
             "profile_visibility": updated_preferences["privacy_settings"]["profile_visibility"],
             "usage_tracking": updated_preferences["privacy_settings"]["usage_tracking"]
         }
-    
+
     # Enable accessibility features
     if "accessibility" in preference_results.get("categories_updated", []):
         system_updates["accessibility_features_enabled"] = True
-        
+
         # Accessibility configuration
         accessibility_config = {
             "high_contrast": updated_preferences["accessibility"]["high_contrast"],
             "large_text": updated_preferences["accessibility"]["large_text"],
             "reduced_motion": updated_preferences["accessibility"]["reduced_motion"]
         }
-    
+
     # User session updates
     session_updates = {
         "preferences_cache_cleared": True,
@@ -706,7 +745,7 @@ if preference_results.get("preferences_updated"):
         "notification_subscriptions_updated": system_updates["notification_routing_updated"],
         "personalization_recalculated": system_updates["privacy_controls_updated"]
     }
-    
+
 else:
     system_updates = {"error": "Preferences could not be updated"}
     session_updates = {"no_changes_applied": True}
@@ -720,32 +759,38 @@ result = {
         "requires_user_refresh": preference_results.get("impact_summary", {}).get("requires_refresh", False)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect preference management nodes
-        builder.add_connection("update_preferences", "result.result", "apply_system_changes", "preference_update_results")
-        
+        builder.add_connection(
+            "update_preferences",
+            "result.result",
+            "apply_system_changes",
+            "preference_update_results",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, preference_updates, "preference_management"
         )
-        
+
         return results
-    
+
     def run_comprehensive_profile_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all profile setup operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Profile Setup Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Initial profile setup
             print("\n1. Setting Up Initial Profile...")
@@ -755,10 +800,12 @@ result = {
                 "email": "alice.johnson@company.com",
                 "phone": "+1-555-0156",
                 "department": "Marketing",
-                "position": "Marketing Specialist"
+                "position": "Marketing Specialist",
             }
-            demo_results["initial_setup"] = self.setup_initial_profile(initial_profile_data)
-            
+            demo_results["initial_setup"] = self.setup_initial_profile(
+                initial_profile_data
+            )
+
             # 2. Update personal information
             print("\n2. Updating Personal Information...")
             personal_updates = {
@@ -766,10 +813,12 @@ result = {
                 "bio": "Marketing specialist with expertise in digital campaigns and analytics",
                 "timezone": "UTC-5",
                 "language": "en",
-                "phone": "+1-555-0157"
+                "phone": "+1-555-0157",
             }
-            demo_results["personal_updates"] = self.update_personal_information(personal_updates)
-            
+            demo_results["personal_updates"] = self.update_personal_information(
+                personal_updates
+            )
+
             # 3. Manage preferences
             print("\n3. Managing User Preferences...")
             preference_updates = {
@@ -777,56 +826,79 @@ result = {
                     "email_notifications": True,
                     "browser_notifications": False,
                     "marketing_communications": True,
-                    "weekly_digest": True
+                    "weekly_digest": True,
                 },
                 "ui_preferences": {
                     "theme": "dark",
                     "dashboard_layout": "compact",
-                    "show_tooltips": False
+                    "show_tooltips": False,
                 },
                 "privacy_settings": {
                     "profile_visibility": "department",
                     "data_analytics": True,
-                    "usage_tracking": False
-                }
+                    "usage_tracking": False,
+                },
             }
-            demo_results["preference_management"] = self.manage_preferences(preference_updates)
-            
+            demo_results["preference_management"] = self.manage_preferences(
+                preference_updates
+            )
+
             # Print comprehensive summary
             self.print_profile_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Profile setup demonstration failed: {str(e)}")
             raise
-    
+
     def print_profile_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive profile setup summary.
-        
+
         Args:
             results: Profile setup results from all workflows
         """
         print("\n" + "=" * 70)
         print("PROFILE SETUP DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Initial setup summary
-        setup_result = results.get("initial_setup", {}).get("setup_profile", {}).get("result", {}).get("result", {})
-        print(f"👤 Profile: Created with {setup_result.get('completion_percentage', 0)}% completion")
-        
+        setup_result = (
+            results.get("initial_setup", {})
+            .get("setup_profile", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"👤 Profile: Created with {setup_result.get('completion_percentage', 0)}% completion"
+        )
+
         # Personal updates summary
-        update_result = results.get("personal_updates", {}).get("update_personal_info", {}).get("result", {}).get("result", {})
-        print(f"✏️ Updates: {update_result.get('total_changes', 0)} personal information changes")
-        
+        update_result = (
+            results.get("personal_updates", {})
+            .get("update_personal_info", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"✏️ Updates: {update_result.get('total_changes', 0)} personal information changes"
+        )
+
         # Preferences summary
-        prefs_result = results.get("preference_management", {}).get("update_preferences", {}).get("result", {}).get("result", {})
-        print(f"⚙️ Preferences: {len(prefs_result.get('categories_updated', []))} preference categories updated")
-        
+        prefs_result = (
+            results.get("preference_management", {})
+            .get("update_preferences", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"⚙️ Preferences: {len(prefs_result.get('categories_updated', []))} preference categories updated"
+        )
+
         print("\n🎉 All profile setup operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -834,34 +906,39 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the profile setup workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Profile Setup Workflow...")
-        
+
         # Create test workflow
         profile_setup = ProfileSetupWorkflow("test_user")
-        
+
         # Test initial profile setup
         test_profile = {
             "first_name": "Test",
             "last_name": "User",
             "email": "test.user@company.com",
-            "department": "Engineering"
+            "department": "Engineering",
         }
-        
+
         result = profile_setup.setup_initial_profile(test_profile)
-        if not result.get("setup_profile", {}).get("result", {}).get("result", {}).get("profile_created"):
+        if (
+            not result.get("setup_profile", {})
+            .get("result", {})
+            .get("result", {})
+            .get("profile_created")
+        ):
             return False
-        
+
         print("✅ Profile setup workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Profile setup workflow test failed: {str(e)}")
         return False
@@ -875,7 +952,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         profile_setup = ProfileSetupWorkflow()
-        
+
         try:
             results = profile_setup.run_comprehensive_profile_demo()
             print("🎉 Profile setup demonstration completed successfully!")

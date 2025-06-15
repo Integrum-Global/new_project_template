@@ -10,26 +10,30 @@ This workflow handles support and assistance including:
 - Knowledge base integration
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class SupportRequestsWorkflow:
     """
     Complete support requests workflow for end users.
     """
-    
+
     def __init__(self, user_id: str = "user"):
         """
         Initialize the support requests workflow.
-        
+
         Args:
             user_id: ID of the user requesting support
         """
@@ -39,38 +43,44 @@ class SupportRequestsWorkflow:
             user_id=user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def create_support_ticket(self, ticket_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Create a new support ticket.
-        
+
         Args:
             ticket_data: Support ticket information
-            
+
         Returns:
             Ticket creation results
         """
         print(f"🎫 Creating support ticket for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("support_ticket_creation")
-        
+
         # Validate ticket input
         validation_rules = {
             "subject": {"required": True, "type": "str", "min_length": 10},
             "description": {"required": True, "type": "str", "min_length": 20},
             "category": {"required": True, "type": "str"},
-            "priority": {"required": False, "type": "str"}
+            "priority": {"required": False, "type": "str"},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_ticket_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_ticket_input",
+            create_validation_node(validation_rules),
+        )
+
         # Process and create support ticket
-        builder.add_node("PythonCodeNode", "create_ticket", {
-            "name": "create_support_ticket",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "create_ticket",
+            {
+                "name": "create_support_ticket",
+                "code": f"""
 from datetime import datetime, timedelta
 import random
 import string
@@ -139,12 +149,12 @@ support_categories = {{
 if category == "auto" or category not in support_categories:
     content_lower = (subject + " " + description).lower()
     category_scores = {{}}
-    
+
     for cat_key, cat_info in support_categories.items():
         score = sum(1 for keyword in cat_info["keywords"] if keyword in content_lower)
         if score > 0:
             category_scores[cat_key] = score
-    
+
     if category_scores:
         category = max(category_scores, key=category_scores.get)
     else:
@@ -260,7 +270,7 @@ auto_response = {{
     "helpful_links": knowledge_base_links,
     "next_steps": [
         "Our support team will review your request",
-        "You'll receive email updates on ticket progress", 
+        "You'll receive email updates on ticket progress",
         "You can track your ticket status in the support portal",
         "Feel free to add additional information if needed"
     ]
@@ -276,20 +286,24 @@ result = {{
         "sla_commitment": sla_deadline
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate ticket notifications
-        builder.add_node("PythonCodeNode", "generate_notifications", {
-            "name": "generate_ticket_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_notifications",
+            {
+                "name": "generate_ticket_notifications",
+                "code": """
 # Generate notifications for ticket creation
 ticket_creation = ticket_creation_result
 
 if ticket_creation.get("ticket_created"):
     ticket_record = ticket_creation.get("ticket_record", {})
     auto_response = ticket_creation.get("auto_response", {})
-    
+
     # User confirmation notification
     user_notification = {
         "type": "ticket_confirmation",
@@ -308,7 +322,7 @@ if ticket_creation.get("ticket_created"):
         "portal_link": f"/support/tickets/{ticket_record.get('ticket_id')}",
         "timestamp": datetime.now().isoformat()
     }
-    
+
     # Support team notification
     team_notification = {
         "type": "new_ticket_assignment",
@@ -326,7 +340,7 @@ if ticket_creation.get("ticket_created"):
         "escalation_required": ticket_record.get("priority") in ["urgent", "high"],
         "timestamp": datetime.now().isoformat()
     }
-    
+
     # Manager notification for high priority tickets
     manager_notification = None
     if ticket_record.get("priority") in ["urgent", "high"]:
@@ -344,7 +358,7 @@ if ticket_creation.get("ticket_created"):
             "requires_monitoring": True,
             "timestamp": datetime.now().isoformat()
         }
-    
+
     notifications_sent = 2 if manager_notification else 1
 
 else:
@@ -362,39 +376,50 @@ result = {
         "escalation_triggered": ticket_creation.get("ticket_record", {}).get("priority") in ["urgent", "high"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect ticket creation nodes
-        builder.add_connection("validate_ticket_input", "result", "create_ticket", "validation_result")
-        builder.add_connection("create_ticket", "result.result", "generate_notifications", "ticket_creation_result")
-        
+        builder.add_connection(
+            "validate_ticket_input", "result", "create_ticket", "validation_result"
+        )
+        builder.add_connection(
+            "create_ticket",
+            "result.result",
+            "generate_notifications",
+            "ticket_creation_result",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, ticket_data, "support_ticket_creation"
         )
-        
+
         return results
-    
+
     def track_ticket_status(self, ticket_id: str) -> Dict[str, Any]:
         """
         Track status and updates for a support ticket.
-        
+
         Args:
             ticket_id: ID of the ticket to track
-            
+
         Returns:
             Ticket tracking results
         """
         print(f"📊 Tracking ticket status: {ticket_id}")
-        
+
         builder = self.runner.create_workflow("ticket_status_tracking")
-        
+
         # Retrieve and analyze ticket status
-        builder.add_node("PythonCodeNode", "get_ticket_status", {
-            "name": "retrieve_ticket_status",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "get_ticket_status",
+            {
+                "name": "retrieve_ticket_status",
+                "code": f"""
 # Retrieve ticket status and history
 ticket_id = "{ticket_id}"
 
@@ -449,7 +474,7 @@ status_history = [
         "status": "in_progress",
         "action": "Internal update",
         "actor": "Sarah Johnson",
-        "actor_type": "agent", 
+        "actor_type": "agent",
         "details": "Identified permission issue, requesting role update"
     }}
 ]]
@@ -468,7 +493,7 @@ communications = [
     }},
     {{
         "timestamp": (datetime.now() - timedelta(hours=2)).isoformat(),
-        "from": "Sarah Johnson", 
+        "from": "Sarah Johnson",
         "from_type": "agent",
         "to": "security_admin",
         "to_type": "internal",
@@ -513,20 +538,24 @@ result = {{
         "last_update": status_history[-1]["timestamp"]
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate status insights and recommendations
-        builder.add_node("PythonCodeNode", "generate_status_insights", {
-            "name": "generate_ticket_status_insights",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_status_insights",
+            {
+                "name": "generate_ticket_status_insights",
+                "code": """
 # Generate insights and recommendations for ticket status
 ticket_status = ticket_status_data
 
 if ticket_status.get("ticket_found"):
     ticket_data = ticket_status.get("ticket_data", {})
     metrics = ticket_status.get("ticket_metrics", {})
-    
+
     # Status insights
     status_insights = {
         "current_status": ticket_data.get("status"),
@@ -535,17 +564,17 @@ if ticket_status.get("ticket_found"):
         "estimated_completion": ticket_data.get("estimated_resolution"),
         "completion_confidence": "high" if ticket_data.get("status") == "in_progress" else "medium"
     }
-    
+
     # User recommendations
     user_recommendations = []
-    
+
     if ticket_data.get("status") == "open":
         user_recommendations.append({
             "action": "Be patient",
             "description": "Your ticket is in queue and will be assigned soon",
             "timeline": "within SLA"
         })
-    
+
     elif ticket_data.get("status") == "in_progress":
         if metrics.get("time_since_creation_hours", 0) > 24:
             user_recommendations.append({
@@ -559,14 +588,14 @@ if ticket_status.get("ticket_found"):
                 "description": "Agent is actively working on your issue",
                 "timeline": "check back in 2 hours"
             })
-    
+
     elif ticket_data.get("status") == "waiting_for_user":
         user_recommendations.append({
             "action": "Respond promptly",
             "description": "Your response is needed to continue progress",
             "timeline": "as soon as possible"
         })
-    
+
     # Escalation information
     escalation_info = {
         "escalation_available": metrics.get("time_since_creation_hours", 0) > 8,
@@ -578,25 +607,25 @@ if ticket_status.get("ticket_found"):
             "Priority SLA adjustment"
         ]
     }
-    
+
     # Self-service options
     self_service_options = []
     category = ticket_data.get("category", "")
-    
+
     if category == "permissions":
         self_service_options.extend([
             {"action": "Check permission requests", "url": "/permissions/requests"},
             {"action": "Review role assignments", "url": "/profile/roles"},
             {"action": "Contact your manager", "method": "internal_message"}
         ])
-    
+
     elif category == "account":
         self_service_options.extend([
             {"action": "Reset password", "url": "/auth/reset-password"},
             {"action": "Update MFA settings", "url": "/settings/mfa"},
             {"action": "Review login history", "url": "/security/login-history"}
         ])
-    
+
     # Next steps timeline
     next_steps = [
         {
@@ -611,7 +640,7 @@ if ticket_status.get("ticket_found"):
         },
         {
             "step": "Testing and verification",
-            "estimated_time": "30 minutes", 
+            "estimated_time": "30 minutes",
             "status": "pending"
         },
         {
@@ -639,38 +668,47 @@ result = {
         "tracking_successful": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect ticket tracking nodes
-        builder.add_connection("get_ticket_status", "result.result", "generate_status_insights", "ticket_status_data")
-        
+        builder.add_connection(
+            "get_ticket_status",
+            "result.result",
+            "generate_status_insights",
+            "ticket_status_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"ticket_id": ticket_id}, "ticket_status_tracking"
         )
-        
+
         return results
-    
+
     def access_knowledge_base(self, search_query: Dict[str, Any]) -> Dict[str, Any]:
         """
         Search and access knowledge base and help documentation.
-        
+
         Args:
             search_query: Search parameters and query
-            
+
         Returns:
             Knowledge base search results
         """
         print(f"📚 Searching knowledge base for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("knowledge_base_search")
-        
+
         # Process knowledge base search
-        builder.add_node("PythonCodeNode", "search_knowledge_base", {
-            "name": "search_help_documentation",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "search_knowledge_base",
+            {
+                "name": "search_help_documentation",
+                "code": f"""
 # Search knowledge base and documentation
 search_data = {search_query}
 query = search_data.get("query", "").lower()
@@ -694,7 +732,7 @@ knowledge_articles = [
         "view_count": 1247
     }},
     {{
-        "id": "kb002", 
+        "id": "kb002",
         "title": "Setting Up Multi-Factor Authentication",
         "category": "security",
         "summary": "Comprehensive guide to enable and configure MFA for enhanced account security",
@@ -757,7 +795,7 @@ knowledge_articles = [
         "content_preview": "Keep your profile up to date and customize your experience...",
         "url": "/help/profile-management",
         "tags": ["profile", "preferences", "settings", "personal", "information"],
-        "difficulty": "beginner", 
+        "difficulty": "beginner",
         "estimated_time": "6 minutes",
         "last_updated": "2024-06-05",
         "rating": 4.4,
@@ -770,33 +808,33 @@ search_results = []
 if query:
     for article in knowledge_articles:
         relevance_score = 0
-        
+
         # Title matching (highest weight)
         if query in article["title"].lower():
             relevance_score += 10
-        
+
         # Tag matching (high weight)
         for tag in article["tags"]:
             if query in tag:
                 relevance_score += 8
-        
+
         # Summary matching (medium weight)
         if query in article["summary"].lower():
             relevance_score += 5
-        
+
         # Content preview matching (low weight)
         if query in article["content_preview"].lower():
             relevance_score += 2
-        
+
         # Category filter
         if category_filter != "all" and article["category"] != category_filter:
             relevance_score = 0
-        
+
         if relevance_score > 0:
             article_result = article.copy()
             article_result["relevance_score"] = relevance_score
             search_results.append(article_result)
-    
+
     # Sort by relevance and rating
     search_results.sort(key=lambda x: (x["relevance_score"], x["rating"]), reverse=True)
     search_results = search_results[:result_limit]
@@ -819,7 +857,7 @@ search_insights = {{
 if len(search_results) == 0 and query:
     search_insights["suggested_refinements"] = [
         "Try broader search terms",
-        "Check spelling of keywords", 
+        "Check spelling of keywords",
         "Browse by category instead",
         "Contact support for specific help"
     ]
@@ -834,13 +872,13 @@ if search_results:
     all_tags = []
     for result in search_results[:3]:  # Top 3 results
         all_tags.extend(result["tags"])
-    
+
     tag_counts = {{}}
     for tag in all_tags:
         tag_counts[tag] = tag_counts.get(tag, 0) + 1
-    
+
     # Get most common tags excluding search query
-    related_tags = [tag for tag, count in sorted(tag_counts.items(), key=lambda x: x[1], reverse=True) 
+    related_tags = [tag for tag, count in sorted(tag_counts.items(), key=lambda x: x[1], reverse=True)
                    if tag != query][:5]
     search_insights["related_topics"] = related_tags
 
@@ -854,23 +892,27 @@ result = {{
         "search_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate personalized recommendations
-        builder.add_node("PythonCodeNode", "generate_recommendations", {
-            "name": "generate_personalized_help_recommendations",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_recommendations",
+            {
+                "name": "generate_personalized_help_recommendations",
+                "code": """
 # Generate personalized help recommendations
 search_data = knowledge_search_results
 
 if search_data.get("search_completed"):
     search_results = search_data.get("search_results", [])
     search_insights = search_data.get("search_insights", {})
-    
+
     # Personalized recommendations based on user context
     personalized_recommendations = []
-    
+
     # New user recommendations
     user_tenure_days = 30  # Simulated - would calculate from user creation date
     if user_tenure_days < 30:
@@ -890,7 +932,7 @@ if search_data.get("search_completed"):
                 "priority": "medium"
             }
         ])
-    
+
     # Role-based recommendations
     user_role = "employee"  # Would get from user context
     if user_role == "manager":
@@ -901,7 +943,7 @@ if search_data.get("search_completed"):
             "reason": "Based on your manager role",
             "priority": "medium"
         })
-    
+
     # Department-specific recommendations
     user_department = "engineering"  # Would get from user context
     if user_department == "engineering":
@@ -912,7 +954,7 @@ if search_data.get("search_completed"):
             "reason": "Tailored for engineering team",
             "priority": "low"
         })
-    
+
     # Trending help topics
     trending_topics = [
         {
@@ -925,12 +967,12 @@ if search_data.get("search_completed"):
         {
             "title": "Mobile App Updates",
             "description": "Latest mobile application features",
-            "url": "/help/mobile-updates", 
+            "url": "/help/mobile-updates",
             "trend_reason": "Recently updated",
             "views_increase": "↑ 89%"
         }
     ]
-    
+
     # Quick action suggestions
     quick_actions = [
         {
@@ -958,7 +1000,7 @@ if search_data.get("search_completed"):
             "icon": "video"
         }
     ]
-    
+
     # Help categories overview
     help_categories = [
         {"name": "Account & Authentication", "articles": 8, "icon": "user"},
@@ -968,7 +1010,7 @@ if search_data.get("search_completed"):
         {"name": "Training & Tutorials", "articles": 10, "icon": "book"},
         {"name": "Feature Guides", "articles": 20, "icon": "star"}
     ]
-    
+
     # User help statistics
     user_help_stats = {
         "articles_viewed_this_month": 5,
@@ -996,32 +1038,38 @@ result = {
         "help_portal_ready": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect knowledge base search nodes
-        builder.add_connection("search_knowledge_base", "result.result", "generate_recommendations", "knowledge_search_results")
-        
+        builder.add_connection(
+            "search_knowledge_base",
+            "result.result",
+            "generate_recommendations",
+            "knowledge_search_results",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, search_query, "knowledge_base_search"
         )
-        
+
         return results
-    
+
     def run_comprehensive_support_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all support request operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Support Requests Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Create support ticket
             print("\n1. Creating Support Ticket...")
@@ -1029,64 +1077,90 @@ result = {
                 "subject": "Unable to access reports section - getting permission denied error",
                 "description": "When I try to access the reports section from the main dashboard, I get a 'Permission Denied' error message. I need access to generate monthly reports for my team. This started happening yesterday and I haven't had any issues before.",
                 "category": "permissions",
-                "priority": "medium"
+                "priority": "medium",
             }
             demo_results["ticket_creation"] = self.create_support_ticket(ticket_data)
-            
+
             # Get ticket ID from creation result
-            ticket_id = demo_results["ticket_creation"].get("create_ticket", {}).get("result", {}).get("result", {}).get("ticket_record", {}).get("ticket_id", "SUP-20240615-ABC123")
-            
+            ticket_id = (
+                demo_results["ticket_creation"]
+                .get("create_ticket", {})
+                .get("result", {})
+                .get("result", {})
+                .get("ticket_record", {})
+                .get("ticket_id", "SUP-20240615-ABC123")
+            )
+
             # 2. Track ticket status
             print(f"\n2. Tracking Ticket Status: {ticket_id}")
             demo_results["ticket_tracking"] = self.track_ticket_status(ticket_id)
-            
+
             # 3. Search knowledge base
             print("\n3. Searching Knowledge Base...")
             search_query = {
                 "query": "permissions access denied",
                 "category": "permissions",
-                "limit": 5
+                "limit": 5,
             }
             demo_results["knowledge_search"] = self.access_knowledge_base(search_query)
-            
+
             # Print comprehensive summary
             self.print_support_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Support requests demonstration failed: {str(e)}")
             raise
-    
+
     def print_support_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive support requests summary.
-        
+
         Args:
             results: Support requests results from all workflows
         """
         print("\n" + "=" * 70)
         print("SUPPORT REQUESTS DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Ticket creation summary
-        ticket_result = results.get("ticket_creation", {}).get("create_ticket", {}).get("result", {}).get("result", {})
+        ticket_result = (
+            results.get("ticket_creation", {})
+            .get("create_ticket", {})
+            .get("result", {})
+            .get("result", {})
+        )
         ticket_record = ticket_result.get("ticket_record", {})
-        print(f"🎫 Ticket: {ticket_record.get('ticket_id', 'N/A')} ({ticket_record.get('priority', 'unknown')} priority)")
-        
+        print(
+            f"🎫 Ticket: {ticket_record.get('ticket_id', 'N/A')} ({ticket_record.get('priority', 'unknown')} priority)"
+        )
+
         # Ticket tracking summary
-        tracking_result = results.get("ticket_tracking", {}).get("get_ticket_status", {}).get("result", {}).get("result", {})
+        tracking_result = (
+            results.get("ticket_tracking", {})
+            .get("get_ticket_status", {})
+            .get("result", {})
+            .get("result", {})
+        )
         ticket_data = tracking_result.get("ticket_data", {})
-        print(f"📊 Status: {ticket_data.get('status', 'unknown')} - Agent: {ticket_data.get('assigned_agent', 'unassigned')}")
-        
+        print(
+            f"📊 Status: {ticket_data.get('status', 'unknown')} - Agent: {ticket_data.get('assigned_agent', 'unassigned')}"
+        )
+
         # Knowledge search summary
-        search_result = results.get("knowledge_search", {}).get("search_knowledge_base", {}).get("result", {}).get("result", {})
+        search_result = (
+            results.get("knowledge_search", {})
+            .get("search_knowledge_base", {})
+            .get("result", {})
+            .get("result", {})
+        )
         search_results = search_result.get("search_results", [])
         print(f"📚 Knowledge Base: {len(search_results)} relevant articles found")
-        
+
         print("\n🎉 All support request operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1094,34 +1168,39 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the support requests workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Support Requests Workflow...")
-        
+
         # Create test workflow
         support_requests = SupportRequestsWorkflow("test_user")
-        
+
         # Test ticket creation
         test_ticket = {
             "subject": "Test ticket for workflow validation",
             "description": "This is a test ticket to validate the support workflow functionality and ensure all components work correctly.",
             "category": "technical",
-            "priority": "low"
+            "priority": "low",
         }
-        
+
         result = support_requests.create_support_ticket(test_ticket)
-        if not result.get("create_ticket", {}).get("result", {}).get("result", {}).get("ticket_created"):
+        if (
+            not result.get("create_ticket", {})
+            .get("result", {})
+            .get("result", {})
+            .get("ticket_created")
+        ):
             return False
-        
+
         print("✅ Support requests workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Support requests workflow test failed: {str(e)}")
         return False
@@ -1135,7 +1214,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         support_requests = SupportRequestsWorkflow()
-        
+
         try:
             results = support_requests.run_comprehensive_support_demo()
             print("🎉 Support requests demonstration completed successfully!")

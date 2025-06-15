@@ -5,23 +5,24 @@ This module implements administrative dashboard endpoints using pure Kailash SDK
 Provides system analytics, health monitoring, and operational insights.
 """
 
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from apps.user_management.core.startup import agent_ui, runtime
-from kailash.middleware import WorkflowEvent, EventType
-from kailash.workflow import WorkflowBuilder
+from kailash.middleware import EventType, WorkflowEvent
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow import WorkflowBuilder
 
 
 # Pydantic models
 class SystemHealthResponse(BaseModel):
     """System health status response."""
+
     status: str  # healthy, degraded, critical
     uptime_hours: float
     active_users: int
@@ -35,6 +36,7 @@ class SystemHealthResponse(BaseModel):
 
 class UserStatisticsResponse(BaseModel):
     """User statistics response."""
+
     total_users: int
     active_users: int
     inactive_users: int
@@ -49,6 +51,7 @@ class UserStatisticsResponse(BaseModel):
 
 class SecurityMetricsResponse(BaseModel):
     """Security metrics response."""
+
     failed_logins_today: int
     successful_logins_today: int
     suspicious_activities: int
@@ -62,6 +65,7 @@ class SecurityMetricsResponse(BaseModel):
 
 class PerformanceMetricsResponse(BaseModel):
     """Performance metrics response."""
+
     average_response_time_ms: float
     p95_response_time_ms: float
     p99_response_time_ms: float
@@ -75,6 +79,7 @@ class PerformanceMetricsResponse(BaseModel):
 
 class AuditSummaryResponse(BaseModel):
     """Audit summary response."""
+
     total_events_today: int
     events_by_type: Dict[str, int]
     events_by_severity: Dict[str, int]
@@ -96,7 +101,7 @@ async_runtime = LocalRuntime(enable_async=True, debug=False)
 async def get_system_health():
     """
     Get comprehensive system health status.
-    
+
     Features beyond Django:
     - Real-time performance metrics
     - AI-powered anomaly detection
@@ -106,87 +111,109 @@ async def get_system_health():
     try:
         # Create session
         session_id = await agent_ui.create_session("admin_dashboard")
-        
+
         # Execute admin statistics workflow
         execution_id = await agent_ui.execute_workflow_template(
             session_id,
             "admin_statistics_enterprise",
-            inputs={
-                "include_activities": include_activities,
-                "time_range": "24h"
-            }
+            inputs={"include_activities": include_activities, "time_range": "24h"},
         )
-        
+
         # Wait for completion
-        result = await agent_ui.wait_for_execution(
-            session_id,
-            execution_id,
-            timeout=10
-        )
-        
+        result = await agent_ui.wait_for_execution(session_id, execution_id, timeout=10)
+
         # Extract statistics
         stats = result.get("outputs", {}).get("aggregate_stats", {}).get("result", {})
-        
+
         # Build dashboard response
         dashboard = AdminDashboard(
             timestamp=datetime.now(),
             system_health=SystemHealth(
                 status=stats.get("system_health", "healthy"),
-                uptime_percentage=stats.get("performance_metrics", {}).get("uptime_percentage", 99.95),
-                response_time_ms=stats.get("performance_metrics", {}).get("avg_response_time_ms", 50),
+                uptime_percentage=stats.get("performance_metrics", {}).get(
+                    "uptime_percentage", 99.95
+                ),
+                response_time_ms=stats.get("performance_metrics", {}).get(
+                    "avg_response_time_ms", 50
+                ),
                 active_sessions=stats.get("auth_metrics", {}).get("active_sessions", 0),
                 error_rate=0.1,
-                last_check=datetime.now()
+                last_check=datetime.now(),
             ),
-            user_metrics=UserMetrics(**stats.get("user_metrics", {
-                "total_users": 0,
-                "active_users": 0,
-                "new_users_today": 0,
-                "new_users_week": 0,
-                "new_users_month": 0,
-                "disabled_users": 0,
-                "users_by_department": {},
-                "users_by_role": {}
-            })),
-            auth_metrics=AuthMetrics(**stats.get("auth_metrics", {
-                "logins_today": 0,
-                "logins_week": 0,
-                "failed_logins_today": 0,
-                "sso_usage": {},
-                "mfa_enabled_users": 0,
-                "mfa_usage": {},
-                "avg_auth_time_ms": 200,
-                "active_sessions": 0
-            })),
-            security_metrics=SecurityMetrics(**stats.get("security_metrics", {
-                "security_events_today": 0,
-                "high_risk_events": 0,
-                "blocked_attempts": 0,
-                "threat_categories": {},
-                "compliance_score": 98.5,
-                "audit_entries_today": 0
-            })),
-            performance_metrics=PerformanceMetrics(**stats.get("performance_metrics", {
-                "avg_response_time_ms": 50,
-                "p95_response_time_ms": 100,
-                "p99_response_time_ms": 200,
-                "requests_per_second": 1250,
-                "concurrent_users": 320,
-                "cache_hit_rate": 0.85,
-                "database_pool_usage": 0.45
-            })),
-            active_features=stats.get("active_features", {
-                "sso_enabled": True,
-                "mfa_enabled": True,
-                "risk_assessment": True,
-                "ai_reasoning": True,
-                "real_time_updates": True
-            }),
-            recent_activities=stats.get("recent_activities", []) if include_activities else []
+            user_metrics=UserMetrics(
+                **stats.get(
+                    "user_metrics",
+                    {
+                        "total_users": 0,
+                        "active_users": 0,
+                        "new_users_today": 0,
+                        "new_users_week": 0,
+                        "new_users_month": 0,
+                        "disabled_users": 0,
+                        "users_by_department": {},
+                        "users_by_role": {},
+                    },
+                )
+            ),
+            auth_metrics=AuthMetrics(
+                **stats.get(
+                    "auth_metrics",
+                    {
+                        "logins_today": 0,
+                        "logins_week": 0,
+                        "failed_logins_today": 0,
+                        "sso_usage": {},
+                        "mfa_enabled_users": 0,
+                        "mfa_usage": {},
+                        "avg_auth_time_ms": 200,
+                        "active_sessions": 0,
+                    },
+                )
+            ),
+            security_metrics=SecurityMetrics(
+                **stats.get(
+                    "security_metrics",
+                    {
+                        "security_events_today": 0,
+                        "high_risk_events": 0,
+                        "blocked_attempts": 0,
+                        "threat_categories": {},
+                        "compliance_score": 98.5,
+                        "audit_entries_today": 0,
+                    },
+                )
+            ),
+            performance_metrics=PerformanceMetrics(
+                **stats.get(
+                    "performance_metrics",
+                    {
+                        "avg_response_time_ms": 50,
+                        "p95_response_time_ms": 100,
+                        "p99_response_time_ms": 200,
+                        "requests_per_second": 1250,
+                        "concurrent_users": 320,
+                        "cache_hit_rate": 0.85,
+                        "database_pool_usage": 0.45,
+                    },
+                )
+            ),
+            active_features=stats.get(
+                "active_features",
+                {
+                    "sso_enabled": True,
+                    "mfa_enabled": True,
+                    "risk_assessment": True,
+                    "ai_reasoning": True,
+                    "real_time_updates": True,
+                },
+            ),
+            recent_activities=(
+                stats.get("recent_activities", []) if include_activities else []
+            ),
         )
-        
+
         return dashboard
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -194,13 +221,13 @@ async def get_system_health():
 @router.get("/metrics/users")
 async def get_user_metrics(
     token: str = Depends(oauth2_scheme),
-    time_range: str = Query("24h", description="Time range (1h, 24h, 7d, 30d)")
+    time_range: str = Query("24h", description="Time range (1h, 24h, 7d, 30d)"),
 ):
     """Get detailed user metrics."""
     try:
         # Create session
         session_id = await agent_ui.create_session("user_metrics")
-        
+
         # Create metrics workflow
         metrics_workflow = {
             "name": "user_metrics_detailed",
@@ -208,10 +235,7 @@ async def get_user_metrics(
                 {
                     "id": "user_stats",
                     "type": "UserManagementNode",
-                    "config": {
-                        "operation": "get_statistics",
-                        "detailed": True
-                    }
+                    "config": {"operation": "get_statistics", "detailed": True},
                 },
                 {
                     "id": "format_metrics",
@@ -248,41 +272,34 @@ metrics = {{
 }}
 
 result = {{"result": metrics}}
-"""
-                    }
-                }
+""",
+                    },
+                },
             ],
             "connections": [
                 {
                     "from_node": "user_stats",
                     "from_output": "statistics",
                     "to_node": "format_metrics",
-                    "to_input": "statistics"
+                    "to_input": "statistics",
                 }
-            ]
+            ],
         }
-        
+
         workflow_id = await agent_ui.create_dynamic_workflow(
-            session_id,
-            metrics_workflow
+            session_id, metrics_workflow
         )
-        
+
         execution_id = await agent_ui.execute_workflow(
-            session_id,
-            workflow_id,
-            inputs={"time_range": time_range}
+            session_id, workflow_id, inputs={"time_range": time_range}
         )
-        
-        result = await agent_ui.wait_for_execution(
-            session_id,
-            execution_id,
-            timeout=10
-        )
-        
+
+        result = await agent_ui.wait_for_execution(session_id, execution_id, timeout=10)
+
         metrics = result.get("outputs", {}).get("format_metrics", {}).get("result", {})
-        
+
         return metrics
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -290,13 +307,13 @@ result = {{"result": metrics}}
 @router.get("/metrics/performance")
 async def get_performance_metrics(
     token: str = Depends(oauth2_scheme),
-    time_range: str = Query("1h", description="Time range (1h, 24h, 7d)")
+    time_range: str = Query("1h", description="Time range (1h, 24h, 7d)"),
 ):
     """Get detailed performance metrics."""
     try:
         # Create session
         session_id = await agent_ui.create_session("performance_metrics")
-        
+
         # Create performance monitoring workflow
         perf_workflow = {
             "name": "performance_monitoring",
@@ -347,37 +364,28 @@ metrics = {
 }
 
 result = {"result": metrics}
-"""
-                    }
+""",
+                    },
                 }
-            ]
+            ],
         }
-        
-        workflow_id = await agent_ui.create_dynamic_workflow(
-            session_id,
-            perf_workflow
-        )
-        
+
+        workflow_id = await agent_ui.create_dynamic_workflow(session_id, perf_workflow)
+
         execution_id = await agent_ui.execute_workflow(
-            session_id,
-            workflow_id,
-            inputs={"time_range": time_range}
+            session_id, workflow_id, inputs={"time_range": time_range}
         )
-        
-        result = await agent_ui.wait_for_execution(
-            session_id,
-            execution_id,
-            timeout=5
-        )
-        
+
+        result = await agent_ui.wait_for_execution(session_id, execution_id, timeout=5)
+
         metrics = result.get("outputs", {}).get("collect_metrics", {}).get("result", {})
-        
+
         return {
             "time_range": time_range,
             "timestamp": datetime.now().isoformat(),
-            **metrics
+            **metrics,
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -387,13 +395,13 @@ async def get_recent_audit_logs(
     token: str = Depends(oauth2_scheme),
     limit: int = Query(50, ge=1, le=500, description="Number of entries"),
     severity: Optional[str] = Query(None, description="Filter by severity"),
-    event_type: Optional[str] = Query(None, description="Filter by event type")
+    event_type: Optional[str] = Query(None, description="Filter by event type"),
 ):
     """Get recent audit log entries."""
     try:
         # Create session
         session_id = await agent_ui.create_session("audit_logs")
-        
+
         # Create audit query workflow
         audit_workflow = {
             "name": "query_audit_logs",
@@ -401,10 +409,7 @@ async def get_recent_audit_logs(
                 {
                     "id": "query_logs",
                     "type": "AuditLogNode",
-                    "config": {
-                        "operation": "query",
-                        "limit": limit
-                    }
+                    "config": {"operation": "query", "limit": limit},
                 },
                 {
                     "id": "filter_logs",
@@ -439,41 +444,32 @@ result = {{
         }}
     }}
 }}
-"""
-                    }
-                }
+""",
+                    },
+                },
             ],
             "connections": [
                 {
                     "from_node": "query_logs",
                     "from_output": "audit_entries",
                     "to_node": "filter_logs",
-                    "to_input": "audit_entries"
+                    "to_input": "audit_entries",
                 }
-            ]
+            ],
         }
-        
-        workflow_id = await agent_ui.create_dynamic_workflow(
-            session_id,
-            audit_workflow
-        )
-        
+
+        workflow_id = await agent_ui.create_dynamic_workflow(session_id, audit_workflow)
+
         execution_id = await agent_ui.execute_workflow(
-            session_id,
-            workflow_id,
-            inputs={}
+            session_id, workflow_id, inputs={}
         )
-        
-        result = await agent_ui.wait_for_execution(
-            session_id,
-            execution_id,
-            timeout=10
-        )
-        
+
+        result = await agent_ui.wait_for_execution(session_id, execution_id, timeout=10)
+
         audit_data = result.get("outputs", {}).get("filter_logs", {}).get("result", {})
-        
+
         return audit_data
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -482,7 +478,7 @@ result = {{
 async def get_system_health():
     """
     Get system health status (public endpoint).
-    
+
     Returns basic health information without requiring authentication.
     """
     try:
@@ -494,28 +490,28 @@ async def get_system_health():
                 "database": "operational",
                 "cache": "operational",
                 "authentication": "operational",
-                "websocket": "operational"
+                "websocket": "operational",
             },
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
     except Exception as e:
         return {
             "status": "degraded",
             "timestamp": datetime.now().isoformat(),
-            "error": str(e)
+            "error": str(e),
         }
 
 
 @router.post("/backup/create")
 async def create_backup(
     token: str = Depends(oauth2_scheme),
-    backup_type: str = Query("full", description="Backup type (full, incremental)")
+    backup_type: str = Query("full", description="Backup type (full, incremental)"),
 ):
     """Create system backup."""
     try:
         # Create session
         session_id = await agent_ui.create_session("create_backup")
-        
+
         # Create backup workflow
         backup_workflow = {
             "name": "system_backup",
@@ -526,8 +522,8 @@ async def create_backup(
                     "config": {
                         "require_admin": True,
                         "resource": "system:backup",
-                        "action": "create"
-                    }
+                        "action": "create",
+                    },
                 },
                 {
                     "id": "create_backup",
@@ -557,54 +553,46 @@ backup_info = {{
 }}
 
 result = {{"result": backup_info}}
-"""
-                    }
+""",
+                    },
                 },
                 {
                     "id": "log_backup",
                     "type": "AuditLogNode",
-                    "config": {
-                        "log_level": "WARNING",
-                        "event_type": "backup_created"
-                    }
-                }
+                    "config": {"log_level": "WARNING", "event_type": "backup_created"},
+                },
             ],
             "connections": [
                 {
                     "from_node": "check_permissions",
                     "from_output": "allowed",
                     "to_node": "create_backup",
-                    "to_input": "proceed"
+                    "to_input": "proceed",
                 },
                 {
                     "from_node": "create_backup",
                     "from_output": "result",
                     "to_node": "log_backup",
-                    "to_input": "event_data"
-                }
-            ]
+                    "to_input": "event_data",
+                },
+            ],
         }
-        
+
         workflow_id = await agent_ui.create_dynamic_workflow(
-            session_id,
-            backup_workflow
+            session_id, backup_workflow
         )
-        
+
         execution_id = await agent_ui.execute_workflow(
-            session_id,
-            workflow_id,
-            inputs={"backup_type": backup_type}
+            session_id, workflow_id, inputs={"backup_type": backup_type}
         )
-        
-        result = await agent_ui.wait_for_execution(
-            session_id,
-            execution_id,
-            timeout=30
+
+        result = await agent_ui.wait_for_execution(session_id, execution_id, timeout=30)
+
+        backup_info = (
+            result.get("outputs", {}).get("create_backup", {}).get("result", {})
         )
-        
-        backup_info = result.get("outputs", {}).get("create_backup", {}).get("result", {})
-        
+
         return backup_info
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

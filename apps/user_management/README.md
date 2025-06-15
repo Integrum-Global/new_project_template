@@ -63,7 +63,7 @@ POST /api/auth/passwordless      # Passwordless auth
 POST /api/auth/logout            # Logout all sessions
 ```
 
-### User Management  
+### User Management
 ```
 GET    /api/users                # List (145ms target)
 POST   /api/users                # Create (95ms target)
@@ -106,7 +106,7 @@ cli roles create --name senior-dev \
   --abac-rule "department=engineering AND clearance>=3"
 cli permissions test --user john --resource project_123
 
-# Security operations  
+# Security operations
 cli security monitor --real-time
 cli security block-ip 192.168.1.100 --reason "brute force"
 cli security export-audit --since 7d --format json
@@ -123,7 +123,7 @@ cli compliance report --type SOC2 --period Q1-2024
 # Comparison
 "equals", "not_equals", "greater_than", "less_than"
 
-# List operations  
+# List operations
 "in_list", "not_in_list", "contains", "not_contains"
 
 # Pattern matching
@@ -300,17 +300,17 @@ services:
       - REDIS_URL=redis://redis:6379
     ports:
       - "8000:8000"
-    
+
   frontend:
     image: kailash/user-management-ui:latest
     ports:
       - "3000:3000"
-      
+
   db:
     image: postgres:15
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      
+
   redis:
     image: redis:7-alpine
 ```
@@ -352,7 +352,7 @@ pytest --cov=apps.user_management tests/
 
 ### API Documentation
 | Document | Purpose |
-|----------|---------|  
+|----------|---------|
 | [API_REFERENCE.md](docs/API_REFERENCE.md) | Complete REST API documentation |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | System design and components |
 | [ENTERPRISE_SSO_IMPLEMENTATION.md](docs/ENTERPRISE_SSO_IMPLEMENTATION.md) | SSO integration guide |

@@ -29,7 +29,7 @@ pytest tests/unit/
 # Integration tests only
 pytest tests/integration/
 
-# Functional tests only  
+# Functional tests only
 pytest tests/functional/
 ```
 

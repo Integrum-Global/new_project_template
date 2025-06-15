@@ -309,10 +309,10 @@ Cost-Optimized Testing
 
    # Phase 1: Basic validation (free)
    qa-test /path/to/app --model-preset development
-   
+
    # Phase 2: Security analysis (targeted cost)
    qa-test /path/to/app --test-types security --security-model openai/gpt-4
-   
+
    # Phase 3: Performance optimization (premium analysis)
    qa-test /path/to/critical-paths --test-types performance --performance-model anthropic/claude-3-opus
 
@@ -328,7 +328,7 @@ CI/CD Pipeline Integration
 
    name: QA Agentic Testing
    on: [push, pull_request]
-   
+
    jobs:
      qa-testing:
        runs-on: ubuntu-latest
@@ -381,25 +381,25 @@ API Integration
    import asyncio
    from qa_agentic_testing import AutonomousQATester
    from pathlib import Path
-   
+
    async def run_qa_test():
        app_path = Path("/path/to/app")
        tester = AutonomousQATester(app_path=app_path)
-       
+
        # Discover application structure
        analysis = tester.discover_app(app_path)
-       
+
        # Generate personas and scenarios
        personas = tester.generate_personas()
        scenarios = tester.generate_scenarios(personas[:5])
-       
+
        # Execute tests
        results = await tester.execute_tests()
-       
+
        # Generate report
        report_path = tester.generate_report("comprehensive_report.html")
        return report_path
-   
+
    # Run the test
    report = asyncio.run(run_qa_test())
    print(f"QA report generated: {report}")
@@ -409,34 +409,34 @@ API Integration
 .. code-block:: python
 
    import requests
-   
+
    # Start QA testing server
    # qa-test server --port 8000
-   
+
    base_url = "http://localhost:8000/api"
-   
+
    # Create project
    project_data = {
        "name": "My Application",
        "app_path": "/path/to/app",
        "description": "Comprehensive testing"
    }
-   
+
    response = requests.post(f"{base_url}/projects", json=project_data)
    project = response.json()
-   
+
    # Create and start test run
    run_data = {
        "project_id": project["project_id"],
        "name": "Production Validation"
    }
-   
+
    response = requests.post(f"{base_url}/runs", json=run_data)
    run = response.json()
-   
+
    # Start execution
    requests.post(f"{base_url}/runs/{run['run_id']}/start")
-   
+
    # Monitor progress
    status = requests.get(f"{base_url}/runs/{run['run_id']}/status")
    print(f"Test status: {status.json()}")
@@ -451,7 +451,7 @@ Real-time Monitoring
 
    # Start monitoring server
    qa-test server --port 8080
-   
+
    # Access monitoring dashboards:
    # http://localhost:8080/projects - Project overview
    # http://localhost:8080/runs/real-time - Live test execution
@@ -464,10 +464,10 @@ Performance Analytics
 
    # Get analytics summary
    qa-test analytics summary --days 30
-   
+
    # Project-specific analytics
    qa-test analytics project proj_12345
-   
+
    # Export analytics data
    qa-test analytics export --format csv --output ./analytics.csv
 
@@ -484,7 +484,7 @@ Common Issues and Solutions
    # Test model connectivity
    qa-test models test ollama llama3.2:latest
    qa-test models test openai gpt-3.5-turbo
-   
+
    # Check Ollama service
    curl http://localhost:11434/api/tags
 
@@ -494,7 +494,7 @@ Common Issues and Solutions
 
    # Verify app access
    ls -la /path/to/app
-   
+
    # Check database permissions
    qa-test init  # Reinitialize if needed
 
@@ -504,7 +504,7 @@ Common Issues and Solutions
 
    # Switch to development models
    qa-test /path/to/app --model-preset development
-   
+
    # Estimate costs before running
    qa-test models cost --preset enterprise --test-count 100
 

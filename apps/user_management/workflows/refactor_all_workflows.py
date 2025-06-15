@@ -11,8 +11,7 @@ This script creates refactored versions of all workflows that:
 
 import os
 import sys
-from typing import Dict, Any, List
-
+from typing import Any, Dict, List
 
 # Template for refactored workflows
 REFACTORED_WORKFLOW_TEMPLATE = '''#!/usr/bin/env python3
@@ -34,8 +33,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
 
 from workflow_runner import WorkflowRunner
 from service_nodes import (
-    UserServiceNode, 
-    RoleServiceNode, 
+    UserServiceNode,
+    RoleServiceNode,
     SecurityServiceNode,
     ComplianceServiceNode
 )
@@ -49,14 +48,14 @@ from kailash.nodes.logic import SwitchNode
 class {class_name}Refactored:
     """
     {description}
-    
+
     This implementation demonstrates proper service integration.
     """
-    
+
     def __init__(self, user_id: str = "{default_user}", api_base_url: str = "http://localhost:8000"):
         """
         Initialize the workflow.
-        
+
         Args:
             user_id: ID of the user performing operations
             api_base_url: Base URL of the user management API
@@ -70,18 +69,18 @@ class {class_name}Refactored:
             enable_audit=True,
             enable_monitoring=True
         )
-    
+
     def _get_auth_token(self) -> str:
         """Get authentication token for API calls."""
         # In production, this would retrieve a valid JWT token
         return f"{{{self.user_id}}}_token"
-    
+
     {methods}
-    
+
     def run_demo(self) -> Dict[str, Any]:
         """
         Run a demonstration of the workflow.
-        
+
         Returns:
             Demonstration results
         """
@@ -90,16 +89,16 @@ class {class_name}Refactored:
         print("NOTE: This requires the user_management API to be running!")
         print("Start it with: python -m apps.user_management.api")
         print("=" * 70)
-        
+
         results = {{}}
-        
+
         try:
             # Run workflow operations
             {demo_calls}
-            
+
             print("\\n✅ Demonstration completed successfully!")
             return results
-            
+
         except Exception as e:
             print(f"❌ Demonstration failed: {str(e)}")
             raise
@@ -108,35 +107,35 @@ class {class_name}Refactored:
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the refactored workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing {title}...")
-        
+
         # Create test workflow
         workflow = {class_name}Refactored("test_user")
-        
+
         # Validate workflow structure
         builder = workflow.runner.create_workflow("test_validation")
-        
+
         # Add a service node to test registration
         builder.add_node("UserServiceNode", "test_service", {{
             "operation": "list_users"
         }})
-        
+
         test_workflow = builder.build()
-        
+
         if test_workflow and len(test_workflow.nodes) > 0:
             print("✅ Workflow structure test passed")
             return True
         else:
             return False
-        
+
     except Exception as e:
         print(f"❌ Workflow test failed: {str(e)}")
         return False
@@ -150,7 +149,7 @@ if __name__ == "__main__":
     else:
         # Run demonstration
         workflow = {class_name}Refactored()
-        
+
         try:
             results = workflow.run_demo()
             print("🎉 Workflow demonstration completed!")
@@ -175,31 +174,31 @@ WORKFLOW_SPECS = {
     def configure_security_policies(self, policies: Dict[str, Any]) -> Dict[str, Any]:
         """Configure security policies using SecurityService."""
         builder = {{self.runner}}.create_workflow("configure_policies")
-        
+
         # Apply policies through service
         builder.add_node("SecurityServiceNode", "apply_policies", {
             "operation": "configure_policies"
         })
-        
+
         # Audit the configuration
         builder.add_node("AuditLogNode", "audit_config", {
             "action": "SECURITY_POLICIES_CONFIGURED",
             "resource_type": "security_policy",
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("apply_policies", "result", "audit_config", "policy_result")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {"policies": policies}, "configure_policies")
         return results
-    
+
     def detect_security_threats(self) -> Dict[str, Any]:
         """Detect and analyze security threats."""
         builder = {{self.runner}}.create_workflow("threat_detection")
-        
+
         # Call threat detection API
         builder.add_node("HTTPRequestNode", "detect_threats", {
             "url": f"{{self.api_base_url}}/api/v1/security/threats/detect",
@@ -208,7 +207,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Analyze results
         builder.add_node("DataTransformer", "analyze_threats", {
             "operations": [
@@ -218,21 +217,21 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Create security events
         builder.add_node("SecurityServiceNode", "create_events", {
             "operation": "create_security_events"
         })
-        
+
         # Connect nodes
         builder.add_connection("detect_threats", "result.data", "analyze_threats", "threats")
         builder.add_connection("analyze_threats", "result", "create_events", "threat_data")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "threat_detection")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Configure security policies
             policies = {
                 "password_policy": {
@@ -245,9 +244,9 @@ WORKFLOW_SPECS = {
                 }
             }
             results["policies"] = self.configure_security_policies(policies)
-            
+
             # Detect threats
-            results["threats"] = self.detect_security_threats()'''
+            results["threats"] = self.detect_security_threats()""",
         },
         "04_monitoring_analytics.py": {
             "class_name": "MonitoringAnalyticsWorkflow",
@@ -259,7 +258,7 @@ WORKFLOW_SPECS = {
     def collect_system_metrics(self) -> Dict[str, Any]:
         """Collect system performance metrics."""
         builder = {{self.runner}}.create_workflow("collect_metrics")
-        
+
         # Get metrics via API
         builder.add_node("HTTPRequestNode", "get_metrics", {
             "url": f"{{self.api_base_url}}/api/v1/monitoring/metrics",
@@ -268,7 +267,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Process metrics
         builder.add_node("DataTransformer", "process_metrics", {
             "operations": [
@@ -285,7 +284,7 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Store in monitoring service
         builder.add_node("HTTPRequestNode", "store_metrics", {
             "url": f"{{self.api_base_url}}/api/v1/monitoring/store",
@@ -295,20 +294,20 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("get_metrics", "result.data", "process_metrics", "metrics")
         builder.add_connection("process_metrics", "result", "store_metrics", "body")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "collect_metrics")
         return results
-    
+
     def generate_analytics_report(self, report_type: str = "user_activity") -> Dict[str, Any]:
         """Generate analytics reports."""
         builder = {{self.runner}}.create_workflow("generate_report")
-        
+
         # Request report generation
         builder.add_node("HTTPRequestNode", "request_report", {
             "url": f"{{self.api_base_url}}/api/v1/analytics/reports/generate",
@@ -323,7 +322,7 @@ WORKFLOW_SPECS = {
                 "include_visualizations": True
             }
         })
-        
+
         # Transform report data
         builder.add_node("DataTransformer", "format_report", {
             "operations": [
@@ -336,28 +335,28 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Audit report generation
         builder.add_node("AuditLogNode", "audit_report", {
             "action": "ANALYTICS_REPORT_GENERATED",
             "resource_type": "report",
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("request_report", "result.data", "format_report", "report_data")
         builder.add_connection("format_report", "result", "audit_report", "report_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {"report_type": report_type}, "generate_report")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Collect system metrics
             results["metrics"] = self.collect_system_metrics()
-            
+
             # Generate analytics report
-            results["report"] = self.generate_analytics_report("user_activity")'''
+            results["report"] = self.generate_analytics_report("user_activity")""",
         },
         "05_backup_recovery.py": {
             "class_name": "BackupRecoveryWorkflow",
@@ -369,7 +368,7 @@ WORKFLOW_SPECS = {
     def create_system_backup(self, backup_type: str = "full") -> Dict[str, Any]:
         """Create a system backup."""
         builder = {{self.runner}}.create_workflow("create_backup")
-        
+
         # Initiate backup via API
         builder.add_node("HTTPRequestNode", "initiate_backup", {
             "url": f"{{self.api_base_url}}/api/v1/backup/create",
@@ -385,7 +384,7 @@ WORKFLOW_SPECS = {
                 "encrypt": True
             }
         })
-        
+
         # Monitor backup progress
         builder.add_node("SwitchNode", "check_status", {
             "condition_field": "status",
@@ -395,33 +394,33 @@ WORKFLOW_SPECS = {
                 "in_progress": "wait_completion"
             }
         })
-        
+
         # Finalize backup
         builder.add_node("ComplianceServiceNode", "finalize_backup", {
             "operation": "verify_backup_compliance"
         })
-        
+
         # Audit backup creation
         builder.add_node("AuditLogNode", "audit_backup", {
             "action": "BACKUP_CREATED",
             "resource_type": "backup",
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("initiate_backup", "result.data", "check_status", "backup_info")
         builder.add_connection("check_status", "completed", "finalize_backup", "backup_data")
         builder.add_connection("finalize_backup", "result", "audit_backup", "compliance_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {"backup_type": backup_type}, "create_backup")
         return results
-    
+
     def test_recovery_plan(self) -> Dict[str, Any]:
         """Test the disaster recovery plan."""
         builder = {{self.runner}}.create_workflow("test_recovery")
-        
+
         # Run recovery test
         builder.add_node("HTTPRequestNode", "run_recovery_test", {
             "url": f"{{self.api_base_url}}/api/v1/backup/test-recovery",
@@ -435,7 +434,7 @@ WORKFLOW_SPECS = {
                 "validate_data": True
             }
         })
-        
+
         # Validate results
         builder.add_node("DataTransformer", "validate_recovery", {
             "operations": [
@@ -450,27 +449,27 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Create recovery report
         builder.add_node("ComplianceServiceNode", "create_report", {
             "operation": "generate_recovery_report"
         })
-        
+
         # Connect nodes
         builder.add_connection("run_recovery_test", "result.data", "validate_recovery", "test_results")
         builder.add_connection("validate_recovery", "result", "create_report", "validation_data")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "test_recovery")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Create system backup
             results["backup"] = self.create_system_backup("incremental")
-            
+
             # Test recovery plan
-            results["recovery_test"] = self.test_recovery_plan()'''
-        }
+            results["recovery_test"] = self.test_recovery_plan()""",
+        },
     },
     "manager_workflows": {
         "01_team_setup.py": {
@@ -483,7 +482,7 @@ WORKFLOW_SPECS = {
     def create_team(self, team_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new team."""
         builder = {{self.runner}}.create_workflow("create_team")
-        
+
         # Create team via API
         builder.add_node("HTTPRequestNode", "create_team_api", {
             "url": f"{{self.api_base_url}}/api/v1/teams",
@@ -494,32 +493,32 @@ WORKFLOW_SPECS = {
             },
             "body": team_data
         })
-        
+
         # Set up team permissions
         builder.add_node("RoleServiceNode", "setup_permissions", {
             "operation": "create_team_role"
         })
-        
+
         # Audit team creation
         builder.add_node("AuditLogNode", "audit_team", {
             "action": "TEAM_CREATED",
             "resource_type": "team",
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("create_team_api", "result.data", "setup_permissions", "team_info")
         builder.add_connection("setup_permissions", "result", "audit_team", "permission_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, team_data, "create_team")
         return results
-    
+
     def assign_team_members(self, team_id: str, member_ids: List[str]) -> Dict[str, Any]:
         """Assign members to a team."""
         builder = {{self.runner}}.create_workflow("assign_members")
-        
+
         # Bulk assign members
         builder.add_node("HTTPRequestNode", "assign_members_api", {
             "url": f"{{self.api_base_url}}/api/v1/teams/{team_id}/members",
@@ -533,12 +532,12 @@ WORKFLOW_SPECS = {
                 "notify_members": True
             }
         })
-        
+
         # Update member roles
         builder.add_node("RoleServiceNode", "update_roles", {
             "operation": "assign_team_member_roles"
         })
-        
+
         # Send notifications
         builder.add_node("HTTPRequestNode", "send_notifications", {
             "url": f"{{self.api_base_url}}/api/v1/notifications/send",
@@ -548,20 +547,20 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("assign_members_api", "result.data", "update_roles", "assignment_info")
         builder.add_connection("update_roles", "result", "send_notifications", "role_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
-            workflow, 
-            {"team_id": team_id, "member_ids": member_ids}, 
+            workflow,
+            {"team_id": team_id, "member_ids": member_ids},
             "assign_members"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Create a team
             team_data = {
                 "name": "Development Team",
@@ -569,9 +568,9 @@ WORKFLOW_SPECS = {
                 "department": "Engineering"
             }
             results["team"] = self.create_team(team_data)
-            
+
             # Assign team members
-            # results["assignments"] = self.assign_team_members("team_123", ["user_1", "user_2"])'''
+            # results["assignments"] = self.assign_team_members("team_123", ["user_1", "user_2"])""",
         },
         "02_user_management.py": {
             "class_name": "ManagerUserManagementWorkflow",
@@ -583,12 +582,12 @@ WORKFLOW_SPECS = {
     def add_team_member(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """Add a new team member."""
         builder = {{self.runner}}.create_workflow("add_team_member")
-        
+
         # Create user through service
         builder.add_node("UserServiceNode", "create_user", {
             "operation": "create_user"
         })
-        
+
         # Assign to manager's team
         builder.add_node("HTTPRequestNode", "assign_to_team", {
             "url": f"{{self.api_base_url}}/api/v1/teams/my-team/members",
@@ -598,35 +597,35 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Set up initial permissions
         builder.add_node("RoleServiceNode", "setup_permissions", {
             "operation": "assign_role"
         })
-        
+
         # Connect nodes
         builder.add_connection("create_user", "user", "assign_to_team", "member_data")
         builder.add_connection("assign_to_team", "result.data", "setup_permissions", "assignment_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, user_data, "add_team_member")
         return results
-    
+
     def update_member_profile(self, user_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update team member profile."""
         builder = {{self.runner}}.create_workflow("update_member")
-        
+
         # Verify manager permissions
         builder.add_node("RoleServiceNode", "check_permissions", {
             "operation": "check_permission"
         })
-        
+
         # Update user through service
         builder.add_node("UserServiceNode", "update_user", {
             "operation": "update_user"
         })
-        
+
         # Audit the update
         builder.add_node("AuditLogNode", "audit_update", {
             "action": "TEAM_MEMBER_UPDATED",
@@ -634,11 +633,11 @@ WORKFLOW_SPECS = {
             "resource_id": user_id,
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("check_permissions", "has_permission", "update_user", "permission_check")
         builder.add_connection("update_user", "user", "audit_update", "update_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -647,7 +646,7 @@ WORKFLOW_SPECS = {
             "update_member"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Add a team member
             member_data = {
                 "email": "new.member@company.com",
@@ -656,12 +655,12 @@ WORKFLOW_SPECS = {
                 "department": "Engineering"
             }
             results["new_member"] = self.add_team_member(member_data)
-            
+
             # Update member profile
-            # results["update"] = self.update_member_profile("user_123", {"position": "Senior Developer"})'''
+            # results["update"] = self.update_member_profile("user_123", {"position": "Senior Developer"})""",
         },
         "03_permission_assignment.py": {
-            "class_name": "PermissionAssignmentWorkflow", 
+            "class_name": "PermissionAssignmentWorkflow",
             "title": "Permission Assignment Workflow",
             "description": "Manages role and permission assignments for team members.",
             "default_user": "manager",
@@ -670,17 +669,17 @@ WORKFLOW_SPECS = {
     def assign_role_to_member(self, user_id: str, role: str) -> Dict[str, Any]:
         """Assign a role to a team member."""
         builder = {{self.runner}}.create_workflow("assign_role")
-        
+
         # Verify manager can assign this role
         builder.add_node("RoleServiceNode", "verify_authority", {
             "operation": "check_permission"
         })
-        
+
         # Assign role through service
         builder.add_node("RoleServiceNode", "assign_role", {
             "operation": "assign_role"
         })
-        
+
         # Send notification
         builder.add_node("HTTPRequestNode", "notify_user", {
             "url": f"{{self.api_base_url}}/api/v1/notifications/send",
@@ -695,7 +694,7 @@ WORKFLOW_SPECS = {
                 "template": "role_assignment"
             }
         })
-        
+
         # Audit role assignment
         builder.add_node("AuditLogNode", "audit_assignment", {
             "action": "ROLE_ASSIGNED",
@@ -703,12 +702,12 @@ WORKFLOW_SPECS = {
             "resource_id": user_id,
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("verify_authority", "has_permission", "assign_role", "authority_check")
         builder.add_connection("assign_role", "result", "notify_user", "role_info")
         builder.add_connection("notify_user", "result", "audit_assignment", "notification_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -722,11 +721,11 @@ WORKFLOW_SPECS = {
             "assign_role"
         )
         return results
-    
+
     def review_team_permissions(self) -> Dict[str, Any]:
         """Review and audit team permissions."""
         builder = {{self.runner}}.create_workflow("review_permissions")
-        
+
         # Get team members
         builder.add_node("HTTPRequestNode", "get_team_members", {
             "url": f"{{self.api_base_url}}/api/v1/teams/my-team/members",
@@ -735,7 +734,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Analyze permissions
         builder.add_node("DataTransformer", "analyze_permissions", {
             "operations": [
@@ -748,26 +747,26 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Generate compliance report
         builder.add_node("ComplianceServiceNode", "compliance_check", {
             "operation": "verify_permission_compliance"
         })
-        
+
         # Connect nodes
         builder.add_connection("get_team_members", "result.data", "analyze_permissions", "members")
         builder.add_connection("analyze_permissions", "result", "compliance_check", "permission_data")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "review_permissions")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Assign role to team member
             # results["role_assignment"] = self.assign_role_to_member("user_123", "developer")
-            
+
             # Review team permissions
-            results["permission_review"] = self.review_team_permissions()'''
+            results["permission_review"] = self.review_team_permissions()""",
         },
         "04_reporting_analytics.py": {
             "class_name": "ReportingAnalyticsWorkflow",
@@ -779,7 +778,7 @@ WORKFLOW_SPECS = {
     def generate_team_report(self, report_type: str = "performance") -> Dict[str, Any]:
         """Generate team performance report."""
         builder = {{self.runner}}.create_workflow("generate_report")
-        
+
         # Request team metrics
         builder.add_node("HTTPRequestNode", "get_team_metrics", {
             "url": f"{{self.api_base_url}}/api/v1/analytics/team-metrics",
@@ -792,7 +791,7 @@ WORKFLOW_SPECS = {
                 "period": "last_30_days"
             }
         })
-        
+
         # Process metrics
         builder.add_node("DataTransformer", "process_metrics", {
             "operations": [
@@ -804,7 +803,7 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Generate visual report
         builder.add_node("HTTPRequestNode", "generate_visuals", {
             "url": f"{{self.api_base_url}}/api/v1/reports/generate",
@@ -814,20 +813,20 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("get_team_metrics", "result.data", "process_metrics", "raw_metrics")
         builder.add_connection("process_metrics", "result", "generate_visuals", "body")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {"report_type": report_type}, "generate_report")
         return results
-    
+
     def analyze_team_productivity(self) -> Dict[str, Any]:
         """Analyze team productivity metrics."""
         builder = {{self.runner}}.create_workflow("analyze_productivity")
-        
+
         # Get activity data
         builder.add_node("HTTPRequestNode", "get_activity_data", {
             "url": f"{{self.api_base_url}}/api/v1/analytics/team-activity",
@@ -836,7 +835,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Calculate productivity scores
         builder.add_node("DataTransformer", "calculate_scores", {
             "operations": [
@@ -848,7 +847,7 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Generate insights
         builder.add_node("HTTPRequestNode", "generate_insights", {
             "url": f"{{self.api_base_url}}/api/v1/analytics/insights",
@@ -858,21 +857,21 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("get_activity_data", "result.data", "calculate_scores", "activity_data")
         builder.add_connection("calculate_scores", "result", "generate_insights", "body")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "analyze_productivity")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Generate team report
             results["team_report"] = self.generate_team_report("performance")
-            
+
             # Analyze productivity
-            results["productivity"] = self.analyze_team_productivity()'''
+            results["productivity"] = self.analyze_team_productivity()""",
         },
         "05_approval_workflows.py": {
             "class_name": "ApprovalWorkflowsWorkflow",
@@ -884,7 +883,7 @@ WORKFLOW_SPECS = {
     def review_access_request(self, request_id: str, decision: str = "approve") -> Dict[str, Any]:
         """Review and process access requests."""
         builder = {{self.runner}}.create_workflow("review_request")
-        
+
         # Get request details
         builder.add_node("HTTPRequestNode", "get_request", {
             "url": f"{{self.api_base_url}}/api/v1/approvals/requests/{request_id}",
@@ -893,7 +892,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Make decision
         builder.add_node("SwitchNode", "process_decision", {
             "condition_field": "decision",
@@ -903,7 +902,7 @@ WORKFLOW_SPECS = {
                 "defer": "defer_request"
             }
         })
-        
+
         # Approve request
         builder.add_node("HTTPRequestNode", "approve_request", {
             "url": f"{{self.api_base_url}}/api/v1/approvals/requests/{request_id}/approve",
@@ -913,7 +912,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Audit decision
         builder.add_node("AuditLogNode", "audit_decision", {
             "action": "APPROVAL_DECISION",
@@ -921,12 +920,12 @@ WORKFLOW_SPECS = {
             "resource_id": request_id,
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("get_request", "result.data", "process_decision", "request_data")
         builder.add_connection("process_decision", "approve", "approve_request", "approval_data")
         builder.add_connection("approve_request", "result", "audit_decision", "decision_result")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -935,11 +934,11 @@ WORKFLOW_SPECS = {
             "review_request"
         )
         return results
-    
+
     def setup_approval_workflow(self, workflow_config: Dict[str, Any]) -> Dict[str, Any]:
         """Set up a new approval workflow."""
         builder = {{self.runner}}.create_workflow("setup_approval")
-        
+
         # Create workflow configuration
         builder.add_node("HTTPRequestNode", "create_workflow", {
             "url": f"{{self.api_base_url}}/api/v1/approvals/workflows",
@@ -950,7 +949,7 @@ WORKFLOW_SPECS = {
             },
             "body": workflow_config
         })
-        
+
         # Configure notifications
         builder.add_node("HTTPRequestNode", "setup_notifications", {
             "url": f"{{self.api_base_url}}/api/v1/notifications/configure",
@@ -960,7 +959,7 @@ WORKFLOW_SPECS = {
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Test workflow
         builder.add_node("DataTransformer", "validate_workflow", {
             "operations": [
@@ -972,11 +971,11 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Connect nodes
         builder.add_connection("create_workflow", "result.data", "setup_notifications", "workflow_info")
         builder.add_connection("setup_notifications", "result", "validate_workflow", "config_data")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -985,7 +984,7 @@ WORKFLOW_SPECS = {
             "setup_approval"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Set up approval workflow
             workflow_config = {
                 "name": "Resource Access Approval",
@@ -997,10 +996,10 @@ WORKFLOW_SPECS = {
                 }
             }
             results["approval_setup"] = self.setup_approval_workflow(workflow_config)
-            
+
             # Review a request (would need actual request ID)
-            # results["review"] = self.review_access_request("req_123", "approve")'''
-        }
+            # results["review"] = self.review_access_request("req_123", "approve")""",
+        },
     },
     "user_workflows": {
         "01_profile_setup.py": {
@@ -1013,7 +1012,7 @@ WORKFLOW_SPECS = {
     def complete_profile(self, profile_data: Dict[str, Any]) -> Dict[str, Any]:
         """Complete user profile setup."""
         builder = {{self.runner}}.create_workflow("complete_profile")
-        
+
         # Update profile via API
         builder.add_node("HTTPRequestNode", "update_profile", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/profile",
@@ -1024,7 +1023,7 @@ WORKFLOW_SPECS = {
             },
             "body": profile_data
         })
-        
+
         # Upload profile picture if provided
         builder.add_node("SwitchNode", "check_picture", {
             "condition_field": "has_picture",
@@ -1033,7 +1032,7 @@ WORKFLOW_SPECS = {
                 "false": "skip_picture"
             }
         })
-        
+
         # Validate profile completeness
         builder.add_node("DataTransformer", "validate_profile", {
             "operations": [
@@ -1045,11 +1044,11 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Connect nodes
         builder.add_connection("update_profile", "result.data", "check_picture", "profile_info")
         builder.add_connection("check_picture", "skip_picture", "validate_profile", "profile_data")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1058,11 +1057,11 @@ WORKFLOW_SPECS = {
             "complete_profile"
         )
         return results
-    
+
     def update_preferences(self, preferences: Dict[str, Any]) -> Dict[str, Any]:
         """Update user preferences."""
         builder = {{self.runner}}.create_workflow("update_preferences")
-        
+
         # Update preferences
         builder.add_node("HTTPRequestNode", "update_prefs", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/preferences",
@@ -1073,7 +1072,7 @@ WORKFLOW_SPECS = {
             },
             "body": preferences
         })
-        
+
         # Apply UI theme if changed
         builder.add_node("DataTransformer", "apply_theme", {
             "operations": [
@@ -1085,7 +1084,7 @@ WORKFLOW_SPECS = {
                 }
             ]
         })
-        
+
         # Save to local storage
         builder.add_node("PythonCodeNode", "save_local", {
             "name": "save_preferences_locally",
@@ -1100,11 +1099,11 @@ local_prefs = {
 result = {"result": {"saved_locally": True, "preferences": local_prefs}}
 """
         })
-        
+
         # Connect nodes
         builder.add_connection("update_prefs", "result.data", "apply_theme", "preference_data")
         builder.add_connection("apply_theme", "result", "save_local", "preferences")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1113,7 +1112,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "update_preferences"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Complete profile
             profile_data = {
                 "phone": "+1-555-0123",
@@ -1123,7 +1122,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "has_picture": False
             }
             results["profile"] = self.complete_profile(profile_data)
-            
+
             # Update preferences
             preferences = {
                 "theme": "dark",
@@ -1134,7 +1133,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                     "mobile": False
                 }
             }
-            results["preferences"] = self.update_preferences(preferences)'''
+            results["preferences"] = self.update_preferences(preferences)""",
         },
         "02_security_settings.py": {
             "class_name": "SecuritySettingsWorkflow",
@@ -1146,7 +1145,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
     def change_password(self, current_password: str, new_password: str) -> Dict[str, Any]:
         """Change user password."""
         builder = {{self.runner}}.create_workflow("change_password")
-        
+
         # Validate current password
         builder.add_node("HTTPRequestNode", "validate_current", {
             "url": f"{{self.api_base_url}}/api/v1/auth/validate-password",
@@ -1159,12 +1158,12 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "current_password": current_password
             }
         })
-        
+
         # Check password policy
         builder.add_node("SecurityServiceNode", "check_policy", {
             "operation": "validate_password_policy"
         })
-        
+
         # Update password
         builder.add_node("HTTPRequestNode", "update_password", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/password",
@@ -1177,17 +1176,17 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "new_password": new_password
             }
         })
-        
+
         # Revoke existing sessions
         builder.add_node("SecurityServiceNode", "revoke_sessions", {
             "operation": "revoke_sessions"
         })
-        
+
         # Connect nodes
         builder.add_connection("validate_current", "result", "check_policy", "validation_result")
         builder.add_connection("check_policy", "result", "update_password", "policy_check")
         builder.add_connection("update_password", "result", "revoke_sessions", "password_update")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1200,11 +1199,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "change_password"
         )
         return results
-    
+
     def enable_two_factor(self) -> Dict[str, Any]:
         """Enable two-factor authentication."""
         builder = {{self.runner}}.create_workflow("enable_2fa")
-        
+
         # Generate 2FA secret
         builder.add_node("HTTPRequestNode", "generate_secret", {
             "url": f"{{self.api_base_url}}/api/v1/security/2fa/generate",
@@ -1213,7 +1212,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Create QR code
         builder.add_node("DataTransformer", "create_qr", {
             "operations": [
@@ -1226,7 +1225,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Save backup codes
         builder.add_node("HTTPRequestNode", "save_backup_codes", {
             "url": f"{{self.api_base_url}}/api/v1/security/2fa/backup-codes",
@@ -1236,21 +1235,21 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("generate_secret", "result.data", "create_qr", "secret_data")
         builder.add_connection("create_qr", "result", "save_backup_codes", "qr_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(workflow, {}, "enable_2fa")
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Enable two-factor authentication
             results["2fa"] = self.enable_two_factor()
-            
+
             # Note: Password change requires actual credentials
-            # results["password"] = self.change_password("current", "new")'''
+            # results["password"] = self.change_password("current", "new")""",
         },
         "03_data_management.py": {
             "class_name": "DataManagementWorkflow",
@@ -1262,12 +1261,12 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
     def export_personal_data(self, format: str = "json") -> Dict[str, Any]:
         """Export all personal data (GDPR compliance)."""
         builder = {{self.runner}}.create_workflow("export_data")
-        
+
         # Request data export
         builder.add_node("ComplianceServiceNode", "request_export", {
             "operation": "export_user_data"
         })
-        
+
         # Monitor export progress
         builder.add_node("HTTPRequestNode", "check_progress", {
             "url": f"{{self.api_base_url}}/api/v1/exports/status",
@@ -1276,7 +1275,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Download when ready
         builder.add_node("SwitchNode", "check_ready", {
             "condition_field": "status",
@@ -1286,11 +1285,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "failed": "handle_error"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("request_export", "export_id", "check_progress", "export_id")
         builder.add_connection("check_progress", "result.data", "check_ready", "export_status")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1303,11 +1302,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "export_data"
         )
         return results
-    
+
     def delete_activity_data(self, data_type: str = "search_history") -> Dict[str, Any]:
         """Delete specific activity data."""
         builder = {{self.runner}}.create_workflow("delete_data")
-        
+
         # Verify user authorization
         builder.add_node("HTTPRequestNode", "verify_auth", {
             "url": f"{{self.api_base_url}}/api/v1/auth/verify",
@@ -1316,7 +1315,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Delete specified data
         builder.add_node("HTTPRequestNode", "delete_data", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/data/{data_type}",
@@ -1325,7 +1324,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Audit deletion
         builder.add_node("AuditLogNode", "audit_deletion", {
             "action": "USER_DATA_DELETED",
@@ -1333,11 +1332,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "resource_id": data_type,
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("verify_auth", "result", "delete_data", "auth_result")
         builder.add_connection("delete_data", "result", "audit_deletion", "deletion_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1346,12 +1345,12 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "delete_data"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Export personal data
             results["export"] = self.export_personal_data("json")
-            
+
             # Delete activity data
-            results["deletion"] = self.delete_activity_data("search_history")'''
+            results["deletion"] = self.delete_activity_data("search_history")""",
         },
         "04_privacy_controls.py": {
             "class_name": "PrivacyControlsWorkflow",
@@ -1363,7 +1362,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
     def update_privacy_settings(self, settings: Dict[str, Any]) -> Dict[str, Any]:
         """Update privacy settings."""
         builder = {{self.runner}}.create_workflow("update_privacy")
-        
+
         # Update privacy preferences
         builder.add_node("HTTPRequestNode", "update_settings", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/privacy",
@@ -1374,7 +1373,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             },
             "body": settings
         })
-        
+
         # Apply visibility changes
         builder.add_node("DataTransformer", "apply_visibility", {
             "operations": [
@@ -1386,16 +1385,16 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Update consent records
         builder.add_node("ComplianceServiceNode", "update_consent", {
             "operation": "update_consent_records"
         })
-        
+
         # Connect nodes
         builder.add_connection("update_settings", "result.data", "apply_visibility", "privacy_data")
         builder.add_connection("apply_visibility", "result", "update_consent", "visibility_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1404,11 +1403,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "update_privacy"
         )
         return results
-    
+
     def manage_data_sharing(self, sharing_config: Dict[str, Any]) -> Dict[str, Any]:
         """Manage data sharing permissions."""
         builder = {{self.runner}}.create_workflow("manage_sharing")
-        
+
         # Update sharing preferences
         builder.add_node("HTTPRequestNode", "update_sharing", {
             "url": f"{{self.api_base_url}}/api/v1/users/me/sharing",
@@ -1419,7 +1418,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             },
             "body": sharing_config
         })
-        
+
         # Revoke existing shares if needed
         builder.add_node("SwitchNode", "check_revoke", {
             "condition_field": "revoke_existing",
@@ -1428,18 +1427,18 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "false": "skip_revoke"
             }
         })
-        
+
         # Audit sharing changes
         builder.add_node("AuditLogNode", "audit_sharing", {
             "action": "DATA_SHARING_UPDATED",
             "resource_type": "privacy_settings",
             "user_id": {{self.user_id}}
         })
-        
+
         # Connect nodes
         builder.add_connection("update_sharing", "result.data", "check_revoke", "sharing_info")
         builder.add_connection("check_revoke", "skip_revoke", "audit_sharing", "sharing_result")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1448,7 +1447,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "manage_sharing"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Update privacy settings
             privacy_settings = {
                 "profile_visibility": "connections_only",
@@ -1457,7 +1456,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "data_analytics": False
             }
             results["privacy"] = self.update_privacy_settings(privacy_settings)
-            
+
             # Manage data sharing
             sharing_config = {
                 "share_with_partners": False,
@@ -1465,7 +1464,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "share_anonymized": True,
                 "revoke_existing": False
             }
-            results["sharing"] = self.manage_data_sharing(sharing_config)'''
+            results["sharing"] = self.manage_data_sharing(sharing_config)""",
         },
         "05_support_requests.py": {
             "class_name": "SupportRequestsWorkflow",
@@ -1477,7 +1476,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
     def create_support_ticket(self, ticket_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new support ticket."""
         builder = {{self.runner}}.create_workflow("create_ticket")
-        
+
         # Validate ticket data
         builder.add_node("DataTransformer", "validate_ticket", {
             "operations": [
@@ -1489,7 +1488,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Create ticket via API
         builder.add_node("HTTPRequestNode", "create_ticket", {
             "url": f"{{self.api_base_url}}/api/v1/support/tickets",
@@ -1500,7 +1499,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             },
             "body": ticket_data
         })
-        
+
         # Attach system info
         builder.add_node("DataTransformer", "attach_info", {
             "operations": [
@@ -1516,7 +1515,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Send confirmation
         builder.add_node("HTTPRequestNode", "send_confirmation", {
             "url": f"{{self.api_base_url}}/api/v1/notifications/send",
@@ -1526,12 +1525,12 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Connect nodes
         builder.add_connection("validate_ticket", "result", "create_ticket", "validated_data")
         builder.add_connection("create_ticket", "result.data", "attach_info", "ticket_info")
         builder.add_connection("attach_info", "result", "send_confirmation", "enriched_ticket")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1540,11 +1539,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "create_ticket"
         )
         return results
-    
+
     def check_ticket_status(self, ticket_id: str) -> Dict[str, Any]:
         """Check support ticket status."""
         builder = {{self.runner}}.create_workflow("check_status")
-        
+
         # Get ticket status
         builder.add_node("HTTPRequestNode", "get_status", {
             "url": f"{{self.api_base_url}}/api/v1/support/tickets/{ticket_id}",
@@ -1553,7 +1552,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "Authorization": f"Bearer {{self._get_auth_token()}}"
             }
         })
-        
+
         # Check for updates
         builder.add_node("DataTransformer", "check_updates", {
             "operations": [
@@ -1566,7 +1565,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Format response
         builder.add_node("DataTransformer", "format_response", {
             "operations": [
@@ -1579,11 +1578,11 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 }
             ]
         })
-        
+
         # Connect nodes
         builder.add_connection("get_status", "result.data", "check_updates", "ticket_data")
         builder.add_connection("check_updates", "result", "format_response", "update_info")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = {{self.runner}}.execute_workflow(
@@ -1592,7 +1591,7 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
             "check_status"
         )
         return results''',
-            "demo_calls": '''
+            "demo_calls": """
             # Create support ticket
             ticket_data = {
                 "subject": "Cannot access team resources",
@@ -1601,40 +1600,40 @@ result = {"result": {"saved_locally": True, "preferences": local_prefs}}
                 "priority": "medium"
             }
             results["ticket"] = self.create_support_ticket(ticket_data)
-            
+
             # Check ticket status (would need actual ticket ID)
-            # results["status"] = self.check_ticket_status("ticket_123")'''
-        }
-    }
+            # results["status"] = self.check_ticket_status("ticket_123")""",
+        },
+    },
 }
 
 
 def create_refactored_workflow(workflow_path: str, spec: Dict[str, Any]) -> str:
     """
     Create a refactored workflow file.
-    
+
     Args:
         workflow_path: Path to the original workflow
         spec: Refactoring specification
-        
+
     Returns:
         Path to the refactored file
     """
     # Generate refactored content
     content = REFACTORED_WORKFLOW_TEMPLATE.format(**spec)
-    
+
     # Create refactored filename
     base_name = os.path.basename(workflow_path)
-    refactored_name = base_name.replace('.py', '_refactored.py')
+    refactored_name = base_name.replace(".py", "_refactored.py")
     refactored_path = os.path.join(os.path.dirname(workflow_path), refactored_name)
-    
+
     # Write refactored file
-    with open(refactored_path, 'w') as f:
+    with open(refactored_path, "w") as f:
         f.write(content)
-    
+
     # Make executable
     os.chmod(refactored_path, 0o755)
-    
+
     return refactored_path
 
 
@@ -1644,19 +1643,19 @@ def main():
     """
     print("🔧 Refactoring User Management Workflows...")
     print("=" * 70)
-    
+
     base_dir = os.path.join(os.path.dirname(__file__))
     refactored_count = 0
-    
+
     # Process each workflow type
     for workflow_type, workflows in WORKFLOW_SPECS.items():
         print(f"\n📁 Processing {workflow_type}...")
-        
+
         workflow_dir = os.path.join(base_dir, workflow_type, "scripts")
-        
+
         for filename, spec in workflows.items():
             workflow_path = os.path.join(workflow_dir, filename)
-            
+
             if os.path.exists(workflow_path):
                 print(f"  ✅ Refactoring {filename}...")
                 refactored_path = create_refactored_workflow(workflow_path, spec)
@@ -1664,7 +1663,7 @@ def main():
                 refactored_count += 1
             else:
                 print(f"  ❌ Not found: {filename}")
-    
+
     print(f"\n{'='*70}")
     print(f"✅ Refactored {refactored_count} workflows")
     print("\nNext steps:")
@@ -1672,7 +1671,7 @@ def main():
     print("2. Start API server: python -m apps.user_management.api")
     print("3. Run full workflows: python <workflow>_refactored.py")
     print("4. Remove original workflows once refactored versions are validated")
-    
+
 
 if __name__ == "__main__":
     main()

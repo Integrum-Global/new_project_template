@@ -248,7 +248,7 @@ Development Environment
 
    # Uses Ollama models:
    # ✓ Basic analysis: llama3.2:latest
-   # ✓ Security scan: llama3.2:latest  
+   # ✓ Security scan: llama3.2:latest
    # ✓ Performance check: codellama:13b
 
 **Best For:**
@@ -315,7 +315,7 @@ Test Coverage Matrix
      - >90% success rate
      - 92-98% pass rate
    * - Authentication
-     - 12 scenarios  
+     - 12 scenarios
      - >95% security compliance
      - 94-99% pass rate
    * - Role Management
@@ -343,16 +343,16 @@ Sample Test Report Output
    ⏱️  Total Execution Time: 3.2 minutes
    🤖 Personas Tested: 7 (Healthcare industry)
    📋 Scenarios Executed: 89
-   
+
    ✅ Functional Testing: 96.1% (43/45 passed)
-   🔒 Security Analysis: 92.3% (24/26 passed) 
+   🔒 Security Analysis: 92.3% (24/26 passed)
    ⚡ Performance Check: 94.7% (18/19 passed)
    👥 Usability Review: 93.8% (15/16 passed)
 
    🚨 Critical Issues Found:
    • Password reset vulnerability (Security)
    • Slow user search queries (Performance)
-   
+
    💡 Recommendations:
    • Implement rate limiting for password reset
    • Add database indexing for user search
@@ -377,7 +377,7 @@ Create ``qa_config.json`` in your User Management app directory:
          "focus_areas": ["authentication", "authorization", "data_protection"]
        },
        "functional": {
-         "provider": "ollama", 
+         "provider": "ollama",
          "model": "llama3.1:8b",
          "temperature": 0.2,
          "focus_areas": ["user_workflows", "api_functionality", "database_operations"]
@@ -410,7 +410,7 @@ Environment Variables
    export QA_DATABASE_URL="postgresql://user:pass@localhost/user_mgmt_test"
    export QA_USER_MGMT_ADMIN_URL="http://localhost:8000/admin/"
    export QA_USER_MGMT_API_BASE="http://localhost:8000/api/v1/"
-   
+
    # Model configuration
    export QA_LLM_PROVIDER="openai"
    export QA_SECURITY_MODEL="gpt-4"
@@ -426,7 +426,7 @@ GitHub Actions Integration
 
    name: QA Agentic Testing
    on: [push, pull_request]
-   
+
    jobs:
      qa-testing:
        runs-on: ubuntu-latest
@@ -437,14 +437,14 @@ GitHub Actions Integration
              cd apps/qa_agentic_testing
              pip install -e .
              qa-test init
-         
+
          - name: Run User Management Tests
            run: |
              qa-test apps/user_management \
                --model-preset development \
                --format json \
                --output ./qa-results
-         
+
          - name: Upload Results
            uses: actions/upload-artifact@v3
            with:
@@ -458,15 +458,15 @@ Pre-commit Hook
 
    #!/bin/bash
    # .git/hooks/pre-commit
-   
+
    echo "Running QA Agentic Testing..."
    qa-test apps/user_management --model-preset development --format json
-   
+
    if [ $? -ne 0 ]; then
      echo "QA tests failed. Commit aborted."
      exit 1
    fi
-   
+
    echo "QA tests passed. Proceeding with commit."
 
 Advanced Features
@@ -480,13 +480,13 @@ Custom Scenario Generation
    # Generate scenarios specific to User Management app
    from core.scenario_generator import ScenarioGenerator
    from core.personas import PersonaManager
-   
+
    generator = ScenarioGenerator()
    persona_manager = PersonaManager()
-   
+
    # Load healthcare personas
    personas = persona_manager.load_industry_personas("healthcare")
-   
+
    # Generate custom scenarios
    scenarios = generator.generate_scenarios(
        app_path="/path/to/apps/user_management",
@@ -516,7 +516,7 @@ Real-time Monitoring
 
    # Start web server for real-time monitoring
    qa-test server --port 8080
-   
+
    # View testing progress at:
    # http://localhost:8080/projects
    # http://localhost:8080/runs/real-time
@@ -533,7 +533,7 @@ Common Issues
 
    # Verify database is running
    psql -h localhost -U postgres -d user_management_test
-   
+
    # Check configuration
    qa-test init  # Recreates default config
 
@@ -551,7 +551,7 @@ Common Issues
 
    # Check app permissions
    ls -la /path/to/apps/user_management
-   
+
    # Verify user has read access to app directory
 
 Next Steps

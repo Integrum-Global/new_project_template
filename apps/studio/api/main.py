@@ -11,18 +11,19 @@ Uses the Kailash SDK's complete middleware stack and FastAPI app instead of manu
 """
 
 import logging
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 # Import SDK gateway - provides complete FastAPI app
 try:
     from kailash.middleware import create_gateway
+
     SDK_GATEWAY_AVAILABLE = True
 except ImportError:
     SDK_GATEWAY_AVAILABLE = False
     logger = logging.getLogger(__name__)
     logger.error("SDK gateway not available - cannot proceed without core middleware")
 
-from ..core.config import get_config, StudioConfig
+from ..core.config import StudioConfig, get_config
 from ..core.security import SecurityService
 
 logger = logging.getLogger(__name__)
@@ -38,17 +39,19 @@ gateway: Optional[Any] = None
 def create_studio_gateway():
     """Create enterprise Studio API using SDK's complete gateway instead of manual FastAPI orchestration."""
     global security_service, gateway
-    
+
     if not SDK_GATEWAY_AVAILABLE:
-        raise RuntimeError("SDK gateway not available - cannot create Studio API without core middleware")
-    
+        raise RuntimeError(
+            "SDK gateway not available - cannot create Studio API without core middleware"
+        )
+
     logger.info("🚀 Creating Enterprise Kailash Studio API using SDK Gateway")
     logger.info(f"📊 Environment: {config.environment.value}")
     logger.info(f"🔒 Security Level: {config.security.level.value}")
-    
+
     # Initialize security service for additional enterprise features
     security_service = SecurityService()
-    
+
     # Create complete enterprise gateway with supported features
     # The APIGateway only accepts specific parameters
     gateway = create_gateway(
@@ -58,23 +61,29 @@ def create_studio_gateway():
         cors_origins=config.cors_origins,
         enable_docs=config.enable_api_docs,
         enable_auth=config.enable_auth,
-        database_url=config.get_database_url() if config.sdk.use_database_nodes else None,
-        max_sessions=config.middleware.max_concurrent_sessions
+        database_url=(
+            config.get_database_url() if config.sdk.use_database_nodes else None
+        ),
+        max_sessions=config.middleware.max_concurrent_sessions,
     )
-    
+
     # Store additional configuration on the gateway for use by routes
     gateway.studio_config = {
-        "ai_config": {
-            "default_provider": config.ai.default_provider,
-            "default_model": config.ai.default_model,
-            "enable_streaming": config.ai.enable_streaming,
-            "enable_function_calling": config.ai.enable_function_calling,
-            "max_tokens": config.ai.max_tokens,
-            "temperature": config.ai.temperature,
-            "top_p": config.ai.top_p,
-            "frequency_penalty": config.ai.frequency_penalty,
-            "presence_penalty": config.ai.presence_penalty
-        } if config.ai.enable_ai_chat else None,
+        "ai_config": (
+            {
+                "default_provider": config.ai.default_provider,
+                "default_model": config.ai.default_model,
+                "enable_streaming": config.ai.enable_streaming,
+                "enable_function_calling": config.ai.enable_function_calling,
+                "max_tokens": config.ai.max_tokens,
+                "temperature": config.ai.temperature,
+                "top_p": config.ai.top_p,
+                "frequency_penalty": config.ai.frequency_penalty,
+                "presence_penalty": config.ai.presence_penalty,
+            }
+            if config.ai.enable_ai_chat
+            else None
+        ),
         "security_config": {
             "level": config.security.level.value,
             "jwt_secret_key": config.security.jwt_secret_key,
@@ -90,7 +99,7 @@ def create_studio_gateway():
             "enable_threat_detection": config.security.enable_threat_detection,
             "enable_behavior_analysis": config.security.enable_behavior_analysis,
             "compliance_frameworks": config.security.compliance_frameworks,
-            "data_retention_days": config.security.data_retention_days
+            "data_retention_days": config.security.data_retention_days,
         },
         "execution_config": {
             "max_concurrent_executions": config.execution.max_concurrent_executions,
@@ -106,7 +115,7 @@ def create_studio_gateway():
             "enable_auto_scaling": config.execution.enable_auto_scaling,
             "enable_execution_queue": config.execution.enable_execution_queue,
             "queue_max_size": config.execution.queue_max_size,
-            "priority_levels": config.execution.priority_levels
+            "priority_levels": config.execution.priority_levels,
         },
         "monitoring_config": {
             "enabled": config.monitoring.enabled,
@@ -124,36 +133,36 @@ def create_studio_gateway():
             "metrics_path": config.monitoring.metrics_path,
             "prometheus_enabled": config.monitoring.prometheus_enabled,
             "error_threshold_rate": config.monitoring.error_threshold_rate,
-            "response_time_threshold_ms": config.monitoring.response_time_threshold_ms
+            "response_time_threshold_ms": config.monitoring.response_time_threshold_ms,
         },
         "middleware_config": {
             "realtime_enabled": config.middleware.realtime_enabled,
             "websocket_heartbeat_interval": config.middleware.websocket_heartbeat_interval,
-            "sse_retry_timeout": config.middleware.sse_retry_timeout
-        }
+            "sse_retry_timeout": config.middleware.sse_retry_timeout,
+        },
     }
-    
+
     logger.info("✅ SDK Gateway created with complete enterprise middleware stack")
     logger.info(f"🏢 Components available: {list(gateway.__dict__.keys())}")
-    
+
     # Add custom Studio-specific endpoints to the SDK's FastAPI app if needed
     _add_studio_custom_endpoints(gateway)
-    
+
     # Store references for external access
     gateway.security_service = security_service
     gateway.config = config
-    
+
     logger.info("🎉 Enterprise Kailash Studio API ready")
-    
+
     return gateway
 
 
 def _add_studio_custom_endpoints(gateway):
     """Add Studio-specific custom endpoints to the SDK's FastAPI app."""
-    
+
     # The SDK gateway already provides:
     # - /health - Health checks
-    # - /api/sessions - Session management  
+    # - /api/sessions - Session management
     # - /api/workflows - Workflow creation and management
     # - /api/executions - Execution tracking and control
     # - /api/schemas/nodes - Node discovery and schemas
@@ -161,11 +170,12 @@ def _add_studio_custom_endpoints(gateway):
     # - /events - Server-Sent Events
     # - /api/stats - System statistics
     # - /api/webhooks - Webhook management
-    
+
     # Import and add PRD-compliant routes
     from .routes import add_studio_routes
+
     add_studio_routes(gateway)
-    
+
     # Add Studio-specific information endpoint
     @gateway.app.get("/api/studio/info", tags=["Studio"])
     async def studio_info():
@@ -184,24 +194,24 @@ def _add_studio_custom_endpoints(gateway):
                 "performance_monitoring": config.monitoring.enabled,
                 "code_export": True,
                 "template_library": True,
-                "ai_chat": True  # Now implemented!
+                "ai_chat": True,  # Now implemented!
             },
             "frontend_integration": {
                 "cors_configured": True,
                 "websocket_endpoint": "/ws",
                 "sse_endpoint": "/events",
                 "api_base": "/api",
-                "authentication": "jwt" if config.enable_auth else "none"
+                "authentication": "jwt" if config.enable_auth else "none",
             },
             "sdk_integration": {
                 "using_sdk_gateway": True,
                 "embedded_sqlalchemy": True,
                 "middleware_repositories": True,
                 "sdk_nodes_only": True,
-                "manual_orchestration": False
-            }
+                "manual_orchestration": False,
+            },
         }
-    
+
     # Add Studio configuration endpoint for frontend
     @gateway.app.get("/api/studio/config", tags=["Studio"])
     async def studio_config():
@@ -213,32 +223,33 @@ def _add_studio_custom_endpoints(gateway):
                 "real_time": config.middleware.realtime_enabled,
                 "ai_chat": config.ai.enable_ai_chat,
                 "multi_tenant": config.multi_tenant_enabled,
-                "api_docs": config.enable_api_docs
+                "api_docs": config.enable_api_docs,
             },
             "limits": {
                 "max_concurrent_executions": config.execution.max_concurrent_executions,
                 "execution_timeout_seconds": config.execution.default_timeout_seconds,
                 "max_concurrent_sessions": config.middleware.max_concurrent_sessions,
-                "session_timeout_minutes": config.security.session_timeout_minutes
+                "session_timeout_minutes": config.security.session_timeout_minutes,
             },
             "endpoints": {
                 "workflows": "/api/workflows",
-                "executions": "/api/executions", 
+                "executions": "/api/executions",
                 "nodes": "/api/nodes/types",  # PRD-compliant endpoint
                 "chat": "/api/chat",  # New AI chat endpoint
                 "sessions": "/api/sessions",
                 "websocket": "/ws",
                 "events": "/events",
                 "health": "/health",
-                "stats": "/api/stats"
-            }
+                "stats": "/api/stats",
+            },
         }
-    
+
     logger.info("📋 Studio-specific endpoints added to SDK gateway")
 
 
 # Create the application instance using SDK gateway
 app = None
+
 
 def get_app():
     """Get the FastAPI app instance from SDK gateway."""
@@ -257,13 +268,15 @@ app = get_app()
 if __name__ == "__main__":
     """Run the Studio API server using SDK gateway."""
     gateway = create_studio_gateway()
-    
-    logger.info(f"🚀 Starting Enterprise Kailash Studio API on {config.host}:{config.port}")
+
+    logger.info(
+        f"🚀 Starting Enterprise Kailash Studio API on {config.host}:{config.port}"
+    )
     logger.info(f"📊 Environment: {config.environment.value}")
     logger.info(f"🔒 Security Level: {config.security.level.value}")
     logger.info(f"🏢 Multi-tenant: {config.multi_tenant_enabled}")
     logger.info(f"🔗 Frontend CORS: {config.cors_origins}")
-    
+
     # Run using SDK gateway's built-in server
     gateway.run(
         host=config.host,
@@ -271,5 +284,5 @@ if __name__ == "__main__":
         workers=config.workers if not config.reload else 1,
         reload=config.reload,
         log_level="debug" if config.debug else "info",
-        access_log=config.monitoring.enable_request_logging
+        access_log=config.monitoring.enable_request_logging,
     )

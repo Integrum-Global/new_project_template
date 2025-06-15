@@ -10,13 +10,13 @@ This workflow handles comprehensive security operations including:
 - Compliance monitoring
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
 from workflow_runner import WorkflowRunner, create_user_context_node
 
@@ -25,11 +25,11 @@ class SecurityManagementWorkflow:
     """
     Complete security management workflow for administrators.
     """
-    
+
     def __init__(self, admin_user_id: str = "admin"):
         """
         Initialize the security management workflow.
-        
+
         Args:
             admin_user_id: ID of the administrator performing security operations
         """
@@ -39,39 +39,48 @@ class SecurityManagementWorkflow:
             user_id=admin_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def monitor_security_threats(self, monitoring_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def monitor_security_threats(
+        self, monitoring_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Monitor and analyze security threats across the system.
-        
+
         Args:
             monitoring_config: Optional monitoring configuration
-            
+
         Returns:
             Security monitoring results
         """
         print("🛡️ Monitoring Security Threats...")
-        
+
         if not monitoring_config:
             monitoring_config = {
                 "time_range": "last_24_hours",
                 "threat_levels": ["high", "critical"],
-                "include_analysis": True
+                "include_analysis": True,
             }
-        
+
         builder = self.runner.create_workflow("security_threat_monitoring")
-        
+
         # Add user context for admin operations
-        builder.add_node("PythonCodeNode", "admin_context", 
-                        create_user_context_node(self.admin_user_id, "admin", 
-                                                ["security_admin", "system_admin"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "admin_context",
+            create_user_context_node(
+                self.admin_user_id, "admin", ["security_admin", "system_admin"]
+            ),
+        )
+
         # Collect security events and threats
-        builder.add_node("PythonCodeNode", "collect_security_events", {
-            "name": "collect_security_threat_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_security_events",
+            {
+                "name": "collect_security_threat_data",
+                "code": f"""
 from datetime import datetime, timedelta
 
 # Collect comprehensive security threat data
@@ -93,7 +102,7 @@ security_events = [
         "investigation_required": True
     }},
     {{
-        "event_id": "SEC-002", 
+        "event_id": "SEC-002",
         "timestamp": (datetime.now() - timedelta(hours=6)).isoformat(),
         "event_type": "suspicious_permission_escalation",
         "severity": "high",
@@ -154,7 +163,7 @@ threat_categories = {{
     }},
     "authorization_violations": {{
         "events": [e for e in security_events if e["event_type"] in ["suspicious_permission_escalation"]],
-        "risk_level": "high", 
+        "risk_level": "high",
         "mitigation_status": "blocked"
     }},
     "behavioral_anomalies": {{
@@ -186,7 +195,7 @@ security_posture = {{
     "threat_level": "elevated",
     "defensive_measures": {{
         "firewall_status": "active",
-        "intrusion_detection": "active", 
+        "intrusion_detection": "active",
         "rate_limiting": "enforced",
         "geo_blocking": "enabled",
         "mfa_enforcement": "active"
@@ -206,13 +215,17 @@ result = {{
         "analysis_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Analyze threats and generate recommendations
-        builder.add_node("PythonCodeNode", "analyze_threats", {
-            "name": "analyze_security_threats",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_threats",
+            {
+                "name": "analyze_security_threats",
+                "code": """
 # Analyze security threats and generate actionable recommendations
 security_data = security_monitoring_data
 
@@ -220,7 +233,7 @@ if security_data.get("monitoring_successful"):
     security_events = security_data.get("security_events", [])
     threat_categories = security_data.get("threat_categories", {})
     security_metrics = security_data.get("security_metrics", {})
-    
+
     # Threat analysis
     threat_analysis = {
         "immediate_threats": [],
@@ -228,7 +241,7 @@ if security_data.get("monitoring_successful"):
         "risk_assessment": {},
         "recommended_actions": []
     }
-    
+
     # Identify immediate threats
     for event in security_events:
         if event.get("severity") == "critical" or event.get("status") == "active":
@@ -239,7 +252,7 @@ if security_data.get("monitoring_successful"):
                 "requires_action": event.get("investigation_required", False),
                 "priority": "immediate" if event["severity"] == "critical" else "high"
             })
-    
+
     # Pattern analysis
     ip_attempts = {}
     user_violations = {}
@@ -248,13 +261,13 @@ if security_data.get("monitoring_successful"):
         if "source_ip" in event:
             ip = event["source_ip"]
             ip_attempts[ip] = ip_attempts.get(ip, 0) + 1
-        
+
         # Track user-based violations
         if "target_user" in event or "source_user" in event:
             user = event.get("target_user") or event.get("source_user")
             if user:
                 user_violations[user] = user_violations.get(user, 0) + 1
-    
+
     # Identify concerning patterns
     if any(count >= 3 for count in ip_attempts.values()):
         threat_analysis["emerging_patterns"].append({
@@ -263,7 +276,7 @@ if security_data.get("monitoring_successful"):
             "affected_ips": [ip for ip, count in ip_attempts.items() if count >= 3],
             "recommendation": "Consider extended IP blocking"
         })
-    
+
     if any(count >= 2 for count in user_violations.values()):
         threat_analysis["emerging_patterns"].append({
             "pattern": "user_security_violations",
@@ -271,12 +284,12 @@ if security_data.get("monitoring_successful"):
             "affected_users": [user for user, count in user_violations.items() if count >= 2],
             "recommendation": "Review user access and provide security training"
         })
-    
+
     # Risk assessment
     total_events = security_metrics.get("total_events", 0)
     critical_events = security_metrics.get("critical_events", 0)
     active_threats = security_metrics.get("active_threats", 0)
-    
+
     risk_score = 0
     if critical_events > 0:
         risk_score += critical_events * 30
@@ -284,9 +297,9 @@ if security_data.get("monitoring_successful"):
         risk_score += active_threats * 20
     if total_events > 10:
         risk_score += 15
-    
+
     risk_score = min(risk_score, 100)
-    
+
     threat_analysis["risk_assessment"] = {
         "current_risk_score": risk_score,
         "risk_level": "critical" if risk_score >= 80 else "high" if risk_score >= 60 else "medium" if risk_score >= 30 else "low",
@@ -297,10 +310,10 @@ if security_data.get("monitoring_successful"):
         },
         "trend": "increasing" if active_threats > 0 else "stable"
     }
-    
+
     # Generate recommendations
     recommendations = []
-    
+
     if critical_events > 0:
         recommendations.append({
             "priority": "immediate",
@@ -309,7 +322,7 @@ if security_data.get("monitoring_successful"):
             "description": f"{critical_events} critical security events require immediate attention",
             "timeline": "within 30 minutes"
         })
-    
+
     if active_threats > 0:
         recommendations.append({
             "priority": "high",
@@ -318,7 +331,7 @@ if security_data.get("monitoring_successful"):
             "description": f"{active_threats} active threats need immediate containment",
             "timeline": "within 2 hours"
         })
-    
+
     if len(threat_analysis["emerging_patterns"]) > 0:
         recommendations.append({
             "priority": "medium",
@@ -327,7 +340,7 @@ if security_data.get("monitoring_successful"):
             "description": "Emerging threat patterns detected requiring investigation",
             "timeline": "within 24 hours"
         })
-    
+
     if risk_score >= 60:
         recommendations.append({
             "priority": "high",
@@ -336,7 +349,7 @@ if security_data.get("monitoring_successful"):
             "description": "Current risk level requires additional security controls",
             "timeline": "within 48 hours"
         })
-    
+
     threat_analysis["recommended_actions"] = recommendations
 
 else:
@@ -350,46 +363,59 @@ result = {
         "next_analysis_due": (datetime.now() + timedelta(hours=4)).isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect security monitoring nodes
-        builder.add_connection("admin_context", "result", "collect_security_events", "context")
-        builder.add_connection("collect_security_events", "result.result", "analyze_threats", "security_monitoring_data")
-        
+        builder.add_connection(
+            "admin_context", "result", "collect_security_events", "context"
+        )
+        builder.add_connection(
+            "collect_security_events",
+            "result.result",
+            "analyze_threats",
+            "security_monitoring_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, monitoring_config, "security_threat_monitoring"
         )
-        
+
         return results
-    
-    def manage_access_controls(self, access_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def manage_access_controls(
+        self, access_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Manage and audit access controls across the system.
-        
+
         Args:
             access_config: Access control configuration
-            
+
         Returns:
             Access control management results
         """
         print("🔐 Managing Access Controls...")
-        
+
         if not access_config:
             access_config = {
                 "audit_scope": "all_users",
                 "check_compliance": True,
-                "generate_recommendations": True
+                "generate_recommendations": True,
             }
-        
+
         builder = self.runner.create_workflow("access_control_management")
-        
+
         # Audit current access controls
-        builder.add_node("PythonCodeNode", "audit_access_controls", {
-            "name": "audit_system_access_controls",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "audit_access_controls",
+            {
+                "name": "audit_system_access_controls",
+                "code": f"""
 # Comprehensive access control audit
 audit_config = {access_config}
 
@@ -405,7 +431,7 @@ user_access_audit = [
         "risk_score": 15
     }},
     {{
-        "user_id": "alice.manager@company.com", 
+        "user_id": "alice.manager@company.com",
         "roles": ["manager", "department_admin"],
         "permissions": ["user_read", "user_create", "dept_manage", "budget_approve"],
         "last_access": (datetime.now() - timedelta(hours=1)).isoformat(),
@@ -474,7 +500,7 @@ compliance_analysis = {{
         {{
             "violation_type": "excessive_permissions",
             "count": 1,
-            "severity": "medium", 
+            "severity": "medium",
             "description": "Users with more permissions than role requires"
         }}
     ]
@@ -520,13 +546,17 @@ result = {{
         "total_users_audited": len(user_access_audit)
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate access control recommendations
-        builder.add_node("PythonCodeNode", "generate_access_recommendations", {
-            "name": "generate_access_control_recommendations",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_access_recommendations",
+            {
+                "name": "generate_access_control_recommendations",
+                "code": """
 # Generate comprehensive access control recommendations
 access_audit = access_control_audit
 
@@ -536,10 +566,10 @@ if access_audit.get("audit_completed"):
     role_analysis = access_audit.get("role_analysis", {})
     permission_analysis = access_audit.get("permission_analysis", {})
     access_patterns = access_audit.get("access_patterns", {})
-    
+
     # Priority recommendations
     recommendations = []
-    
+
     # Critical security recommendations
     non_compliant_count = compliance_analysis.get("non_compliant_users", 0)
     if non_compliant_count > 0:
@@ -556,7 +586,7 @@ if access_audit.get("audit_completed"):
             "timeline": "immediate",
             "risk_reduction": 60
         })
-    
+
     # Role management recommendations
     if role_analysis.get("orphaned_roles"):
         recommendations.append({
@@ -572,7 +602,7 @@ if access_audit.get("audit_completed"):
             "timeline": "within_week",
             "risk_reduction": 20
         })
-    
+
     # Permission optimization
     if permission_analysis.get("segregation_violations"):
         recommendations.append({
@@ -588,7 +618,7 @@ if access_audit.get("audit_completed"):
             "timeline": "within_month",
             "risk_reduction": 40
         })
-    
+
     # Behavioral monitoring
     if access_patterns.get("unusual_access_times"):
         recommendations.append({
@@ -604,7 +634,7 @@ if access_audit.get("audit_completed"):
             "timeline": "within_month",
             "risk_reduction": 25
         })
-    
+
     # Compliance improvements
     compliance_percentage = compliance_analysis.get("compliance_percentage", 0)
     if compliance_percentage < 90:
@@ -621,7 +651,7 @@ if access_audit.get("audit_completed"):
             "timeline": "ongoing",
             "risk_reduction": 35
         })
-    
+
     # Implementation plan
     implementation_plan = {
         "immediate_actions": [r for r in recommendations if r["priority"] == "critical"],
@@ -629,12 +659,12 @@ if access_audit.get("audit_completed"):
         "medium_term_actions": [r for r in recommendations if r["priority"] == "medium"],
         "total_risk_reduction": sum(r.get("risk_reduction", 0) for r in recommendations)
     }
-    
+
     # Monitoring and measurement
     monitoring_plan = {
         "key_metrics": [
             "Compliance percentage",
-            "Average user risk score", 
+            "Average user risk score",
             "Number of segregation violations",
             "Stale account count",
             "Permission escalation attempts"
@@ -669,45 +699,56 @@ result = {
         "estimated_risk_reduction": implementation_plan.get("total_risk_reduction", 0)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect access control management nodes
-        builder.add_connection("audit_access_controls", "result.result", "generate_access_recommendations", "access_control_audit")
-        
+        builder.add_connection(
+            "audit_access_controls",
+            "result.result",
+            "generate_access_recommendations",
+            "access_control_audit",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, access_config, "access_control_management"
         )
-        
+
         return results
-    
-    def conduct_security_assessment(self, assessment_scope: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def conduct_security_assessment(
+        self, assessment_scope: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Conduct comprehensive security assessment of the system.
-        
+
         Args:
             assessment_scope: Assessment configuration and scope
-            
+
         Returns:
             Security assessment results
         """
         print("📋 Conducting Security Assessment...")
-        
+
         if not assessment_scope:
             assessment_scope = {
                 "assessment_type": "comprehensive",
                 "include_penetration_testing": False,
-                "compliance_frameworks": ["GDPR", "SOC2"]
+                "compliance_frameworks": ["GDPR", "SOC2"],
             }
-        
+
         builder = self.runner.create_workflow("security_assessment")
-        
+
         # Comprehensive security assessment
-        builder.add_node("PythonCodeNode", "assess_security_posture", {
-            "name": "conduct_comprehensive_security_assessment",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "assess_security_posture",
+            {
+                "name": "conduct_comprehensive_security_assessment",
+                "code": f"""
 # Conduct comprehensive security assessment
 assessment_config = {assessment_scope}
 assessment_type = assessment_config.get("assessment_type", "comprehensive")
@@ -717,7 +758,7 @@ infrastructure_assessment = {{
     "network_security": {{
         "firewall_configuration": "properly_configured",
         "intrusion_detection": "active_and_monitoring",
-        "network_segmentation": "implemented", 
+        "network_segmentation": "implemented",
         "vpn_security": "strong_encryption",
         "score": 85
     }},
@@ -890,23 +931,27 @@ result = {{
         "next_assessment_due": (datetime.now() + timedelta(days=90)).isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate security improvement roadmap
-        builder.add_node("PythonCodeNode", "generate_security_roadmap", {
-            "name": "generate_security_improvement_roadmap",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_security_roadmap",
+            {
+                "name": "generate_security_improvement_roadmap",
+                "code": """
 # Generate comprehensive security improvement roadmap
 security_assessment = security_assessment_results
 
 if security_assessment.get("assessment_completed"):
     overall_score = security_assessment.get("overall_security_score", 0)
     maturity_level = security_assessment.get("security_maturity_level", "initial")
-    
+
     # Identify improvement areas
     improvement_areas = []
-    
+
     # Infrastructure improvements
     infra = security_assessment.get("infrastructure_assessment", {})
     for category, details in infra.items():
@@ -918,7 +963,7 @@ if security_assessment.get("assessment_completed"):
                 "target_score": 90,
                 "priority": "high" if details.get("score", 0) < 75 else "medium"
             })
-    
+
     # IAM improvements
     iam = security_assessment.get("iam_assessment", {})
     for category, details in iam.items():
@@ -930,7 +975,7 @@ if security_assessment.get("assessment_completed"):
                 "target_score": 90,
                 "priority": "high" if details.get("score", 0) < 75 else "medium"
             })
-    
+
     # Data protection improvements
     data_protection = security_assessment.get("data_protection_assessment", {})
     for category, details in data_protection.items():
@@ -942,10 +987,10 @@ if security_assessment.get("assessment_completed"):
                 "target_score": 90,
                 "priority": "high" if details.get("score", 0) < 75 else "medium"
             })
-    
+
     # Generate specific recommendations
     security_recommendations = []
-    
+
     # High priority recommendations
     if overall_score < 85:
         security_recommendations.append({
@@ -962,7 +1007,7 @@ if security_assessment.get("assessment_completed"):
             "timeline": "3 months",
             "expected_improvement": 10
         })
-    
+
     # Compliance-specific recommendations
     compliance_assessment = security_assessment.get("compliance_assessment", {})
     for framework, details in compliance_assessment.items():
@@ -982,12 +1027,12 @@ if security_assessment.get("assessment_completed"):
                 "timeline": "2 months",
                 "expected_improvement": 15
             })
-    
+
     # Incident response improvements
     ir_assessment = security_assessment.get("incident_response_assessment", {})
     ir_scores = [details.get("score", 0) for details in ir_assessment.values()]
     avg_ir_score = sum(ir_scores) / len(ir_scores) if ir_scores else 0
-    
+
     if avg_ir_score < 85:
         security_recommendations.append({
             "priority": "medium",
@@ -1003,7 +1048,7 @@ if security_assessment.get("assessment_completed"):
             "timeline": "4 months",
             "expected_improvement": 8
         })
-    
+
     # Implementation roadmap
     roadmap = {
         "phase_1": {
@@ -1013,7 +1058,7 @@ if security_assessment.get("assessment_completed"):
             "success_metrics": ["Security score >85", "Zero critical vulnerabilities"]
         },
         "phase_2": {
-            "duration": "3-6 months", 
+            "duration": "3-6 months",
             "focus": "Process improvements",
             "actions": [r for r in security_recommendations if r["priority"] == "medium"],
             "success_metrics": ["Security score >90", "Full compliance achieved"]
@@ -1025,7 +1070,7 @@ if security_assessment.get("assessment_completed"):
             "success_metrics": ["Optimized maturity level", "Automated security processes"]
         }
     }
-    
+
     # Investment analysis
     investment_analysis = {
         "estimated_budget": {
@@ -1060,99 +1105,130 @@ result = {
         "estimated_improvement": sum(r.get("expected_improvement", 0) for r in security_recommendations)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect security assessment nodes
-        builder.add_connection("assess_security_posture", "result.result", "generate_security_roadmap", "security_assessment_results")
-        
+        builder.add_connection(
+            "assess_security_posture",
+            "result.result",
+            "generate_security_roadmap",
+            "security_assessment_results",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, assessment_scope, "security_assessment"
         )
-        
+
         return results
-    
+
     def run_comprehensive_security_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all security management operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Security Management Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Monitor security threats
             print("\n1. Monitoring Security Threats...")
             monitoring_config = {
                 "time_range": "last_24_hours",
                 "threat_levels": ["high", "critical"],
-                "include_analysis": True
+                "include_analysis": True,
             }
-            demo_results["threat_monitoring"] = self.monitor_security_threats(monitoring_config)
-            
+            demo_results["threat_monitoring"] = self.monitor_security_threats(
+                monitoring_config
+            )
+
             # 2. Manage access controls
             print("\n2. Managing Access Controls...")
             access_config = {
                 "audit_scope": "all_users",
                 "check_compliance": True,
-                "generate_recommendations": True
+                "generate_recommendations": True,
             }
             demo_results["access_control"] = self.manage_access_controls(access_config)
-            
+
             # 3. Conduct security assessment
             print("\n3. Conducting Security Assessment...")
             assessment_scope = {
                 "assessment_type": "comprehensive",
                 "include_penetration_testing": False,
-                "compliance_frameworks": ["GDPR", "SOC2"]
+                "compliance_frameworks": ["GDPR", "SOC2"],
             }
-            demo_results["security_assessment"] = self.conduct_security_assessment(assessment_scope)
-            
+            demo_results["security_assessment"] = self.conduct_security_assessment(
+                assessment_scope
+            )
+
             # Print comprehensive summary
             self.print_security_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Security management demonstration failed: {str(e)}")
             raise
-    
+
     def print_security_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive security management summary.
-        
+
         Args:
             results: Security management results from all workflows
         """
         print("\n" + "=" * 70)
         print("SECURITY MANAGEMENT DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Threat monitoring summary
-        threat_result = results.get("threat_monitoring", {}).get("collect_security_events", {}).get("result", {}).get("result", {})
+        threat_result = (
+            results.get("threat_monitoring", {})
+            .get("collect_security_events", {})
+            .get("result", {})
+            .get("result", {})
+        )
         security_metrics = threat_result.get("security_metrics", {})
-        print(f"🛡️ Threats: {security_metrics.get('total_events', 0)} events, {security_metrics.get('critical_events', 0)} critical")
-        
+        print(
+            f"🛡️ Threats: {security_metrics.get('total_events', 0)} events, {security_metrics.get('critical_events', 0)} critical"
+        )
+
         # Access control summary
-        access_result = results.get("access_control", {}).get("audit_access_controls", {}).get("result", {}).get("result", {})
+        access_result = (
+            results.get("access_control", {})
+            .get("audit_access_controls", {})
+            .get("result", {})
+            .get("result", {})
+        )
         compliance_analysis = access_result.get("compliance_analysis", {})
-        print(f"🔐 Access: {compliance_analysis.get('compliance_percentage', 0):.1f}% compliant users")
-        
+        print(
+            f"🔐 Access: {compliance_analysis.get('compliance_percentage', 0):.1f}% compliant users"
+        )
+
         # Security assessment summary
-        assessment_result = results.get("security_assessment", {}).get("assess_security_posture", {}).get("result", {}).get("result", {})
+        assessment_result = (
+            results.get("security_assessment", {})
+            .get("assess_security_posture", {})
+            .get("result", {})
+            .get("result", {})
+        )
         overall_score = assessment_result.get("overall_security_score", 0)
         maturity_level = assessment_result.get("security_maturity_level", "unknown")
-        print(f"📋 Assessment: {overall_score}/100 security score ({maturity_level} maturity)")
-        
+        print(
+            f"📋 Assessment: {overall_score}/100 security score ({maturity_level} maturity)"
+        )
+
         print("\n🎉 All security management operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1160,27 +1236,32 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the security management workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Security Management Workflow...")
-        
+
         # Create test workflow
         security_mgmt = SecurityManagementWorkflow("test_admin")
-        
+
         # Test threat monitoring
         result = security_mgmt.monitor_security_threats()
-        if not result.get("collect_security_events", {}).get("result", {}).get("result", {}).get("monitoring_successful"):
+        if (
+            not result.get("collect_security_events", {})
+            .get("result", {})
+            .get("result", {})
+            .get("monitoring_successful")
+        ):
             return False
-        
+
         print("✅ Security management workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Security management workflow test failed: {str(e)}")
         return False
@@ -1194,7 +1275,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         security_mgmt = SecurityManagementWorkflow()
-        
+
         try:
             results = security_mgmt.run_comprehensive_security_demo()
             print("🎉 Security management demonstration completed successfully!")

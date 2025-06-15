@@ -140,7 +140,7 @@ class CustomUserAdmin(admin.ModelAdmin):
 GET /api/users/?department=Engineering&is_active=true&search=john
 
 # User creation form automatically generated
-POST /api/users/ 
+POST /api/users/
 {
     "email": "john@company.com",
     "first_name": "John",
@@ -284,7 +284,7 @@ fetch('/api/users/?is_active=true')
   .then(res => res.json())
   .then(users => console.log(users));
 
-// Create user  
+// Create user
 fetch('/api/users/', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -596,7 +596,7 @@ class Settings(BaseSettings):
     database_url: str
     jwt_secret_key: str
     redis_url: str = "redis://localhost:6379"
-    
+
     class Config:
         env_file = ".env"
 

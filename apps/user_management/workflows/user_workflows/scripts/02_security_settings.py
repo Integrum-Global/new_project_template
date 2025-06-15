@@ -10,26 +10,30 @@ This workflow handles personal security management including:
 - Session management
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class SecuritySettingsWorkflow:
     """
     Complete security settings workflow for end users.
     """
-    
+
     def __init__(self, user_id: str = "user"):
         """
         Initialize the security settings workflow.
-        
+
         Args:
             user_id: ID of the user performing security operations
         """
@@ -39,37 +43,45 @@ class SecuritySettingsWorkflow:
             user_id=user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def setup_password_security(self, password_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def setup_password_security(
+        self, password_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Set up password security and management.
-        
+
         Args:
             password_config: Password configuration settings
-            
+
         Returns:
             Password security setup results
         """
         print(f"🔐 Setting up password security for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("password_security_setup")
-        
+
         # Password validation and setup
         validation_rules = {
             "current_password": {"required": True, "type": "str", "min_length": 8},
             "new_password": {"required": True, "type": "str", "min_length": 12},
-            "confirm_password": {"required": True, "type": "str", "min_length": 12}
+            "confirm_password": {"required": True, "type": "str", "min_length": 12},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_password_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_password_input",
+            create_validation_node(validation_rules),
+        )
+
         # Password strength and policy validation
-        builder.add_node("PythonCodeNode", "validate_password_strength", {
-            "name": "validate_new_password_strength",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_password_strength",
+            {
+                "name": "validate_new_password_strength",
+                "code": """
 from datetime import datetime, timedelta
 import re
 import random
@@ -146,20 +158,24 @@ result = {
         "next_expiry": security_features["expiry_date"] if all_checks_passed else None
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Apply password changes
-        builder.add_node("PythonCodeNode", "apply_password_changes", {
-            "name": "apply_new_password_settings",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "apply_password_changes",
+            {
+                "name": "apply_new_password_settings",
+                "code": """
 # Apply password changes and security settings
 from datetime import datetime
 password_validation = password_strength_validation
 
 if password_validation.get("password_valid"):
     security_features = password_validation.get("security_features", {})
-    
+
     # Password update record
     password_update = {
         "user_id": "test@example.com",
@@ -170,7 +186,7 @@ if password_validation.get("password_valid"):
         "policy_compliant": True,
         "force_change_next_login": False
     }
-    
+
     # Security audit record
     security_audit = {
         "event_type": "password_change",
@@ -182,7 +198,7 @@ if password_validation.get("password_valid"):
         "strength_level": password_validation.get("strength_level"),
         "compliance_status": "compliant"
     }
-    
+
     # Account security status update
     account_security = {
         "password_last_changed": datetime.now().isoformat(),
@@ -192,7 +208,7 @@ if password_validation.get("password_valid"):
         "password_expiry_warnings_enabled": True,
         "breach_monitoring_enabled": True
     }
-    
+
     # Notification settings
     security_notifications = {
         "password_change_confirmation": True,
@@ -202,7 +218,7 @@ if password_validation.get("password_valid"):
         "suspicious_activity_alerts": True,
         "breach_notifications": True
     }
-    
+
     update_successful = True
 else:
     password_update = None
@@ -228,39 +244,57 @@ result = {
         "next_required_change": password_update.get("expiry_date") if update_successful else None
     }
 }
-""".replace("{self.user_id}", self.user_id)
-        })
-        
+""".replace(
+                    "{self.user_id}", self.user_id
+                ),
+            },
+        )
+
         # Connect password setup nodes
-        builder.add_connection("validate_password_input", "result", "validate_password_strength", "validation_result")
-        builder.add_connection("validate_password_strength", "result.result", "apply_password_changes", "password_strength_validation")
-        
+        builder.add_connection(
+            "validate_password_input",
+            "result",
+            "validate_password_strength",
+            "validation_result",
+        )
+        builder.add_connection(
+            "validate_password_strength",
+            "result.result",
+            "apply_password_changes",
+            "password_strength_validation",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, password_config, "password_security_setup"
         )
-        
+
         return results
-    
-    def setup_multi_factor_authentication(self, mfa_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def setup_multi_factor_authentication(
+        self, mfa_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Set up multi-factor authentication.
-        
+
         Args:
             mfa_config: MFA configuration settings
-            
+
         Returns:
             MFA setup results
         """
         print(f"📱 Setting up MFA for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("mfa_setup")
-        
+
         # MFA configuration and setup
-        builder.add_node("PythonCodeNode", "configure_mfa", {
-            "name": "configure_multi_factor_authentication",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "configure_mfa",
+            {
+                "name": "configure_multi_factor_authentication",
+                "code": """
 import random
 import string
 
@@ -287,7 +321,7 @@ mfa_setup = {
 if mfa_method == "totp":
     # Generate secret key for TOTP
     totp_secret = ''.join(random.choices(string.ascii_uppercase + string.digits, k=32))
-    
+
     totp_setup = {
         "secret_key": totp_secret,
         "issuer": "User Management System",
@@ -362,20 +396,24 @@ result = {
         "next_steps": ["verify_primary_method", "test_backup_methods", "save_recovery_codes"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Setup MFA verification process
-        builder.add_node("PythonCodeNode", "setup_mfa_verification", {
-            "name": "setup_mfa_verification_process",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_mfa_verification",
+            {
+                "name": "setup_mfa_verification_process",
+                "code": """
 # Set up MFA verification and testing process
 mfa_configuration = mfa_config_setup
 
 if mfa_configuration.get("mfa_configured"):
     mfa_setup = mfa_configuration.get("mfa_setup", {})
     primary_method = mfa_configuration.get("primary_method")
-    
+
     # Verification process setup
     verification_process = {
         "verification_required": True,
@@ -383,7 +421,7 @@ if mfa_configuration.get("mfa_configured"):
         "estimated_completion_time": "5 minutes",
         "support_contact": "support@company.com"
     }
-    
+
     # Method-specific verification steps
     if primary_method == "totp":
         verification_process["verification_steps"] = [
@@ -417,7 +455,7 @@ if mfa_configuration.get("mfa_configured"):
                 "required": True
             }
         ]
-    
+
     elif primary_method == "sms":
         verification_process["verification_steps"] = [
             {
@@ -441,7 +479,7 @@ if mfa_configuration.get("mfa_configured"):
                 "required": False
             }
         ]
-    
+
     elif primary_method == "email":
         verification_process["verification_steps"] = [
             {
@@ -459,16 +497,16 @@ if mfa_configuration.get("mfa_configured"):
                 "required": True
             }
         ]
-    
+
     # Security reminders and best practices
     security_reminders = [
         "Never share your MFA codes with anyone",
-        "Keep recovery codes in a secure location", 
+        "Keep recovery codes in a secure location",
         "Don't save codes in cloud storage or email",
         "Contact support immediately if you lose access to your MFA device",
         "Review and update your MFA settings regularly"
     ]
-    
+
     # Account security improvement
     security_improvement = {
         "before_mfa_score": 60,  # Baseline security score
@@ -477,7 +515,7 @@ if mfa_configuration.get("mfa_configured"):
         "protection_level": "high",
         "compliance_status": "enhanced"
     }
-    
+
 else:
     verification_process = {"error": "MFA configuration failed"}
     security_reminders = []
@@ -492,38 +530,49 @@ result = {
         "mfa_ready_for_activation": mfa_configuration.get("mfa_configured", False)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect MFA setup nodes
-        builder.add_connection("configure_mfa", "result.result", "setup_mfa_verification", "mfa_config_setup")
-        
+        builder.add_connection(
+            "configure_mfa",
+            "result.result",
+            "setup_mfa_verification",
+            "mfa_config_setup",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, mfa_config, "mfa_setup"
         )
-        
+
         return results
-    
-    def monitor_account_security(self, monitoring_period: str = "last_30_days") -> Dict[str, Any]:
+
+    def monitor_account_security(
+        self, monitoring_period: str = "last_30_days"
+    ) -> Dict[str, Any]:
         """
         Monitor account security and activity.
-        
+
         Args:
             monitoring_period: Period to monitor (last_7_days, last_30_days, last_90_days)
-            
+
         Returns:
             Security monitoring results
         """
         print(f"🔍 Monitoring account security for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("account_security_monitoring")
-        
+
         # Collect security metrics and activity
-        builder.add_node("PythonCodeNode", "collect_security_data", {
-            "name": "collect_account_security_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_security_data",
+            {
+                "name": "collect_account_security_metrics",
+                "code": """
 # Collect comprehensive security data for monitoring period
 monitoring_period = "{monitoring_period}"
 user_id = "test@example.com"
@@ -667,13 +716,17 @@ result = {
         "security_recommendations": security_recommendations
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate security insights and alerts
-        builder.add_node("PythonCodeNode", "generate_security_insights", {
-            "name": "generate_account_security_insights",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_security_insights",
+            {
+                "name": "generate_account_security_insights",
+                "code": """
 # Generate actionable security insights
 security_data = security_monitoring_data
 
@@ -768,91 +821,124 @@ result = {
         "monitoring_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect security monitoring nodes
-        builder.add_connection("collect_security_data", "result.result", "generate_security_insights", "security_monitoring_data")
-        
+        builder.add_connection(
+            "collect_security_data",
+            "result.result",
+            "generate_security_insights",
+            "security_monitoring_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
-            workflow, {"monitoring_period": monitoring_period}, "account_security_monitoring"
+            workflow,
+            {"monitoring_period": monitoring_period},
+            "account_security_monitoring",
         )
-        
+
         return results
-    
+
     def run_comprehensive_security_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all security settings operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Security Settings Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Password security setup
             print("\n1. Setting up Password Security...")
             password_config = {
                 "current_password": "OldPassword123!",
                 "new_password": "NewSecurePassword456!@#",
-                "confirm_password": "NewSecurePassword456!@#"
+                "confirm_password": "NewSecurePassword456!@#",
             }
-            demo_results["password_security"] = self.setup_password_security(password_config)
-            
+            demo_results["password_security"] = self.setup_password_security(
+                password_config
+            )
+
             # 2. Multi-factor authentication setup
             print("\n2. Setting up Multi-Factor Authentication...")
             mfa_config = {
                 "method": "totp",
                 "phone_number": "+1-555-0123",
-                "email": "user@company.com"
+                "email": "user@company.com",
             }
-            demo_results["mfa_setup"] = self.setup_multi_factor_authentication(mfa_config)
-            
+            demo_results["mfa_setup"] = self.setup_multi_factor_authentication(
+                mfa_config
+            )
+
             # 3. Account security monitoring
             print("\n3. Monitoring Account Security...")
-            demo_results["security_monitoring"] = self.monitor_account_security("last_30_days")
-            
+            demo_results["security_monitoring"] = self.monitor_account_security(
+                "last_30_days"
+            )
+
             # Print comprehensive summary
             self.print_security_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Security settings demonstration failed: {str(e)}")
             raise
-    
+
     def print_security_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive security settings summary.
-        
+
         Args:
             results: Security settings results from all workflows
         """
         print("\n" + "=" * 70)
         print("SECURITY SETTINGS DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Password security summary
-        password_result = results.get("password_security", {}).get("validate_password_strength", {}).get("result", {}).get("result", {})
-        print(f"🔐 Password: {password_result.get('strength_level', 'N/A')} strength ({password_result.get('strength_score', 0)}/100)")
-        
+        password_result = (
+            results.get("password_security", {})
+            .get("validate_password_strength", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🔐 Password: {password_result.get('strength_level', 'N/A')} strength ({password_result.get('strength_score', 0)}/100)"
+        )
+
         # MFA setup summary
-        mfa_result = results.get("mfa_setup", {}).get("configure_mfa", {}).get("result", {}).get("result", {})
+        mfa_result = (
+            results.get("mfa_setup", {})
+            .get("configure_mfa", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"📱 MFA: {mfa_result.get('primary_method', 'N/A')} method configured")
-        
+
         # Security monitoring summary
-        monitoring_result = results.get("security_monitoring", {}).get("collect_security_data", {}).get("result", {}).get("result", {})
-        security_score = monitoring_result.get("security_posture", {}).get("overall_score", 0)
+        monitoring_result = (
+            results.get("security_monitoring", {})
+            .get("collect_security_data", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        security_score = monitoring_result.get("security_posture", {}).get(
+            "overall_score", 0
+        )
         print(f"🔍 Security Score: {security_score}/100")
-        
+
         print("\n🎉 All security settings operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -860,33 +946,38 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the security settings workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Security Settings Workflow...")
-        
+
         # Create test workflow
         security_setup = SecuritySettingsWorkflow("test_user")
-        
+
         # Test password security setup
         test_password_config = {
             "current_password": "OldPassword123!",
             "new_password": "TestPassword456!@#",
-            "confirm_password": "TestPassword456!@#"
+            "confirm_password": "TestPassword456!@#",
         }
-        
+
         result = security_setup.setup_password_security(test_password_config)
-        if not result.get("validate_password_strength", {}).get("result", {}).get("result", {}).get("password_valid"):
+        if (
+            not result.get("validate_password_strength", {})
+            .get("result", {})
+            .get("result", {})
+            .get("password_valid")
+        ):
             return False
-        
+
         print("✅ Security settings workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Security settings workflow test failed: {str(e)}")
         return False
@@ -900,7 +991,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         security_setup = SecuritySettingsWorkflow()
-        
+
         try:
             results = security_setup.run_comprehensive_security_demo()
             print("🎉 Security settings demonstration completed successfully!")

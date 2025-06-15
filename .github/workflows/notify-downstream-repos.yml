@@ -1,0 +1,65 @@
+name: Notify Downstream Repos
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'sdk-users/**'
+      - 'CLAUDE.md'
+      - '.github/workflows/**'
+      - 'apps/_template/**'
+      - 'apps/qa_agentic_testing/**'
+      - 'apps/studio/**'
+      - 'apps/user_management/**'
+      - 'deployment/**'
+      - 'solutions/**'
+      - 'scripts/**'
+
+jobs:
+  create-sync-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create sync notification issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "📢 Template has been updated. Creating notification issues..."
+          
+          # Get list of downstream repos
+          REPOS=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name' | grep -v "^new_project_template$" || true)
+          
+          if [ -z "$REPOS" ]; then
+            REPOS=$(gh repo list Integrum-Global --limit 200 --json name,templateRepository --jq '.[] | select(.templateRepository.name == "new_project_template") | .name')
+          fi
+          
+          ISSUE_COUNT=0
+          for repo in $REPOS; do
+            if [ -n "$repo" ]; then
+              # Check if similar issue already exists
+              EXISTING=$(gh issue list -R "Integrum-Global/$repo" --search "Template sync available" --state open --json number --jq '.[0].number' || echo "")
+              
+              if [ -z "$EXISTING" ]; then
+                gh issue create -R "Integrum-Global/$repo" \
+                  --title "🔄 Template sync available" \
+                  --body "The Kailash template has been updated. 
+
+## To sync the latest changes:
+
+1. Go to the **Actions** tab
+2. Click on **Sync from Template** workflow
+3. Click **Run workflow**
+4. Review and merge the created PR
+
+## What's updated:
+- SDK documentation (sdk-users/)
+- Development patterns (CLAUDE.md)
+- Example applications
+- Deployment configurations
+
+This issue will auto-close when sync is completed." \
+                  --label "template-sync" 2>/dev/null && ((ISSUE_COUNT++)) || true
+              fi
+            fi
+          done
+          
+          echo "✅ Created $ISSUE_COUNT notification issues"

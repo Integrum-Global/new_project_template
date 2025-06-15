@@ -10,26 +10,30 @@ This workflow handles personal data management including:
 - Activity log review
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class DataManagementWorkflow:
     """
     Complete data management workflow for end users.
     """
-    
+
     def __init__(self, user_id: str = "user"):
         """
         Initialize the data management workflow.
-        
+
         Args:
             user_id: ID of the user performing data operations
         """
@@ -39,37 +43,43 @@ class DataManagementWorkflow:
             user_id=user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def access_personal_data(self, access_request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Access and view personal data stored in the system.
-        
+
         Args:
             access_request: Data access request parameters
-            
+
         Returns:
             Personal data access results
         """
         print(f"📁 Accessing personal data for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("personal_data_access")
-        
+
         # Validate access request
         validation_rules = {
             "data_categories": {"required": False, "type": "list"},
             "date_range": {"required": False, "type": "dict"},
-            "format": {"required": False, "type": "str"}
+            "format": {"required": False, "type": "str"},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_access_request", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_access_request",
+            create_validation_node(validation_rules),
+        )
+
         # Collect comprehensive personal data
-        builder.add_node("PythonCodeNode", "collect_personal_data", {
-            "name": "collect_user_personal_data",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_personal_data",
+            {
+                "name": "collect_user_personal_data",
+                "code": """
 from datetime import datetime, timedelta
 
 # Collect all personal data categories for user
@@ -135,7 +145,7 @@ activity_data = {
                 "timestamp": "2024-06-14T17:30:00Z",
                 "ip_address": "192.168.1.101",
                 "device": "Safari on iOS",
-                "location": "New York, NY", 
+                "location": "New York, NY",
                 "success": True
             }
         ],
@@ -221,7 +231,7 @@ permissions_data = {
             },
             {
                 "role": "developer",
-                "assigned_date": "2024-02-01T09:00:00Z", 
+                "assigned_date": "2024-02-01T09:00:00Z",
                 "assigned_by": "manager",
                 "status": "active"
             }
@@ -276,13 +286,17 @@ result = {
         }
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate data access report
-        builder.add_node("PythonCodeNode", "generate_data_report", {
-            "name": "generate_personal_data_report",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_data_report",
+            {
+                "name": "generate_personal_data_report",
+                "code": """
 from datetime import datetime
 # Generate comprehensive data access report
 data_collection = personal_data_collection
@@ -318,7 +332,7 @@ data_rights_info = {
         "access_frequency": "as_needed"
     },
     "right_to_rectification": {
-        "status": "available", 
+        "status": "available",
         "process": "Submit correction request through profile settings",
         "response_time": "5 business days"
     },
@@ -339,7 +353,7 @@ processing_info = {
     "processing_purposes": [
         "Account management and authentication",
         "Service provision and support",
-        "Security monitoring and fraud prevention", 
+        "Security monitoring and fraud prevention",
         "Legal compliance and audit",
         "System improvement and analytics"
     ],
@@ -401,39 +415,53 @@ result = {
         "next_steps": ["review_data_accuracy", "check_privacy_settings", "consider_data_updates"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect data access nodes
-        builder.add_connection("validate_access_request", "result", "collect_personal_data", "validation_result")
-        builder.add_connection("collect_personal_data", "result.result", "generate_data_report", "personal_data_collection")
-        
+        builder.add_connection(
+            "validate_access_request",
+            "result",
+            "collect_personal_data",
+            "validation_result",
+        )
+        builder.add_connection(
+            "collect_personal_data",
+            "result.result",
+            "generate_data_report",
+            "personal_data_collection",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, access_request, "personal_data_access"
         )
-        
+
         return results
-    
+
     def export_personal_data(self, export_request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Export personal data for GDPR compliance or backup purposes.
-        
+
         Args:
             export_request: Data export request parameters
-            
+
         Returns:
             Data export results
         """
         print(f"📤 Exporting personal data for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("personal_data_export")
-        
+
         # Process data export request
-        builder.add_node("PythonCodeNode", "process_export_request", {
-            "name": "process_personal_data_export",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "process_export_request",
+            {
+                "name": "process_personal_data_export",
+                "code": """
 from datetime import datetime, timedelta
 # Process comprehensive data export request
 user_id = "test@example.com"
@@ -478,7 +506,7 @@ export_data = {
             "work_phone": "+1-555-0123",
             "emergency_contact": {
                 "name": "Jane Doe",
-                "relationship": "Spouse", 
+                "relationship": "Spouse",
                 "phone": "+1-555-0124"
             }
         },
@@ -510,7 +538,7 @@ export_data = {
                 "location": "New York, NY"
             },
             {
-                "timestamp": "2024-06-14T17:30:00Z", 
+                "timestamp": "2024-06-14T17:30:00Z",
                 "event": "logout",
                 "ip_address": "192.168.1.100",
                 "device": "Chrome on macOS"
@@ -548,7 +576,7 @@ export_data = {
             },
             {
                 "timestamp": "2024-02-01T09:00:00Z",
-                "action": "role_assigned", 
+                "action": "role_assigned",
                 "role": "developer",
                 "assigned_by": "manager"
             }
@@ -614,13 +642,17 @@ result = {
         "ready_for_packaging": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Package and secure export
-        builder.add_node("PythonCodeNode", "package_export", {
-            "name": "package_secure_data_export",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "package_export",
+            {
+                "name": "package_secure_data_export",
+                "code": """
 from datetime import datetime, timedelta
 # Package and secure the data export
 export_preparation = export_prep_data
@@ -733,38 +765,49 @@ result = {
         "ready_for_delivery": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect export nodes
-        builder.add_connection("process_export_request", "result.result", "package_export", "export_prep_data")
-        
+        builder.add_connection(
+            "process_export_request",
+            "result.result",
+            "package_export",
+            "export_prep_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, export_request, "personal_data_export"
         )
-        
+
         return results
-    
-    def request_data_correction(self, correction_request: Dict[str, Any]) -> Dict[str, Any]:
+
+    def request_data_correction(
+        self, correction_request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Request correction of personal data.
-        
+
         Args:
             correction_request: Data correction request details
-            
+
         Returns:
             Data correction request results
         """
         print(f"✏️ Requesting data correction for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("data_correction_request")
-        
+
         # Process correction request
-        builder.add_node("PythonCodeNode", "process_correction_request", {
-            "name": "process_data_correction_request",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "process_correction_request",
+            {
+                "name": "process_data_correction_request",
+                "code": """
 from datetime import datetime
 import random
 import string
@@ -803,7 +846,7 @@ if all_required_present:
         "priority": correction_data.get("priority", "normal"),
         "category": "personal_data_correction"
     }
-    
+
     # Determine correction workflow
     field_to_correct = correction_data.get("field_to_correct")
     correction_workflow = {
@@ -812,11 +855,11 @@ if all_required_present:
         "admin_approval_fields": ["email", "employee_id", "legal_name"],
         "hr_approval_fields": ["employment_status", "salary_grade", "benefits"]
     }
-    
+
     # Determine approval process
     approval_process = "unknown"
     estimated_timeline = "5-10 business days"
-    
+
     if field_to_correct in correction_workflow["auto_approved_fields"]:
         approval_process = "automatic"
         estimated_timeline = "immediate"
@@ -824,12 +867,12 @@ if all_required_present:
         approval_process = "manager_approval"
         estimated_timeline = "2-3 business days"
     elif field_to_correct in correction_workflow["admin_approval_fields"]:
-        approval_process = "admin_approval"  
+        approval_process = "admin_approval"
         estimated_timeline = "5-7 business days"
     elif field_to_correct in correction_workflow["hr_approval_fields"]:
         approval_process = "hr_approval"
         estimated_timeline = "7-10 business days"
-    
+
     # Create approval workflow
     approval_workflow_config = {
         "process_type": approval_process,
@@ -838,7 +881,7 @@ if all_required_present:
         "notifications_enabled": True,
         "escalation_enabled": True
     }
-    
+
     if approval_process == "automatic":
         approval_workflow_config["approval_steps"] = [
             {
@@ -872,9 +915,9 @@ if all_required_present:
                 "sla_hours": 96
             }
         ]
-    
+
     request_successful = True
-    
+
 else:
     correction_request_record = None
     approval_workflow_config = None
@@ -907,13 +950,17 @@ result = {
         "estimated_completion": approval_workflow_config.get("estimated_timeline") if request_successful else None
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Track correction request status
-        builder.add_node("PythonCodeNode", "setup_request_tracking", {
-            "name": "setup_correction_request_tracking",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_request_tracking",
+            {
+                "name": "setup_correction_request_tracking",
+                "code": """
 from datetime import datetime, timedelta
 # Set up correction request tracking and notifications
 correction_processing = correction_request_processing
@@ -921,7 +968,7 @@ correction_processing = correction_request_processing
 if correction_processing.get("request_submitted"):
     request_id = correction_processing.get("request_id")
     approval_workflow = correction_processing.get("approval_workflow", {})
-    
+
     # Tracking configuration
     tracking_config = {
         "request_id": request_id,
@@ -933,14 +980,14 @@ if correction_processing.get("request_submitted"):
         },
         "milestone_notifications": [
             "request_received",
-            "under_review", 
+            "under_review",
             "approval_pending",
             "approved",
             "changes_applied",
             "completed"
         ]
     }
-    
+
     # Status timeline
     status_timeline = [
         {
@@ -956,7 +1003,7 @@ if correction_processing.get("request_submitted"):
             "completed": False
         }
     ]
-    
+
     # Add approval-specific timeline steps
     approval_process = approval_workflow.get("process_type")
     if approval_process == "automatic":
@@ -974,7 +1021,7 @@ if correction_processing.get("request_submitted"):
                 "description": f"Awaiting approval from {step['approver']}",
                 "completed": False
             })
-    
+
     # Final steps
     status_timeline.extend([
         {
@@ -990,7 +1037,7 @@ if correction_processing.get("request_submitted"):
             "completed": False
         }
     ])
-    
+
     # User guidance
     user_guidance = {
         "what_happens_next": [
@@ -1003,9 +1050,9 @@ if correction_processing.get("request_submitted"):
         "support_contact": "support@company.com",
         "reference_number": request_id
     }
-    
+
     tracking_setup_successful = True
-    
+
 else:
     tracking_config = {}
     status_timeline = []
@@ -1021,41 +1068,51 @@ result = {
         "request_trackable": tracking_setup_successful
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect correction request nodes
-        builder.add_connection("process_correction_request", "result.result", "setup_request_tracking", "correction_request_processing")
-        
+        builder.add_connection(
+            "process_correction_request",
+            "result.result",
+            "setup_request_tracking",
+            "correction_request_processing",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, correction_request, "data_correction_request"
         )
-        
+
         return results
-    
+
     def run_comprehensive_data_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all data management operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Data Management Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Access personal data
             print("\n1. Accessing Personal Data...")
             access_request = {
-                "data_categories": ["profile_information", "activity_logs", "preferences"],
-                "format": "json"
+                "data_categories": [
+                    "profile_information",
+                    "activity_logs",
+                    "preferences",
+                ],
+                "format": "json",
             }
             demo_results["data_access"] = self.access_personal_data(access_request)
-            
+
             # 2. Export personal data
             print("\n2. Exporting Personal Data...")
             export_request = {
@@ -1063,10 +1120,10 @@ result = {
                 "categories": "all",
                 "include_metadata": True,
                 "encryption": True,
-                "delivery": "download"
+                "delivery": "download",
             }
             demo_results["data_export"] = self.export_personal_data(export_request)
-            
+
             # 3. Request data correction
             print("\n3. Requesting Data Correction...")
             correction_request = {
@@ -1074,46 +1131,67 @@ result = {
                 "current_value": "+1-555-0123",
                 "proposed_value": "+1-555-0199",
                 "justification": "Phone number changed",
-                "priority": "normal"
+                "priority": "normal",
             }
-            demo_results["data_correction"] = self.request_data_correction(correction_request)
-            
+            demo_results["data_correction"] = self.request_data_correction(
+                correction_request
+            )
+
             # Print comprehensive summary
             self.print_data_management_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Data management demonstration failed: {str(e)}")
             raise
-    
+
     def print_data_management_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive data management summary.
-        
+
         Args:
             results: Data management results from all workflows
         """
         print("\n" + "=" * 70)
         print("DATA MANAGEMENT DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Data access summary
-        access_result = results.get("data_access", {}).get("collect_personal_data", {}).get("result", {}).get("result", {})
-        print(f"📁 Data Access: {access_result.get('categories_retrieved', 0)} categories retrieved")
-        
+        access_result = (
+            results.get("data_access", {})
+            .get("collect_personal_data", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📁 Data Access: {access_result.get('categories_retrieved', 0)} categories retrieved"
+        )
+
         # Data export summary
-        export_result = results.get("data_export", {}).get("package_export", {}).get("result", {}).get("result", {})
+        export_result = (
+            results.get("data_export", {})
+            .get("package_export", {})
+            .get("result", {})
+            .get("result", {})
+        )
         export_size = export_result.get("completion_summary", {}).get("file_size_kb", 0)
         print(f"📤 Data Export: {export_size:.1f} KB package created")
-        
+
         # Data correction summary
-        correction_result = results.get("data_correction", {}).get("process_correction_request", {}).get("result", {}).get("result", {})
-        print(f"✏️ Data Correction: Request {correction_result.get('request_id', 'N/A')} submitted")
-        
+        correction_result = (
+            results.get("data_correction", {})
+            .get("process_correction_request", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"✏️ Data Correction: Request {correction_result.get('request_id', 'N/A')} submitted"
+        )
+
         print("\n🎉 All data management operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1121,32 +1199,37 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the data management workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Data Management Workflow...")
-        
+
         # Create test workflow
         data_mgmt = DataManagementWorkflow("test_user")
-        
+
         # Test data access
         test_access_request = {
             "data_categories": ["profile_information"],
-            "format": "json"
+            "format": "json",
         }
-        
+
         result = data_mgmt.access_personal_data(test_access_request)
-        if not result.get("collect_personal_data", {}).get("result", {}).get("result", {}).get("data_access_successful"):
+        if (
+            not result.get("collect_personal_data", {})
+            .get("result", {})
+            .get("result", {})
+            .get("data_access_successful")
+        ):
             return False
-        
+
         print("✅ Data management workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Data management workflow test failed: {str(e)}")
         return False
@@ -1160,7 +1243,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         data_mgmt = DataManagementWorkflow()
-        
+
         try:
             results = data_mgmt.run_comprehensive_data_demo()
             print("🎉 Data management demonstration completed successfully!")

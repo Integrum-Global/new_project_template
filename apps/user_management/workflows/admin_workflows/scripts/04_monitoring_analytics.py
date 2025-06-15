@@ -10,13 +10,13 @@ This workflow handles system monitoring and analytics including:
 - Trend analysis and forecasting
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
 from workflow_runner import WorkflowRunner, create_user_context_node
 
@@ -25,11 +25,11 @@ class MonitoringAnalyticsWorkflow:
     """
     Complete monitoring and analytics workflow for administrators.
     """
-    
+
     def __init__(self, admin_user_id: str = "admin"):
         """
         Initialize the monitoring and analytics workflow.
-        
+
         Args:
             admin_user_id: ID of the administrator performing monitoring operations
         """
@@ -39,39 +39,48 @@ class MonitoringAnalyticsWorkflow:
             user_id=admin_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def monitor_system_performance(self, monitoring_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def monitor_system_performance(
+        self, monitoring_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Monitor comprehensive system performance metrics.
-        
+
         Args:
             monitoring_config: Monitoring configuration parameters
-            
+
         Returns:
             System performance monitoring results
         """
         print("📊 Monitoring System Performance...")
-        
+
         if not monitoring_config:
             monitoring_config = {
                 "time_range": "last_24_hours",
                 "include_predictions": True,
-                "alert_thresholds": True
+                "alert_thresholds": True,
             }
-        
+
         builder = self.runner.create_workflow("system_performance_monitoring")
-        
+
         # Add admin context for monitoring operations
-        builder.add_node("PythonCodeNode", "admin_context", 
-                        create_user_context_node(self.admin_user_id, "admin", 
-                                                ["system_admin", "monitoring_admin"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "admin_context",
+            create_user_context_node(
+                self.admin_user_id, "admin", ["system_admin", "monitoring_admin"]
+            ),
+        )
+
         # Collect comprehensive system metrics
-        builder.add_node("PythonCodeNode", "collect_system_metrics", {
-            "name": "collect_comprehensive_system_metrics",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_system_metrics",
+            {
+                "name": "collect_comprehensive_system_metrics",
+                "code": f"""
 from datetime import datetime, timedelta
 import random
 import math
@@ -102,57 +111,57 @@ system_metrics = {{
 # Generate hourly metrics for last 24 hours
 for hour in range(hours):
     timestamp = (current_time - timedelta(hours=hours-hour)).replace(minute=0, second=0, microsecond=0)
-    
+
     # Add realistic variations (business hours vs off-hours)
     hour_of_day = timestamp.hour
     is_business_hours = 9 <= hour_of_day <= 17
     business_multiplier = 1.5 if is_business_hours else 0.6
-    
+
     # Weekly patterns (weekdays vs weekends)
     is_weekend = timestamp.weekday() >= 5
     weekend_multiplier = 0.4 if is_weekend else 1.0
-    
+
     # Combined load factor
     load_factor = business_multiplier * weekend_multiplier
-    
+
     # CPU usage with realistic patterns
     cpu_variation = random.uniform(-10, 15) * load_factor
     cpu_usage = max(5, min(95, base_cpu + cpu_variation))
-    
+
     # Memory usage (more stable than CPU)
     memory_variation = random.uniform(-5, 10) * load_factor
     memory_usage = max(20, min(90, base_memory + memory_variation))
-    
+
     # Disk usage (gradual increase)
     disk_base = 72 + (hour * 0.1)  # Gradual growth
     disk_variation = random.uniform(-2, 3)
     disk_usage = max(60, min(85, disk_base + disk_variation))
-    
+
     # Network I/O (correlated with user activity)
     network_base = 150 * load_factor
     network_variation = random.uniform(-30, 50)
     network_io = max(10, network_base + network_variation)
-    
+
     # Response times (inversely correlated with load)
     response_base = base_response + (cpu_usage * 0.5)
     response_variation = random.uniform(-10, 20)
     response_time = max(20, response_base + response_variation)
-    
+
     # Error rates (higher under load)
     error_base = 0.1 + (cpu_usage * 0.01)
     error_variation = random.uniform(-0.05, 0.1)
     error_rate = max(0, error_base + error_variation)
-    
+
     # Concurrent users
     users_base = 200 * load_factor
     users_variation = random.uniform(-50, 100)
     concurrent_users = max(10, int(users_base + users_variation))
-    
+
     # API calls per minute
     api_base = 1500 * load_factor
     api_variation = random.uniform(-300, 500)
     api_calls = max(100, int(api_base + api_variation))
-    
+
     # Store metrics
     system_metrics["cpu_usage"].append({{"timestamp": timestamp.isoformat(), "value": round(cpu_usage, 2)}})
     system_metrics["memory_usage"].append({{"timestamp": timestamp.isoformat(), "value": round(memory_usage, 2)}})
@@ -201,7 +210,7 @@ for metric, thresholds in performance_thresholds.items():
         elif value >= thresholds["warning"]:
             active_alerts.append({{
                 "metric": metric,
-                "level": "warning", 
+                "level": "warning",
                 "current_value": value,
                 "threshold": thresholds["warning"],
                 "message": f"{{metric}} is at warning level: {{value}}"
@@ -256,13 +265,17 @@ result = {{
         "health_status": health_status
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Analyze performance trends and predictions
-        builder.add_node("PythonCodeNode", "analyze_performance_trends", {
-            "name": "analyze_system_performance_trends",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_performance_trends",
+            {
+                "name": "analyze_system_performance_trends",
+                "code": """
 # Analyze performance trends and generate predictions
 performance_data = system_performance_data
 
@@ -270,27 +283,27 @@ if performance_data.get("monitoring_successful"):
     system_metrics = performance_data.get("system_metrics", {})
     current_metrics = performance_data.get("current_metrics", {})
     active_alerts = performance_data.get("active_alerts", [])
-    
+
     # Trend analysis
     trend_analysis = {}
-    
+
     for metric_name, metric_data in system_metrics.items():
         values = [m["value"] for m in metric_data]
         timestamps = [datetime.fromisoformat(m["timestamp"]) for m in metric_data]
-        
+
         # Calculate trend direction and rate
         if len(values) >= 2:
             # Simple linear regression for trend
             n = len(values)
             x_values = list(range(n))
-            
+
             # Calculate slope (trend direction)
             x_mean = sum(x_values) / n
             y_mean = sum(values) / n
-            
+
             numerator = sum((x_values[i] - x_mean) * (values[i] - y_mean) for i in range(n))
             denominator = sum((x_values[i] - x_mean) ** 2 for i in range(n))
-            
+
             if denominator != 0:
                 slope = numerator / denominator
                 trend_direction = "increasing" if slope > 0.1 else "decreasing" if slope < -0.1 else "stable"
@@ -298,11 +311,11 @@ if performance_data.get("monitoring_successful"):
             else:
                 trend_direction = "stable"
                 trend_rate = 0
-            
+
             # Volatility (standard deviation)
             variance = sum((v - y_mean) ** 2 for v in values) / n
             volatility = variance ** 0.5
-            
+
             # Prediction for next 4 hours (simple linear extrapolation)
             prediction_points = 4
             predictions = []
@@ -314,7 +327,7 @@ if performance_data.get("monitoring_successful"):
                     "predicted_value": round(max(0, predicted_value), 2),
                     "confidence": max(0.5, 1.0 - (volatility / y_mean)) if y_mean > 0 else 0.5
                 })
-            
+
             trend_analysis[metric_name] = {
                 "trend_direction": trend_direction,
                 "trend_rate": round(trend_rate, 4),
@@ -324,17 +337,17 @@ if performance_data.get("monitoring_successful"):
                 "predictions": predictions,
                 "stability": "high" if volatility < y_mean * 0.1 else "medium" if volatility < y_mean * 0.2 else "low"
             }
-    
+
     # Capacity planning analysis
     capacity_analysis = {}
-    
+
     # CPU capacity
     cpu_values = [m["value"] for m in system_metrics.get("cpu_usage", [])]
     cpu_avg = sum(cpu_values) / len(cpu_values) if cpu_values else 0
     cpu_max = max(cpu_values) if cpu_values else 0
     cpu_capacity_remaining = 100 - cpu_max
     cpu_trend = trend_analysis.get("cpu_usage", {}).get("trend_direction", "stable")
-    
+
     capacity_analysis["cpu"] = {
         "current_usage": cpu_values[-1] if cpu_values else 0,
         "average_usage": round(cpu_avg, 2),
@@ -344,14 +357,14 @@ if performance_data.get("monitoring_successful"):
         "estimated_time_to_capacity": "6 months" if cpu_trend == "increasing" else "not_applicable",
         "recommendation": "Monitor closely" if cpu_avg > 70 else "Adequate capacity"
     }
-    
+
     # Memory capacity
     memory_values = [m["value"] for m in system_metrics.get("memory_usage", [])]
     memory_avg = sum(memory_values) / len(memory_values) if memory_values else 0
     memory_max = max(memory_values) if memory_values else 0
     memory_capacity_remaining = 100 - memory_max
     memory_trend = trend_analysis.get("memory_usage", {}).get("trend_direction", "stable")
-    
+
     capacity_analysis["memory"] = {
         "current_usage": memory_values[-1] if memory_values else 0,
         "average_usage": round(memory_avg, 2),
@@ -361,10 +374,10 @@ if performance_data.get("monitoring_successful"):
         "estimated_time_to_capacity": "3 months" if memory_trend == "increasing" else "not_applicable",
         "recommendation": "Plan upgrade" if memory_avg > 80 else "Adequate capacity"
     }
-    
+
     # Performance optimization recommendations
     optimization_recommendations = []
-    
+
     # CPU optimization
     if cpu_avg > 75:
         optimization_recommendations.append({
@@ -379,7 +392,7 @@ if performance_data.get("monitoring_successful"):
             ],
             "expected_improvement": "15-25% CPU reduction"
         })
-    
+
     # Memory optimization
     if memory_avg > 80:
         optimization_recommendations.append({
@@ -394,11 +407,11 @@ if performance_data.get("monitoring_successful"):
             ],
             "expected_improvement": "10-20% memory reduction"
         })
-    
+
     # Response time optimization
     response_values = [m["value"] for m in system_metrics.get("response_times", [])]
     response_avg = sum(response_values) / len(response_values) if response_values else 0
-    
+
     if response_avg > 150:
         optimization_recommendations.append({
             "category": "response_time_optimization",
@@ -412,10 +425,10 @@ if performance_data.get("monitoring_successful"):
             ],
             "expected_improvement": "20-40% response time improvement"
         })
-    
+
     # Alert recommendations
     alert_recommendations = []
-    
+
     if len(active_alerts) > 0:
         alert_recommendations.append({
             "priority": "immediate",
@@ -423,7 +436,7 @@ if performance_data.get("monitoring_successful"):
             "recommendation": f"Address {len(active_alerts)} active performance alerts",
             "actions": ["Investigate root causes", "Implement immediate fixes", "Monitor for recurrence"]
         })
-    
+
     # Predictive alerts
     for metric_name, analysis in trend_analysis.items():
         predictions = analysis.get("predictions", [])
@@ -432,7 +445,7 @@ if performance_data.get("monitoring_successful"):
             thresholds = performance_data.get("performance_thresholds", {}).get(metric_name, {})
             warning_threshold = thresholds.get("warning")
             critical_threshold = thresholds.get("critical")
-            
+
             for pred in predictions:
                 pred_value = pred.get("predicted_value", 0)
                 if critical_threshold and pred_value >= critical_threshold:
@@ -468,46 +481,59 @@ result = {
         "analysis_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect monitoring nodes
-        builder.add_connection("admin_context", "result", "collect_system_metrics", "context")
-        builder.add_connection("collect_system_metrics", "result.result", "analyze_performance_trends", "system_performance_data")
-        
+        builder.add_connection(
+            "admin_context", "result", "collect_system_metrics", "context"
+        )
+        builder.add_connection(
+            "collect_system_metrics",
+            "result.result",
+            "analyze_performance_trends",
+            "system_performance_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, monitoring_config, "system_performance_monitoring"
         )
-        
+
         return results
-    
-    def analyze_user_activity(self, analysis_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def analyze_user_activity(
+        self, analysis_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Analyze user activity patterns and generate insights.
-        
+
         Args:
             analysis_config: Analysis configuration parameters
-            
+
         Returns:
             User activity analysis results
         """
         print("👥 Analyzing User Activity...")
-        
+
         if not analysis_config:
             analysis_config = {
                 "time_range": "last_30_days",
                 "include_demographics": True,
-                "include_behavior_analysis": True
+                "include_behavior_analysis": True,
             }
-        
+
         builder = self.runner.create_workflow("user_activity_analysis")
-        
+
         # Collect user activity data
-        builder.add_node("PythonCodeNode", "collect_user_activity", {
-            "name": "collect_comprehensive_user_activity",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_user_activity",
+            {
+                "name": "collect_comprehensive_user_activity",
+                "code": f"""
 import random
 
 # Collect comprehensive user activity data
@@ -588,22 +614,22 @@ daily_activity = []
 base_daily_users = 180
 for day in range(30):
     date = (datetime.now() - timedelta(days=30-day)).date()
-    
+
     # Weekend pattern
     is_weekend = date.weekday() >= 5
     weekend_factor = 0.3 if is_weekend else 1.0
-    
+
     # Random variation
     variation = random.uniform(0.8, 1.2)
-    
+
     # Calculate daily active users
     daily_users = int(base_daily_users * weekend_factor * variation)
-    
+
     # Calculate other metrics
     daily_sessions = int(daily_users * random.uniform(2.5, 4.2))
     daily_logins = int(daily_users * random.uniform(1.0, 1.8))
     daily_features_used = int(daily_users * random.uniform(8.2, 15.6))
-    
+
     daily_activity.append({{
         "date": date.isoformat(),
         "active_users": daily_users,
@@ -654,13 +680,17 @@ result = {{
         "behavior_patterns": behavior_patterns
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate user insights and recommendations
-        builder.add_node("PythonCodeNode", "generate_user_insights", {
-            "name": "generate_user_activity_insights",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_user_insights",
+            {
+                "name": "generate_user_activity_insights",
+                "code": """
 # Generate actionable insights from user activity analysis
 activity_data = user_activity_data
 
@@ -671,7 +701,7 @@ if activity_data.get("analysis_successful"):
     session_analytics = activity_data.get("session_analytics", {})
     behavior_patterns = activity_data.get("behavior_patterns", {})
     daily_activity = activity_data.get("daily_activity", [])
-    
+
     # Engagement insights
     engagement_insights = {
         "overall_health": "good",  # Based on 90%+ monthly active rate
@@ -681,7 +711,7 @@ if activity_data.get("analysis_successful"):
             "churn_rate": user_engagement.get("user_churn_rate", 0)
         }
     }
-    
+
     # Determine engagement health
     monthly_rate = user_engagement.get("monthly_active_rate", 0)
     if monthly_rate >= 85:
@@ -692,56 +722,56 @@ if activity_data.get("analysis_successful"):
         engagement_insights["overall_health"] = "fair"
     else:
         engagement_insights["overall_health"] = "poor"
-    
+
     # Feature adoption insights
     feature_insights = {}
     total_users = user_engagement.get("total_registered_users", 1)
-    
+
     for feature, usage in feature_usage.items():
         unique_users = usage.get("unique_users", 0)
         adoption_rate = (unique_users / total_users) * 100
-        
+
         feature_insights[feature] = {
             "adoption_rate": round(adoption_rate, 1),
             "usage_intensity": usage.get("avg_per_user", 0),
             "status": "high_adoption" if adoption_rate >= 60 else "medium_adoption" if adoption_rate >= 30 else "low_adoption"
         }
-    
+
     # User segment insights
     segment_insights = {}
-    
+
     # Department analysis
     dept_data = user_demographics.get("by_department", {})
     most_active_dept = max(dept_data.items(), key=lambda x: x[1].get("count", 0) if x[1].get("activity_level") == "high" else 0)
     least_active_dept = min(dept_data.items(), key=lambda x: x[1].get("count", 0) if x[1].get("activity_level") == "low" else float('inf'))
-    
+
     segment_insights["departments"] = {
         "most_active": most_active_dept[0] if most_active_dept else "N/A",
         "least_active": least_active_dept[0] if least_active_dept else "N/A",
         "opportunities": [dept for dept, info in dept_data.items() if info.get("activity_level") == "low"]
     }
-    
+
     # Behavioral insights
     power_users = behavior_patterns.get("power_users", {}).get("count", 0)
     inactive_users = behavior_patterns.get("inactive_users", {}).get("count", 0)
-    
+
     behavioral_insights = {
         "power_user_percentage": round((power_users / total_users) * 100, 1),
         "inactive_user_percentage": round((inactive_users / total_users) * 100, 1),
         "engagement_distribution": "healthy" if power_users > inactive_users else "needs_attention"
     }
-    
+
     # Trend analysis from daily activity
     if len(daily_activity) >= 7:
         recent_week = daily_activity[-7:]
         previous_week = daily_activity[-14:-7] if len(daily_activity) >= 14 else daily_activity[:7]
-        
+
         recent_avg = sum(day["active_users"] for day in recent_week) / len(recent_week)
         previous_avg = sum(day["active_users"] for day in previous_week) / len(previous_week)
-        
+
         trend_direction = "increasing" if recent_avg > previous_avg * 1.05 else "decreasing" if recent_avg < previous_avg * 0.95 else "stable"
         trend_magnitude = abs(recent_avg - previous_avg) / previous_avg * 100 if previous_avg > 0 else 0
-        
+
         trend_insights = {
             "direction": trend_direction,
             "magnitude": round(trend_magnitude, 1),
@@ -750,10 +780,10 @@ if activity_data.get("analysis_successful"):
         }
     else:
         trend_insights = {"direction": "insufficient_data"}
-    
+
     # Generate recommendations
     recommendations = []
-    
+
     # Engagement recommendations
     if monthly_rate < 80:
         recommendations.append({
@@ -769,7 +799,7 @@ if activity_data.get("analysis_successful"):
             ],
             "expected_impact": "10-15% increase in engagement"
         })
-    
+
     # Feature adoption recommendations
     low_adoption_features = [f for f, i in feature_insights.items() if i["status"] == "low_adoption"]
     if low_adoption_features:
@@ -787,7 +817,7 @@ if activity_data.get("analysis_successful"):
             "affected_features": low_adoption_features,
             "expected_impact": "20-30% improvement in feature usage"
         })
-    
+
     # Inactive user recommendations
     inactive_percentage = behavioral_insights.get("inactive_user_percentage", 0)
     if inactive_percentage > 10:
@@ -804,7 +834,7 @@ if activity_data.get("analysis_successful"):
             ],
             "expected_impact": "25-40% reduction in inactive users"
         })
-    
+
     # Department-specific recommendations
     low_activity_depts = segment_insights.get("departments", {}).get("opportunities", [])
     if low_activity_depts:
@@ -822,7 +852,7 @@ if activity_data.get("analysis_successful"):
             "target_departments": low_activity_depts,
             "expected_impact": "30-50% increase in department engagement"
         })
-    
+
     # Success metrics and KPIs
     success_metrics = {
         "primary_kpis": [
@@ -860,45 +890,60 @@ result = {
         "total_recommendations": len(recommendations)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect user activity analysis nodes
-        builder.add_connection("collect_user_activity", "result.result", "generate_user_insights", "user_activity_data")
-        
+        builder.add_connection(
+            "collect_user_activity",
+            "result.result",
+            "generate_user_insights",
+            "user_activity_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, analysis_config, "user_activity_analysis"
         )
-        
+
         return results
-    
-    def generate_business_reports(self, report_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def generate_business_reports(
+        self, report_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Generate comprehensive business intelligence reports.
-        
+
         Args:
             report_config: Report configuration parameters
-            
+
         Returns:
             Business reporting results
         """
         print("📈 Generating Business Reports...")
-        
+
         if not report_config:
             report_config = {
-                "report_types": ["executive_summary", "operational_metrics", "security_overview"],
+                "report_types": [
+                    "executive_summary",
+                    "operational_metrics",
+                    "security_overview",
+                ],
                 "time_period": "monthly",
-                "include_forecasts": True
+                "include_forecasts": True,
             }
-        
+
         builder = self.runner.create_workflow("business_intelligence_reporting")
-        
+
         # Generate comprehensive business reports
-        builder.add_node("PythonCodeNode", "generate_reports", {
-            "name": "generate_comprehensive_business_reports",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_reports",
+            {
+                "name": "generate_comprehensive_business_reports",
+                "code": f"""
 # Generate comprehensive business intelligence reports
 report_config = {report_config}
 report_types = report_config.get("report_types", ["executive_summary"])
@@ -1126,97 +1171,125 @@ result = {{
         "distribution_info": distribution_info
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, report_config, "business_intelligence_reporting"
         )
-        
+
         return results
-    
+
     def run_comprehensive_monitoring_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all monitoring and analytics operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Monitoring and Analytics Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Monitor system performance
             print("\n1. Monitoring System Performance...")
             monitoring_config = {
                 "time_range": "last_24_hours",
                 "include_predictions": True,
-                "alert_thresholds": True
+                "alert_thresholds": True,
             }
-            demo_results["performance_monitoring"] = self.monitor_system_performance(monitoring_config)
-            
+            demo_results["performance_monitoring"] = self.monitor_system_performance(
+                monitoring_config
+            )
+
             # 2. Analyze user activity
             print("\n2. Analyzing User Activity...")
             analysis_config = {
                 "time_range": "last_30_days",
                 "include_demographics": True,
-                "include_behavior_analysis": True
+                "include_behavior_analysis": True,
             }
             demo_results["user_analysis"] = self.analyze_user_activity(analysis_config)
-            
+
             # 3. Generate business reports
             print("\n3. Generating Business Reports...")
             report_config = {
-                "report_types": ["executive_summary", "operational_metrics", "security_overview"],
+                "report_types": [
+                    "executive_summary",
+                    "operational_metrics",
+                    "security_overview",
+                ],
                 "time_period": "monthly",
-                "include_forecasts": True
+                "include_forecasts": True,
             }
-            demo_results["business_reports"] = self.generate_business_reports(report_config)
-            
+            demo_results["business_reports"] = self.generate_business_reports(
+                report_config
+            )
+
             # Print comprehensive summary
             self.print_monitoring_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Monitoring and analytics demonstration failed: {str(e)}")
             raise
-    
+
     def print_monitoring_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive monitoring and analytics summary.
-        
+
         Args:
             results: Monitoring and analytics results from all workflows
         """
         print("\n" + "=" * 70)
         print("MONITORING AND ANALYTICS DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Performance monitoring summary
-        perf_result = results.get("performance_monitoring", {}).get("collect_system_metrics", {}).get("result", {}).get("result", {})
+        perf_result = (
+            results.get("performance_monitoring", {})
+            .get("collect_system_metrics", {})
+            .get("result", {})
+            .get("result", {})
+        )
         health_score = perf_result.get("health_score", 0)
         active_alerts = len(perf_result.get("active_alerts", []))
-        print(f"📊 Performance: {health_score}/100 health score, {active_alerts} active alerts")
-        
+        print(
+            f"📊 Performance: {health_score}/100 health score, {active_alerts} active alerts"
+        )
+
         # User analysis summary
-        user_result = results.get("user_analysis", {}).get("collect_user_activity", {}).get("result", {}).get("result", {})
+        user_result = (
+            results.get("user_analysis", {})
+            .get("collect_user_activity", {})
+            .get("result", {})
+            .get("result", {})
+        )
         user_engagement = user_result.get("user_engagement", {})
         monthly_active = user_engagement.get("monthly_active_rate", 0)
-        print(f"👥 Users: {monthly_active}% monthly active rate, {user_engagement.get('active_users_30_days', 0)} active users")
-        
+        print(
+            f"👥 Users: {monthly_active}% monthly active rate, {user_engagement.get('active_users_30_days', 0)} active users"
+        )
+
         # Business reports summary
-        reports_result = results.get("business_reports", {}).get("generate_reports", {}).get("result", {}).get("result", {})
+        reports_result = (
+            results.get("business_reports", {})
+            .get("generate_reports", {})
+            .get("result", {})
+            .get("result", {})
+        )
         total_reports = reports_result.get("total_reports", 0)
         print(f"📈 Reports: {total_reports} business reports generated")
-        
+
         print("\n🎉 All monitoring and analytics operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1224,27 +1297,32 @@ result = {{
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the monitoring and analytics workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Monitoring and Analytics Workflow...")
-        
+
         # Create test workflow
         monitoring = MonitoringAnalyticsWorkflow("test_admin")
-        
+
         # Test system performance monitoring
         result = monitoring.monitor_system_performance()
-        if not result.get("collect_system_metrics", {}).get("result", {}).get("result", {}).get("monitoring_successful"):
+        if (
+            not result.get("collect_system_metrics", {})
+            .get("result", {})
+            .get("result", {})
+            .get("monitoring_successful")
+        ):
             return False
-        
+
         print("✅ Monitoring and analytics workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Monitoring and analytics workflow test failed: {str(e)}")
         return False
@@ -1258,7 +1336,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         monitoring = MonitoringAnalyticsWorkflow()
-        
+
         try:
             results = monitoring.run_comprehensive_monitoring_demo()
             print("🎉 Monitoring and analytics demonstration completed successfully!")

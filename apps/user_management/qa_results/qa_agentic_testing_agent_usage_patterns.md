@@ -99,10 +99,10 @@ def get_specialized_agents(self, analysis_type: AnalysisType) -> List[str]:
     for agent_id, config in self.agent_configs.items():
         if config.enabled and analysis_type in config.specializations:
             specialized_agents.append(agent_id)
-    
+
     # Sort by priority (higher priority first)
     specialized_agents.sort(
-        key=lambda aid: self.agent_configs[aid].priority, 
+        key=lambda aid: self.agent_configs[aid].priority,
         reverse=True
     )
     return specialized_agents
@@ -127,21 +127,21 @@ Test Scenario Generated
 Analysis Type Determined (Security/Performance/Functional/Usability)
     ↓
 Agent Selection Logic:
-    
+
     IF analysis_type == SECURITY:
         → Use IterativeLLMAgent (deep analysis)
         → Register in AgentPool for collaboration
         → Run 3 iterations with convergence detection
-    
+
     IF analysis_type == PERFORMANCE:
         → Use SelfOrganizingAgent (team formation)
         → Register in AgentPool with performance capabilities
         → Form optimal team for performance analysis
-    
+
     IF analysis_type == FUNCTIONAL:
         → Use IterativeLLMAgent (thorough validation)
         → Run iterative business logic analysis
-    
+
     IF complex_scenario OR consensus_needed:
         → Use A2AAgent (collaboration)
         → Enable shared memory pool
@@ -194,7 +194,7 @@ AGENT_MODEL_CONFIG = {
 ```
 [21:52:44] ⚙️  Configuring advanced agent systems with custom models...
 [21:52:44] ⚙️    • iterative_agent: ollama:llama3.1:8b      ← For deep analysis
-[21:52:44] ⚙️    • a2a_agent: ollama:llama3.2:latest        ← For collaboration  
+[21:52:44] ⚙️    • a2a_agent: ollama:llama3.2:latest        ← For collaboration
 [21:52:44] ⚙️    • self_organizing: ollama:codellama:13b     ← For team formation
 [21:52:44] ⚙️    • Agent pools enabled for team formation   ← AgentPoolManagerNode active
 [21:52:44] ⚙️    • Agent-to-Agent communication enabled     ← A2A coordination active
@@ -221,7 +221,7 @@ AGENT_MODEL_CONFIG = {
 
 ### **2. Multi-Agent Coordination**
 - **AgentPoolManagerNode manages team formation** for complex tasks
-- **A2AAgentNode enables collaboration** between different agent types  
+- **A2AAgentNode enables collaboration** between different agent types
 - **IterativeLLMAgentNode provides deep analysis** through multiple iterations
 
 ### **3. Dynamic Adaptation**

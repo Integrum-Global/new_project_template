@@ -5,26 +5,27 @@ This module implements GDPR compliance endpoints using pure Kailash SDK.
 Supports data export, deletion, consent management, and audit trails.
 """
 
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-import json
 import base64
-import uuid
 import io
+import json
+import uuid
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 from apps.user_management.core.startup import agent_ui, runtime
-from kailash.middleware import WorkflowEvent, EventType
-from kailash.workflow import WorkflowBuilder
+from kailash.middleware import EventType, WorkflowEvent
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow import WorkflowBuilder
 
 
 # Pydantic models
 class DataExportRequest(BaseModel):
     """User data export request."""
+
     user_id: str = Field(..., description="User ID to export data for")
     format: str = Field("json", pattern="^(json|csv|pdf)$", description="Export format")
     include_audit_logs: bool = Field(True, description="Include audit trail")
@@ -35,6 +36,7 @@ class DataExportRequest(BaseModel):
 
 class DataDeletionRequest(BaseModel):
     """User data deletion request."""
+
     user_id: str = Field(..., description="User ID to delete data for")
     reason: str = Field(..., min_length=10, description="Deletion reason")
     delete_audit_logs: bool = Field(False, description="Also delete audit logs")
@@ -44,8 +46,11 @@ class DataDeletionRequest(BaseModel):
 
 class ConsentUpdateRequest(BaseModel):
     """User consent update request."""
+
     user_id: str
-    consent_type: str = Field(..., pattern="^(marketing|analytics|cookies|data_sharing)$")
+    consent_type: str = Field(
+        ..., pattern="^(marketing|analytics|cookies|data_sharing)$"
+    )
     granted: bool
     ip_address: Optional[str] = None
     user_agent: Optional[str] = None
@@ -53,6 +58,7 @@ class ConsentUpdateRequest(BaseModel):
 
 class RetentionPolicyRequest(BaseModel):
     """Data retention policy configuration."""
+
     data_type: str = Field(..., pattern="^(user_data|audit_logs|sessions|backups)$")
     retention_days: int = Field(..., ge=1, le=3650)
     auto_delete: bool = Field(True)
@@ -61,6 +67,7 @@ class RetentionPolicyRequest(BaseModel):
 
 class ComplianceReportRequest(BaseModel):
     """Compliance report generation request."""
+
     report_type: str = Field(..., pattern="^(gdpr|ccpa|hipaa|sox|pci)$")
     start_date: datetime
     end_date: datetime
@@ -77,12 +84,11 @@ async_runtime = LocalRuntime(enable_async=True, debug=False)
 
 @router.post("/export-data")
 async def export_user_data(
-    export_request: DataExportRequest,
-    background_tasks: BackgroundTasks
+    export_request: DataExportRequest, background_tasks: BackgroundTasks
 ):
     """
     Export all user data for GDPR compliance.
-    
+
     Features beyond Django:
     - Multiple export formats (JSON, CSV, PDF)
     - Optional encryption
@@ -92,35 +98,50 @@ async def export_user_data(
     try:
         # Create export workflow
         builder = WorkflowBuilder("export_user_data_workflow")
-        
+
         # Add permission check
-        builder.add_node("ABACPermissionEvaluatorNode", "check_export_permission", {
-            "resource": "user_data",
-            "action": "export",
-            "user_id": export_request.user_id,
-            "require_self_or_admin": True
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "check_export_permission",
+            {
+                "resource": "user_data",
+                "action": "export",
+                "user_id": export_request.user_id,
+                "require_self_or_admin": True,
+            },
+        )
+
         # Add user data collection
-        builder.add_node("UserManagementNode", "collect_user_data", {
-            "operation": "get_user_complete",
-            "user_id": export_request.user_id,
-            "include_history": True
-        })
-        
+        builder.add_node(
+            "UserManagementNode",
+            "collect_user_data",
+            {
+                "operation": "get_user_complete",
+                "user_id": export_request.user_id,
+                "include_history": True,
+            },
+        )
+
         # Add audit log collection if requested
         if export_request.include_audit_logs:
-            builder.add_node("AuditLogNode", "collect_audit_logs", {
-                "operation": "get_user_logs",
-                "user_id": export_request.user_id,
-                "limit": 10000
-            })
-        
+            builder.add_node(
+                "AuditLogNode",
+                "collect_audit_logs",
+                {
+                    "operation": "get_user_logs",
+                    "user_id": export_request.user_id,
+                    "limit": 10000,
+                },
+            )
+
         # Add permission history if requested
         if export_request.include_permissions:
-            builder.add_node("PythonCodeNode", "collect_permissions", {
-                "name": "collect_permission_history",
-                "code": """
+            builder.add_node(
+                "PythonCodeNode",
+                "collect_permissions",
+                {
+                    "name": "collect_permission_history",
+                    "code": """
 # Collect permission history
 import json
 from datetime import datetime
@@ -142,14 +163,18 @@ permission_history = [
 ]
 
 result = {"result": {"permission_history": permission_history}}
-"""
-            })
-        
+""",
+                },
+            )
+
         # Add session history if requested
         if export_request.include_sessions:
-            builder.add_node("PythonCodeNode", "collect_sessions", {
-                "name": "collect_session_history",
-                "code": """
+            builder.add_node(
+                "PythonCodeNode",
+                "collect_sessions",
+                {
+                    "name": "collect_session_history",
+                    "code": """
 # Collect session history
 from datetime import datetime, timedelta
 
@@ -165,13 +190,17 @@ for i in range(10):
     })
 
 result = {"result": {"session_history": sessions}}
-"""
-            })
-        
+""",
+                },
+            )
+
         # Add data compilation node
-        builder.add_node("PythonCodeNode", "compile_export", {
-            "name": "compile_export_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "compile_export",
+            {
+                "name": "compile_export_data",
+                "code": f"""
 # Compile all collected data
 import json
 import base64
@@ -223,43 +252,62 @@ result = {{
         "encrypted": bool("{export_request.encryption_key}")
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_export", {
-            "operation": "log_event",
-            "event_type": "gdpr_data_export",
-            "severity": "high",
-            "user_id": export_request.user_id
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_export",
+            {
+                "operation": "log_event",
+                "event_type": "gdpr_data_export",
+                "severity": "high",
+                "user_id": export_request.user_id,
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("check_export_permission", "allowed", "collect_user_data", "proceed")
-        builder.add_connection("collect_user_data", "result", "compile_export", "user_data")
-        
+        builder.add_connection(
+            "check_export_permission", "allowed", "collect_user_data", "proceed"
+        )
+        builder.add_connection(
+            "collect_user_data", "result", "compile_export", "user_data"
+        )
+
         if export_request.include_audit_logs:
-            builder.add_connection("collect_audit_logs", "result", "compile_export", "audit_logs")
-        
+            builder.add_connection(
+                "collect_audit_logs", "result", "compile_export", "audit_logs"
+            )
+
         if export_request.include_permissions:
-            builder.add_connection("collect_permissions", "result", "compile_export", "permissions")
-        
+            builder.add_connection(
+                "collect_permissions", "result", "compile_export", "permissions"
+            )
+
         if export_request.include_sessions:
-            builder.add_connection("collect_sessions", "result", "compile_export", "sessions")
-        
-        builder.add_connection("compile_export", "result", "audit_export", "export_info")
-        
+            builder.add_connection(
+                "collect_sessions", "result", "compile_export", "sessions"
+            )
+
+        builder.add_connection(
+            "compile_export", "result", "audit_export", "export_info"
+        )
+
         # Build and execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         # Check permission
         if not results.get("check_export_permission", {}).get("allowed"):
-            raise HTTPException(status_code=403, detail="Permission denied for data export")
-        
+            raise HTTPException(
+                status_code=403, detail="Permission denied for data export"
+            )
+
         # Get export data
         export_result = results.get("compile_export", {}).get("result", {})
-        
+
         # Create download response
         return StreamingResponse(
             iter([export_result["data"]]),
@@ -267,10 +315,10 @@ result = {{
             headers={
                 "Content-Disposition": f'attachment; filename="{export_result["filename"]}"',
                 "X-GDPR-Export": "true",
-                "X-Export-ID": execution_id
-            }
+                "X-Export-ID": execution_id,
+            },
         )
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -279,12 +327,11 @@ result = {{
 
 @router.post("/delete-data")
 async def delete_user_data(
-    deletion_request: DataDeletionRequest,
-    background_tasks: BackgroundTasks
+    deletion_request: DataDeletionRequest, background_tasks: BackgroundTasks
 ):
     """
     Delete or anonymize user data for GDPR compliance.
-    
+
     Features:
     - Right to be forgotten implementation
     - Optional anonymization instead of deletion
@@ -293,11 +340,14 @@ async def delete_user_data(
     """
     try:
         builder = WorkflowBuilder("delete_user_data_workflow")
-        
+
         # Add confirmation validation
-        builder.add_node("PythonCodeNode", "validate_confirmation", {
-            "name": "validate_deletion_confirmation",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_confirmation",
+            {
+                "name": "validate_deletion_confirmation",
+                "code": f"""
 # Validate confirmation code
 # In production, check against stored confirmation code
 expected_code = "DELETE-" + "{deletion_request.user_id}"[:6].upper()
@@ -309,21 +359,29 @@ result = {{
         "error": "Invalid confirmation code" if not valid else None
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add permission check
-        builder.add_node("ABACPermissionEvaluatorNode", "check_delete_permission", {
-            "resource": "user_data",
-            "action": "delete",
-            "user_id": deletion_request.user_id,
-            "require_self_or_admin": True
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "check_delete_permission",
+            {
+                "resource": "user_data",
+                "action": "delete",
+                "user_id": deletion_request.user_id,
+                "require_self_or_admin": True,
+            },
+        )
+
         # Add impact analysis
-        builder.add_node("PythonCodeNode", "analyze_impact", {
-            "name": "analyze_deletion_impact",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_impact",
+            {
+                "name": "analyze_deletion_impact",
+                "code": """
 # Analyze impact of deletion
 impact = {
     "active_sessions": 2,
@@ -338,13 +396,17 @@ impact = {
 }
 
 result = {"result": impact}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add deletion/anonymization node
-        builder.add_node("PythonCodeNode", "process_deletion", {
-            "name": "process_data_deletion",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_deletion",
+            {
+                "name": "process_data_deletion",
+                "code": f"""
 # Process deletion or anonymization
 from datetime import datetime
 import hashlib
@@ -384,13 +446,17 @@ result = {{
         "details": details
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add notification node
-        builder.add_node("PythonCodeNode", "send_confirmation", {
-            "name": "send_deletion_confirmation",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "send_confirmation",
+            {
+                "name": "send_deletion_confirmation",
+                "code": """
 # Send confirmation email
 # In production, integrate with email service
 result = {
@@ -400,59 +466,74 @@ result = {
         "recipient": "user@example.com"
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add compliance audit
-        builder.add_node("AuditLogNode", "audit_deletion", {
-            "operation": "log_event",
-            "event_type": "gdpr_data_deletion",
-            "severity": "critical",
-            "user_id": deletion_request.user_id
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_deletion",
+            {
+                "operation": "log_event",
+                "event_type": "gdpr_data_deletion",
+                "severity": "critical",
+                "user_id": deletion_request.user_id,
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_confirmation", "result", "check_delete_permission", "validation")
-        builder.add_connection("check_delete_permission", "allowed", "analyze_impact", "proceed")
+        builder.add_connection(
+            "validate_confirmation", "result", "check_delete_permission", "validation"
+        )
+        builder.add_connection(
+            "check_delete_permission", "allowed", "analyze_impact", "proceed"
+        )
         builder.add_connection("analyze_impact", "result", "process_deletion", "impact")
-        builder.add_connection("process_deletion", "result", "send_confirmation", "deletion_info")
-        builder.add_connection("process_deletion", "result", "audit_deletion", "deletion_details")
-        
+        builder.add_connection(
+            "process_deletion", "result", "send_confirmation", "deletion_info"
+        )
+        builder.add_connection(
+            "process_deletion", "result", "audit_deletion", "deletion_details"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         # Check validation
         validation = results.get("validate_confirmation", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(status_code=400, detail=validation.get("error"))
-        
+
         # Check permission
         if not results.get("check_delete_permission", {}).get("allowed"):
-            raise HTTPException(status_code=403, detail="Permission denied for data deletion")
-        
+            raise HTTPException(
+                status_code=403, detail="Permission denied for data deletion"
+            )
+
         # Get deletion result
         deletion_result = results.get("process_deletion", {}).get("result", {})
-        
+
         # Broadcast compliance event
         await agent_ui.realtime.broadcast_event(
             WorkflowEvent(
                 type=EventType.GDPR_DELETION_COMPLETED,
                 workflow_id="delete_user_data_workflow",
                 execution_id=execution_id,
-                data=deletion_result
+                data=deletion_result,
             )
         )
-        
+
         return {
             "success": True,
             "action": deletion_result["action"],
             "user_id": deletion_request.user_id,
             "execution_id": execution_id,
             "details": deletion_result["details"],
-            "timestamp": deletion_result["timestamp"]
+            "timestamp": deletion_result["timestamp"],
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -460,12 +541,10 @@ result = {
 
 
 @router.post("/consent")
-async def update_consent(
-    consent_update: ConsentUpdateRequest
-):
+async def update_consent(consent_update: ConsentUpdateRequest):
     """
     Update user consent preferences.
-    
+
     Tracks:
     - Marketing consent
     - Analytics consent
@@ -474,11 +553,14 @@ async def update_consent(
     """
     try:
         builder = WorkflowBuilder("update_consent_workflow")
-        
+
         # Add consent validation
-        builder.add_node("PythonCodeNode", "validate_consent", {
-            "name": "validate_consent_update",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_consent",
+            {
+                "name": "validate_consent_update",
+                "code": f"""
 # Validate consent update
 from datetime import datetime
 
@@ -511,13 +593,17 @@ result = {{
         }}
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add consent storage
-        builder.add_node("PythonCodeNode", "store_consent", {
-            "name": "store_consent_update",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "store_consent",
+            {
+                "name": "store_consent_update",
+                "code": """
 # Store consent update
 import uuid
 from datetime import datetime
@@ -541,13 +627,17 @@ if handling.get("retention_days"):
     consent_record["expires_at"] = expiry_date.isoformat()
 
 result = {"result": consent_record}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add notification if required
-        builder.add_node("PythonCodeNode", "notify_consent", {
-            "name": "notify_consent_change",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "notify_consent",
+            {
+                "name": "notify_consent_change",
+                "code": """
 # Notify about consent change
 notifications = []
 
@@ -565,30 +655,43 @@ notifications.append({
 })
 
 result = {"result": {"notifications": notifications}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_consent", {
-            "operation": "log_event",
-            "event_type": "consent_updated",
-            "severity": "medium",
-            "user_id": consent_update.user_id
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_consent",
+            {
+                "operation": "log_event",
+                "event_type": "consent_updated",
+                "severity": "medium",
+                "user_id": consent_update.user_id,
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_consent", "result.consent_data", "store_consent", "consent_data")
-        builder.add_connection("validate_consent", "result.handling", "store_consent", "handling")
-        builder.add_connection("validate_consent", "result.handling", "notify_consent", "handling")
-        builder.add_connection("store_consent", "result", "audit_consent", "consent_record")
-        
+        builder.add_connection(
+            "validate_consent", "result.consent_data", "store_consent", "consent_data"
+        )
+        builder.add_connection(
+            "validate_consent", "result.handling", "store_consent", "handling"
+        )
+        builder.add_connection(
+            "validate_consent", "result.handling", "notify_consent", "handling"
+        )
+        builder.add_connection(
+            "store_consent", "result", "audit_consent", "consent_record"
+        )
+
         # Execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         consent_record = results.get("store_consent", {}).get("result", {})
         notifications = results.get("notify_consent", {}).get("result", {})
-        
+
         return {
             "success": True,
             "consent_id": consent_record["id"],
@@ -597,9 +700,9 @@ result = {"result": {"notifications": notifications}}
             "granted": consent_update.granted,
             "timestamp": consent_record["timestamp"],
             "expires_at": consent_record.get("expires_at"),
-            "notifications": notifications["notifications"]
+            "notifications": notifications["notifications"],
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -611,11 +714,14 @@ async def get_user_consents(user_id: str):
     """
     try:
         builder = WorkflowBuilder("get_consents_workflow")
-        
+
         # Add consent retrieval
-        builder.add_node("PythonCodeNode", "get_consents", {
-            "name": "retrieve_user_consents",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "get_consents",
+            {
+                "name": "retrieve_user_consents",
+                "code": f"""
 # Retrieve user consents
 from datetime import datetime, timedelta
 
@@ -640,26 +746,25 @@ result = {{
         "last_updated": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         return results.get("get_consents", {}).get("result", {})
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/retention-policy")
-async def configure_retention_policy(
-    policy: RetentionPolicyRequest
-):
+async def configure_retention_policy(policy: RetentionPolicyRequest):
     """
     Configure data retention policies.
-    
+
     Features:
     - Automatic data deletion
     - Retention period configuration
@@ -668,11 +773,14 @@ async def configure_retention_policy(
     """
     try:
         builder = WorkflowBuilder("configure_retention_workflow")
-        
+
         # Add policy validation
-        builder.add_node("PythonCodeNode", "validate_policy", {
-            "name": "validate_retention_policy",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_policy",
+            {
+                "name": "validate_retention_policy",
+                "code": f"""
 # Validate retention policy
 from datetime import datetime
 
@@ -700,13 +808,17 @@ result = {{
         }}
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add policy storage
-        builder.add_node("PythonCodeNode", "store_policy", {
-            "name": "store_retention_policy",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "store_policy",
+            {
+                "name": "store_retention_policy",
+                "code": """
 # Store retention policy
 import uuid
 
@@ -724,40 +836,49 @@ if policy_data["auto_delete"]:
     policy_record["next_run"] = (datetime.now() + timedelta(days=1)).isoformat()
 
 result = {"result": policy_record}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit
-        builder.add_node("AuditLogNode", "audit_policy", {
-            "operation": "log_event",
-            "event_type": "retention_policy_configured",
-            "severity": "high"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_policy",
+            {
+                "operation": "log_event",
+                "event_type": "retention_policy_configured",
+                "severity": "high",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_policy", "result.policy_data", "store_policy", "policy_data")
-        builder.add_connection("store_policy", "result", "audit_policy", "policy_record")
-        
+        builder.add_connection(
+            "validate_policy", "result.policy_data", "store_policy", "policy_data"
+        )
+        builder.add_connection(
+            "store_policy", "result", "audit_policy", "policy_record"
+        )
+
         # Execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         # Check validation
         validation = results.get("validate_policy", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(status_code=400, detail=validation.get("error"))
-        
+
         policy_record = results.get("store_policy", {}).get("result", {})
-        
+
         return {
             "success": True,
             "policy_id": policy_record["id"],
             "data_type": policy.data_type,
             "retention_days": policy.retention_days,
             "auto_delete": policy.auto_delete,
-            "next_run": policy_record.get("next_run")
+            "next_run": policy_record.get("next_run"),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -765,12 +886,10 @@ result = {"result": policy_record}
 
 
 @router.post("/compliance-report")
-async def generate_compliance_report(
-    report_request: ComplianceReportRequest
-):
+async def generate_compliance_report(report_request: ComplianceReportRequest):
     """
     Generate comprehensive compliance reports.
-    
+
     Supports:
     - GDPR compliance
     - CCPA compliance
@@ -780,11 +899,14 @@ async def generate_compliance_report(
     """
     try:
         builder = WorkflowBuilder("generate_compliance_report_workflow")
-        
+
         # Add data collection
-        builder.add_node("PythonCodeNode", "collect_metrics", {
-            "name": "collect_compliance_metrics",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_metrics",
+            {
+                "name": "collect_compliance_metrics",
+                "code": f"""
 # Collect compliance metrics
 from datetime import datetime
 
@@ -812,14 +934,18 @@ metrics = {{
 }}
 
 result = {{"result": metrics}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add violation detection
         if report_request.include_violations:
-            builder.add_node("PythonCodeNode", "detect_violations", {
-                "name": "detect_compliance_violations",
-                "code": """
+            builder.add_node(
+                "PythonCodeNode",
+                "detect_violations",
+                {
+                    "name": "detect_compliance_violations",
+                    "code": """
 # Detect compliance violations
 violations = [
     {
@@ -832,14 +958,18 @@ violations = [
 ]
 
 result = {"result": {"violations": violations}}
-"""
-            })
-        
+""",
+                },
+            )
+
         # Add recommendations
         if report_request.include_recommendations:
-            builder.add_node("PythonCodeNode", "generate_recommendations", {
-                "name": "generate_compliance_recommendations",
-                "code": f"""
+            builder.add_node(
+                "PythonCodeNode",
+                "generate_recommendations",
+                {
+                    "name": "generate_compliance_recommendations",
+                    "code": f"""
 # Generate recommendations based on report type
 recommendations = []
 
@@ -860,13 +990,17 @@ if "{report_request.report_type}" == "gdpr":
     ])
 
 result = {{"result": {{"recommendations": recommendations}}}}
-"""
-            })
-        
+""",
+                },
+            )
+
         # Add report generation
-        builder.add_node("PythonCodeNode", "generate_report", {
-            "name": "compile_compliance_report",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_report",
+            {
+                "name": "compile_compliance_report",
+                "code": f"""
 # Compile final report
 from datetime import datetime
 import uuid
@@ -888,24 +1022,34 @@ report = {{
 }}
 
 result = {{"result": report}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("collect_metrics", "result", "generate_report", "metrics")
-        
+        builder.add_connection(
+            "collect_metrics", "result", "generate_report", "metrics"
+        )
+
         if report_request.include_violations:
-            builder.add_connection("detect_violations", "result", "generate_report", "violations")
-        
+            builder.add_connection(
+                "detect_violations", "result", "generate_report", "violations"
+            )
+
         if report_request.include_recommendations:
-            builder.add_connection("generate_recommendations", "result", "generate_report", "recommendations")
-        
+            builder.add_connection(
+                "generate_recommendations",
+                "result",
+                "generate_report",
+                "recommendations",
+            )
+
         # Execute
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         report = results.get("generate_report", {}).get("result", {})
-        
+
         # Broadcast report generation
         await agent_ui.realtime.broadcast_event(
             WorkflowEvent(
@@ -915,40 +1059,46 @@ result = {{"result": report}}
                 data={
                     "report_id": report["report_id"],
                     "type": report["type"],
-                    "score": report["executive_summary"]["compliance_score"]
-                }
+                    "score": report["executive_summary"]["compliance_score"],
+                },
             )
         )
-        
+
         return report
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/audit-trail/{user_id}")
 async def get_compliance_audit_trail(
-    user_id: str,
-    days: int = Query(90, ge=1, le=365, description="Days of history")
+    user_id: str, days: int = Query(90, ge=1, le=365, description="Days of history")
 ):
     """
     Get complete compliance audit trail for a user.
     """
     try:
         builder = WorkflowBuilder("get_audit_trail_workflow")
-        
+
         # Add audit retrieval
-        builder.add_node("AuditLogNode", "get_audit_trail", {
-            "operation": "get_user_logs",
-            "user_id": user_id,
-            "days": days,
-            "include_compliance": True
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "get_audit_trail",
+            {
+                "operation": "get_user_logs",
+                "user_id": user_id,
+                "days": days,
+                "include_compliance": True,
+            },
+        )
+
         # Add processing
-        builder.add_node("PythonCodeNode", "process_audit", {
-            "name": "process_compliance_audit",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "process_audit",
+            {
+                "name": "process_compliance_audit",
+                "code": """
 # Process audit trail for compliance view
 audit_logs = logs.get("logs", [])
 
@@ -989,20 +1139,20 @@ result = {
         }
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
         builder.add_connection("get_audit_trail", "result", "process_audit", "logs")
-        
+
         # Execute
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={"user_id": user_id, "days": days}
+            workflow, parameters={"user_id": user_id, "days": days}
         )
-        
+
         return results.get("process_audit", {}).get("result", {})
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

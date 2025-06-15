@@ -10,26 +10,30 @@ This workflow handles team setup and organization including:
 - Performance monitoring setup
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class TeamSetupWorkflow:
     """
     Complete team setup and organization workflow for department managers.
     """
-    
+
     def __init__(self, manager_user_id: str = "manager"):
         """
         Initialize the team setup workflow.
-        
+
         Args:
             manager_user_id: ID of the manager performing setup
         """
@@ -39,38 +43,46 @@ class TeamSetupWorkflow:
             user_id=manager_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def setup_department_structure(self, department_info: Dict[str, Any]) -> Dict[str, Any]:
+
+    def setup_department_structure(
+        self, department_info: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Set up department structure and organization.
-        
+
         Args:
             department_info: Department configuration information
-            
+
         Returns:
             Department setup results
         """
         print(f"🏢 Setting up department: {department_info.get('name', 'Unknown')}")
-        
+
         builder = self.runner.create_workflow("department_structure_setup")
-        
+
         # Department validation
         validation_rules = {
             "name": {"required": True, "type": str, "min_length": 2},
             "manager_email": {"required": True, "type": str, "min_length": 5},
             "budget": {"required": False, "type": int},
-            "team_size": {"required": False, "type": int}
+            "team_size": {"required": False, "type": int},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_department_info", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_department_info",
+            create_validation_node(validation_rules),
+        )
+
         # Department structure creation
-        builder.add_node("PythonCodeNode", "create_department_structure", {
-            "name": "create_department_organization",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_department_structure",
+            {
+                "name": "create_department_organization",
+                "code": """
 from datetime import datetime
 import random
 import string
@@ -79,7 +91,7 @@ import string
 def generate_id():
     return ''.join(random.choices(string.ascii_letters + string.digits, k=12))
 
-# Use the workflow input parameters  
+# Use the workflow input parameters
 # For now, use test data to validate the workflow structure
 department_info = {
     'team_name': 'Test Engineering Team',
@@ -120,7 +132,7 @@ team_structure = {
         },
         {
             "id": generate_id(),
-            "name": f"{name} - Support Team", 
+            "name": f"{name} - Support Team",
             "lead": None,  # To be assigned
             "type": "support",
             "max_members": 5
@@ -157,18 +169,22 @@ result = {
         "resource_allocation": resource_allocation,
         "next_steps": [
             "assign_team_leads",
-            "configure_approval_workflows", 
+            "configure_approval_workflows",
             "setup_monitoring_dashboards"
         ]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Approval workflow setup
-        builder.add_node("PythonCodeNode", "setup_approval_workflows", {
-            "name": "configure_department_approval_workflows",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_approval_workflows",
+            {
+                "name": "configure_department_approval_workflows",
+                "code": """
 # Configure department-specific approval workflows
 approval_workflows = []
 
@@ -180,7 +196,7 @@ access_approval = {
     "steps": [
         {
             "level": 1,
-            "approver": "direct_manager", 
+            "approver": "direct_manager",
             "criteria": "standard_access",
             "sla_hours": 24,
             "auto_approve_conditions": ["same_department", "standard_role"]
@@ -211,7 +227,7 @@ budget_approval = {
         {
             "level": 2,
             "approver": "finance_director",
-            "criteria": "amount_over_1000", 
+            "criteria": "amount_over_1000",
             "sla_hours": 96
         }
     ]
@@ -243,39 +259,53 @@ result = {
         "sla_configured": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect department setup nodes
-        builder.add_connection("validate_department_info", "result", "create_department_structure", "validation_result")
-        builder.add_connection("create_department_structure", "result.result", "setup_approval_workflows", "department_structure")
-        
+        builder.add_connection(
+            "validate_department_info",
+            "result",
+            "create_department_structure",
+            "validation_result",
+        )
+        builder.add_connection(
+            "create_department_structure",
+            "result.result",
+            "setup_approval_workflows",
+            "department_structure",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, department_info, "department_structure_setup"
         )
-        
+
         return results
-    
+
     def onboard_team_member(self, member_info: Dict[str, Any]) -> Dict[str, Any]:
         """
         Onboard a new team member with complete setup.
-        
+
         Args:
             member_info: New team member information
-            
+
         Returns:
             Onboarding results
         """
         print(f"👤 Onboarding team member: {member_info.get('email', 'Unknown')}")
-        
+
         builder = self.runner.create_workflow("team_member_onboarding")
-        
+
         # Member onboarding process
-        builder.add_node("PythonCodeNode", "create_onboarding_plan", {
-            "name": "create_team_member_onboarding_plan",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_onboarding_plan",
+            {
+                "name": "create_team_member_onboarding_plan",
+                "code": """
 from datetime import datetime, timedelta
 
 # Create comprehensive onboarding plan
@@ -314,7 +344,7 @@ onboarding_plan = {
             ]
         },
         {
-            "phase": "first_week", 
+            "phase": "first_week",
             "days": 1,
             "tasks": [
                 "Department overview training",
@@ -353,7 +383,7 @@ onboarding_plan = {
 access_requirements = {
     "basic_systems": [
         "email_system",
-        "intranet_portal", 
+        "intranet_portal",
         "time_tracking",
         "collaboration_tools"
     ],
@@ -380,13 +410,17 @@ result = {
         "onboarding_duration_days": 90
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Team integration setup
-        builder.add_node("PythonCodeNode", "setup_team_integration", {
-            "name": "setup_new_member_team_integration",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_team_integration",
+            {
+                "name": "setup_new_member_team_integration",
+                "code": """
 # Set up team integration for new member
 team_integration = {
     "buddy_system": {
@@ -423,7 +457,7 @@ team_integration = {
             "participants": "core_team"
         },
         {
-            "activity": "skills_assessment_session", 
+            "activity": "skills_assessment_session",
             "scheduled_date": (datetime.now() + timedelta(days=7)).strftime("%Y-%m-%d"),
             "participants": "manager_and_lead"
         }
@@ -444,38 +478,47 @@ result = {
         "communication_setup": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect onboarding nodes
-        builder.add_connection("create_onboarding_plan", "result.result", "setup_team_integration", "onboarding_info")
-        
+        builder.add_connection(
+            "create_onboarding_plan",
+            "result.result",
+            "setup_team_integration",
+            "onboarding_info",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"member_info": member_info}, "team_member_onboarding"
         )
-        
+
         return results
-    
+
     def setup_performance_monitoring(self, department_id: str) -> Dict[str, Any]:
         """
         Set up performance monitoring and analytics for the team.
-        
+
         Args:
             department_id: ID of the department to monitor
-            
+
         Returns:
             Monitoring setup results
         """
         print(f"📊 Setting up performance monitoring for department: {department_id}")
-        
+
         builder = self.runner.create_workflow("performance_monitoring_setup")
-        
+
         # Performance metrics configuration
-        builder.add_node("PythonCodeNode", "configure_performance_metrics", {
-            "name": "configure_team_performance_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "configure_performance_metrics",
+            {
+                "name": "configure_team_performance_metrics",
+                "code": """
 # Configure comprehensive performance monitoring
 department_id = "dept_123"
 
@@ -571,13 +614,17 @@ result = {
         "alert_system_enabled": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Reporting setup
-        builder.add_node("PythonCodeNode", "setup_reporting_system", {
-            "name": "setup_performance_reporting_system",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_reporting_system",
+            {
+                "name": "setup_performance_reporting_system",
+                "code": """
 # Configure automated reporting system
 reporting_configuration = {
     "automated_reports": [
@@ -596,7 +643,7 @@ reporting_configuration = {
             ]
         },
         {
-            "report_name": "monthly_department_summary", 
+            "report_name": "monthly_department_summary",
             "frequency": "monthly",
             "delivery_day": "first_monday",
             "recipients": ["manager", "department_head", "hr"],
@@ -658,32 +705,38 @@ result = {
         "reporting_system_active": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect monitoring setup nodes
-        builder.add_connection("configure_performance_metrics", "result.result", "setup_reporting_system", "metrics_config")
-        
+        builder.add_connection(
+            "configure_performance_metrics",
+            "result.result",
+            "setup_reporting_system",
+            "metrics_config",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"department_id": department_id}, "performance_monitoring_setup"
         )
-        
+
         return results
-    
+
     def run_comprehensive_team_setup_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all team setup operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Team Setup Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Setup department structure
             print("\\n1. Setting up Department Structure...")
@@ -691,13 +744,21 @@ result = {
                 "name": "Engineering",
                 "manager_email": "engineering.manager@company.com",
                 "budget": 500000,
-                "team_size": 25
+                "team_size": 25,
             }
-            demo_results["department_setup"] = self.setup_department_structure(department_info)
-            
+            demo_results["department_setup"] = self.setup_department_structure(
+                department_info
+            )
+
             # Extract department ID for subsequent operations
-            dept_id = demo_results["department_setup"].get("create_department_structure", {}).get("result", {}).get("result", {}).get("department_id", "dept_123")
-            
+            dept_id = (
+                demo_results["department_setup"]
+                .get("create_department_structure", {})
+                .get("result", {})
+                .get("result", {})
+                .get("department_id", "dept_123")
+            )
+
             # 2. Onboard team member
             print("\\n2. Onboarding New Team Member...")
             new_member_info = {
@@ -706,53 +767,83 @@ result = {
                 "last_name": "Wilson",
                 "department": "Engineering",
                 "position": "Senior Software Developer",
-                "start_date": "2024-07-01"
+                "start_date": "2024-07-01",
             }
-            demo_results["member_onboarding"] = self.onboard_team_member(new_member_info)
-            
+            demo_results["member_onboarding"] = self.onboard_team_member(
+                new_member_info
+            )
+
             # 3. Setup performance monitoring
             print("\\n3. Setting up Performance Monitoring...")
-            demo_results["performance_monitoring"] = self.setup_performance_monitoring(dept_id)
-            
+            demo_results["performance_monitoring"] = self.setup_performance_monitoring(
+                dept_id
+            )
+
             # Print comprehensive summary
             self.print_team_setup_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Team setup demonstration failed: {str(e)}")
             raise
-    
+
     def print_team_setup_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive team setup summary.
-        
+
         Args:
             results: Setup results from all workflows
         """
         print("\\n" + "=" * 70)
         print("TEAM SETUP DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Department setup summary
-        dept_result = results.get("department_setup", {}).get("create_department_structure", {}).get("result", {}).get("result", {})
+        dept_result = (
+            results.get("department_setup", {})
+            .get("create_department_structure", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"🏢 Department: {dept_result.get('department_id', 'N/A')} configured")
-        
+
         # Approval workflows summary
-        workflow_result = results.get("department_setup", {}).get("setup_approval_workflows", {}).get("result", {}).get("result", {})
-        print(f"📋 Workflows: {workflow_result.get('workflows_configured', 0)} approval workflows configured")
-        
+        workflow_result = (
+            results.get("department_setup", {})
+            .get("setup_approval_workflows", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📋 Workflows: {workflow_result.get('workflows_configured', 0)} approval workflows configured"
+        )
+
         # Member onboarding summary
-        onboarding_result = results.get("member_onboarding", {}).get("create_onboarding_plan", {}).get("result", {}).get("result", {})
-        print(f"👤 Onboarding: {onboarding_result.get('phases_planned', 0)} phases planned")
-        
+        onboarding_result = (
+            results.get("member_onboarding", {})
+            .get("create_onboarding_plan", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"👤 Onboarding: {onboarding_result.get('phases_planned', 0)} phases planned"
+        )
+
         # Performance monitoring summary
-        monitoring_result = results.get("performance_monitoring", {}).get("configure_performance_metrics", {}).get("result", {}).get("result", {})
-        print(f"📊 Monitoring: {monitoring_result.get('metrics_configured', 0)} metrics configured")
-        
+        monitoring_result = (
+            results.get("performance_monitoring", {})
+            .get("configure_performance_metrics", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📊 Monitoring: {monitoring_result.get('metrics_configured', 0)} metrics configured"
+        )
+
         print("\\n🎉 Complete team setup and organization ready!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -760,34 +851,39 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the team setup workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Team Setup Workflow...")
-        
+
         # Create test workflow
         team_setup = TeamSetupWorkflow("test_manager")
-        
+
         # Test department setup
         test_department = {
             "name": "Test Department",
             "manager_email": "test.manager@company.com",
             "budget": 100000,
-            "team_size": 10
+            "team_size": 10,
         }
-        
+
         result = team_setup.setup_department_structure(test_department)
-        if not result.get("create_department_structure", {}).get("result", {}).get("result", {}).get("department_created"):
+        if (
+            not result.get("create_department_structure", {})
+            .get("result", {})
+            .get("result", {})
+            .get("department_created")
+        ):
             return False
-        
+
         print("✅ Team setup workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Team setup workflow test failed: {str(e)}")
         return False
@@ -801,7 +897,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         team_setup = TeamSetupWorkflow()
-        
+
         try:
             results = team_setup.run_comprehensive_team_setup_demo()
             print("🎉 Team setup demonstration completed successfully!")

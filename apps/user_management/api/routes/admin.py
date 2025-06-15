@@ -5,24 +5,25 @@ This module implements administrative dashboard endpoints using pure Kailash SDK
 Provides system analytics, health monitoring, and operational insights.
 """
 
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-import json
 import io
+import json
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from apps.user_management.core.startup import agent_ui, runtime
-from kailash.middleware import WorkflowEvent, EventType
-from kailash.workflow import WorkflowBuilder
+from kailash.middleware import EventType, WorkflowEvent
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow import WorkflowBuilder
 
 
 # Pydantic models
 class SystemHealthResponse(BaseModel):
     """System health status response."""
+
     status: str  # healthy, degraded, critical
     uptime_hours: float
     active_users: int
@@ -36,6 +37,7 @@ class SystemHealthResponse(BaseModel):
 
 class UserStatisticsResponse(BaseModel):
     """User statistics response."""
+
     total_users: int
     active_users: int
     inactive_users: int
@@ -50,6 +52,7 @@ class UserStatisticsResponse(BaseModel):
 
 class SecurityMetricsResponse(BaseModel):
     """Security metrics response."""
+
     failed_logins_today: int
     successful_logins_today: int
     suspicious_activities: int
@@ -63,6 +66,7 @@ class SecurityMetricsResponse(BaseModel):
 
 class PerformanceMetricsResponse(BaseModel):
     """Performance metrics response."""
+
     average_response_time_ms: float
     p95_response_time_ms: float
     p99_response_time_ms: float
@@ -76,6 +80,7 @@ class PerformanceMetricsResponse(BaseModel):
 
 class AuditSummaryResponse(BaseModel):
     """Audit summary response."""
+
     total_events_today: int
     events_by_type: Dict[str, int]
     events_by_severity: Dict[str, int]
@@ -97,7 +102,7 @@ async_runtime = LocalRuntime(enable_async=True, debug=False)
 async def get_system_health():
     """
     Get comprehensive system health status.
-    
+
     Features beyond Django:
     - Real-time performance metrics
     - AI-powered anomaly detection
@@ -106,11 +111,14 @@ async def get_system_health():
     """
     try:
         builder = WorkflowBuilder("system_health_workflow")
-        
+
         # Add system metrics collection
-        builder.add_node("PythonCodeNode", "collect_metrics", {
-            "name": "collect_system_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_metrics",
+            {
+                "name": "collect_system_metrics",
+                "code": """
 # Collect system metrics
 import psutil
 import random
@@ -151,13 +159,17 @@ result = {
         "disk_usage_percent": disk.percent
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add anomaly detection
-        builder.add_node("PythonCodeNode", "detect_anomalies", {
-            "name": "detect_health_anomalies",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "detect_anomalies",
+            {
+                "name": "detect_health_anomalies",
+                "code": """
 # Detect anomalies in system health
 anomalies = []
 
@@ -183,27 +195,38 @@ if metrics["disk_usage_percent"] > 90:
     })
 
 result = {"result": {"anomalies": anomalies}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_health_check", {
-            "operation": "log_event",
-            "event_type": "system_health_check",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_health_check",
+            {
+                "operation": "log_event",
+                "event_type": "system_health_check",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("collect_metrics", "result", "detect_anomalies", "metrics")
-        builder.add_connection("detect_anomalies", "result", "audit_health_check", "anomalies")
-        
+        builder.add_connection(
+            "collect_metrics", "result", "detect_anomalies", "metrics"
+        )
+        builder.add_connection(
+            "detect_anomalies", "result", "audit_health_check", "anomalies"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         health_data = results.get("collect_metrics", {}).get("result", {})
-        anomalies = results.get("detect_anomalies", {}).get("result", {}).get("anomalies", [])
-        
+        anomalies = (
+            results.get("detect_anomalies", {}).get("result", {}).get("anomalies", [])
+        )
+
         # Broadcast critical health events
         if health_data["status"] == "critical" or anomalies:
             await agent_ui.realtime.broadcast_event(
@@ -211,15 +234,12 @@ result = {"result": {"anomalies": anomalies}}
                     type=EventType.SYSTEM_HEALTH_ALERT,
                     workflow_id="system_health_workflow",
                     execution_id=execution_id,
-                    data={
-                        "status": health_data["status"],
-                        "anomalies": anomalies
-                    }
+                    data={"status": health_data["status"], "anomalies": anomalies},
                 )
             )
-        
+
         return SystemHealthResponse(**health_data)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -228,7 +248,7 @@ result = {"result": {"anomalies": anomalies}}
 async def get_user_statistics():
     """
     Get comprehensive user statistics and analytics.
-    
+
     Provides insights into:
     - User growth trends
     - Activity patterns
@@ -237,11 +257,14 @@ async def get_user_statistics():
     """
     try:
         builder = WorkflowBuilder("user_statistics_workflow")
-        
+
         # Add user analytics node
-        builder.add_node("PythonCodeNode", "analyze_users", {
-            "name": "analyze_user_statistics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_users",
+            {
+                "name": "analyze_user_statistics",
+                "code": """
 # Analyze user statistics
 from datetime import datetime, timedelta
 import random
@@ -301,13 +324,17 @@ result = {
         "last_login_distribution": last_login_distribution
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add trend analysis
-        builder.add_node("PythonCodeNode", "analyze_trends", {
-            "name": "analyze_user_trends",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_trends",
+            {
+                "name": "analyze_user_trends",
+                "code": """
 # Analyze user trends
 trends = {
     "growth_trend": "increasing" if stats["user_growth_rate"] > 5 else "stable",
@@ -327,20 +354,21 @@ if stats["user_growth_rate"] < 5:
     trends["recommendations"].append("Low growth rate - review user acquisition strategy")
 
 result = {"result": {"trends": trends}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
         builder.add_connection("analyze_users", "result", "analyze_trends", "stats")
-        
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         statistics = results.get("analyze_users", {}).get("result", {})
-        
+
         return UserStatisticsResponse(**statistics)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -349,7 +377,7 @@ result = {"result": {"trends": trends}}
 async def get_security_metrics():
     """
     Get real-time security metrics and threat analysis.
-    
+
     Features:
     - Failed login tracking
     - Threat detection
@@ -358,11 +386,14 @@ async def get_security_metrics():
     """
     try:
         builder = WorkflowBuilder("security_metrics_workflow")
-        
+
         # Add security analysis
-        builder.add_node("PythonCodeNode", "analyze_security", {
-            "name": "analyze_security_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_security",
+            {
+                "name": "analyze_security_metrics",
+                "code": """
 # Analyze security metrics
 from datetime import datetime, timedelta
 import random
@@ -411,30 +442,35 @@ result = {
         "recent_threats": recent_threats
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add threat assessment
-        builder.add_node("ThreatDetectionNode", "assess_threats", {
-            "operation": "analyze_threats",
-            "threshold": 0.7
-        })
-        
+        builder.add_node(
+            "ThreatDetectionNode",
+            "assess_threats",
+            {"operation": "analyze_threats", "threshold": 0.7},
+        )
+
         # Connect nodes
-        builder.add_connection("analyze_security", "result", "assess_threats", "security_data")
-        
+        builder.add_connection(
+            "analyze_security", "result", "assess_threats", "security_data"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         security_metrics = results.get("analyze_security", {}).get("result", {})
-        
+
         # Broadcast high-severity threats
         high_severity_threats = [
-            t for t in security_metrics.get("recent_threats", [])
+            t
+            for t in security_metrics.get("recent_threats", [])
             if t.get("severity") == "high" and not t.get("blocked")
         ]
-        
+
         if high_severity_threats:
             await agent_ui.realtime.broadcast_event(
                 WorkflowEvent(
@@ -443,13 +479,13 @@ result = {
                     execution_id=execution_id,
                     data={
                         "threats": high_severity_threats,
-                        "security_score": security_metrics["security_score"]
-                    }
+                        "security_score": security_metrics["security_score"],
+                    },
                 )
             )
-        
+
         return SecurityMetricsResponse(**security_metrics)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -458,7 +494,7 @@ result = {
 async def get_performance_metrics():
     """
     Get system performance metrics and analytics.
-    
+
     Tracks:
     - Response times
     - Throughput
@@ -467,11 +503,14 @@ async def get_performance_metrics():
     """
     try:
         builder = WorkflowBuilder("performance_metrics_workflow")
-        
+
         # Add performance collection
-        builder.add_node("PythonCodeNode", "collect_performance", {
-            "name": "collect_performance_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_performance",
+            {
+                "name": "collect_performance_metrics",
+                "code": """
 # Collect performance metrics
 import random
 from datetime import datetime
@@ -509,13 +548,17 @@ result = {
         "queued_workflows": queued_workflows
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add performance analysis
-        builder.add_node("PythonCodeNode", "analyze_performance", {
-            "name": "analyze_performance_health",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_performance",
+            {
+                "name": "analyze_performance_health",
+                "code": """
 # Analyze performance health
 issues = []
 
@@ -548,20 +591,23 @@ result = {
         "performance_grade": performance_grade
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("collect_performance", "result", "analyze_performance", "metrics")
-        
+        builder.add_connection(
+            "collect_performance", "result", "analyze_performance", "metrics"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         performance_metrics = results.get("collect_performance", {}).get("result", {})
-        
+
         return PerformanceMetricsResponse(**performance_metrics)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -572,7 +618,7 @@ async def get_audit_summary(
 ):
     """
     Get audit log summary and analytics.
-    
+
     Provides:
     - Event distribution
     - Top users by activity
@@ -581,17 +627,21 @@ async def get_audit_summary(
     """
     try:
         builder = WorkflowBuilder("audit_summary_workflow")
-        
+
         # Add audit analysis
-        builder.add_node("AuditLogNode", "get_audit_stats", {
-            "operation": "get_statistics",
-            "hours": hours
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "get_audit_stats",
+            {"operation": "get_statistics", "hours": hours},
+        )
+
         # Add detailed analysis
-        builder.add_node("PythonCodeNode", "analyze_audit", {
-            "name": "analyze_audit_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_audit",
+            {
+                "name": "analyze_audit_data",
+                "code": """
 # Analyze audit data
 import random
 from collections import Counter
@@ -600,9 +650,9 @@ from collections import Counter
 total_events_today = random.randint(1000, 5000)
 
 # Event type distribution
-event_types = ["login", "logout", "data_access", "permission_change", "user_update", 
+event_types = ["login", "logout", "data_access", "permission_change", "user_update",
                "role_assignment", "export_data", "delete_data", "api_call"]
-events_by_type = {{}}
+events_by_type = {}
 remaining = total_events_today
 for i, event_type in enumerate(event_types):
     if i == len(event_types) - 1:
@@ -613,21 +663,21 @@ for i, event_type in enumerate(event_types):
         remaining -= events_by_type[event_type]
 
 # Severity distribution
-events_by_severity = {{
+events_by_severity = {
     "info": int(total_events_today * 0.7),
     "warning": int(total_events_today * 0.2),
     "error": int(total_events_today * 0.08),
     "critical": int(total_events_today * 0.02)
-}}
+}
 
 # Top users by activity
 top_users = []
 for i in range(10):
-    top_users.append({{
-        "user_id": f"user{{random.randint(100, 999)}}",
+    top_users.append({
+        "user_id": f"user{random.randint(100, 999)}",
         "event_count": random.randint(50, 200),
-        "last_activity": f"{{random.randint(1, 60)}} minutes ago"
-    }})
+        "last_activity": f"{random.randint(1, 60)} minutes ago"
+    })
 
 # Event categories
 compliance_events = random.randint(100, 500)
@@ -635,8 +685,8 @@ security_events = random.randint(200, 800)
 administrative_events = random.randint(300, 1000)
 data_access_events = random.randint(500, 2000)
 
-result = {{
-    "result": {{
+result = {
+    "result": {
         "total_events_today": total_events_today,
         "events_by_type": events_by_type,
         "events_by_severity": events_by_severity,
@@ -645,22 +695,25 @@ result = {{
         "security_events": security_events,
         "administrative_events": administrative_events,
         "data_access_events": data_access_events
-    }}
-}}
-"""
-        })
-        
+    }
+}
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("get_audit_stats", "result", "analyze_audit", "audit_stats")
-        
+        builder.add_connection(
+            "get_audit_stats", "result", "analyze_audit", "audit_stats"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         audit_summary = results.get("analyze_audit", {}).get("result", {})
-        
+
         return AuditSummaryResponse(**audit_summary)
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -671,7 +724,7 @@ async def cleanup_old_data(
 ):
     """
     Clean up old data and optimize system.
-    
+
     Features:
     - Session cleanup
     - Log rotation
@@ -680,18 +733,25 @@ async def cleanup_old_data(
     """
     try:
         builder = WorkflowBuilder("cleanup_workflow")
-        
+
         # Add cleanup validation
-        builder.add_node("ABACPermissionEvaluatorNode", "check_permission", {
-            "resource": "system:maintenance",
-            "action": "cleanup",
-            "require_admin": True
-        })
-        
+        builder.add_node(
+            "ABACPermissionEvaluatorNode",
+            "check_permission",
+            {
+                "resource": "system:maintenance",
+                "action": "cleanup",
+                "require_admin": True,
+            },
+        )
+
         # Add cleanup operations
-        builder.add_node("PythonCodeNode", "cleanup_data", {
-            "name": "perform_data_cleanup",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "cleanup_data",
+            {
+                "name": "perform_data_cleanup",
+                "code": f"""
 # Perform data cleanup
 from datetime import datetime, timedelta
 import random
@@ -719,42 +779,51 @@ result = {{
         "completed_at": datetime.now().isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Add audit logging
-        builder.add_node("AuditLogNode", "audit_cleanup", {
-            "operation": "log_event",
-            "event_type": "maintenance_cleanup",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_cleanup",
+            {
+                "operation": "log_event",
+                "event_type": "maintenance_cleanup",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
         builder.add_connection("check_permission", "allowed", "cleanup_data", "proceed")
-        builder.add_connection("cleanup_data", "result", "audit_cleanup", "cleanup_results")
-        
+        builder.add_connection(
+            "cleanup_data", "result", "audit_cleanup", "cleanup_results"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(workflow)
-        
+
         # Check permission
         if not results.get("check_permission", {}).get("allowed"):
-            raise HTTPException(status_code=403, detail="Admin permission required for cleanup")
-        
+            raise HTTPException(
+                status_code=403, detail="Admin permission required for cleanup"
+            )
+
         cleanup_result = results.get("cleanup_data", {}).get("result", {})
-        
+
         # Broadcast cleanup completion
         await agent_ui.realtime.broadcast_event(
             WorkflowEvent(
                 type=EventType.MAINTENANCE_COMPLETED,
                 workflow_id="cleanup_workflow",
                 execution_id=execution_id,
-                data=cleanup_result
+                data=cleanup_result,
             )
         )
-        
+
         return cleanup_result
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -767,16 +836,19 @@ async def export_dashboard_data(
 ):
     """
     Export complete dashboard data for reporting.
-    
+
     Includes all metrics and analytics in a single export.
     """
     try:
         builder = WorkflowBuilder("export_dashboard_workflow")
-        
+
         # Collect all metrics in parallel
-        builder.add_node("PythonCodeNode", "collect_all_metrics", {
-            "name": "collect_dashboard_metrics",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_all_metrics",
+            {
+                "name": "collect_dashboard_metrics",
+                "code": """
 # Collect all dashboard metrics
 # In production, this would call the actual metric collection functions
 from datetime import datetime
@@ -806,13 +878,17 @@ dashboard_data = {
 }
 
 result = {"result": {"dashboard_data": dashboard_data}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Format export
-        builder.add_node("PythonCodeNode", "format_export", {
-            "name": "format_dashboard_export",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "format_export",
+            {
+                "name": "format_dashboard_export",
+                "code": f"""
 # Format dashboard export
 import json
 
@@ -845,26 +921,32 @@ result = {{
         "filename": filename
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("collect_all_metrics", "result.dashboard_data", "format_export", "dashboard_data")
-        
+        builder.add_connection(
+            "collect_all_metrics",
+            "result.dashboard_data",
+            "format_export",
+            "dashboard_data",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         export_data = results.get("format_export", {}).get("result", {})
-        
+
         # Return as streaming response
         return StreamingResponse(
             iter([export_data["content"]]),
             media_type=export_data["content_type"],
             headers={
                 "Content-Disposition": f'attachment; filename="{export_data["filename"]}"'
-            }
+            },
         )
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

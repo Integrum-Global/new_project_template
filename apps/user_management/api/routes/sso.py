@@ -5,47 +5,49 @@ This module implements enterprise Single Sign-On using pure Kailash SDK.
 Supports SAML, OAuth2, Azure AD, Google, Okta, and custom providers.
 """
 
-from typing import List, Optional, Dict, Any
-from datetime import datetime, timedelta
-import secrets
 import base64
+import secrets
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field, HttpUrl
 
 from apps.user_management.core.startup import agent_ui, runtime
-from kailash.middleware import WorkflowEvent, EventType
-from kailash.workflow import WorkflowBuilder
+from kailash.middleware import EventType, WorkflowEvent
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow import WorkflowBuilder
 
 
 # Pydantic models
 class SSOProviderCreateRequest(BaseModel):
     """SSO provider creation request."""
+
     name: str = Field(..., min_length=1, max_length=100)
     provider_type: str = Field(..., pattern="^(saml|oauth2|azure|google|okta|custom)$")
     client_id: str = Field(..., description="OAuth client ID or SAML entity ID")
     client_secret: Optional[str] = Field(None, description="OAuth client secret")
     metadata_url: Optional[HttpUrl] = Field(None, description="SAML metadata URL")
-    authorization_url: Optional[HttpUrl] = Field(None, description="OAuth authorization URL")
+    authorization_url: Optional[HttpUrl] = Field(
+        None, description="OAuth authorization URL"
+    )
     token_url: Optional[HttpUrl] = Field(None, description="OAuth token URL")
     userinfo_url: Optional[HttpUrl] = Field(None, description="OAuth userinfo URL")
     scopes: List[str] = Field(default_factory=lambda: ["openid", "email", "profile"])
     attribute_mapping: Dict[str, str] = Field(
-        default_factory=dict,
-        description="Map provider attributes to user fields"
+        default_factory=dict, description="Map provider attributes to user fields"
     )
     is_active: bool = Field(True, description="Enable/disable provider")
     allow_signup: bool = Field(True, description="Allow new user creation")
     domain_whitelist: List[str] = Field(
-        default_factory=list,
-        description="Allowed email domains"
+        default_factory=list, description="Allowed email domains"
     )
 
 
 class SSOSessionResponse(BaseModel):
     """SSO session response."""
+
     session_id: str
     provider: str
     authorization_url: str
@@ -55,6 +57,7 @@ class SSOSessionResponse(BaseModel):
 
 class SSOCallbackRequest(BaseModel):
     """SSO callback request."""
+
     code: Optional[str] = None
     state: str
     error: Optional[str] = None
@@ -63,6 +66,7 @@ class SSOCallbackRequest(BaseModel):
 
 class SSOUserInfo(BaseModel):
     """SSO user information."""
+
     sub: str  # Subject/unique ID
     email: str
     name: Optional[str] = None
@@ -76,6 +80,7 @@ class SSOUserInfo(BaseModel):
 
 class SSOProviderResponse(BaseModel):
     """SSO provider response."""
+
     id: str
     name: str
     provider_type: str
@@ -101,7 +106,7 @@ async_runtime = LocalRuntime(enable_async=True, debug=False)
 async def create_sso_provider(provider_data: SSOProviderCreateRequest):
     """
     Create a new SSO provider configuration.
-    
+
     Features beyond Django:
     - Multiple provider types (SAML, OAuth2, etc.)
     - Domain-based access control
@@ -111,11 +116,14 @@ async def create_sso_provider(provider_data: SSOProviderCreateRequest):
     """
     try:
         builder = WorkflowBuilder("create_sso_provider_workflow")
-        
+
         # Validate provider configuration
-        builder.add_node("PythonCodeNode", "validate_provider", {
-            "name": "validate_sso_provider",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_provider",
+            {
+                "name": "validate_sso_provider",
+                "code": """
 # Validate SSO provider configuration
 errors = []
 provider = provider_data
@@ -142,27 +150,36 @@ result = {
         "provider_data": provider
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Test provider connectivity
-        builder.add_node("HTTPRequestNode", "test_connectivity", {
-            "name": "test_sso_connectivity",
-            "method": "GET",
-            "timeout": 5000,
-            "validate_ssl": True
-        })
-        
+        builder.add_node(
+            "HTTPRequestNode",
+            "test_connectivity",
+            {
+                "name": "test_sso_connectivity",
+                "method": "GET",
+                "timeout": 5000,
+                "validate_ssl": True,
+            },
+        )
+
         # Encrypt sensitive data
-        builder.add_node("CredentialManagerNode", "encrypt_secrets", {
-            "operation": "encrypt",
-            "credential_type": "oauth_secret"
-        })
-        
+        builder.add_node(
+            "CredentialManagerNode",
+            "encrypt_secrets",
+            {"operation": "encrypt", "credential_type": "oauth_secret"},
+        )
+
         # Create provider record
-        builder.add_node("PythonCodeNode", "create_provider", {
-            "name": "create_sso_provider_record",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_provider",
+            {
+                "name": "create_sso_provider_record",
+                "code": """
 # Create SSO provider
 import uuid
 from datetime import datetime
@@ -198,61 +215,80 @@ provider = {
 }
 
 result = {"result": provider}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit creation
-        builder.add_node("AuditLogNode", "audit_creation", {
-            "operation": "log_event",
-            "event_type": "sso_provider_created",
-            "severity": "high"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_creation",
+            {
+                "operation": "log_event",
+                "event_type": "sso_provider_created",
+                "severity": "high",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_provider", "result", "test_connectivity", "validation")
-        builder.add_connection("test_connectivity", "response", "encrypt_secrets", "connectivity_test")
-        builder.add_connection("validate_provider", "result.provider_data", "encrypt_secrets", "data")
-        builder.add_connection("encrypt_secrets", "result", "create_provider", "encryption_result")
-        builder.add_connection("validate_provider", "result.provider_data", "create_provider", "provider_data")
-        builder.add_connection("create_provider", "result", "audit_creation", "resource")
-        
+        builder.add_connection(
+            "validate_provider", "result", "test_connectivity", "validation"
+        )
+        builder.add_connection(
+            "test_connectivity", "response", "encrypt_secrets", "connectivity_test"
+        )
+        builder.add_connection(
+            "validate_provider", "result.provider_data", "encrypt_secrets", "data"
+        )
+        builder.add_connection(
+            "encrypt_secrets", "result", "create_provider", "encryption_result"
+        )
+        builder.add_connection(
+            "validate_provider",
+            "result.provider_data",
+            "create_provider",
+            "provider_data",
+        )
+        builder.add_connection(
+            "create_provider", "result", "audit_creation", "resource"
+        )
+
         # Execute workflow
         workflow = builder.build()
-        
+
         # Set URL for connectivity test based on provider type
         test_url = provider_data.metadata_url or provider_data.authorization_url
-        
+
         results, execution_id = await async_runtime.execute(
             workflow,
             parameters={
                 "provider_data": provider_data.dict(),
-                "url": str(test_url) if test_url else None
-            }
+                "url": str(test_url) if test_url else None,
+            },
         )
-        
+
         # Check validation
         validation = results.get("validate_provider", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(
-                status_code=400,
-                detail={"errors": validation.get("errors", [])}
+                status_code=400, detail={"errors": validation.get("errors", [])}
             )
-        
+
         # Get created provider
         provider = results.get("create_provider", {}).get("result", {})
-        
+
         # Broadcast creation event
         await agent_ui.realtime.broadcast_event(
             WorkflowEvent(
                 type=EventType.SSO_PROVIDER_CREATED,
                 workflow_id="create_sso_provider_workflow",
                 execution_id=execution_id,
-                data={"provider": provider}
+                data={"provider": provider},
             )
         )
-        
+
         return SSOProviderResponse(**provider)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -263,20 +299,23 @@ result = {"result": provider}
 async def initiate_sso(
     provider_id: str,
     redirect_uri: str = Query(..., description="Redirect URI after authentication"),
-    request: Request = None
+    request: Request = None,
 ):
     """
     Initiate SSO authentication flow.
-    
+
     Creates a secure session and returns the authorization URL.
     """
     try:
         builder = WorkflowBuilder("initiate_sso_workflow")
-        
+
         # Get provider configuration
-        builder.add_node("PythonCodeNode", "get_provider", {
-            "name": "get_sso_provider",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "get_provider",
+            {
+                "name": "get_sso_provider",
+                "code": f"""
 # Get SSO provider configuration
 # In real implementation, would fetch from database
 provider = {{
@@ -292,13 +331,17 @@ if not provider.get("is_active"):
     raise ValueError("SSO provider is not active")
 
 result = {{"result": {{"provider": provider}}}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate secure session
-        builder.add_node("PythonCodeNode", "create_session", {
-            "name": "create_sso_session",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_session",
+            {
+                "name": "create_sso_session",
+                "code": """
 # Create SSO session
 import secrets
 import base64
@@ -319,13 +362,17 @@ session = {
 }
 
 result = {"result": {"session": session, "state": state}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Build authorization URL
-        builder.add_node("PythonCodeNode", "build_auth_url", {
-            "name": "build_authorization_url",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "build_auth_url",
+            {
+                "name": "build_authorization_url",
+                "code": """
 # Build authorization URL
 from urllib.parse import urlencode
 
@@ -357,44 +404,59 @@ result = {
         "session_id": session_data["session"]["session_id"]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit SSO initiation
-        builder.add_node("AuditLogNode", "audit_initiation", {
-            "operation": "log_event",
-            "event_type": "sso_initiated",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_initiation",
+            {
+                "operation": "log_event",
+                "event_type": "sso_initiated",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("get_provider", "result", "create_session", "provider_data")
-        builder.add_connection("create_session", "result", "build_auth_url", "session_data")
-        builder.add_connection("get_provider", "result", "build_auth_url", "provider_data")
-        builder.add_connection("build_auth_url", "result", "audit_initiation", "sso_data")
-        
+        builder.add_connection(
+            "get_provider", "result", "create_session", "provider_data"
+        )
+        builder.add_connection(
+            "create_session", "result", "build_auth_url", "session_data"
+        )
+        builder.add_connection(
+            "get_provider", "result", "build_auth_url", "provider_data"
+        )
+        builder.add_connection(
+            "build_auth_url", "result", "audit_initiation", "sso_data"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
             workflow,
             parameters={
                 "redirect_uri": redirect_uri,
-                "request_ip": request.client.host if request else "unknown"
-            }
+                "request_ip": request.client.host if request else "unknown",
+            },
         )
-        
+
         # Get authorization URL and session
         auth_data = results.get("build_auth_url", {}).get("result", {})
-        session_data = results.get("create_session", {}).get("result", {}).get("session", {})
-        
+        session_data = (
+            results.get("create_session", {}).get("result", {}).get("session", {})
+        )
+
         return SSOSessionResponse(
             session_id=auth_data["session_id"],
             provider=provider_id,
             authorization_url=auth_data["authorization_url"],
             state=session_data["state"],
-            expires_at=session_data["expires_at"]
+            expires_at=session_data["expires_at"],
         )
-        
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -402,13 +464,10 @@ result = {
 
 
 @router.post("/callback/{provider_id}")
-async def sso_callback(
-    provider_id: str,
-    callback_data: SSOCallbackRequest
-):
+async def sso_callback(provider_id: str, callback_data: SSOCallbackRequest):
     """
     Handle SSO callback from provider.
-    
+
     Validates the callback, exchanges code for tokens, and creates/updates user.
     """
     try:
@@ -416,15 +475,18 @@ async def sso_callback(
         if callback_data.error:
             raise HTTPException(
                 status_code=400,
-                detail=f"SSO error: {callback_data.error} - {callback_data.error_description}"
+                detail=f"SSO error: {callback_data.error} - {callback_data.error_description}",
             )
-        
+
         builder = WorkflowBuilder("sso_callback_workflow")
-        
+
         # Validate state parameter
-        builder.add_node("PythonCodeNode", "validate_state", {
-            "name": "validate_sso_state",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_state",
+            {
+                "name": "validate_sso_state",
+                "code": """
 # Validate state parameter
 # In real implementation, would check against stored session
 import secrets
@@ -442,28 +504,35 @@ if not session_valid:
     raise ValueError("SSO session expired or invalid")
 
 result = {"result": {"valid": True}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Exchange code for tokens
-        builder.add_node("OAuth2Node", "exchange_code", {
-            "operation": "exchange_code",
-            "provider_id": provider_id
-        })
-        
+        builder.add_node(
+            "OAuth2Node",
+            "exchange_code",
+            {"operation": "exchange_code", "provider_id": provider_id},
+        )
+
         # Get user info from provider
-        builder.add_node("HTTPRequestNode", "get_userinfo", {
-            "name": "get_sso_userinfo",
-            "method": "GET",
-            "headers": {
-                "Authorization": "Bearer {access_token}"
-            }
-        })
-        
+        builder.add_node(
+            "HTTPRequestNode",
+            "get_userinfo",
+            {
+                "name": "get_sso_userinfo",
+                "method": "GET",
+                "headers": {"Authorization": "Bearer {access_token}"},
+            },
+        )
+
         # Process user data
-        builder.add_node("PythonCodeNode", "process_userinfo", {
-            "name": "process_sso_userinfo",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "process_userinfo",
+            {
+                "name": "process_sso_userinfo",
+                "code": """
 # Process user info from SSO provider
 import json
 
@@ -490,18 +559,24 @@ email_domain = "@" + user_data["email"].split("@")[-1]
 # In real impl, would check against provider's domain_whitelist
 
 result = {"result": {"user_data": user_data}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Create or update user
-        builder.add_node("UserManagementNode", "upsert_user", {
-            "operation": "create_or_update_sso_user"
-        })
-        
+        builder.add_node(
+            "UserManagementNode",
+            "upsert_user",
+            {"operation": "create_or_update_sso_user"},
+        )
+
         # Create authentication token
-        builder.add_node("PythonCodeNode", "create_token", {
-            "name": "create_auth_token",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_token",
+            {
+                "name": "create_auth_token",
+                "code": """
 # Create JWT token for user
 import jwt
 import secrets
@@ -529,24 +604,35 @@ result = {
         "user": user
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit successful login
-        builder.add_node("AuditLogNode", "audit_login", {
-            "operation": "log_event",
-            "event_type": "sso_login_success",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_login",
+            {
+                "operation": "log_event",
+                "event_type": "sso_login_success",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_state", "result", "exchange_code", "state_validation")
+        builder.add_connection(
+            "validate_state", "result", "exchange_code", "state_validation"
+        )
         builder.add_connection("exchange_code", "tokens", "get_userinfo", "token_data")
-        builder.add_connection("get_userinfo", "response", "process_userinfo", "userinfo_response")
-        builder.add_connection("process_userinfo", "result.user_data", "upsert_user", "sso_user_data")
+        builder.add_connection(
+            "get_userinfo", "response", "process_userinfo", "userinfo_response"
+        )
+        builder.add_connection(
+            "process_userinfo", "result.user_data", "upsert_user", "sso_user_data"
+        )
         builder.add_connection("upsert_user", "user", "create_token", "user")
         builder.add_connection("create_token", "result", "audit_login", "login_data")
-        
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = await async_runtime.execute(
@@ -554,28 +640,25 @@ result = {
             parameters={
                 "state": callback_data.state,
                 "code": callback_data.code,
-                "provider_id": provider_id
-            }
+                "provider_id": provider_id,
+            },
         )
-        
+
         # Get authentication result
         auth_result = results.get("create_token", {}).get("result", {})
-        
+
         # Broadcast successful SSO login
         await agent_ui.realtime.broadcast_event(
             WorkflowEvent(
                 type=EventType.SSO_LOGIN_SUCCESS,
                 workflow_id="sso_callback_workflow",
                 execution_id=execution_id,
-                data={
-                    "user_id": auth_result["user"]["id"],
-                    "provider": provider_id
-                }
+                data={"user_id": auth_result["user"]["id"], "provider": provider_id},
             )
         )
-        
+
         return auth_result
-        
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except HTTPException:
@@ -590,16 +673,19 @@ async def list_sso_providers(
 ):
     """
     List all configured SSO providers.
-    
+
     Shows provider status, usage statistics, and health metrics.
     """
     try:
         builder = WorkflowBuilder("list_sso_providers_workflow")
-        
+
         # Get providers from database
-        builder.add_node("PythonCodeNode", "get_providers", {
-            "name": "get_all_providers",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "get_providers",
+            {
+                "name": "get_all_providers",
+                "code": f"""
 # Get SSO providers
 # In real implementation, would query database
 from datetime import datetime, timedelta
@@ -654,13 +740,17 @@ if not {include_inactive}:
     providers = [p for p in providers if p["is_active"]]
 
 result = {{"result": {{"providers": providers}}}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Check provider health
-        builder.add_node("PythonCodeNode", "check_health", {
-            "name": "check_provider_health",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "check_health",
+            {
+                "name": "check_provider_health",
+                "code": """
 # Check health status of each provider
 import random
 
@@ -672,44 +762,49 @@ for provider in providers:
         health_status = "degraded"
     elif not provider["last_used"]:
         health_status = "unknown"
-    
+
     provider["health_status"] = health_status
     provider["response_time_ms"] = random.randint(50, 200) if health_status == "healthy" else random.randint(200, 1000)
-    
+
     providers_with_health.append(provider)
 
 result = {"result": {"providers": providers_with_health}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("get_providers", "result.providers", "check_health", "providers")
-        
+        builder.add_connection(
+            "get_providers", "result.providers", "check_health", "providers"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
-        providers = results.get("check_health", {}).get("result", {}).get("providers", [])
-        
+
+        providers = (
+            results.get("check_health", {}).get("result", {}).get("providers", [])
+        )
+
         return [SSOProviderResponse(**p) for p in providers]
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.put("/providers/{provider_id}")
-async def update_sso_provider(
-    provider_id: str,
-    updates: Dict[str, Any]
-):
+async def update_sso_provider(provider_id: str, updates: Dict[str, Any]):
     """Update SSO provider configuration."""
     try:
         builder = WorkflowBuilder("update_sso_provider_workflow")
-        
+
         # Validate updates
-        builder.add_node("PythonCodeNode", "validate_updates", {
-            "name": "validate_provider_updates",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_updates",
+            {
+                "name": "validate_provider_updates",
+                "code": """
 # Validate SSO provider updates
 errors = []
 
@@ -729,13 +824,17 @@ result = {
         "errors": errors
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Apply updates
-        builder.add_node("PythonCodeNode", "apply_updates", {
-            "name": "update_provider_config",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "apply_updates",
+            {
+                "name": "update_provider_config",
+                "code": """
 # Apply updates to provider
 from datetime import datetime
 
@@ -754,13 +853,17 @@ for key, value in updates.items():
 current_provider["updated_at"] = datetime.now()
 
 result = {"result": {"provider": current_provider}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Test connectivity if URLs changed
-        builder.add_node("PythonCodeNode", "test_if_needed", {
-            "name": "test_connectivity_if_needed",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "test_if_needed",
+            {
+                "name": "test_connectivity_if_needed",
+                "code": """
 # Test connectivity if URLs were updated
 should_test = any(key in updates for key in ["authorization_url", "token_url", "metadata_url"])
 
@@ -771,47 +874,55 @@ else:
     test_result = {"skipped": True}
 
 result = {"result": {"test_result": test_result}}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit update
-        builder.add_node("AuditLogNode", "audit_update", {
-            "operation": "log_event",
-            "event_type": "sso_provider_updated",
-            "severity": "medium"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_update",
+            {
+                "operation": "log_event",
+                "event_type": "sso_provider_updated",
+                "severity": "medium",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("validate_updates", "result", "apply_updates", "validation")
-        builder.add_connection("apply_updates", "result", "test_if_needed", "updated_provider")
-        builder.add_connection("test_if_needed", "result", "audit_update", "test_result")
-        
+        builder.add_connection(
+            "validate_updates", "result", "apply_updates", "validation"
+        )
+        builder.add_connection(
+            "apply_updates", "result", "test_if_needed", "updated_provider"
+        )
+        builder.add_connection(
+            "test_if_needed", "result", "audit_update", "test_result"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={
-                "provider_id": provider_id,
-                "updates": updates
-            }
+            workflow, parameters={"provider_id": provider_id, "updates": updates}
         )
-        
+
         # Check validation
         validation = results.get("validate_updates", {}).get("result", {})
         if not validation.get("valid"):
             raise HTTPException(
-                status_code=400,
-                detail={"errors": validation.get("errors", [])}
+                status_code=400, detail={"errors": validation.get("errors", [])}
             )
-        
+
         updated = results.get("apply_updates", {}).get("result", {}).get("provider", {})
-        
+
         return {
             "success": True,
             "provider": updated,
-            "connectivity_test": results.get("test_if_needed", {}).get("result", {}).get("test_result", {})
+            "connectivity_test": results.get("test_if_needed", {})
+            .get("result", {})
+            .get("test_result", {}),
         }
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -822,16 +933,19 @@ result = {"result": {"test_result": test_result}}
 async def delete_sso_provider(provider_id: str):
     """
     Delete SSO provider.
-    
+
     Checks for active users and provides migration options.
     """
     try:
         builder = WorkflowBuilder("delete_sso_provider_workflow")
-        
+
         # Check impact
-        builder.add_node("PythonCodeNode", "check_impact", {
-            "name": "check_deletion_impact",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "check_impact",
+            {
+                "name": "check_deletion_impact",
+                "code": """
 # Check impact of deleting SSO provider
 # In real implementation, would query user database
 impact = {
@@ -848,13 +962,17 @@ result = {
         "impact": impact
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Delete if allowed
-        builder.add_node("PythonCodeNode", "delete_provider", {
-            "name": "delete_sso_provider",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "delete_provider",
+            {
+                "name": "delete_sso_provider",
+                "code": """
 # Delete SSO provider
 from datetime import datetime
 
@@ -870,37 +988,45 @@ result = {
         "migration_required": impact_check["impact"]["active_users"] > 0
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit deletion
-        builder.add_node("AuditLogNode", "audit_deletion", {
-            "operation": "log_event",
-            "event_type": "sso_provider_deleted",
-            "severity": "high"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_deletion",
+            {
+                "operation": "log_event",
+                "event_type": "sso_provider_deleted",
+                "severity": "high",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("check_impact", "result", "delete_provider", "impact_check")
-        builder.add_connection("delete_provider", "result", "audit_deletion", "deletion")
-        
+        builder.add_connection(
+            "check_impact", "result", "delete_provider", "impact_check"
+        )
+        builder.add_connection(
+            "delete_provider", "result", "audit_deletion", "deletion"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={"provider_id": provider_id}
+            workflow, parameters={"provider_id": provider_id}
         )
-        
+
         impact = results.get("check_impact", {}).get("result", {})
         deletion = results.get("delete_provider", {}).get("result", {})
-        
+
         return {
             "success": True,
             "message": "SSO provider deleted",
             "impact": impact.get("impact", {}),
-            "deleted_at": deletion.get("deleted_at")
+            "deleted_at": deletion.get("deleted_at"),
         }
-        
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -909,26 +1035,31 @@ result = {
 
 @router.get("/providers/{provider_id}/users")
 async def get_provider_users(
-    provider_id: str,
-    page: int = Query(1, ge=1),
-    limit: int = Query(50, ge=1, le=200)
+    provider_id: str, page: int = Query(1, ge=1), limit: int = Query(50, ge=1, le=200)
 ):
     """Get all users using this SSO provider."""
     try:
         builder = WorkflowBuilder("get_provider_users_workflow")
-        
+
         # Query users
-        builder.add_node("UserManagementNode", "get_sso_users", {
-            "operation": "list_users_by_sso_provider",
-            "provider_id": provider_id,
-            "page": page,
-            "limit": limit
-        })
-        
+        builder.add_node(
+            "UserManagementNode",
+            "get_sso_users",
+            {
+                "operation": "list_users_by_sso_provider",
+                "provider_id": provider_id,
+                "page": page,
+                "limit": limit,
+            },
+        )
+
         # Add usage analytics
-        builder.add_node("PythonCodeNode", "analyze_usage", {
-            "name": "analyze_sso_usage",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_usage",
+            {
+                "name": "analyze_sso_usage",
+                "code": """
 # Analyze SSO usage patterns
 users = user_list.get("users", [])
 
@@ -957,26 +1088,23 @@ result = {
         }
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
         builder.add_connection("get_sso_users", "result", "analyze_usage", "user_list")
-        
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={
-                "page": page,
-                "limit": limit
-            }
+            workflow, parameters={"page": page, "limit": limit}
         )
-        
+
         usage_data = results.get("analyze_usage", {}).get("result", {})
-        
+
         return usage_data
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -985,30 +1113,38 @@ result = {
 async def test_sso_connection(provider_id: str):
     """
     Test SSO provider connectivity and configuration.
-    
+
     Performs comprehensive health checks beyond Django Admin.
     """
     try:
         builder = WorkflowBuilder("test_sso_connection_workflow")
-        
+
         # Test connectivity
-        builder.add_node("HTTPRequestNode", "test_endpoints", {
-            "name": "test_provider_endpoints",
-            "method": "GET",
-            "timeout": 5000,
-            "validate_ssl": True
-        })
-        
+        builder.add_node(
+            "HTTPRequestNode",
+            "test_endpoints",
+            {
+                "name": "test_provider_endpoints",
+                "method": "GET",
+                "timeout": 5000,
+                "validate_ssl": True,
+            },
+        )
+
         # Test authentication flow
-        builder.add_node("OAuth2Node", "test_auth_flow", {
-            "operation": "test_authorization",
-            "provider_id": provider_id
-        })
-        
+        builder.add_node(
+            "OAuth2Node",
+            "test_auth_flow",
+            {"operation": "test_authorization", "provider_id": provider_id},
+        )
+
         # Validate configuration
-        builder.add_node("PythonCodeNode", "validate_config", {
-            "name": "validate_provider_config",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_config",
+            {
+                "name": "validate_provider_config",
+                "code": """
 # Validate provider configuration
 from datetime import datetime
 
@@ -1040,32 +1176,40 @@ result = {
         "response_time_ms": connectivity_result.get("response_time_ms", 0)
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit test
-        builder.add_node("AuditLogNode", "audit_test", {
-            "operation": "log_event",
-            "event_type": "sso_provider_tested",
-            "severity": "info"
-        })
-        
+        builder.add_node(
+            "AuditLogNode",
+            "audit_test",
+            {
+                "operation": "log_event",
+                "event_type": "sso_provider_tested",
+                "severity": "info",
+            },
+        )
+
         # Connect nodes
-        builder.add_connection("test_endpoints", "response", "validate_config", "connectivity_result")
-        builder.add_connection("test_auth_flow", "result", "validate_config", "auth_result")
+        builder.add_connection(
+            "test_endpoints", "response", "validate_config", "connectivity_result"
+        )
+        builder.add_connection(
+            "test_auth_flow", "result", "validate_config", "auth_result"
+        )
         builder.add_connection("validate_config", "result", "audit_test", "test_result")
-        
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(
-            workflow,
-            parameters={"provider_id": provider_id}
+            workflow, parameters={"provider_id": provider_id}
         )
-        
+
         test_result = results.get("validate_config", {}).get("result", {})
-        
+
         return test_result
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -1074,16 +1218,19 @@ result = {
 async def get_service_provider_metadata():
     """
     Get Service Provider metadata for SAML configuration.
-    
+
     Returns SP metadata XML that can be imported into IdP.
     """
     try:
         builder = WorkflowBuilder("get_sp_metadata_workflow")
-        
+
         # Generate SP metadata
-        builder.add_node("PythonCodeNode", "generate_metadata", {
-            "name": "generate_sp_metadata",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_metadata",
+            {
+                "name": "generate_sp_metadata",
+                "code": """
 # Generate SAML SP metadata
 from datetime import datetime
 import uuid
@@ -1126,21 +1273,22 @@ result = {
         "generated_at": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, _ = await async_runtime.execute(workflow)
-        
+
         metadata = results.get("generate_metadata", {}).get("result", {})
-        
+
         return {
             "content_type": "application/xml",
             "metadata": metadata["metadata_xml"],
             "download_filename": "sp-metadata.xml",
-            "entity_id": metadata["entity_id"]
+            "entity_id": metadata["entity_id"],
         }
-        
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

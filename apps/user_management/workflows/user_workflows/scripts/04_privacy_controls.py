@@ -10,26 +10,30 @@ This workflow handles privacy management including:
 - Data sharing controls
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class PrivacyControlsWorkflow:
     """
     Complete privacy controls workflow for end users.
     """
-    
+
     def __init__(self, user_id: str = "user"):
         """
         Initialize the privacy controls workflow.
-        
+
         Args:
             user_id: ID of the user managing privacy settings
         """
@@ -39,38 +43,46 @@ class PrivacyControlsWorkflow:
             user_id=user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def configure_privacy_settings(self, privacy_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def configure_privacy_settings(
+        self, privacy_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Configure comprehensive privacy settings.
-        
+
         Args:
             privacy_config: Privacy configuration parameters
-            
+
         Returns:
             Privacy configuration results
         """
         print(f"🔒 Configuring privacy settings for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("privacy_settings_configuration")
-        
+
         # Validate privacy settings input
         validation_rules = {
             "data_collection_consent": {"required": True, "type": "str"},
             "marketing_consent": {"required": False, "type": "str"},
             "analytics_consent": {"required": False, "type": "str"},
-            "profile_visibility": {"required": False, "type": "str"}
+            "profile_visibility": {"required": False, "type": "str"},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_privacy_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_privacy_input",
+            create_validation_node(validation_rules),
+        )
+
         # Configure comprehensive privacy controls
-        builder.add_node("PythonCodeNode", "configure_privacy", {
-            "name": "configure_user_privacy_settings",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "configure_privacy",
+            {
+                "name": "configure_user_privacy_settings",
+                "code": f"""
 from datetime import datetime, timedelta
 
 # Configure comprehensive privacy settings
@@ -139,7 +151,7 @@ processing_transparency = {{
             "automated_decisions": False
         }},
         {{
-            "category": "Usage Data", 
+            "category": "Usage Data",
             "examples": ["Login times", "Feature usage", "Preferences"],
             "purpose": "Service improvement and personalization",
             "automated_decisions": True
@@ -224,13 +236,17 @@ result = {{
         "next_review_date": (datetime.now() + timedelta(days=365)).isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate privacy dashboard
-        builder.add_node("PythonCodeNode", "generate_privacy_dashboard", {
-            "name": "generate_user_privacy_dashboard",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_privacy_dashboard",
+            {
+                "name": "generate_user_privacy_dashboard",
+                "code": """
 # Generate user privacy dashboard
 privacy_config = privacy_configuration
 
@@ -273,7 +289,7 @@ if consent_settings.get("analytics_data", {}).get("consent") == "granted":
 
 if consent_settings.get("marketing_data", {}).get("consent") == "granted":
     recommendations.append({
-        "priority": "low", 
+        "priority": "low",
         "action": "Review marketing preferences",
         "description": "Fine-tune which communications you receive",
         "impact": "Reduced communication volume"
@@ -332,39 +348,50 @@ result = {
         "privacy_health": "good" if privacy_score >= 60 else "needs_attention"
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect privacy configuration nodes
-        builder.add_connection("validate_privacy_input", "result", "configure_privacy", "validation_result")
-        builder.add_connection("configure_privacy", "result.result", "generate_privacy_dashboard", "privacy_configuration")
-        
+        builder.add_connection(
+            "validate_privacy_input", "result", "configure_privacy", "validation_result"
+        )
+        builder.add_connection(
+            "configure_privacy",
+            "result.result",
+            "generate_privacy_dashboard",
+            "privacy_configuration",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, privacy_config, "privacy_settings_configuration"
         )
-        
+
         return results
-    
+
     def manage_data_rights(self, rights_request: Dict[str, Any]) -> Dict[str, Any]:
         """
         Manage GDPR and privacy rights requests.
-        
+
         Args:
             rights_request: Rights request parameters
-            
+
         Returns:
             Rights management results
         """
         print(f"⚖️ Processing data rights request for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("data_rights_management")
-        
+
         # Process rights request
-        builder.add_node("PythonCodeNode", "process_rights_request", {
-            "name": "process_user_rights_request",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_rights_request",
+            {
+                "name": "process_user_rights_request",
+                "code": f"""
 # Process user data rights request
 request_data = {rights_request}
 right_type = request_data.get("right_type", "access")
@@ -425,7 +452,7 @@ if right_type not in available_rights:
     }}
 else:
     right_info = available_rights[right_type]
-    
+
     # Create rights request record
     request_record = {{
         "request_id": f"DR-{{datetime.now().strftime('%Y%m%d')}}-{{"{self.user_id}"[:8]}}",
@@ -446,7 +473,7 @@ else:
             else datetime.now()
         ).isoformat()
     }}
-    
+
     # Process specific rights
     if right_type == "access":
         # Data access - immediate processing
@@ -469,7 +496,7 @@ else:
         }}
         request_record["access_data"] = access_data
         request_record["status"] = "completed"
-    
+
     elif right_type == "portability":
         # Data portability - immediate processing
         portable_data = {{
@@ -487,7 +514,7 @@ else:
         }}
         request_record["portable_data"] = portable_data
         request_record["status"] = "completed"
-    
+
     elif right_type in ["rectification", "erasure", "restriction", "objection"]:
         # Rights requiring manual review
         request_record["status"] = "under_review"
@@ -497,7 +524,7 @@ else:
             "technical_feasibility": True,
             "impact_assessment": True
         }}
-    
+
     rights_processing = {{
         "status": "processed",
         "request_record": request_record,
@@ -513,13 +540,17 @@ result = {{
         "requires_follow_up": right_type in ["rectification", "erasure", "restriction", "objection"]
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate rights fulfillment
-        builder.add_node("PythonCodeNode", "fulfill_rights_request", {
-            "name": "fulfill_data_rights_request",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "fulfill_rights_request",
+            {
+                "name": "fulfill_data_rights_request",
+                "code": """
 # Fulfill the data rights request
 rights_processing = rights_request_processing
 
@@ -527,7 +558,7 @@ if rights_processing.get("rights_request_processed"):
     request_details = rights_processing.get("request_details", {})
     request_record = request_details.get("request_record", {})
     right_type = request_record.get("right_type")
-    
+
     # Generate fulfillment documentation
     fulfillment = {
         "request_id": request_record.get("request_id"),
@@ -537,7 +568,7 @@ if rights_processing.get("rights_request_processed"):
         "legal_basis_review": "completed",
         "data_subject_notified": True
     }
-    
+
     # Type-specific fulfillment
     if right_type == "access":
         fulfillment.update({
@@ -546,7 +577,7 @@ if rights_processing.get("rights_request_processed"):
             "completeness": "full",
             "delivery_method": "secure_download"
         })
-    
+
     elif right_type == "portability":
         fulfillment.update({
             "data_exported": True,
@@ -554,7 +585,7 @@ if rights_processing.get("rights_request_processed"):
             "portability_compliant": True,
             "delivery_method": "secure_download"
         })
-    
+
     elif right_type in ["rectification", "erasure", "restriction", "objection"]:
         fulfillment.update({
             "review_completed": True,
@@ -562,7 +593,7 @@ if rights_processing.get("rights_request_processed"):
             "technical_implementation": "scheduled",
             "timeline": request_record.get("estimated_completion")
         })
-    
+
     # Audit trail
     audit_trail = {
         "request_received": request_record.get("submitted_at"),
@@ -572,7 +603,7 @@ if rights_processing.get("rights_request_processed"):
         "fulfillment_completed": datetime.now().isoformat() if right_type in ["access", "portability"] else None,
         "data_subject_notification": datetime.now().isoformat()
     }
-    
+
     # Follow-up actions
     follow_up_actions = []
     if right_type == "erasure":
@@ -588,7 +619,7 @@ if rights_processing.get("rights_request_processed"):
             "Update system access controls",
             "Notify relevant departments"
         ])
-    
+
 else:
     fulfillment = {"error": "Rights request could not be processed"}
     audit_trail = {}
@@ -603,38 +634,49 @@ result = {
         "compliance_confirmed": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect rights management nodes
-        builder.add_connection("process_rights_request", "result.result", "fulfill_rights_request", "rights_request_processing")
-        
+        builder.add_connection(
+            "process_rights_request",
+            "result.result",
+            "fulfill_rights_request",
+            "rights_request_processing",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, rights_request, "data_rights_management"
         )
-        
+
         return results
-    
-    def conduct_privacy_impact_assessment(self, assessment_trigger: Dict[str, Any]) -> Dict[str, Any]:
+
+    def conduct_privacy_impact_assessment(
+        self, assessment_trigger: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Conduct privacy impact assessment for user activities.
-        
+
         Args:
             assessment_trigger: Assessment trigger parameters
-            
+
         Returns:
             Privacy impact assessment results
         """
         print(f"📊 Conducting privacy impact assessment for user: {self.user_id}")
-        
+
         builder = self.runner.create_workflow("privacy_impact_assessment")
-        
+
         # Assess privacy impact
-        builder.add_node("PythonCodeNode", "assess_privacy_impact", {
-            "name": "conduct_privacy_impact_assessment",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "assess_privacy_impact",
+            {
+                "name": "conduct_privacy_impact_assessment",
+                "code": f"""
 # Conduct comprehensive privacy impact assessment
 trigger_data = {assessment_trigger}
 assessment_type = trigger_data.get("type", "routine")
@@ -754,13 +796,17 @@ result = {{
         "next_review_date": (datetime.now() + timedelta(days=180)).isoformat()
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate compliance recommendations
-        builder.add_node("PythonCodeNode", "generate_compliance_recommendations", {
-            "name": "generate_privacy_compliance_recommendations",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_compliance_recommendations",
+            {
+                "name": "generate_privacy_compliance_recommendations",
+                "code": """
 # Generate privacy compliance recommendations
 pia_results = privacy_impact_assessment
 
@@ -768,10 +814,10 @@ if pia_results.get("assessment_completed"):
     assessment_outcome = pia_results.get("assessment_outcome", {})
     risk_level = assessment_outcome.get("overall_risk_level")
     data_subject_impact = pia_results.get("data_subject_impact", {})
-    
+
     # Generate recommendations based on risk level
     recommendations = []
-    
+
     if risk_level == "high":
         recommendations.extend([
             {
@@ -789,7 +835,7 @@ if pia_results.get("assessment_completed"):
                 "compliance_requirement": "GDPR Article 32"
             }
         ])
-    
+
     if risk_level in ["high", "medium"]:
         recommendations.extend([
             {
@@ -807,7 +853,7 @@ if pia_results.get("assessment_completed"):
                 "compliance_requirement": "GDPR Article 5(2)"
             }
         ])
-    
+
     # Consent management recommendations
     if data_subject_impact.get("consent_renewal_needed"):
         recommendations.append({
@@ -817,8 +863,8 @@ if pia_results.get("assessment_completed"):
             "timeline": "before_implementation",
             "compliance_requirement": "GDPR Article 6-7"
         })
-    
-    # Rights management recommendations  
+
+    # Rights management recommendations
     if data_subject_impact.get("rights_affected"):
         recommendations.append({
             "priority": "medium",
@@ -827,7 +873,7 @@ if pia_results.get("assessment_completed"):
             "timeline": "14_days",
             "compliance_requirement": "GDPR Chapter 3"
         })
-    
+
     # Compliance monitoring
     monitoring_plan = {
         "regular_reviews": {
@@ -837,7 +883,7 @@ if pia_results.get("assessment_completed"):
         },
         "key_metrics": [
             "Data volume growth",
-            "Purpose creep incidents", 
+            "Purpose creep incidents",
             "Rights request volume",
             "Consent withdrawal rate",
             "Security incident frequency"
@@ -848,7 +894,7 @@ if pia_results.get("assessment_completed"):
             "consent_withdrawal_rate": "10%"
         }
     }
-    
+
     # Implementation roadmap
     implementation_roadmap = [
         {
@@ -857,7 +903,7 @@ if pia_results.get("assessment_completed"):
             "duration": "1-7 days"
         },
         {
-            "phase": "short_term", 
+            "phase": "short_term",
             "actions": [r for r in recommendations if r["priority"] == "high"],
             "duration": "1-4 weeks"
         },
@@ -884,32 +930,38 @@ result = {
         "compliance_status": "requires_action" if len(recommendations) > 0 else "compliant"
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect privacy assessment nodes
-        builder.add_connection("assess_privacy_impact", "result.result", "generate_compliance_recommendations", "privacy_impact_assessment")
-        
+        builder.add_connection(
+            "assess_privacy_impact",
+            "result.result",
+            "generate_compliance_recommendations",
+            "privacy_impact_assessment",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, assessment_trigger, "privacy_impact_assessment"
         )
-        
+
         return results
-    
+
     def run_comprehensive_privacy_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all privacy control operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Privacy Controls Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Configure privacy settings
             print("\n1. Configuring Privacy Settings...")
@@ -919,18 +971,20 @@ result = {
                 "analytics_consent": "denied",
                 "profile_visibility": "team_only",
                 "contact_sharing": False,
-                "activity_sharing": False
+                "activity_sharing": False,
             }
-            demo_results["privacy_configuration"] = self.configure_privacy_settings(privacy_config)
-            
+            demo_results["privacy_configuration"] = self.configure_privacy_settings(
+                privacy_config
+            )
+
             # 2. Process data rights request
             print("\n2. Processing Data Rights Request...")
             rights_request = {
                 "right_type": "access",
-                "reason": "Want to review my personal data"
+                "reason": "Want to review my personal data",
             }
             demo_results["rights_management"] = self.manage_data_rights(rights_request)
-            
+
             # 3. Conduct privacy impact assessment
             print("\n3. Conducting Privacy Impact Assessment...")
             assessment_trigger = {
@@ -938,47 +992,70 @@ result = {
                 "event": "new_feature_adoption",
                 "new_data_points": 5,
                 "new_purposes": ["personalization"],
-                "automation_level": "medium"
+                "automation_level": "medium",
             }
-            demo_results["privacy_assessment"] = self.conduct_privacy_impact_assessment(assessment_trigger)
-            
+            demo_results["privacy_assessment"] = self.conduct_privacy_impact_assessment(
+                assessment_trigger
+            )
+
             # Print comprehensive summary
             self.print_privacy_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Privacy controls demonstration failed: {str(e)}")
             raise
-    
+
     def print_privacy_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive privacy controls summary.
-        
+
         Args:
             results: Privacy controls results from all workflows
         """
         print("\n" + "=" * 70)
         print("PRIVACY CONTROLS DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Privacy configuration summary
-        config_result = results.get("privacy_configuration", {}).get("generate_privacy_dashboard", {}).get("result", {}).get("result", {})
+        config_result = (
+            results.get("privacy_configuration", {})
+            .get("generate_privacy_dashboard", {})
+            .get("result", {})
+            .get("result", {})
+        )
         privacy_dashboard = config_result.get("privacy_dashboard", {})
-        print(f"🔒 Privacy Score: {privacy_dashboard.get('privacy_score', 0)}/100 ({privacy_dashboard.get('privacy_level', 'unknown')})")
-        
+        print(
+            f"🔒 Privacy Score: {privacy_dashboard.get('privacy_score', 0)}/100 ({privacy_dashboard.get('privacy_level', 'unknown')})"
+        )
+
         # Rights management summary
-        rights_result = results.get("rights_management", {}).get("process_rights_request", {}).get("result", {}).get("result", {})
-        print(f"⚖️ Rights Request: {rights_result.get('request_details', {}).get('request_record', {}).get('status', 'unknown')}")
-        
+        rights_result = (
+            results.get("rights_management", {})
+            .get("process_rights_request", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"⚖️ Rights Request: {rights_result.get('request_details', {}).get('request_record', {}).get('status', 'unknown')}"
+        )
+
         # Privacy assessment summary
-        assessment_result = results.get("privacy_assessment", {}).get("assess_privacy_impact", {}).get("result", {}).get("result", {})
-        risk_level = assessment_result.get("assessment_outcome", {}).get("overall_risk_level", "unknown")
+        assessment_result = (
+            results.get("privacy_assessment", {})
+            .get("assess_privacy_impact", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        risk_level = assessment_result.get("assessment_outcome", {}).get(
+            "overall_risk_level", "unknown"
+        )
         print(f"📊 Privacy Risk: {risk_level} risk level identified")
-        
+
         print("\n🎉 All privacy control operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -986,34 +1063,39 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the privacy controls workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Privacy Controls Workflow...")
-        
+
         # Create test workflow
         privacy_controls = PrivacyControlsWorkflow("test_user")
-        
+
         # Test privacy configuration
         test_privacy_config = {
             "data_collection_consent": "granted",
             "marketing_consent": "denied",
             "analytics_consent": "denied",
-            "profile_visibility": "private"
+            "profile_visibility": "private",
         }
-        
+
         result = privacy_controls.configure_privacy_settings(test_privacy_config)
-        if not result.get("configure_privacy", {}).get("result", {}).get("result", {}).get("privacy_configured"):
+        if (
+            not result.get("configure_privacy", {})
+            .get("result", {})
+            .get("result", {})
+            .get("privacy_configured")
+        ):
             return False
-        
+
         print("✅ Privacy controls workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Privacy controls workflow test failed: {str(e)}")
         return False
@@ -1027,7 +1109,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         privacy_controls = PrivacyControlsWorkflow()
-        
+
         try:
             results = privacy_controls.run_comprehensive_privacy_demo()
             print("🎉 Privacy controls demonstration completed successfully!")

@@ -110,8 +110,8 @@ Preset Configurations
 Development Preset
 ~~~~~~~~~~~~~~~~~~~
 
-**Target**: Local development and testing  
-**Cost**: Free (Ollama only)  
+**Target**: Local development and testing
+**Cost**: Free (Ollama only)
 **Performance**: Good for basic testing
 
 .. code-block:: text
@@ -131,8 +131,8 @@ Development Preset
 Balanced Preset
 ~~~~~~~~~~~~~~~
 
-**Target**: Production use with cost optimization  
-**Cost**: Medium (mix of local and API models)  
+**Target**: Production use with cost optimization
+**Cost**: Medium (mix of local and API models)
 **Performance**: Excellent balance of quality and cost
 
 .. code-block:: text
@@ -152,8 +152,8 @@ Balanced Preset
 Enterprise Preset
 ~~~~~~~~~~~~~~~~~~
 
-**Target**: Mission-critical applications  
-**Cost**: High (premium API models)  
+**Target**: Mission-critical applications
+**Cost**: High (premium API models)
 **Performance**: Maximum quality and comprehensive analysis
 
 .. code-block:: text
@@ -227,7 +227,7 @@ Environment-Based Configuration
    # Development environment
    export QA_MODEL_PRESET=development
 
-   # Staging environment  
+   # Staging environment
    export QA_MODEL_PRESET=balanced
    export QA_SECURITY_MODEL=openai/gpt-4
 
@@ -355,7 +355,7 @@ Cost Estimation
 
    # Compare presets
    qa-test models cost --preset development
-   qa-test models cost --preset balanced  
+   qa-test models cost --preset balanced
    qa-test models cost --preset enterprise
 
 Best Practices

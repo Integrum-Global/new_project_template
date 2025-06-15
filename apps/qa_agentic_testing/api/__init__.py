@@ -5,6 +5,6 @@ FastAPI-based REST interface for managing test projects, runs, and results.
 """
 
 from .main import app, create_app
-from .routes import projects, runs, results, analytics, reports
+from .routes import analytics, projects, reports, results, runs
 
 __all__ = ["app", "create_app"]

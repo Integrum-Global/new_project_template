@@ -9,26 +9,30 @@ This workflow handles permission and role management including:
 - Permission request processing
 """
 
-import sys
 import os
+import sys
 from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class PermissionAssignmentWorkflow:
     """
     Complete permission assignment workflow for department managers.
     """
-    
+
     def __init__(self, manager_user_id: str = "manager"):
         """
         Initialize the permission assignment workflow.
-        
+
         Args:
             manager_user_id: ID of the manager performing operations
         """
@@ -38,38 +42,46 @@ class PermissionAssignmentWorkflow:
             user_id=manager_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def assign_standard_roles(self, user_id: str, role_assignment: Dict[str, Any]) -> Dict[str, Any]:
+
+    def assign_standard_roles(
+        self, user_id: str, role_assignment: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Assign standard roles to team members.
-        
+
         Args:
             user_id: ID of the team member
             role_assignment: Role assignment details
-            
+
         Returns:
             Role assignment results
         """
         print(f"👤 Assigning roles to team member: {user_id}")
-        
+
         builder = self.runner.create_workflow("standard_role_assignment")
-        
+
         # Role validation
         validation_rules = {
             "roles": {"required": True, "type": list, "min_length": 1},
             "effective_date": {"required": False, "type": str},
-            "justification": {"required": True, "type": str, "min_length": 10}
+            "justification": {"required": True, "type": str, "min_length": 10},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_role_assignment", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_role_assignment",
+            create_validation_node(validation_rules),
+        )
+
         # Standard role assignment process
-        builder.add_node("PythonCodeNode", "assign_roles", {
-            "name": "assign_standard_roles_to_member",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "assign_roles",
+            {
+                "name": "assign_standard_roles_to_member",
+                "code": f"""
 from datetime import datetime, timedelta
 import random
 import string
@@ -129,11 +141,11 @@ assignment_errors = []
 for role in requested_roles:
     if role in assignable_roles:
         role_info = assignable_roles[role]
-        
+
         # Check prerequisites
-        missing_prereqs = [req for req in role_info["prerequisites"] 
+        missing_prereqs = [req for req in role_info["prerequisites"]
                           if req not in current_user_roles["current_roles"] + requested_roles]
-        
+
         if not missing_prereqs:
             assignment = {{
                 "role": role,
@@ -177,13 +189,17 @@ result = {{
         "effective_date": effective_date
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate role assignment notifications
-        builder.add_node("PythonCodeNode", "generate_role_notifications", {
-            "name": "generate_role_assignment_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_role_notifications",
+            {
+                "name": "generate_role_assignment_notifications",
+                "code": """
 # Generate notifications for role assignments
 role_assignment_data = role_assignment_result.get("successful_assignments", [])
 assignment_errors = role_assignment_result.get("assignment_errors", [])
@@ -238,46 +254,59 @@ result = {
     "result": {
         "notifications_generated": 3,
         "user_notification": user_notification,
-        "hr_notification": hr_notification, 
+        "hr_notification": hr_notification,
         "it_notification": it_notification,
         "audit_logged": True,
         "audit_record": audit_record
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect role assignment nodes
-        builder.add_connection("validate_role_assignment", "result", "assign_roles", "validation_result")
-        builder.add_connection("assign_roles", "result.result", "generate_role_notifications", "role_assignment_result")
-        
+        builder.add_connection(
+            "validate_role_assignment", "result", "assign_roles", "validation_result"
+        )
+        builder.add_connection(
+            "assign_roles",
+            "result.result",
+            "generate_role_notifications",
+            "role_assignment_result",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, role_assignment, "standard_role_assignment"
         )
-        
+
         return results
-    
-    def grant_temporary_access(self, user_id: str, temporary_request: Dict[str, Any]) -> Dict[str, Any]:
+
+    def grant_temporary_access(
+        self, user_id: str, temporary_request: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Grant temporary access permissions to team members.
-        
+
         Args:
             user_id: ID of the team member
             temporary_request: Temporary access request details
-            
+
         Returns:
             Temporary access grant results
         """
         print(f"⏰ Granting temporary access to team member: {user_id}")
-        
+
         builder = self.runner.create_workflow("temporary_access_grant")
-        
+
         # Temporary access processing
-        builder.add_node("PythonCodeNode", "process_temporary_access", {
-            "name": "process_temporary_access_request",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_temporary_access",
+            {
+                "name": "process_temporary_access_request",
+                "code": f"""
 import random
 import string
 
@@ -371,13 +400,17 @@ result = {{
         "requires_additional_approval": len(requires_additional_approval) > 0
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Set up monitoring and auto-revocation
-        builder.add_node("PythonCodeNode", "setup_temp_access_monitoring", {
-            "name": "setup_temporary_access_monitoring",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_temp_access_monitoring",
+            {
+                "name": "setup_temporary_access_monitoring",
+                "code": """
 # Set up monitoring for temporary access
 temp_grant = temp_access_processing.get("temp_access_grant", {})
 
@@ -456,39 +489,50 @@ result = {
         "monitoring_level": "enhanced"
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect temporary access nodes
-        builder.add_connection("process_temporary_access", "result.result", "setup_temp_access_monitoring", "temp_access_processing")
-        
+        builder.add_connection(
+            "process_temporary_access",
+            "result.result",
+            "setup_temp_access_monitoring",
+            "temp_access_processing",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, temporary_request, "temporary_access_grant"
         )
-        
+
         return results
-    
-    def manage_role_hierarchy(self, department_id: str, hierarchy_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def manage_role_hierarchy(
+        self, department_id: str, hierarchy_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Manage role hierarchy and delegation configurations.
-        
+
         Args:
             department_id: ID of the department
             hierarchy_config: Hierarchy configuration details
-            
+
         Returns:
             Role hierarchy management results
         """
         print(f"🏗️ Managing role hierarchy for department: {department_id}")
-        
+
         builder = self.runner.create_workflow("role_hierarchy_management")
-        
+
         # Role hierarchy setup
-        builder.add_node("PythonCodeNode", "setup_role_hierarchy", {
-            "name": "setup_department_role_hierarchy",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_role_hierarchy",
+            {
+                "name": "setup_department_role_hierarchy",
+                "code": f"""
 # Department role hierarchy configuration
 department_id = "{department_id}"
 hierarchy_config = {hierarchy_config}
@@ -543,7 +587,7 @@ for lead_config in team_leads:
         "team_members": lead_config.get("team_members", []),
         "responsibilities": [
             "Daily team coordination",
-            "Sprint planning participation", 
+            "Sprint planning participation",
             "Code review oversight",
             "Team member mentoring",
             "Performance feedback"
@@ -588,13 +632,17 @@ result = {{
         "team_assignments": team_lead_assignments
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Configure approval chains
-        builder.add_node("PythonCodeNode", "configure_approval_chains", {
-            "name": "configure_hierarchy_approval_chains",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "configure_approval_chains",
+            {
+                "name": "configure_hierarchy_approval_chains",
+                "code": """
 # Configure approval chains based on hierarchy
 hierarchy_data = hierarchy_setup.get("role_hierarchy", {})
 team_assignments = hierarchy_setup.get("team_assignments", [])
@@ -614,7 +662,7 @@ access_approval_chain = {
             "sla_hours": 24
         },
         {
-            "level": 2, 
+            "level": 2,
             "approver_role": "department_manager",
             "criteria": "elevated_access",
             "requires_justification": True,
@@ -649,7 +697,7 @@ role_approval_chain = {
         },
         {
             "level": 2,
-            "approver_role": "department_head", 
+            "approver_role": "department_head",
             "criteria": "leadership_roles",
             "can_approve": ["team_lead", "manager", "architect"],
             "requires_hr_consultation": True,
@@ -712,38 +760,49 @@ result = {
         "sla_compliance_monitoring": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect hierarchy management nodes
-        builder.add_connection("setup_role_hierarchy", "result.result", "configure_approval_chains", "hierarchy_setup")
-        
+        builder.add_connection(
+            "setup_role_hierarchy",
+            "result.result",
+            "configure_approval_chains",
+            "hierarchy_setup",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, hierarchy_config, "role_hierarchy_management"
         )
-        
+
         return results
-    
-    def process_permission_requests(self, requests: List[Dict[str, Any]]) -> Dict[str, Any]:
+
+    def process_permission_requests(
+        self, requests: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Process multiple permission requests from team members.
-        
+
         Args:
             requests: List of permission requests to process
-            
+
         Returns:
             Permission request processing results
         """
         print(f"📋 Processing {len(requests)} permission requests...")
-        
+
         builder = self.runner.create_workflow("permission_request_processing")
-        
+
         # Batch process permission requests
-        builder.add_node("PythonCodeNode", "batch_process_requests", {
-            "name": "batch_process_permission_requests",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "batch_process_requests",
+            {
+                "name": "batch_process_permission_requests",
+                "code": f"""
 # Process multiple permission requests
 requests_list = {requests}
 manager_id = "{self.manager_user_id}"
@@ -777,31 +836,31 @@ for i, request in enumerate(requests_list):
     permissions = request.get("permissions", [])
     justification = request.get("justification", "")
     duration_days = request.get("duration_days", 30)
-    
+
     # Evaluate request
     decision_type = "pending"
     decision_reason = ""
-    
+
     # Check for auto-approval
-    if all(perm in approval_criteria["auto_approve"]["standard_tools"] + 
+    if all(perm in approval_criteria["auto_approve"]["standard_tools"] +
            approval_criteria["auto_approve"]["development_tools"] for perm in permissions):
         if duration_days <= approval_criteria["auto_approve"]["max_duration_days"]:
             decision_type = "auto_approved"
             decision_reason = "Standard tools within approval limits"
-    
+
     # Check for escalation requirements
-    elif any(perm in approval_criteria["escalation_required"]["financial_systems"] + 
-             approval_criteria["escalation_required"]["security_systems"] + 
+    elif any(perm in approval_criteria["escalation_required"]["financial_systems"] +
+             approval_criteria["escalation_required"]["security_systems"] +
              approval_criteria["escalation_required"]["compliance_data"] for perm in permissions):
         decision_type = "escalation_required"
         decision_reason = "Requires security/compliance approval"
         escalation_required.append(request_id)
-    
+
     # Manager review required
     else:
         decision_type = "manager_review"
         decision_reason = "Requires manager evaluation"
-    
+
     # Process decision
     processed_request = {{
         "request_id": request_id,
@@ -816,7 +875,7 @@ for i, request in enumerate(requests_list):
         "status": "approved" if decision_type == "auto_approved" else "pending"
     }}
     processed_requests.append(processed_request)
-    
+
     # Create approval decision record
     approval_decision = {{
         "request_id": request_id,
@@ -832,7 +891,7 @@ for i, request in enumerate(requests_list):
 processing_summary = {{
     "total_requests": len(requests_list),
     "auto_approved": len([r for r in processed_requests if r["decision_type"] == "auto_approved"]),
-    "requiring_review": len([r for r in processed_requests if r["decision_type"] == "manager_review"]), 
+    "requiring_review": len([r for r in processed_requests if r["decision_type"] == "manager_review"]),
     "requiring_escalation": len(escalation_required),
     "processing_rate": len(processed_requests) / len(requests_list) * 100 if requests_list else 0
 }}
@@ -846,13 +905,17 @@ result = {{
         "escalation_required": escalation_required
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate batch notifications
-        builder.add_node("PythonCodeNode", "generate_batch_notifications", {
-            "name": "generate_batch_processing_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_batch_notifications",
+            {
+                "name": "generate_batch_processing_notifications",
+                "code": """
 # Generate notifications for batch processed requests
 processing_results = batch_processing.get("processed_requests", [])
 approval_decisions = batch_processing.get("approval_decisions", [])
@@ -918,58 +981,68 @@ result = {
     "result": {
         "notifications_generated": len(user_notifications) + len(it_notifications) + len(escalation_notifications),
         "user_notifications": len(user_notifications),
-        "it_notifications": len(it_notifications), 
+        "it_notifications": len(it_notifications),
         "escalation_notifications": len(escalation_notifications),
         "manager_summary": manager_summary,
         "batch_processing_complete": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect batch processing nodes
-        builder.add_connection("batch_process_requests", "result.result", "generate_batch_notifications", "batch_processing")
-        
+        builder.add_connection(
+            "batch_process_requests",
+            "result.result",
+            "generate_batch_notifications",
+            "batch_processing",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"requests": requests}, "permission_request_processing"
         )
-        
+
         return results
-    
+
     def run_comprehensive_permission_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all permission assignment operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive Permission Assignment Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Assign standard roles
             print("\n1. Assigning Standard Roles...")
             role_assignment = {
                 "roles": ["developer", "mentor"],
                 "effective_date": "2024-07-01",
-                "justification": "Promotion based on excellent performance and mentoring capabilities"
+                "justification": "Promotion based on excellent performance and mentoring capabilities",
             }
-            demo_results["role_assignment"] = self.assign_standard_roles("user_001", role_assignment)
-            
+            demo_results["role_assignment"] = self.assign_standard_roles(
+                "user_001", role_assignment
+            )
+
             # 2. Grant temporary access
             print("\n2. Granting Temporary Access...")
             temporary_request = {
                 "permissions": ["deploy_staging", "admin_panel"],
                 "duration_days": 5,
                 "justification": "Emergency production debugging access",
-                "project_code": "PROJ-2024-001"
+                "project_code": "PROJ-2024-001",
             }
-            demo_results["temporary_access"] = self.grant_temporary_access("user_002", temporary_request)
-            
+            demo_results["temporary_access"] = self.grant_temporary_access(
+                "user_002", temporary_request
+            )
+
             # 3. Manage role hierarchy
             print("\n3. Managing Role Hierarchy...")
             hierarchy_config = {
@@ -977,17 +1050,19 @@ result = {
                     {
                         "user_id": "user_003",
                         "team_name": "Frontend Team",
-                        "team_members": ["user_004", "user_005", "user_006"]
+                        "team_members": ["user_004", "user_005", "user_006"],
                     },
                     {
                         "user_id": "user_007",
-                        "team_name": "Backend Team", 
-                        "team_members": ["user_008", "user_009", "user_010"]
-                    }
+                        "team_name": "Backend Team",
+                        "team_members": ["user_008", "user_009", "user_010"],
+                    },
                 ]
             }
-            demo_results["hierarchy_management"] = self.manage_role_hierarchy("dept_engineering", hierarchy_config)
-            
+            demo_results["hierarchy_management"] = self.manage_role_hierarchy(
+                "dept_engineering", hierarchy_config
+            )
+
             # 4. Process permission requests
             print("\n4. Processing Permission Requests...")
             permission_requests = [
@@ -995,62 +1070,92 @@ result = {
                     "user_id": "user_011",
                     "permissions": ["jira", "confluence"],
                     "duration_days": 90,
-                    "justification": "New team member onboarding"
+                    "justification": "New team member onboarding",
                 },
                 {
                     "user_id": "user_012",
                     "permissions": ["production_access", "database_admin"],
                     "duration_days": 1,
-                    "justification": "Emergency production issue resolution"
+                    "justification": "Emergency production issue resolution",
                 },
                 {
                     "user_id": "user_013",
                     "permissions": ["github", "docker", "ci_cd"],
                     "duration_days": 30,
-                    "justification": "Development environment setup"
-                }
+                    "justification": "Development environment setup",
+                },
             ]
-            demo_results["permission_processing"] = self.process_permission_requests(permission_requests)
-            
+            demo_results["permission_processing"] = self.process_permission_requests(
+                permission_requests
+            )
+
             # Print comprehensive summary
             self.print_permission_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Permission assignment demonstration failed: {str(e)}")
             raise
-    
+
     def print_permission_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive permission assignment summary.
-        
+
         Args:
             results: Permission assignment results from all workflows
         """
         print("\n" + "=" * 70)
         print("PERMISSION ASSIGNMENT DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Role assignment summary
-        role_result = results.get("role_assignment", {}).get("assign_roles", {}).get("result", {}).get("result", {})
-        print(f"🎭 Roles: {role_result.get('roles_assigned', 0)} roles assigned successfully")
-        
+        role_result = (
+            results.get("role_assignment", {})
+            .get("assign_roles", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🎭 Roles: {role_result.get('roles_assigned', 0)} roles assigned successfully"
+        )
+
         # Temporary access summary
-        temp_result = results.get("temporary_access", {}).get("process_temporary_access", {}).get("result", {}).get("result", {})
-        print(f"⏰ Temporary: {temp_result.get('permissions_approved', 0)} permissions granted temporarily")
-        
+        temp_result = (
+            results.get("temporary_access", {})
+            .get("process_temporary_access", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"⏰ Temporary: {temp_result.get('permissions_approved', 0)} permissions granted temporarily"
+        )
+
         # Hierarchy management summary
-        hierarchy_result = results.get("hierarchy_management", {}).get("setup_role_hierarchy", {}).get("result", {}).get("result", {})
-        print(f"🏗️ Hierarchy: {hierarchy_result.get('team_leads_assigned', 0)} team leads assigned")
-        
+        hierarchy_result = (
+            results.get("hierarchy_management", {})
+            .get("setup_role_hierarchy", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🏗️ Hierarchy: {hierarchy_result.get('team_leads_assigned', 0)} team leads assigned"
+        )
+
         # Permission processing summary
-        processing_result = results.get("permission_processing", {}).get("batch_process_requests", {}).get("result", {}).get("result", {})
-        print(f"📋 Requests: {processing_result.get('requests_processed', 0)} permission requests processed")
-        
+        processing_result = (
+            results.get("permission_processing", {})
+            .get("batch_process_requests", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📋 Requests: {processing_result.get('requests_processed', 0)} permission requests processed"
+        )
+
         print("\n🎉 All permission assignment operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -1058,32 +1163,38 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the permission assignment workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing Permission Assignment Workflow...")
-        
+
         # Create test workflow
         permission_mgmt = PermissionAssignmentWorkflow("test_manager")
-        
+
         # Test role assignment
         test_assignment = {
             "roles": ["developer"],
-            "justification": "Test role assignment"
+            "justification": "Test role assignment",
         }
-        
+
         result = permission_mgmt.assign_standard_roles("test_user", test_assignment)
-        if not result.get("assign_roles", {}).get("result", {}).get("result", {}).get("roles_assigned", 0) > 0:
+        if (
+            not result.get("assign_roles", {})
+            .get("result", {})
+            .get("result", {})
+            .get("roles_assigned", 0)
+            > 0
+        ):
             return False
-        
+
         print("✅ Permission assignment workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ Permission assignment workflow test failed: {str(e)}")
         return False
@@ -1097,7 +1208,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         permission_mgmt = PermissionAssignmentWorkflow()
-        
+
         try:
             results = permission_mgmt.run_comprehensive_permission_demo()
             print("🎉 Permission assignment demonstration completed successfully!")

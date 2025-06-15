@@ -20,12 +20,12 @@ class UserProfile(BaseUserModel):
     employee_id = Column(String(50), unique=True)
     cost_center = Column(String(50))
     clearance_level = Column(Integer, default=1)
-    
+
     # SSO integrations
     azure_ad_id = Column(String(255))
     google_workspace_id = Column(String(255))
     okta_id = Column(String(255))
-    
+
     # Compliance fields
     gdpr_consent_date = Column(DateTime)
     data_retention_exempt = Column(Boolean, default=False)
@@ -52,15 +52,15 @@ CUSTOM_OPERATORS = {
     # Temporal operators
     "working_hours": lambda ctx: ctx.time.hour in range(9, 17),
     "business_days": lambda ctx: ctx.time.weekday() < 5,
-    
-    # Hierarchical operators  
+
+    # Hierarchical operators
     "reports_to": lambda user, manager: user.manager_id == manager.id,
     "in_org_tree": lambda user, root: check_org_hierarchy(user, root),
-    
+
     # Risk-based operators
     "risk_below": lambda ctx, threshold: ctx.risk_score < threshold,
     "trusted_device": lambda ctx: ctx.device_id in ctx.user.trusted_devices,
-    
+
     # Compliance operators
     "gdpr_consented": lambda user: user.gdpr_consent_date is not None,
     "data_classified": lambda resource, level: resource.classification <= level
@@ -72,12 +72,12 @@ CUSTOM_OPERATORS = {
 async def generate_abac_rule(description: str) -> dict:
     """Use LLM to convert natural language to ABAC rules."""
     prompt = f"Convert to ABAC rule: {description}"
-    
+
     result = await llm_agent.run(
         model="gpt-4",
         messages=[{"role": "user", "content": prompt}]
     )
-    
+
     return validate_and_optimize_rule(result)
 ```
 
@@ -94,13 +94,13 @@ SSO_HANDLERS = {
             "job_title": "jobTitle"
         }
     ),
-    
+
     "google": GoogleWorkspaceHandler(
         domain=config.GOOGLE_DOMAIN,
         admin_sdk_enabled=True,
         org_unit_sync=True
     ),
-    
+
     "okta": OktaHandler(
         domain=config.OKTA_DOMAIN,
         group_prefix="kailash_",
@@ -116,13 +116,13 @@ SSO_HANDLERS = {
 -- User query optimization
 CREATE INDEX idx_users_dept_status ON users(department, status);
 CREATE INDEX idx_users_manager_tree ON users(manager_id);
-CREATE INDEX idx_users_last_login_partial 
-    ON users(last_login) 
+CREATE INDEX idx_users_last_login_partial
+    ON users(last_login)
     WHERE status = 'active';
 
 -- Session optimization
-CREATE INDEX idx_sessions_user_active 
-    ON user_sessions(user_id, expires_at) 
+CREATE INDEX idx_sessions_user_active
+    ON user_sessions(user_id, expires_at)
     WHERE status = 'active';
 
 -- Audit log partitioning
@@ -137,13 +137,13 @@ CACHE_LAYERS = {
         "user_profiles": LRUCache(maxsize=1000, ttl=300),
         "permissions": LRUCache(maxsize=5000, ttl=900)
     },
-    
+
     "L2_REDIS": {
         "sessions": {"ttl": 7200, "prefix": "sess:"},
         "abac_results": {"ttl": 300, "prefix": "abac:"},
         "sso_tokens": {"ttl": 3600, "prefix": "sso:"}
     },
-    
+
     "L3_DATABASE": {
         "audit_logs": {"partition": "monthly"},
         "security_events": {"retention": "7_years"}
@@ -157,12 +157,12 @@ CACHE_LAYERS = {
 ```python
 class GDPRComplianceWorkflow(Workflow):
     """Automated GDPR compliance workflows."""
-    
+
     async def data_export(self, user_id: str):
         """Article 15 - Right of access."""
         data = await gather_user_data(user_id)
         return format_gdpr_export(data)
-    
+
     async def data_erasure(self, user_id: str):
         """Article 17 - Right to erasure."""
         await anonymize_user_data(user_id)
@@ -174,7 +174,7 @@ class GDPRComplianceWorkflow(Workflow):
 ```python
 SOC2_CONTROLS = {
     "CC6.1": "Logical access security",
-    "CC6.2": "New user access provisioning", 
+    "CC6.2": "New user access provisioning",
     "CC6.3": "User access modification",
     "CC6.4": "User access termination",
     "CC6.5": "Privileged access",
@@ -193,13 +193,13 @@ WEBSOCKET_EVENTS = {
         "channels": ["admin_dashboard", "security_monitoring"],
         "throttle": "5/second/user"
     },
-    
+
     "security_alerts": {
         "channels": ["security_ops", "admin_notifications"],
         "priority": "high",
         "delivery": "guaranteed"
     },
-    
+
     "compliance_events": {
         "channels": ["compliance_dashboard"],
         "retention": "7_years"
@@ -222,7 +222,7 @@ RATE_LIMITS = {
 # Custom middleware chain
 MIDDLEWARE_CHAIN = [
     "SecurityHeadersMiddleware",
-    "TenantIsolationMiddleware", 
+    "TenantIsolationMiddleware",
     "ABACAuthorizationMiddleware",
     "AuditLoggingMiddleware",
     "PerformanceMonitoringMiddleware"
@@ -245,7 +245,7 @@ WORKFLOWS = {
             "ScheduleAccessReview"
         ]
     },
-    
+
     "user_offboarding": {
         "nodes": [
             "DisableAccount",
@@ -300,12 +300,12 @@ THREAT_RULES = {
         "condition": "failed_logins > 5 in 5_minutes",
         "action": "block_ip_30_minutes"
     },
-    
+
     "impossible_travel": {
         "condition": "distance > 1000km in < 1_hour",
         "action": "require_mfa"
     },
-    
+
     "privilege_escalation": {
         "condition": "permission_changes > normal_baseline",
         "action": "alert_security_team"

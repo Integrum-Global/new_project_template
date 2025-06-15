@@ -10,27 +10,31 @@ This workflow handles comprehensive reporting and analytics for department manag
 - Custom report generation
 """
 
-import sys
 import os
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 import random
+import sys
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class ReportingAnalyticsWorkflow:
     """
     Complete reporting and analytics workflow for department managers.
     """
-    
+
     def __init__(self, manager_user_id: str = "manager@company.com"):
         """
         Initialize the reporting and analytics workflow.
-        
+
         Args:
             manager_user_id: ID of the manager generating reports
         """
@@ -40,48 +44,69 @@ class ReportingAnalyticsWorkflow:
             user_id=manager_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
-    def generate_team_performance_report(self, report_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def generate_team_performance_report(
+        self, report_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Generate comprehensive team performance report.
-        
+
         Args:
             report_config: Report configuration parameters
-            
+
         Returns:
             Team performance report results
         """
         print("📊 Generating Team Performance Report...")
-        
+
         if not report_config:
             report_config = {
                 "department": "Engineering",
                 "period": "monthly",
                 "include_trends": True,
-                "include_comparisons": True
+                "include_comparisons": True,
             }
-        
+
         builder = self.runner.create_workflow("team_performance_report")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["view_team_reports", "export_analytics"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id,
+                "manager",
+                ["view_team_reports", "export_analytics"],
+            ),
+        )
+
         # Validate report parameters
         validation_rules = {
             "department": {"required": True, "type": str},
-            "period": {"required": True, "type": str, "pattern": "^(daily|weekly|monthly|quarterly|yearly)$"}
+            "period": {
+                "required": True,
+                "type": str,
+                "pattern": "^(daily|weekly|monthly|quarterly|yearly)$",
+            },
         }
-        builder.add_node("PythonCodeNode", "validate_params", create_validation_node(validation_rules))
-        builder.add_connection("manager_context", "result", "validate_params", "context")
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_params",
+            create_validation_node(validation_rules),
+        )
+        builder.add_connection(
+            "manager_context", "result", "validate_params", "context"
+        )
+
         # Collect team performance metrics
-        builder.add_node("PythonCodeNode", "collect_performance_metrics", {
-            "name": "collect_team_performance_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_performance_metrics",
+            {
+                "name": "collect_team_performance_data",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -137,14 +162,20 @@ performance_metrics = {{
 }}
 
 result = {{"result": performance_metrics}}
-"""
-        })
-        builder.add_connection("validate_params", "result", "collect_performance_metrics", "validation")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "validate_params", "result", "collect_performance_metrics", "validation"
+        )
+
         # Generate trend analysis
-        builder.add_node("PythonCodeNode", "analyze_trends", {
-            "name": "analyze_performance_trends",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_trends",
+            {
+                "name": "analyze_performance_trends",
+                "code": """
 import random
 from datetime import datetime
 
@@ -188,14 +219,23 @@ result = {"result": {
     "trend_analysis": trend_analysis,
     "analysis_timestamp": datetime.now().isoformat()
 }}
-"""
-        })
-        builder.add_connection("collect_performance_metrics", "result", "analyze_trends", "collect_performance_metrics")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "collect_performance_metrics",
+            "result",
+            "analyze_trends",
+            "collect_performance_metrics",
+        )
+
         # Generate recommendations
-        builder.add_node("PythonCodeNode", "generate_recommendations", {
-            "name": "generate_performance_recommendations",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_recommendations",
+            {
+                "name": "generate_performance_recommendations",
+                "code": """
 from datetime import datetime, timedelta
 
 # Generate actionable recommendations based on analysis
@@ -267,64 +307,82 @@ final_report = {
 }
 
 result = {"result": final_report}
-"""
-        })
-        builder.add_connection("analyze_trends", "result", "generate_recommendations", "analyze_trends")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "analyze_trends", "result", "generate_recommendations", "analyze_trends"
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                report_config,
-                "team_performance_report"
+                workflow, report_config, "team_performance_report"
             )
-            
+
             print("✅ Team Performance Report Generated Successfully!")
             if self.runner.enable_debug:
                 report = results.get("generate_recommendations", {})
-                print(f"   Report ID: {report.get('performance_metrics', {}).get('report_metadata', {}).get('report_id', 'N/A')}")
-                print(f"   Team Size: {report.get('performance_metrics', {}).get('team_overview', {}).get('total_members', 'N/A')}")
-                print(f"   Overall Health: {report.get('executive_summary', {}).get('overall_health', 'N/A')}")
-            
+                print(
+                    f"   Report ID: {report.get('performance_metrics', {}).get('report_metadata', {}).get('report_id', 'N/A')}"
+                )
+                print(
+                    f"   Team Size: {report.get('performance_metrics', {}).get('team_overview', {}).get('total_members', 'N/A')}"
+                )
+                print(
+                    f"   Overall Health: {report.get('executive_summary', {}).get('overall_health', 'N/A')}"
+                )
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to generate team performance report: {str(e)}")
             return {"error": str(e)}
-    
-    def generate_activity_monitoring_report(self, monitoring_config: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def generate_activity_monitoring_report(
+        self, monitoring_config: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Generate activity monitoring and compliance report.
-        
+
         Args:
             monitoring_config: Monitoring configuration parameters
-            
+
         Returns:
             Activity monitoring report results
         """
         print("🔍 Generating Activity Monitoring Report...")
-        
+
         if not monitoring_config:
             monitoring_config = {
                 "department": "Engineering",
                 "time_range": "last_7_days",
                 "include_anomalies": True,
-                "include_compliance": True
+                "include_compliance": True,
             }
-        
+
         builder = self.runner.create_workflow("activity_monitoring_report")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["view_activity_logs", "monitor_compliance"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id,
+                "manager",
+                ["view_activity_logs", "monitor_compliance"],
+            ),
+        )
+
         # Collect activity data
-        builder.add_node("PythonCodeNode", "collect_activity_data", {
-            "name": "collect_team_activity_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_activity_data",
+            {
+                "name": "collect_team_activity_data",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -388,7 +446,7 @@ if monitoring_config.get("include_anomalies", True):
             "timestamp": (datetime.now() - timedelta(hours=random.randint(1, 48))).isoformat(),
             "action_taken": "MFA challenge issued"
         }})
-    
+
     if random.random() > 0.8:
         anomalies.append({{
             "type": "high_data_access",
@@ -402,14 +460,20 @@ if monitoring_config.get("include_anomalies", True):
 activity_data["anomalies"] = anomalies
 
 result = {{"result": activity_data}}
-"""
-        })
-        builder.add_connection("manager_context", "result", "collect_activity_data", "context")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "manager_context", "result", "collect_activity_data", "context"
+        )
+
         # Analyze compliance status
-        builder.add_node("PythonCodeNode", "analyze_compliance", {
-            "name": "analyze_compliance_status",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "analyze_compliance",
+            {
+                "name": "analyze_compliance_status",
+                "code": """
 import random
 from datetime import datetime
 
@@ -494,65 +558,90 @@ final_report = {
 }
 
 result = {"result": final_report}
-"""
-        })
-        builder.add_connection("collect_activity_data", "result", "analyze_compliance", "collect_activity_data")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "collect_activity_data",
+            "result",
+            "analyze_compliance",
+            "collect_activity_data",
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                monitoring_config,
-                "activity_monitoring_report"
+                workflow, monitoring_config, "activity_monitoring_report"
             )
-            
+
             print("✅ Activity Monitoring Report Generated Successfully!")
             if self.runner.enable_debug:
                 report = results.get("analyze_compliance", {})
-                print(f"   Compliance Score: {report.get('compliance_analysis', {}).get('overall_compliance_score', 'N/A')}%")
-                print(f"   Anomalies Detected: {len(report.get('activity_data', {}).get('anomalies', []))}")
-                print(f"   Risk Assessment: {report.get('executive_insights', {}).get('risk_assessment', 'N/A')}")
-            
+                print(
+                    f"   Compliance Score: {report.get('compliance_analysis', {}).get('overall_compliance_score', 'N/A')}%"
+                )
+                print(
+                    f"   Anomalies Detected: {len(report.get('activity_data', {}).get('anomalies', []))}"
+                )
+                print(
+                    f"   Risk Assessment: {report.get('executive_insights', {}).get('risk_assessment', 'N/A')}"
+                )
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to generate activity monitoring report: {str(e)}")
             return {"error": str(e)}
-    
+
     def generate_custom_report(self, custom_config: Dict[str, Any]) -> Dict[str, Any]:
         """
         Generate custom report based on manager specifications.
-        
+
         Args:
             custom_config: Custom report configuration
-            
+
         Returns:
             Custom report results
         """
         print("📈 Generating Custom Report...")
-        
+
         builder = self.runner.create_workflow("custom_report")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["generate_custom_reports", "export_data"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id,
+                "manager",
+                ["generate_custom_reports", "export_data"],
+            ),
+        )
+
         # Validate custom report parameters
         validation_rules = {
             "report_type": {"required": True, "type": str},
             "metrics": {"required": True, "type": list, "min_length": 1},
-            "format": {"required": False, "type": str}
+            "format": {"required": False, "type": str},
         }
-        builder.add_node("PythonCodeNode", "validate_custom", create_validation_node(validation_rules))
-        builder.add_connection("manager_context", "result", "validate_custom", "context")
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_custom",
+            create_validation_node(validation_rules),
+        )
+        builder.add_connection(
+            "manager_context", "result", "validate_custom", "context"
+        )
+
         # Generate custom report
-        builder.add_node("PythonCodeNode", "generate_custom", {
-            "name": "generate_custom_report_data",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_custom",
+            {
+                "name": "generate_custom_report_data",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -623,29 +712,34 @@ report_data["export_info"] = {{
 }}
 
 result = {{"result": report_data}}
-"""
-        })
-        builder.add_connection("validate_custom", "result", "generate_custom", "validation")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "validate_custom", "result", "generate_custom", "validation"
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                custom_config,
-                "custom_report"
+                workflow, custom_config, "custom_report"
             )
-            
+
             print("✅ Custom Report Generated Successfully!")
             if self.runner.enable_debug:
                 report = results.get("generate_custom", {})
-                print(f"   Report ID: {report.get('report_metadata', {}).get('report_id', 'N/A')}")
+                print(
+                    f"   Report ID: {report.get('report_metadata', {}).get('report_id', 'N/A')}"
+                )
                 print(f"   Metrics Included: {len(report.get('custom_metrics', {}))}")
-                print(f"   Export Format: {report.get('export_info', {}).get('format', 'N/A')}")
-            
+                print(
+                    f"   Export Format: {report.get('export_info', {}).get('format', 'N/A')}"
+                )
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to generate custom report: {str(e)}")
             return {"error": str(e)}
@@ -654,58 +748,60 @@ result = {{"result": report_data}}
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the reporting and analytics workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if tests pass, False otherwise
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TESTING REPORTING & ANALYTICS WORKFLOW")
-    print("="*60)
-    
+    print("=" * 60)
+
     workflow = ReportingAnalyticsWorkflow("test_manager@company.com")
-    
+
     # Test 1: Team Performance Report
     print("\n1️⃣ Testing Team Performance Report...")
-    result = workflow.generate_team_performance_report({
-        "department": "Engineering",
-        "period": "monthly",
-        "include_trends": True
-    })
-    
+    result = workflow.generate_team_performance_report(
+        {"department": "Engineering", "period": "monthly", "include_trends": True}
+    )
+
     if "error" in result:
         print(f"❌ Team performance report test failed: {result['error']}")
         return False
-    
+
     # Test 2: Activity Monitoring Report
     print("\n2️⃣ Testing Activity Monitoring Report...")
-    result = workflow.generate_activity_monitoring_report({
-        "department": "Engineering",
-        "time_range": "last_7_days",
-        "include_anomalies": True
-    })
-    
+    result = workflow.generate_activity_monitoring_report(
+        {
+            "department": "Engineering",
+            "time_range": "last_7_days",
+            "include_anomalies": True,
+        }
+    )
+
     if "error" in result:
         print(f"❌ Activity monitoring report test failed: {result['error']}")
         return False
-    
+
     # Test 3: Custom Report
     print("\n3️⃣ Testing Custom Report Generation...")
-    result = workflow.generate_custom_report({
-        "report_type": "quarterly_review",
-        "metrics": ["user_productivity", "system_performance", "cost_analysis"],
-        "format": "pdf"
-    })
-    
+    result = workflow.generate_custom_report(
+        {
+            "report_type": "quarterly_review",
+            "metrics": ["user_productivity", "system_performance", "cost_analysis"],
+            "format": "pdf",
+        }
+    )
+
     if "error" in result:
         print(f"❌ Custom report test failed: {result['error']}")
         return False
-    
+
     # Print summary statistics
     workflow.runner.print_stats()
-    
+
     print("\n✅ All reporting & analytics workflow tests passed!")
     return True
 

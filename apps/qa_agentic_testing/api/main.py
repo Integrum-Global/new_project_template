@@ -2,21 +2,22 @@
 Main FastAPI application for QA Agentic Testing System.
 """
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
-import os
 
-from .routes import projects, runs, results, analytics, reports
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+
 from ..core.database import setup_database
+from .routes import analytics, projects, reports, results, runs
 
 
 def create_app() -> FastAPI:
     """Create and configure the FastAPI application."""
-    
+
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         """Initialize database on startup."""
@@ -29,9 +30,9 @@ def create_app() -> FastAPI:
         version="0.1.0",
         docs_url="/api/docs",
         redoc_url="/api/redoc",
-        lifespan=lifespan
+        lifespan=lifespan,
     )
-    
+
     # Configure CORS
     app.add_middleware(
         CORSMiddleware,
@@ -40,28 +41,31 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    
+
     # Include API routes
     app.include_router(projects.router, prefix="/api/projects", tags=["Projects"])
     app.include_router(runs.router, prefix="/api/runs", tags=["Test Runs"])
     app.include_router(results.router, prefix="/api/results", tags=["Test Results"])
     app.include_router(analytics.router, prefix="/api/analytics", tags=["Analytics"])
     app.include_router(reports.router, prefix="/api/reports", tags=["Reports"])
-    
+
     # Serve static files if frontend exists
     frontend_path = Path(__file__).parent.parent / "frontend" / "dist"
     if frontend_path.exists():
         app.mount("/static", StaticFiles(directory=str(frontend_path)), name="static")
-    
+
     @app.get("/", response_class=HTMLResponse)
     async def root():
         """Serve the frontend or API documentation."""
-        frontend_index = Path(__file__).parent.parent / "frontend" / "dist" / "index.html"
-        
+        frontend_index = (
+            Path(__file__).parent.parent / "frontend" / "dist" / "index.html"
+        )
+
         if frontend_index.exists():
             return HTMLResponse(content=frontend_index.read_text())
         else:
-            return HTMLResponse(content="""
+            return HTMLResponse(
+                content="""
             <html>
                 <head>
                     <title>QA Agentic Testing</title>
@@ -79,19 +83,19 @@ def create_app() -> FastAPI:
                     <div class="container">
                         <h1>🤖 QA Agentic Testing Framework</h1>
                         <p>AI-powered autonomous testing framework that can test any application with minimal configuration.</p>
-                        
+
                         <div class="links">
                             <a href="/api/docs">📚 API Documentation</a>
                             <a href="/api/redoc">📖 API Reference</a>
                         </div>
-                        
+
                         <h2>✨ Key Features</h2>
                         <div class="feature">🔍 <strong>Auto-Discovery</strong> - Automatically discovers REST APIs, CLI commands, web interfaces</div>
                         <div class="feature">🎭 <strong>Intelligent Personas</strong> - Creates personas based on app's user roles and permissions</div>
                         <div class="feature">🧠 <strong>Advanced Agents</strong> - A2A communication, self-organizing pools, iterative reasoning</div>
                         <div class="feature">📊 <strong>Comprehensive Reports</strong> - Interactive HTML dashboards with AI insights</div>
                         <div class="feature">⚡ <strong>Enterprise Ready</strong> - CI/CD integration, regression detection, performance monitoring</div>
-                        
+
                         <h2>🚀 Quick Start</h2>
                         <pre style="background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 5px; overflow-x: auto;">
 # Install and run
@@ -103,20 +107,21 @@ curl -X POST "http://localhost:8000/api/projects" \\
      -H "Content-Type: application/json" \\
      -d '{"name": "My App", "app_path": "/path/to/app", "description": "Test my application"}'
                         </pre>
-                        
+
                         <p style="margin-top: 30px; color: #7f8c8d;">
                             Built with the Kailash SDK - Empowering developers with AI-powered testing capabilities
                         </p>
                     </div>
                 </body>
             </html>
-            """)
-    
+            """
+            )
+
     @app.get("/health")
     async def health_check():
         """Health check endpoint."""
         return {"status": "healthy", "service": "qa-agentic-testing"}
-    
+
     return app
 
 

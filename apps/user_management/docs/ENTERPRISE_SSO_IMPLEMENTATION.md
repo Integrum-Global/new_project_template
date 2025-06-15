@@ -190,7 +190,7 @@ user_filter = {
 
 # Group search filter
 group_filter = {
-    "objectClass": "group", 
+    "objectClass": "group",
     "base_dn": "OU=Groups,DC=company,DC=com",
     "attributes": ["cn", "description", "member"]
 }
@@ -273,19 +273,19 @@ class EnterpriseAuthProviderNode(SecurityMixin, PerformanceMixin, LoggingMixin, 
 async def _assess_risk(self, user_id: str, risk_context: Dict[str, Any]) -> Dict[str, Any]:
     risk_factors = []
     risk_score = 0.0
-    
+
     # IP-based risk assessment
     ip_risk = await self._assess_ip_risk(ip_address, user_id)
-    
-    # Device-based risk assessment  
+
+    # Device-based risk assessment
     device_risk = await self._assess_device_risk(device_info, user_id)
-    
+
     # Time-based risk assessment
     time_risk = await self._assess_time_risk(login_time, user_id)
-    
+
     # Behavioral risk assessment
     behavior_risk = await self._assess_behavior_risk(user_id, risk_context)
-    
+
     # AI-based risk assessment
     ai_risk = await self._ai_risk_assessment(user_id, risk_context, risk_factors)
 ```
@@ -300,18 +300,18 @@ async def _assess_risk(self, user_id: str, risk_context: Dict[str, Any]) -> Dict
 
 **Risk-Based Factor Requirements**:
 ```python
-async def _determine_additional_factors(self, user_id: str, risk_score: float, 
+async def _determine_additional_factors(self, user_id: str, risk_score: float,
                                       primary_method: str) -> List[str]:
     additional_factors = []
-    
+
     if risk_score > 0.7:  # High risk
         if "mfa" in self.enabled_methods and primary_method != "mfa":
             additional_factors.append("mfa")
-    
+
     if risk_score > 0.9:  # Very high risk
         if "passwordless" in self.enabled_methods:
             additional_factors.append("passwordless")
-    
+
     return additional_factors
 ```
 
@@ -408,7 +408,7 @@ export_result = await gdpr_node.run(
 # Data erasure (Article 17)
 erasure_result = await gdpr_node.run(
     action="process_data_subject_request",
-    request_type="erasure", 
+    request_type="erasure",
     user_id="user123"
 )
 
@@ -479,13 +479,13 @@ user_creation_workflow = {
             "config": {"name": "validate_user_data", "code": "..."}
         },
         {
-            "id": "check_permissions", 
+            "id": "check_permissions",
             "type": "ABACPermissionEvaluatorNode",
             "config": {"ai_reasoning": True, "cache_results": True}
         },
         {
             "id": "create_user",
-            "type": "UserManagementNode", 
+            "type": "UserManagementNode",
             "config": {"operation_timeout": 30, "enable_audit": True}
         },
         {
@@ -500,7 +500,7 @@ user_creation_workflow = {
         }
     ],
     "connections": [
-        {"from_node": "validate_user_data", "from_output": "result", 
+        {"from_node": "validate_user_data", "from_output": "result",
          "to_node": "check_permissions", "to_input": "user_context"},
         {"from_node": "check_permissions", "from_output": "allowed",
          "to_node": "create_user", "to_input": "permission_granted"}
@@ -520,7 +520,7 @@ auth_workflow = {
             "config": {"baseline_period": "30 days", "anomaly_threshold": 0.8}
         },
         {
-            "id": "enterprise_auth", 
+            "id": "enterprise_auth",
             "type": "EnterpriseAuthProviderNode",
             "config": {"adaptive_auth_enabled": True, "risk_assessment_enabled": True}
         },
@@ -544,7 +544,7 @@ async def create_user(user_data: dict):
         session_id, "user_creation_enterprise", inputs={"user_data": user_data}
     )
     result = await self.agent_ui.wait_for_execution(session_id, execution_id, timeout=30)
-    
+
     # Real-time update
     await self.realtime.broadcast_event(
         WorkflowEvent(type=EventType.WORKFLOW_COMPLETED, data=result)
@@ -567,7 +567,7 @@ async def initiate_sso(provider: str, redirect_uri: str):
     session_id = await self.agent_ui.create_session("sso_user")
     sso_workflow = {"name": "sso_initiation", "nodes": [{"id": "sso_node", "type": "SSOAuthenticationNode"}]}
     workflow_id = await self.agent_ui.create_dynamic_workflow(session_id, sso_workflow)
-    execution_id = await self.agent_ui.execute_workflow(session_id, workflow_id, 
+    execution_id = await self.agent_ui.execute_workflow(session_id, workflow_id,
                                                        inputs={"action": "initiate", "provider": provider})
     return await self.agent_ui.wait_for_execution(session_id, execution_id, timeout=5)
 
@@ -578,7 +578,7 @@ async def handle_auth_callback(callback_data: dict):
         session_id, "user_authentication_enterprise", inputs=callback_data
     )
     result = await self.agent_ui.wait_for_execution(session_id, execution_id, timeout=15)
-    
+
     # Real-time authentication event
     await self.realtime.broadcast_event(
         WorkflowEvent(type=EventType.USER_AUTHENTICATED, data=result)
@@ -612,7 +612,7 @@ const createUser = async () => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(userData)
     });
-    
+
     if (response.ok) {
         // Real-time update will refresh the list automatically
         alert('User created successfully!');
@@ -637,7 +637,7 @@ User Listing (1000 users):
 
 User Creation:
 - Django Admin: 890ms
-- Kailash Enterprise: 100ms  
+- Kailash Enterprise: 100ms
 - Performance Gain: 8.9x faster
 
 Permission Check:
@@ -727,7 +727,7 @@ Test Results:
 
 Test Coverage:
 ✅ SSOAuthenticationNode tests passed
-✅ DirectoryIntegrationNode tests passed  
+✅ DirectoryIntegrationNode tests passed
 ✅ EnterpriseAuthProviderNode tests passed
 ✅ Risk Assessment tests passed
 ✅ Adaptive Authentication tests passed
@@ -860,7 +860,7 @@ async def health_check():
 security_headers = {
     "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY", 
+    "X-Frame-Options": "DENY",
     "X-XSS-Protection": "1; mode=block",
     "Content-Security-Policy": "default-src 'self'; script-src 'self' 'unsafe-inline'",
     "Referrer-Policy": "strict-origin-when-cross-origin"
@@ -871,7 +871,7 @@ security_headers = {
 ```python
 rate_limits = {
     "/api/auth/login": "5 per minute",
-    "/api/users": "100 per minute", 
+    "/api/users": "100 per minute",
     "/api/auth/sso/*": "10 per minute",
     "/api/admin/*": "200 per minute"
 }
@@ -889,7 +889,7 @@ rate_limits = {
 - **70% fewer** security incident response time
 - **60% reduction** in compliance preparation time
 
-#### Operational Efficiency  
+#### Operational Efficiency
 - **95% automation** of user provisioning
 - **85% reduction** in manual user management tasks
 - **75% faster** security incident detection

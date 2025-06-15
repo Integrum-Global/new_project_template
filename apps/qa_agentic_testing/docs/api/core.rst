@@ -27,13 +27,13 @@ AutonomousQATester
    .. code-block:: python
 
       from core.test_executor import AutonomousQATester
-      
+
       # Initialize tester
       tester = AutonomousQATester(
           app_path=Path("/path/to/app"),
           output_dir=Path("./qa_results")
       )
-      
+
       # Run complete testing pipeline
       summary = await tester.quick_test(app_path)
       print(f"Success rate: {summary.success_rate}%")
@@ -95,13 +95,13 @@ ScenarioGenerator
 
       from core.scenario_generator import ScenarioGenerator, ScenarioType
       from core.personas import PersonaManager
-      
+
       generator = ScenarioGenerator()
       persona_manager = PersonaManager()
-      
+
       # Get personas for testing
       personas = persona_manager.get_testing_matrix()
-      
+
       # Generate scenarios
       scenarios = generator.generate_scenarios_for_personas(
           personas=personas,
@@ -165,15 +165,15 @@ ReportGenerator
    .. code-block:: python
 
       from core.report_generator import ReportGenerator
-      
+
       generator = ReportGenerator()
-      
+
       # Generate HTML report
       await generator.generate_comprehensive_report_async(
           report_data=test_data,
           output_file=Path("./report.html")
       )
-      
+
       # Generate JSON report
       await generator.generate_json_report_async(
           report_data=test_data,

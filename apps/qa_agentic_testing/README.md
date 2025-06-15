@@ -103,7 +103,7 @@ open _build/html/index.html
 
 ### Built-in Personas (7 Base)
 - **System Admin**: Full access, security-focused testing
-- **Security Officer**: Compliance and audit validation  
+- **Security Officer**: Compliance and audit validation
 - **Manager**: Department-level operations
 - **Analyst**: Data analysis and reporting
 - **Regular User**: Standard workflows
@@ -212,7 +212,7 @@ qa-test /path/to/app --model-preset enterprise
 User Management System Testing:
 ✅ 100% success rate across all phases
 ✅ 27 personas from discovered permissions
-✅ 32 scenarios across all test types  
+✅ 32 scenarios across all test types
 ✅ 3-5x performance improvement with async
 ✅ Zero configuration required
 ```
@@ -229,7 +229,7 @@ User Management System Testing:
 # Testing
 qa-test /path/to/app [--async] [--industry INDUSTRY] [--model-preset PRESET]
 
-# Project management  
+# Project management
 qa-test project create|list|test|delete
 
 # Analytics

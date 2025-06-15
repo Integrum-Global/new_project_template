@@ -34,7 +34,7 @@ The enhanced developer script (`run_qa_test_developer.py`) now includes comprehe
 # ===== AGENT MODEL CONFIGURATION =====
 AGENT_MODEL_CONFIG = {
     "preset": "balanced",  # development, balanced, enterprise
-    
+
     # Custom model assignments per agent type
     "custom_models": {
         "basic_llm": {
@@ -52,7 +52,7 @@ AGENT_MODEL_CONFIG = {
             "timeout_seconds": 45
         },
         "a2a_agent": {
-            "provider": "ollama", 
+            "provider": "ollama",
             "model": "llama3.2:latest",
             "temperature": 0.1,
             "max_tokens": 4000,
@@ -67,13 +67,13 @@ AGENT_MODEL_CONFIG = {
         },
         "mcp_agent": {
             "provider": "ollama",
-            "model": "llama3.1:8b", 
+            "model": "llama3.1:8b",
             "temperature": 0.1,
             "max_tokens": 3000,
             "timeout_seconds": 25
         }
     },
-    
+
     # Team configurations
     "team_configurations": {
         "enable_agent_pools": True,      # Use AgentPoolManagerNode
@@ -137,7 +137,7 @@ if config.agent_type == AgentType.ITERATIVE_AGENT:
 
 **Purpose**: Deep analysis with multiple reasoning iterations
 - **Security Analysis**: Multi-pass vulnerability scanning
-- **Functional Analysis**: Complex workflow validation  
+- **Functional Analysis**: Complex workflow validation
 - **Convergence Detection**: Iterates until analysis stabilizes
 - **Use Case**: When single-shot analysis isn't sufficient
 
@@ -167,7 +167,7 @@ if config.agent_type in [AgentType.SELF_ORGANIZING, AgentType.A2A_AGENT]:
 
 ### **3. Agent Specialization System**
 
-**Security Specialists**: 
+**Security Specialists**:
 ```python
 "security_analysis": ["iterative_agent", "a2a_agent"]
 ```

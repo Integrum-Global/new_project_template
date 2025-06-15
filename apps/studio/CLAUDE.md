@@ -42,7 +42,7 @@ studio server --host 0.0.0.0 --port 8000
 # CLI Operations
 studio init                           # Initialize database
 studio workflows list                 # List workflows
-studio executions list --status running # List running executions  
+studio executions list --status running # List running executions
 studio templates list                 # List templates
 studio stats                         # System statistics
 studio cleanup --days 30             # Cleanup old data
@@ -109,7 +109,7 @@ STUDIO_HOST=0.0.0.0
 STUDIO_PORT=8000
 STUDIO_DEBUG=false
 
-# Database  
+# Database
 STUDIO_DATABASE_URL=sqlite:///studio.db  # or PostgreSQL for production
 
 # Authentication
@@ -146,7 +146,7 @@ STUDIO_EXECUTION_TIMEOUT=3600
 ```json
 {
   "type": "node_progress",
-  "execution_id": "exec_abc123", 
+  "execution_id": "exec_abc123",
   "node_id": "node_1",
   "status": "completed",
   "progress": {

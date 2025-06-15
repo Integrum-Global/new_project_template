@@ -163,7 +163,7 @@ events.onmessage = (event) => {
 - **Lead Scoring**: AI-powered scoring with CRM integration
 - **Report Generation**: Data aggregation and distribution
 
-### Data Processing Templates  
+### Data Processing Templates
 - **CSV ETL Pipeline**: Read, transform, validate, load
 - **API Data Sync**: Periodic fetch and synchronization
 - **Data Quality Check**: Validation and cleansing
@@ -216,15 +216,15 @@ STUDIO_CORS_ORIGINS=http://localhost:3000,http://localhost:5173
 ### Database Indexes
 ```sql
 -- Workflow queries
-CREATE INDEX idx_workflows_tenant_updated 
+CREATE INDEX idx_workflows_tenant_updated
     ON workflows(tenant_id, updated_at DESC);
-    
+
 -- Execution tracking
-CREATE INDEX idx_executions_workflow_status 
+CREATE INDEX idx_executions_workflow_status
     ON executions(workflow_id, status);
-    
+
 -- Template analytics
-CREATE INDEX idx_template_usage 
+CREATE INDEX idx_template_usage
     ON template_usage(template_id, used_at);
 ```
 
@@ -276,14 +276,14 @@ spec:
 # API health
 curl http://localhost:8000/health
 
-# WebSocket health  
+# WebSocket health
 wscat -c ws://localhost:8000/ws/health
 ```
 
 ## 📚 App Documentation
 
 | Document | Purpose |
-|----------|---------|  
+|----------|---------|
 | [CLAUDE.md](CLAUDE.md) | Developer navigation and code guide |
 | [API Docs](http://localhost:8000/api/docs) | Interactive API documentation |
 | [WebSocket Protocol](docs/WEBSOCKET.md) | Real-time event specifications |

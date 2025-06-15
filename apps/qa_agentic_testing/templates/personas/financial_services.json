@@ -9,7 +9,7 @@
     ],
     "goals": [
       "Ensure regulatory compliance",
-      "Monitor suspicious activities", 
+      "Monitor suspicious activities",
       "Generate compliance reports",
       "Validate risk controls",
       "Audit transaction patterns"
@@ -17,7 +17,7 @@
     "behavior_style": "Meticulous, rule-focused, risk-averse, thorough documentation",
     "typical_actions": [
       "Review transaction logs",
-      "Generate compliance reports", 
+      "Generate compliance reports",
       "Investigate flagged activities",
       "Validate regulatory controls",
       "Monitor system alerts"
@@ -27,7 +27,7 @@
   },
   {
     "key": "trading_desk_user",
-    "name": "Thomas Trader", 
+    "name": "Thomas Trader",
     "role": "Trading Desk Operator",
     "permissions": [
       "trading:execute", "market:read", "portfolio:read", "risk:read",
@@ -36,7 +36,7 @@
     "goals": [
       "Execute trades efficiently",
       "Monitor market conditions",
-      "Manage risk exposure", 
+      "Manage risk exposure",
       "Meet performance targets",
       "Access real-time data"
     ],
@@ -54,7 +54,7 @@
   {
     "key": "risk_analyst",
     "name": "Rebecca Risk",
-    "role": "Risk Management Analyst", 
+    "role": "Risk Management Analyst",
     "permissions": [
       "risk:read", "risk:calculate", "models:access", "data:analyze",
       "scenarios:run", "reports:create", "limits:monitor"

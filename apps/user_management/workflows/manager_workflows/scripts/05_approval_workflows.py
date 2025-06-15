@@ -10,28 +10,32 @@ This workflow handles approval processes and request management including:
 - Escalation and delegation management
 """
 
-import sys
-import os
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
-import random
 import json
+import os
+import random
+import sys
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class ApprovalWorkflow:
     """
     Complete approval and request management workflow for department managers.
     """
-    
+
     def __init__(self, manager_user_id: str = "manager@company.com"):
         """
         Initialize the approval workflow.
-        
+
         Args:
             manager_user_id: ID of the manager handling approvals
         """
@@ -41,43 +45,60 @@ class ApprovalWorkflow:
             user_id=manager_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def process_access_request(self, request_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Process access request approval workflow.
-        
+
         Args:
             request_data: Access request details
-            
+
         Returns:
             Approval workflow results
         """
         print("🔐 Processing Access Request Approval...")
-        
+
         builder = self.runner.create_workflow("access_request_approval")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["approve_access", "delegate_approval"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id, "manager", ["approve_access", "delegate_approval"]
+            ),
+        )
+
         # Validate request data
         validation_rules = {
             "request_id": {"required": True, "type": str},
-            "requester": {"required": True, "type": str, "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"},
+            "requester": {
+                "required": True,
+                "type": str,
+                "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$",
+            },
             "resource_type": {"required": True, "type": str},
             "access_level": {"required": True, "type": str},
-            "justification": {"required": True, "type": str, "min_length": 20}
+            "justification": {"required": True, "type": str, "min_length": 20},
         }
-        builder.add_node("PythonCodeNode", "validate_request", create_validation_node(validation_rules))
-        builder.add_connection("manager_context", "result", "validate_request", "context")
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_request",
+            create_validation_node(validation_rules),
+        )
+        builder.add_connection(
+            "manager_context", "result", "validate_request", "context"
+        )
+
         # Evaluate access request
-        builder.add_node("PythonCodeNode", "evaluate_request", {
-            "name": "evaluate_access_request",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "evaluate_request",
+            {
+                "name": "evaluate_access_request",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -138,14 +159,20 @@ evaluation = {{
 }}
 
 result = {{"result": evaluation}}
-"""
-        })
-        builder.add_connection("validate_request", "result", "evaluate_request", "validation")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "validate_request", "result", "evaluate_request", "validation"
+        )
+
         # Make approval decision
-        builder.add_node("PythonCodeNode", "make_decision", {
-            "name": "make_approval_decision",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "make_decision",
+            {
+                "name": "make_approval_decision",
+                "code": f"""
 from datetime import datetime, timedelta
 
 # Make final approval decision
@@ -208,14 +235,20 @@ approval_record = {{
 }}
 
 result = {{"result": approval_record}}
-"""
-        })
-        builder.add_connection("evaluate_request", "result", "make_decision", "evaluate_request")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "evaluate_request", "result", "make_decision", "evaluate_request"
+        )
+
         # Send notifications
-        builder.add_node("PythonCodeNode", "send_notifications", {
-            "name": "send_approval_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "send_notifications",
+            {
+                "name": "send_approval_notifications",
+                "code": """
 from datetime import datetime
 
 # Send notifications based on decision
@@ -284,64 +317,74 @@ final_result = {
 }
 
 result = {"result": final_result}
-"""
-        })
-        builder.add_connection("make_decision", "result", "send_notifications", "make_decision")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "make_decision", "result", "send_notifications", "make_decision"
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                request_data,
-                "access_request_approval"
+                workflow, request_data, "access_request_approval"
             )
-            
+
             print("✅ Access Request Processed Successfully!")
             if self.runner.enable_debug:
                 approval = results.get("send_notifications", {})
                 record = approval.get("approval_record", {})
                 print(f"   Approval ID: {record.get('approval_id', 'N/A')}")
                 print(f"   Decision: {record.get('decision', 'N/A').upper()}")
-                print(f"   Risk Level: {record.get('decision_details', {}).get('risk_accepted', 'N/A')}")
-            
+                print(
+                    f"   Risk Level: {record.get('decision_details', {}).get('risk_accepted', 'N/A')}"
+                )
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to process access request: {str(e)}")
             return {"error": str(e)}
-    
-    def manage_pending_approvals(self, filter_criteria: Dict[str, Any] = None) -> Dict[str, Any]:
+
+    def manage_pending_approvals(
+        self, filter_criteria: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
         """
         Manage queue of pending approvals with bulk actions.
-        
+
         Args:
             filter_criteria: Optional filtering criteria
-            
+
         Returns:
             Pending approvals management results
         """
         print("📋 Managing Pending Approvals Queue...")
-        
+
         if not filter_criteria:
-            filter_criteria = {
-                "status": "pending",
-                "priority": "all",
-                "age_days": 7
-            }
-        
+            filter_criteria = {"status": "pending", "priority": "all", "age_days": 7}
+
         builder = self.runner.create_workflow("manage_pending_approvals")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["view_all_requests", "bulk_approve", "delegate"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id,
+                "manager",
+                ["view_all_requests", "bulk_approve", "delegate"],
+            ),
+        )
+
         # Fetch pending approvals
-        builder.add_node("PythonCodeNode", "fetch_pending", {
-            "name": "fetch_pending_approvals",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "fetch_pending",
+            {
+                "name": "fetch_pending_approvals",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -359,7 +402,7 @@ for i in range(num_pending):
     request_type = random.choice(request_types)
     priority = random.choice(priorities)
     days_old = random.randint(0, filter_criteria.get("age_days", 7))
-    
+
     approval = {{
         "request_id": f"REQ-{{1000 + i}}",
         "request_type": request_type,
@@ -379,13 +422,13 @@ for i in range(num_pending):
         "delegated_from": "senior_manager@company.com" if random.random() > 0.8 else None,
         "requires_additional_approval": request_type in ["procurement", "expense"] and random.random() > 0.5
     }}
-    
+
     # Apply filters
     if filter_criteria.get("priority") != "all" and approval["priority"] != filter_criteria.get("priority"):
         continue
     if filter_criteria.get("status") != "all" and approval["status"] != filter_criteria.get("status"):
         continue
-        
+
     pending_approvals.append(approval)
 
 # Sort by urgency and age
@@ -404,7 +447,7 @@ summary_stats = {{
     }},
     "sla_at_risk": sum(1 for a in pending_approvals if a["sla_status"] == "at_risk"),
     "average_age_days": round(sum(
-        (datetime.now() - datetime.fromisoformat(a["submitted_date"])).days 
+        (datetime.now() - datetime.fromisoformat(a["submitted_date"])).days
         for a in pending_approvals
     ) / max(len(pending_approvals), 1), 1),
     "delegated_requests": sum(1 for a in pending_approvals if a["delegated_from"])
@@ -417,14 +460,18 @@ result = {{
         "fetch_timestamp": datetime.now().isoformat()
     }}
 }}
-"""
-        })
+""",
+            },
+        )
         builder.add_connection("manager_context", "result", "fetch_pending", "context")
-        
+
         # Analyze and prioritize approvals
-        builder.add_node("PythonCodeNode", "prioritize_approvals", {
-            "name": "analyze_and_prioritize",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "prioritize_approvals",
+            {
+                "name": "analyze_and_prioritize",
+                "code": """
 from datetime import datetime
 
 # Analyze and prioritize pending approvals
@@ -437,29 +484,29 @@ prioritized_approvals = []
 for approval in approvals:
     # Calculate priority score
     priority_score = 0
-    
+
     # Priority weight
     priority_weights = {"high": 3, "medium": 2, "low": 1}
     priority_score += priority_weights.get(approval["priority"], 1) * 10
-    
+
     # Age weight (older = higher priority)
     age_days = (datetime.now() - datetime.fromisoformat(approval["submitted_date"])).days
     priority_score += min(age_days * 5, 25)  # Cap at 25 points
-    
+
     # SLA risk weight
     if approval["sla_status"] == "at_risk":
         priority_score += 20
-    
+
     # Urgency weight
     priority_score += approval["urgency_score"] * 2
-    
+
     # Delegation weight
     if approval["delegated_from"]:
         priority_score += 15
-    
+
     # Add priority score to approval
     approval["priority_score"] = priority_score
-    
+
     # Recommend action based on analysis
     if approval["request_type"] == "time_off" and age_days < 2:
         approval["recommended_action"] = "auto_approve"
@@ -469,7 +516,7 @@ for approval in approvals:
         approval["recommended_action"] = "urgent_review"
     else:
         approval["recommended_action"] = "standard_review"
-    
+
     prioritized_approvals.append(approval)
 
 # Sort by priority score
@@ -514,14 +561,20 @@ result = {"result": {
     "recommendations": recommendations,
     "analysis_timestamp": datetime.now().isoformat()
 }}
-"""
-        })
-        builder.add_connection("fetch_pending", "result", "prioritize_approvals", "fetch_pending")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "fetch_pending", "result", "prioritize_approvals", "fetch_pending"
+        )
+
         # Process bulk actions
-        builder.add_node("PythonCodeNode", "process_bulk_actions", {
-            "name": "execute_bulk_approval_actions",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_bulk_actions",
+            {
+                "name": "execute_bulk_approval_actions",
+                "code": """
 from datetime import datetime
 
 # Execute bulk approval actions based on manager input
@@ -531,11 +584,11 @@ approvals = prioritized_data.get("prioritized_approvals", [])
 # Simulate bulk action execution
 bulk_actions = filter_criteria.get("bulk_actions", ["auto_approve_eligible"])
 
-action_results = {{
+action_results = {
     "actions_performed": [],
     "approvals_processed": 0,
     "errors": []
-}}
+}
 
 for action in bulk_actions:
     if action == "auto_approve_eligible":
@@ -543,75 +596,79 @@ for action in bulk_actions:
         auto_approved = []
         for approval in approvals:
             if approval["recommended_action"] == "auto_approve":
-                auto_approved.append({{
+                auto_approved.append({
                     "request_id": approval["request_id"],
                     "action": "approved",
                     "reason": "Auto-approved per policy",
                     "timestamp": datetime.now().isoformat()
-                }})
-        
-        action_results["actions_performed"].append({{
+                })
+
+        action_results["actions_performed"].append({
             "action_type": "auto_approve",
             "count": len(auto_approved),
             "details": auto_approved
-        }})
+        })
         action_results["approvals_processed"] += len(auto_approved)
-    
+
     elif action == "delegate_expense":
         # Delegate expense approvals
         delegated = []
         for approval in approvals:
             if approval["request_type"] == "expense":
-                delegated.append({{
+                delegated.append({
                     "request_id": approval["request_id"],
                     "delegated_to": "finance_manager@company.com",
                     "timestamp": datetime.now().isoformat()
-                }})
-        
-        action_results["actions_performed"].append({{
+                })
+
+        action_results["actions_performed"].append({
             "action_type": "delegate",
             "count": len(delegated),
             "delegate_to": "finance_manager@company.com",
             "details": delegated
-        }})
+        })
 
 # Generate summary report
-summary_report = {{
-    "queue_status": {{
+summary_report = {
+    "queue_status": {
         "total_pending_before": prioritized_data["total_approvals"],
         "processed": action_results["approvals_processed"],
         "remaining": prioritized_data["total_approvals"] - action_results["approvals_processed"],
         "sla_compliance": round(random.uniform(85, 95), 1)
-    }},
+    },
     "actions_summary": action_results,
     "next_review_recommended": (datetime.now() + timedelta(hours=4)).isoformat(),
-    "notifications_sent": {{
+    "notifications_sent": {
         "requesters_notified": action_results["approvals_processed"],
         "delegates_notified": sum(
-            len(a.get("details", [])) 
-            for a in action_results["actions_performed"] 
+            len(a.get("details", []))
+            for a in action_results["actions_performed"]
             if a["action_type"] == "delegate"
         ),
         "escalations": 0
-    }},
-    "manager_dashboard_url": f"/manager/approvals/dashboard?session={{datetime.now().timestamp()}}"
-}}
+    },
+    "manager_dashboard_url": f"/manager/approvals/dashboard?session={datetime.now().timestamp()}"
+}
 
-result = {{"result": summary_report}}
-"""
-        })
-        builder.add_connection("prioritize_approvals", "result", "process_bulk_actions", "prioritize_approvals")
-        
+result = {"result": summary_report}
+""",
+            },
+        )
+        builder.add_connection(
+            "prioritize_approvals",
+            "result",
+            "process_bulk_actions",
+            "prioritize_approvals",
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                filter_criteria,
-                "manage_pending_approvals"
+                workflow, filter_criteria, "manage_pending_approvals"
             )
-            
+
             print("✅ Pending Approvals Managed Successfully!")
             if self.runner.enable_debug:
                 summary = results.get("process_bulk_actions", {})
@@ -619,46 +676,63 @@ result = {{"result": summary_report}}
                 print(f"   Total Pending: {queue.get('total_pending_before', 'N/A')}")
                 print(f"   Processed: {queue.get('processed', 'N/A')}")
                 print(f"   Remaining: {queue.get('remaining', 'N/A')}")
-            
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to manage pending approvals: {str(e)}")
             return {"error": str(e)}
-    
-    def setup_approval_delegation(self, delegation_config: Dict[str, Any]) -> Dict[str, Any]:
+
+    def setup_approval_delegation(
+        self, delegation_config: Dict[str, Any]
+    ) -> Dict[str, Any]:
         """
         Setup approval delegation rules and chains.
-        
+
         Args:
             delegation_config: Delegation configuration
-            
+
         Returns:
             Delegation setup results
         """
         print("🔄 Setting Up Approval Delegation...")
-        
+
         builder = self.runner.create_workflow("setup_delegation")
-        
+
         # Add manager context
-        builder.add_node("PythonCodeNode", "manager_context", 
-                        create_user_context_node(self.manager_user_id, "manager", 
-                                                ["configure_delegation", "manage_approval_chains"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "manager_context",
+            create_user_context_node(
+                self.manager_user_id,
+                "manager",
+                ["configure_delegation", "manage_approval_chains"],
+            ),
+        )
+
         # Validate delegation configuration
         validation_rules = {
             "delegation_type": {"required": True, "type": str},
             "delegate_to": {"required": True, "type": str},
             "effective_from": {"required": True, "type": str},
-            "effective_until": {"required": False, "type": str}
+            "effective_until": {"required": False, "type": str},
         }
-        builder.add_node("PythonCodeNode", "validate_delegation", create_validation_node(validation_rules))
-        builder.add_connection("manager_context", "result", "validate_delegation", "context")
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_delegation",
+            create_validation_node(validation_rules),
+        )
+        builder.add_connection(
+            "manager_context", "result", "validate_delegation", "context"
+        )
+
         # Setup delegation rules
-        builder.add_node("PythonCodeNode", "setup_delegation_rules", {
-            "name": "configure_delegation_rules",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "setup_delegation_rules",
+            {
+                "name": "configure_delegation_rules",
+                "code": f"""
 import random
 from datetime import datetime, timedelta
 
@@ -724,14 +798,20 @@ delegation_rules = {{
 }}
 
 result = {{"result": delegation_rules}}
-"""
-        })
-        builder.add_connection("validate_delegation", "result", "setup_delegation_rules", "validation")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "validate_delegation", "result", "setup_delegation_rules", "validation"
+        )
+
         # Activate delegation
-        builder.add_node("PythonCodeNode", "activate_delegation", {
-            "name": "activate_delegation_rules",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "activate_delegation",
+            {
+                "name": "activate_delegation_rules",
+                "code": """
 from datetime import datetime, timedelta
 
 # Activate delegation rules
@@ -783,20 +863,24 @@ confirmation = {
 }
 
 result = {"result": confirmation}
-"""
-        })
-        builder.add_connection("setup_delegation_rules", "result", "activate_delegation", "setup_delegation_rules")
-        
+""",
+            },
+        )
+        builder.add_connection(
+            "setup_delegation_rules",
+            "result",
+            "activate_delegation",
+            "setup_delegation_rules",
+        )
+
         # Build and execute workflow
         workflow = builder.build()
-        
+
         try:
             results, execution_id = self.runner.execute_workflow(
-                workflow, 
-                delegation_config,
-                "setup_delegation"
+                workflow, delegation_config, "setup_delegation"
             )
-            
+
             print("✅ Delegation Setup Completed Successfully!")
             if self.runner.enable_debug:
                 confirmation = results.get("activate_delegation", {})
@@ -804,9 +888,9 @@ result = {"result": confirmation}
                 print(f"   Delegation Type: {summary.get('delegation_type', 'N/A')}")
                 print(f"   Delegate: {summary.get('delegate', 'N/A')}")
                 print(f"   Status: {summary.get('status', 'N/A')}")
-            
+
             return results
-            
+
         except Exception as e:
             print(f"❌ Failed to setup delegation: {str(e)}")
             return {"error": str(e)}
@@ -815,64 +899,70 @@ result = {"result": confirmation}
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the approval workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if tests pass, False otherwise
     """
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TESTING APPROVAL WORKFLOW")
-    print("="*60)
-    
+    print("=" * 60)
+
     workflow = ApprovalWorkflow("test_manager@company.com")
-    
+
     # Test 1: Access Request Approval
     print("\n1️⃣ Testing Access Request Approval...")
-    result = workflow.process_access_request({
-        "request_id": "REQ-12345",
-        "requester": "john.doe@company.com",
-        "resource_type": "production",
-        "access_level": "write",
-        "justification": "Need write access to production database for critical bug fix deployment"
-    })
-    
+    result = workflow.process_access_request(
+        {
+            "request_id": "REQ-12345",
+            "requester": "john.doe@company.com",
+            "resource_type": "production",
+            "access_level": "write",
+            "justification": "Need write access to production database for critical bug fix deployment",
+        }
+    )
+
     if "error" in result:
         print(f"❌ Access request approval test failed: {result['error']}")
         return False
-    
+
     # Test 2: Manage Pending Approvals
     print("\n2️⃣ Testing Pending Approvals Management...")
-    result = workflow.manage_pending_approvals({
-        "status": "pending",
-        "priority": "high",
-        "age_days": 7,
-        "bulk_actions": ["auto_approve_eligible"]
-    })
-    
+    result = workflow.manage_pending_approvals(
+        {
+            "status": "pending",
+            "priority": "high",
+            "age_days": 7,
+            "bulk_actions": ["auto_approve_eligible"],
+        }
+    )
+
     if "error" in result:
         print(f"❌ Pending approvals management test failed: {result['error']}")
         return False
-    
+
     # Test 3: Setup Delegation
     print("\n3️⃣ Testing Delegation Setup...")
-    result = workflow.setup_approval_delegation({
-        "delegation_type": "temporary",
-        "delegate_to": "senior.manager@company.com",
-        "effective_from": datetime.now().isoformat(),
-        "effective_until": (datetime.now() + timedelta(days=14)).isoformat(),
-        "request_types": ["access_request", "time_off"],
-        "max_amount": 5000
-    })
-    
+    result = workflow.setup_approval_delegation(
+        {
+            "delegation_type": "temporary",
+            "delegate_to": "senior.manager@company.com",
+            "effective_from": datetime.now().isoformat(),
+            "effective_until": (datetime.now() + timedelta(days=14)).isoformat(),
+            "request_types": ["access_request", "time_off"],
+            "max_amount": 5000,
+        }
+    )
+
     if "error" in result:
         print(f"❌ Delegation setup test failed: {result['error']}")
         return False
-    
+
     # Print summary statistics
     workflow.runner.print_stats()
-    
+
     print("\n✅ All approval workflow tests passed!")
     return True
 

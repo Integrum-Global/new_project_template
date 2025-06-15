@@ -10,26 +10,30 @@ This workflow handles the initial system setup including:
 - SSO provider setup
 """
 
-import sys
 import os
+import sys
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class SystemSetupWorkflow:
     """
     Complete system setup and configuration workflow for administrators.
     """
-    
+
     def __init__(self, admin_user_id: str = "system_admin"):
         """
         Initialize the system setup workflow.
-        
+
         Args:
             admin_user_id: ID of the administrator performing setup
         """
@@ -39,29 +43,36 @@ class SystemSetupWorkflow:
             user_id=admin_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def setup_database_schema(self) -> Dict[str, Any]:
         """
         Initialize database schema for user management system.
-        
+
         Returns:
             Results of database setup workflow
         """
         print("🗄️  Initializing Database Schema...")
-        
+
         builder = self.runner.create_workflow("database_schema_setup")
-        
+
         # Add user context
-        builder.add_node("PythonCodeNode", "user_context", 
-                        create_user_context_node(self.admin_user_id, "admin", 
-                                                ["system_admin", "database_admin"]))
-        
+        builder.add_node(
+            "PythonCodeNode",
+            "user_context",
+            create_user_context_node(
+                self.admin_user_id, "admin", ["system_admin", "database_admin"]
+            ),
+        )
+
         # Database initialization
-        builder.add_node("PythonCodeNode", "init_database", {
-            "name": "initialize_database_schema",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "init_database",
+            {
+                "name": "initialize_database_schema",
+                "code": """
 from datetime import datetime
 
 # Initialize user management database schema
@@ -88,7 +99,7 @@ tables_created.append(user_table)
 
 # Roles table
 roles_table = {
-    "name": "roles", 
+    "name": "roles",
     "columns": [
         "id (UUID PRIMARY KEY)",
         "name (VARCHAR UNIQUE)",
@@ -165,13 +176,17 @@ result = {
         "setup_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Create system indexes
-        builder.add_node("PythonCodeNode", "create_indexes", {
-            "name": "create_performance_indexes",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_indexes",
+            {
+                "name": "create_performance_indexes",
+                "code": """
 # Create performance indexes
 performance_indexes = [
     {
@@ -182,7 +197,7 @@ performance_indexes = [
     },
     {
         "name": "idx_audit_logs_action_timestamp",
-        "table": "audit_logs", 
+        "table": "audit_logs",
         "columns": ["action", "timestamp"],
         "type": "btree"
     },
@@ -201,36 +216,42 @@ result = {
         "query_optimization": "configured"
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect nodes
         builder.add_connection("user_context", "result", "init_database", "context")
-        builder.add_connection("init_database", "result.result", "create_indexes", "database_info")
-        
+        builder.add_connection(
+            "init_database", "result.result", "create_indexes", "database_info"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {}, "database_schema_setup"
         )
-        
+
         return results
-    
+
     def configure_security_policies(self) -> Dict[str, Any]:
         """
         Set up security policies and configurations.
-        
+
         Returns:
             Results of security configuration workflow
         """
         print("🔐 Configuring Security Policies...")
-        
+
         builder = self.runner.create_workflow("security_configuration")
-        
+
         # Password policy configuration
-        builder.add_node("PythonCodeNode", "password_policy", {
-            "name": "configure_password_policy",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "password_policy",
+            {
+                "name": "configure_password_policy",
+                "code": """
 from datetime import datetime
 # Configure comprehensive password policy
 password_policy = {
@@ -281,13 +302,17 @@ result = {
         "configured_at": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Audit configuration
-        builder.add_node("PythonCodeNode", "audit_config", {
-            "name": "configure_audit_logging",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "audit_config",
+            {
+                "name": "configure_audit_logging",
+                "code": """
 # Configure comprehensive audit logging
 audit_config = {
     "enabled": True,
@@ -320,46 +345,55 @@ result = {
         "alerts_configured": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect security configuration nodes
-        builder.add_connection("password_policy", "result.result", "audit_config", "security_config")
-        
+        builder.add_connection(
+            "password_policy", "result.result", "audit_config", "security_config"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {}, "security_configuration"
         )
-        
+
         return results
-    
+
     def create_admin_accounts(self) -> Dict[str, Any]:
         """
         Create initial administrator accounts.
-        
+
         Returns:
             Results of admin account creation workflow
         """
         print("👤 Creating Administrator Accounts...")
-        
+
         builder = self.runner.create_workflow("admin_account_creation")
-        
+
         # Validation for admin creation
         validation_rules = {
             "email": {"required": True, "type": str, "min_length": 5},
             "password": {"required": True, "type": str, "min_length": 12},
             "first_name": {"required": True, "type": str, "min_length": 1},
-            "last_name": {"required": True, "type": str, "min_length": 1}
+            "last_name": {"required": True, "type": str, "min_length": 1},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_admin_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_admin_input",
+            create_validation_node(validation_rules),
+        )
+
         # Create super admin account
-        builder.add_node("PythonCodeNode", "create_super_admin", {
-            "name": "create_super_administrator",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_super_admin",
+            {
+                "name": "create_super_administrator",
+                "code": """
 import random
 import string
 
@@ -373,7 +407,7 @@ super_admin = {
     "id": generate_id(),
     "email": "admin@company.com",
     "first_name": "System",
-    "last_name": "Administrator", 
+    "last_name": "Administrator",
     "password_hash": hashlib.sha256(("SecureAdminPassword123!" + secrets.token_hex(16)).encode()).hexdigest(),
     "is_active": True,
     "is_superuser": True,
@@ -416,13 +450,17 @@ result = {
         "default_roles_assigned": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Create system roles
-        builder.add_node("PythonCodeNode", "create_system_roles", {
-            "name": "create_default_system_roles",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_system_roles",
+            {
+                "name": "create_default_system_roles",
+                "code": """
 # Create comprehensive system roles
 system_roles = []
 
@@ -490,61 +528,68 @@ result = {
         "role_hierarchy_established": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect admin creation nodes
-        builder.add_connection("validate_admin_input", "result", "create_super_admin", "validation")
-        builder.add_connection("create_super_admin", "result.result", "create_system_roles", "admin_info")
-        
+        builder.add_connection(
+            "validate_admin_input", "result", "create_super_admin", "validation"
+        )
+        builder.add_connection(
+            "create_super_admin", "result.result", "create_system_roles", "admin_info"
+        )
+
         # Execute workflow
         workflow = builder.build()
-        
+
         # Provide admin creation parameters
         admin_params = {
             "email": "admin@company.com",
             "password": "SecureAdminPassword123!",
             "first_name": "System",
-            "last_name": "Administrator"
+            "last_name": "Administrator",
         }
-        
+
         results, execution_id = self.runner.execute_workflow(
             workflow, admin_params, "admin_account_creation"
         )
-        
+
         return results
-    
-    def setup_sso_providers(self, sso_configs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+
+    def setup_sso_providers(
+        self, sso_configs: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Configure SSO providers for enterprise authentication.
-        
+
         Args:
             sso_configs: Optional SSO configuration parameters
-            
+
         Returns:
             Results of SSO setup workflow
         """
         print("🔗 Configuring SSO Providers...")
-        
+
         if not sso_configs:
             sso_configs = {
                 "azure_ad": {
                     "enabled": True,
                     "tenant_id": "your-tenant-id",
-                    "client_id": "your-client-id"
+                    "client_id": "your-client-id",
                 },
-                "google": {
-                    "enabled": True,
-                    "domain": "company.com"
-                }
+                "google": {"enabled": True, "domain": "company.com"},
             }
-        
+
         builder = self.runner.create_workflow("sso_configuration")
-        
+
         # SSO provider configuration
-        builder.add_node("PythonCodeNode", "configure_sso", {
-            "name": "configure_sso_providers",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "configure_sso",
+            {
+                "name": "configure_sso_providers",
+                "code": f"""
 # Configure SSO providers
 sso_providers = []
 
@@ -570,7 +615,7 @@ if {sso_configs.get('azure_ad', {}).get('enabled', False)}:
     }}
     sso_providers.append(azure_config)
 
-# Google Workspace configuration  
+# Google Workspace configuration
 if {sso_configs.get('google', {}).get('enabled', False)}:
     google_config = {{
         "provider": "google",
@@ -582,7 +627,7 @@ if {sso_configs.get('google', {}).get('enabled', False)}:
         "scopes": ["openid", "email", "profile"],
         "attribute_mapping": {{
             "email": "email",
-            "first_name": "given_name", 
+            "first_name": "given_name",
             "last_name": "family_name",
             "picture": "picture"
         }},
@@ -615,13 +660,17 @@ result = {{
         "fallback_auth_enabled": True
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Test SSO connectivity
-        builder.add_node("PythonCodeNode", "test_sso_connectivity", {
-            "name": "test_sso_connections",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "test_sso_connectivity",
+            {
+                "name": "test_sso_connections",
+                "code": """
 # Test SSO provider connectivity
 connectivity_tests = []
 
@@ -643,35 +692,41 @@ result = {
         "providers_ready": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect SSO configuration nodes
-        builder.add_connection("configure_sso", "result.result", "test_sso_connectivity", "sso_config")
-        
+        builder.add_connection(
+            "configure_sso", "result.result", "test_sso_connectivity", "sso_config"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, sso_configs, "sso_configuration"
         )
-        
+
         return results
-    
+
     def validate_system_setup(self) -> Dict[str, Any]:
         """
         Comprehensive system validation after setup.
-        
+
         Returns:
             Results of system validation workflow
         """
         print("✅ Validating System Setup...")
-        
+
         builder = self.runner.create_workflow("system_validation")
-        
+
         # Component validation
-        builder.add_node("PythonCodeNode", "validate_components", {
-            "name": "validate_system_components",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_components",
+            {
+                "name": "validate_system_components",
+                "code": """
 # Validate all system components
 validation_results = {}
 
@@ -730,13 +785,17 @@ result = {
         "validation_timestamp": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Performance validation
-        builder.add_node("PythonCodeNode", "validate_performance", {
-            "name": "validate_system_performance", 
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_performance",
+            {
+                "name": "validate_system_performance",
+                "code": """
 # Performance validation tests
 performance_tests = []
 
@@ -753,7 +812,7 @@ performance_tests.append(api_test)
 db_test = {
     "test": "database_queries",
     "target": "< 50ms",
-    "actual": "23ms", 
+    "actual": "23ms",
     "status": "pass"
 }
 performance_tests.append(db_test)
@@ -784,94 +843,135 @@ result = {
         "ready_for_production": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect validation nodes
-        builder.add_connection("validate_components", "result.result", "validate_performance", "component_status")
-        
+        builder.add_connection(
+            "validate_components",
+            "result.result",
+            "validate_performance",
+            "component_status",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {}, "system_validation"
         )
-        
+
         return results
-    
-    def run_complete_setup(self, sso_configs: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+
+    def run_complete_setup(
+        self, sso_configs: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
         """
         Run the complete system setup workflow.
-        
+
         Args:
             sso_configs: Optional SSO configuration
-            
+
         Returns:
             Complete setup results
         """
         print("🚀 Starting Complete System Setup...")
         print("=" * 60)
-        
+
         setup_results = {}
-        
+
         try:
             # Step 1: Database Schema Setup
             setup_results["database"] = self.setup_database_schema()
-            
+
             # Step 2: Security Configuration
             setup_results["security"] = self.configure_security_policies()
-            
+
             # Step 3: Admin Account Creation
             setup_results["admin_accounts"] = self.create_admin_accounts()
-            
+
             # Step 4: SSO Configuration
             setup_results["sso"] = self.setup_sso_providers(sso_configs)
-            
+
             # Step 5: System Validation
             setup_results["validation"] = self.validate_system_setup()
-            
+
             # Print summary
             self.print_setup_summary(setup_results)
-            
+
             return setup_results
-            
+
         except Exception as e:
             print(f"❌ System setup failed: {str(e)}")
             raise
-    
+
     def print_setup_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive setup summary.
-        
+
         Args:
             results: Setup results from all workflows
         """
         print("\n" + "=" * 60)
         print("SYSTEM SETUP COMPLETE")
         print("=" * 60)
-        
+
         # Database summary
-        db_result = results.get("database", {}).get("init_database", {}).get("result", {}).get("result", {})
-        print(f"📊 Database: {db_result.get('tables_created', 0)} tables, {db_result.get('indexes_created', 0)} indexes")
-        
+        db_result = (
+            results.get("database", {})
+            .get("init_database", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📊 Database: {db_result.get('tables_created', 0)} tables, {db_result.get('indexes_created', 0)} indexes"
+        )
+
         # Security summary
-        security_result = results.get("security", {}).get("password_policy", {}).get("result", {}).get("result", {})
-        print(f"🔐 Security: Password policy configured, MFA enabled: {security_result.get('mfa_config', {}).get('enabled', False)}")
-        
+        security_result = (
+            results.get("security", {})
+            .get("password_policy", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🔐 Security: Password policy configured, MFA enabled: {security_result.get('mfa_config', {}).get('enabled', False)}"
+        )
+
         # Admin accounts summary
-        admin_result = results.get("admin_accounts", {}).get("create_super_admin", {}).get("result", {}).get("result", {})
+        admin_result = (
+            results.get("admin_accounts", {})
+            .get("create_super_admin", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"👤 Admin: {admin_result.get('admin_accounts', 0)} accounts created")
-        
+
         # SSO summary
-        sso_result = results.get("sso", {}).get("configure_sso", {}).get("result", {}).get("result", {})
-        print(f"🔗 SSO: {sso_result.get('providers_configured', 0)} providers configured")
-        
+        sso_result = (
+            results.get("sso", {})
+            .get("configure_sso", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🔗 SSO: {sso_result.get('providers_configured', 0)} providers configured"
+        )
+
         # Validation summary
-        validation_result = results.get("validation", {}).get("validate_components", {}).get("result", {}).get("result", {})
-        print(f"✅ Validation: {validation_result.get('components_validated', 0)} components validated")
-        
+        validation_result = (
+            results.get("validation", {})
+            .get("validate_components", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"✅ Validation: {validation_result.get('components_validated', 0)} components validated"
+        )
+
         print("\n🎉 System is ready for production use!")
         print("=" * 60)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -879,31 +979,43 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the system setup workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing System Setup Workflow...")
-        
+
         # Create test workflow
         setup = SystemSetupWorkflow("test_admin")
-        
+
         # Test individual components
         db_result = setup.setup_database_schema()
-        if not db_result.get("init_database", {}).get("result", {}).get("result", {}).get("status") == "success":
+        if (
+            not db_result.get("init_database", {})
+            .get("result", {})
+            .get("result", {})
+            .get("status")
+            == "success"
+        ):
             return False
-        
+
         security_result = setup.configure_security_policies()
-        if not security_result.get("password_policy", {}).get("result", {}).get("result", {}).get("security_level") == "enterprise":
+        if (
+            not security_result.get("password_policy", {})
+            .get("result", {})
+            .get("result", {})
+            .get("security_level")
+            == "enterprise"
+        ):
             return False
-        
+
         print("✅ System setup workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ System setup workflow test failed: {str(e)}")
         return False
@@ -917,20 +1029,17 @@ if __name__ == "__main__":
     else:
         # Run complete setup
         setup = SystemSetupWorkflow()
-        
+
         # Optional SSO configuration
         sso_config = {
             "azure_ad": {
                 "enabled": True,
                 "tenant_id": "your-tenant-id",
-                "client_id": "your-client-id"
+                "client_id": "your-client-id",
             },
-            "google": {
-                "enabled": True,
-                "domain": "company.com"
-            }
+            "google": {"enabled": True, "domain": "company.com"},
         }
-        
+
         try:
             results = setup.run_complete_setup(sso_config)
             print("🎉 Complete system setup finished successfully!")

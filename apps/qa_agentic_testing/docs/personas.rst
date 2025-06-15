@@ -17,7 +17,7 @@ Administrative Personas
    * **Use Case**: Complete system validation and security testing
 
 **Security Officer (Sarah Security)**
-   * **Role**: Security Officer  
+   * **Role**: Security Officer
    * **Permissions**: user:read, role:read, audit:read, security:*
    * **Focus**: Security, audit, compliance
    * **Success Rate**: 75.0%

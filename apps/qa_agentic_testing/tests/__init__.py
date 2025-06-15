@@ -17,6 +17,7 @@ from pathlib import Path
 QA_RESULTS_DIR = Path(__file__).parent.parent / "qa_results"
 QA_RESULTS_DIR.mkdir(exist_ok=True)
 
+
 # Common test utilities
 def get_results_path(filename: str) -> Path:
     """Get path for test results file."""

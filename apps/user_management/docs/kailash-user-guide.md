@@ -95,7 +95,7 @@ from kailash.workflow import WorkflowBuilder
 
 def create_user_workflow():
     builder = WorkflowBuilder("user_creation_enterprise")
-    
+
     # Step 1: Validate user data
     builder.add_node("PythonCodeNode", "validate_user_data", {
         "name": "data_validator",
@@ -131,7 +131,7 @@ result = {
 }
 """
     })
-    
+
     # Step 2: Check permissions
     builder.add_node("ABACPermissionEvaluatorNode", "check_permissions", {
         "name": "permission_evaluator",
@@ -139,7 +139,7 @@ result = {
         "action": "create",
         "require_context": ["user_role", "department"]
     })
-    
+
     # Step 3: Create user record
     builder.add_node("UserManagementNode", "create_user", {
         "name": "user_creator",
@@ -147,21 +147,21 @@ result = {
         "auto_generate_id": True,
         "hash_password": True
     })
-    
+
     # Step 4: Setup SSO
     builder.add_node("SSOAuthenticationNode", "setup_sso", {
         "name": "sso_configurator",
         "provider": "saml",
         "auto_provision": True
     })
-    
+
     # Step 5: Setup MFA
     builder.add_node("MultiFactorAuthNode", "setup_mfa", {
         "name": "mfa_configurator",
         "methods": ["totp", "sms"],
         "require_backup_codes": True
     })
-    
+
     # Step 6: Audit logging
     builder.add_node("AuditLogNode", "log_audit", {
         "name": "audit_logger",
@@ -169,7 +169,7 @@ result = {
         "severity": "INFO",
         "include_user_data": True
     })
-    
+
     # Step 7: Send notification
     builder.add_node("PythonCodeNode", "send_notification", {
         "name": "notification_sender",
@@ -186,7 +186,7 @@ notification_data = {
 result = {"result": notification_data}
 """
     })
-    
+
     # Connect workflow steps
     builder.add_connection("validate_user_data", "result", "check_permissions", "validation_result")
     builder.add_connection("check_permissions", "allowed", "create_user", "permission_granted")
@@ -197,7 +197,7 @@ result = {"result": notification_data}
     builder.add_connection("create_user", "user_result", "send_notification", "user_result")
     builder.add_connection("setup_sso", "sso_result", "send_notification", "sso_result")
     builder.add_connection("setup_mfa", "mfa_result", "send_notification", "mfa_result")
-    
+
     return builder.build()
 ```
 
@@ -206,7 +206,7 @@ result = {"result": notification_data}
 ```python
 def create_authentication_workflow():
     builder = WorkflowBuilder("user_authentication_enterprise")
-    
+
     # Step 1: Risk assessment
     builder.add_node("BehaviorAnalysisNode", "assess_risk", {
         "name": "risk_assessor",
@@ -214,14 +214,14 @@ def create_authentication_workflow():
         "ml_model": "user_behavior_v2",
         "risk_threshold": 0.7
     })
-    
+
     # Step 2: Threat detection
     builder.add_node("ThreatDetectionNode", "threat_detection", {
         "name": "threat_detector",
         "check_patterns": ["brute_force", "credential_stuffing", "anomalous_location"],
         "real_time_feeds": True
     })
-    
+
     # Step 3: Authentication
     builder.add_node("EnterpriseAuthProviderNode", "authenticate", {
         "name": "authenticator",
@@ -229,7 +229,7 @@ def create_authentication_workflow():
         "fallback_order": ["sso", "ldap", "local"],
         "require_mfa_threshold": 0.5
     })
-    
+
     # Step 4: Session management
     builder.add_node("SessionManagementNode", "create_session", {
         "name": "session_manager",
@@ -237,21 +237,21 @@ def create_authentication_workflow():
         "session_timeout": 3600,
         "refresh_token": True
     })
-    
+
     # Step 5: Security event logging
     builder.add_node("SecurityEventNode", "log_event", {
         "name": "security_logger",
         "event_types": ["login_success", "login_failure", "high_risk_login"],
         "include_context": True
     })
-    
+
     # Connect authentication flow
     builder.add_connection("assess_risk", "risk_score", "threat_detection", "risk_context")
     builder.add_connection("threat_detection", "threat_assessment", "authenticate", "security_context")
     builder.add_connection("authenticate", "auth_result", "create_session", "user_data")
     builder.add_connection("assess_risk", "risk_score", "log_event", "risk_data")
     builder.add_connection("authenticate", "auth_result", "log_event", "auth_data")
-    
+
     return builder.build()
 ```
 
@@ -260,7 +260,7 @@ def create_authentication_workflow():
 ```python
 def create_permission_check_workflow():
     builder = WorkflowBuilder("permission_check_enterprise")
-    
+
     # Step 1: Get user context
     builder.add_node("PythonCodeNode", "get_user_context", {
         "name": "context_gatherer",
@@ -278,7 +278,7 @@ user_context = {
 result = {"result": {"user_context": user_context}}
 """
     })
-    
+
     # Step 2: ABAC evaluation with AI
     builder.add_node("ABACPermissionEvaluatorNode", "evaluate_permission", {
         "name": "abac_evaluator",
@@ -287,7 +287,7 @@ result = {"result": {"user_context": user_context}}
         "evaluation_timeout": 15,  # 15ms target
         "cache_results": True
     })
-    
+
     # Step 3: Format response
     builder.add_node("PythonCodeNode", "format_response", {
         "name": "response_formatter",
@@ -307,11 +307,11 @@ response = {
 result = {"result": response}
 """
     })
-    
+
     # Connect permission flow
     builder.add_connection("get_user_context", "result", "evaluate_permission", "user_context")
     builder.add_connection("evaluate_permission", "evaluation_result", "format_response", "evaluation_result")
-    
+
     return builder.build()
 ```
 
@@ -332,10 +332,10 @@ async def create_user(
     agent_ui: AgentUIMiddleware = Depends(get_agent_ui)
 ):
     """Create user with enterprise workflow."""
-    
+
     # Create session for workflow execution
     session_id = await agent_ui.create_session("user_creation")
-    
+
     try:
         # Execute user creation workflow
         execution_id = await agent_ui.execute_workflow_template(
@@ -343,18 +343,18 @@ async def create_user(
             "user_creation_enterprise",
             inputs={"user_data": user_data.dict()}
         )
-        
+
         # Wait for completion with timeout
         result = await agent_ui.wait_for_execution(
-            session_id, 
-            execution_id, 
+            session_id,
+            execution_id,
             timeout=30
         )
-        
+
         # Extract user data from workflow result
         user_result = result["outputs"]["create_user"]["user_result"]
         return UserResponseSchema(**user_result)
-        
+
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
 ```
@@ -370,14 +370,14 @@ class UserManagementWebSocket:
     def __init__(self):
         self.realtime = RealtimeMiddleware()
         self.connections = []
-    
+
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.connections.append(websocket)
-        
+
         # Subscribe to user events
         await self.realtime.subscribe("user_events", self.broadcast_event)
-    
+
     async def broadcast_event(self, event_data):
         """Broadcast user events to all connected clients."""
         for connection in self.connections:
@@ -390,7 +390,7 @@ class UserManagementWebSocket:
 async def websocket_endpoint(websocket: WebSocket):
     ws_manager = UserManagementWebSocket()
     await ws_manager.connect(websocket)
-    
+
     try:
         while True:
             await websocket.receive_text()
@@ -418,36 +418,36 @@ class EnterpriseSecurityStack:
             "oauth2": SSOAuthenticationNode(provider="oauth2"),
             "oidc": SSOAuthenticationNode(provider="oidc")
         }
-        
+
         self.mfa = MultiFactorAuthNode(
             methods=["totp", "sms", "email", "hardware_token"]
         )
-        
+
         self.behavior_analysis = BehaviorAnalysisNode(
             ml_model="enterprise_v3",
             risk_factors=["location", "device", "time", "behavior"]
         )
-        
+
         self.threat_detection = ThreatDetectionNode(
             detection_rules=["brute_force", "credential_stuffing", "account_takeover"],
             real_time_feeds=True
         )
-    
+
     async def authenticate_user(self, credentials, context):
         """Complete enterprise authentication flow."""
-        
+
         # Risk assessment
         risk_score = await self.behavior_analysis.assess_risk(
             user_id=credentials.get("user_id"),
             context=context
         )
-        
+
         # Threat detection
         threats = await self.threat_detection.check_threats(
             credentials=credentials,
             context=context
         )
-        
+
         # Determine authentication method
         if risk_score > 0.7 or threats:
             # High risk - require strongest authentication
@@ -464,7 +464,7 @@ class EnterpriseSecurityStack:
                 auth_result = await self.authenticate_with_provider(provider, credentials)
                 if auth_result.get("success"):
                     return auth_result
-        
+
         return {"success": False, "reason": "Authentication failed"}
 ```
 
@@ -485,10 +485,10 @@ class AdvancedABACSystem:
                 "distance_within", "in_region"
             ]
         )
-    
+
     async def check_permission(self, user_id, resource, action, context=None):
         """AI-enhanced permission checking."""
-        
+
         permission_request = {
             "user_id": user_id,
             "resource": resource,
@@ -496,9 +496,9 @@ class AdvancedABACSystem:
             "context": context or {},
             "timestamp": datetime.now().isoformat()
         }
-        
+
         result = await self.evaluator.evaluate(permission_request)
-        
+
         return {
             "allowed": result.get("allowed", False),
             "reason": result.get("reason", ""),
@@ -506,13 +506,13 @@ class AdvancedABACSystem:
             "policies_applied": result.get("policies_applied", []),
             "evaluation_time_ms": result.get("evaluation_time_ms", 0)
         }
-    
+
     async def create_dynamic_policy(self, policy_data):
         """Create ABAC policy with AI assistance."""
-        
+
         # AI-enhanced policy creation
         enhanced_policy = await self.evaluator.enhance_policy(policy_data)
-        
+
         return {
             "policy_id": enhanced_policy.get("id"),
             "rules": enhanced_policy.get("rules"),
@@ -532,10 +532,10 @@ from kailash.workflow import WorkflowBuilder
 class OptimizedUserRepository:
     def __init__(self):
         self.runtime = LocalRuntime(enable_async=True)
-    
+
     async def execute_query(self, query: str, params: dict = None) -> list:
         """Execute optimized database query."""
-        
+
         workflow = WorkflowBuilder("query_workflow")
         workflow.add_node("AsyncSQLDatabaseNode", "db_query", {
             "name": "query_executor",
@@ -547,17 +547,17 @@ class OptimizedUserRepository:
             "enable_cache": True,
             "cache_ttl": 300  # 5 minute cache
         })
-        
+
         built_workflow = workflow.build()
         results, _ = await self.runtime.execute(built_workflow, parameters={})
-        
+
         return results["db_query"]["rows"]
-    
+
     async def get_user_with_permissions(self, user_id: str):
         """Get user with all permissions in single optimized query."""
-        
+
         query = """
-        SELECT 
+        SELECT
             u.*,
             array_agg(DISTINCT r.name) as roles,
             array_agg(DISTINCT p.name) as permissions
@@ -569,7 +569,7 @@ class OptimizedUserRepository:
         WHERE u.id = $1
         GROUP BY u.id
         """
-        
+
         result = await self.execute_query(query, {"user_id": user_id})
         return result[0] if result else None
 ```
@@ -586,7 +586,7 @@ class UserManagementCache:
             backend="redis",
             default_ttl=3600
         )
-        
+
         # Define cache layers
         self.cache_layers = {
             "user_profiles": {"ttl": 3600},  # 1 hour
@@ -595,37 +595,37 @@ class UserManagementCache:
             "abac_results": {"ttl": 300},    # 5 minutes
             "search_results": {"ttl": 180}   # 3 minutes
         }
-    
+
     async def get_user_permissions(self, user_id: str):
         """Cached permission lookup."""
-        
+
         cache_key = f"permissions:{user_id}"
         cached_result = await self.cache.get(cache_key)
-        
+
         if cached_result:
             return cached_result
-        
+
         # Fetch from database
         permissions = await self.fetch_user_permissions(user_id)
-        
+
         # Cache with appropriate TTL
         await self.cache.set(
-            cache_key, 
-            permissions, 
+            cache_key,
+            permissions,
             ttl=self.cache_layers["permissions"]["ttl"]
         )
-        
+
         return permissions
-    
+
     async def invalidate_user_cache(self, user_id: str):
         """Invalidate all cache entries for a user."""
-        
+
         patterns = [
             f"user:{user_id}:*",
             f"permissions:{user_id}",
             f"sessions:{user_id}:*"
         ]
-        
+
         for pattern in patterns:
             await self.cache.delete_pattern(pattern)
 ```
@@ -641,7 +641,7 @@ from kailash.middleware import EventStreamMiddleware
 class UserManagementEvents:
     def __init__(self):
         self.event_stream = EventStreamMiddleware()
-        
+
         # Define event types
         self.event_types = {
             "user_created": {"priority": "normal", "retention": "7d"},
@@ -652,22 +652,22 @@ class UserManagementEvents:
             "permission_denied": {"priority": "high", "retention": "30d"},
             "security_threat": {"priority": "critical", "retention": "90d"}
         }
-    
+
     async def emit_user_event(self, event_type: str, data: dict):
         """Emit user management event."""
-        
+
         event = {
             "type": event_type,
             "data": data,
             "timestamp": datetime.now().isoformat(),
             "source": "user_management"
         }
-        
+
         await self.event_stream.emit(event_type, event)
-    
+
     async def subscribe_to_events(self, event_types: list, callback):
         """Subscribe to specific event types."""
-        
+
         for event_type in event_types:
             await self.event_stream.subscribe(event_type, callback)
 ```
@@ -680,38 +680,38 @@ class UserManagementDashboard:
     def __init__(self):
         self.events = UserManagementEvents()
         self.metrics = {}
-    
+
     async def start_monitoring(self):
         """Start real-time monitoring."""
-        
+
         # Subscribe to all user events
         await self.events.subscribe_to_events(
             ["user_created", "user_updated", "authentication_success"],
             self.update_metrics
         )
-    
+
     async def update_metrics(self, event):
         """Update dashboard metrics in real-time."""
-        
+
         event_type = event.get("type")
-        
+
         if event_type == "user_created":
             self.metrics["total_users"] = self.metrics.get("total_users", 0) + 1
         elif event_type == "authentication_success":
             self.metrics["active_sessions"] = self.metrics.get("active_sessions", 0) + 1
-        
+
         # Broadcast updated metrics to WebSocket clients
         await self.broadcast_metrics()
-    
+
     async def broadcast_metrics(self):
         """Broadcast metrics to connected dashboards."""
-        
+
         metrics_event = {
             "type": "metrics_update",
             "data": self.metrics,
             "timestamp": datetime.now().isoformat()
         }
-        
+
         await self.events.emit_user_event("dashboard_update", metrics_event)
 ```
 
@@ -729,15 +729,15 @@ class TestUserWorkflows:
     @pytest.fixture
     async def test_runtime(self):
         return LocalRuntime(enable_async=True, debug=True)
-    
+
     @pytest.mark.asyncio
     async def test_user_creation_workflow(self, test_runtime):
         """Test user creation workflow with valid data."""
-        
+
         # Create workflow
         registry = WorkflowRegistry()
         workflow = await registry.get_workflow("user_creation_enterprise")
-        
+
         # Test data
         user_data = {
             "email": "test@example.com",
@@ -745,13 +745,13 @@ class TestUserWorkflows:
             "last_name": "User",
             "department": "Engineering"
         }
-        
+
         # Execute workflow
         results, run_id = await test_runtime.execute(
             workflow,
             parameters={"user_data": user_data}
         )
-        
+
         # Verify results
         assert results["validate_user_data"]["result"]["valid"] is True
         assert results["create_user"]["user_result"]["email"] == user_data["email"]
@@ -770,7 +770,7 @@ class TestUserAPI:
     @pytest.mark.asyncio
     async def test_create_user_endpoint(self):
         """Test user creation endpoint."""
-        
+
         async with AsyncClient(app=app, base_url="http://test") as client:
             response = await client.post(
                 "/api/users/",
@@ -781,7 +781,7 @@ class TestUserAPI:
                 },
                 headers={"Authorization": "Bearer test_token"}
             )
-            
+
             assert response.status_code == 200
             data = response.json()
             assert data["email"] == "test@example.com"
@@ -825,22 +825,22 @@ class Settings(BaseSettings):
     # Database
     database_url: str
     redis_url: str = "redis://localhost:6379"
-    
+
     # Security
     jwt_secret_key: str
     jwt_algorithm: str = "HS256"
     jwt_expiration: int = 3600
-    
+
     # Enterprise features
     enable_sso: bool = True
     enable_mfa: bool = True
     enable_audit_logging: bool = True
-    
+
     # Performance
     max_concurrency: int = 10
     session_timeout_minutes: int = 30
     cache_ttl_seconds: int = 300
-    
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -860,7 +860,7 @@ class UserManagementMonitoring:
             enable_prometheus=True,
             enable_custom_metrics=True
         )
-        
+
         # Define custom metrics
         self.user_metrics = {
             "user_creation_time": "histogram",
@@ -868,19 +868,19 @@ class UserManagementMonitoring:
             "permission_check_time": "histogram",
             "active_sessions": "gauge"
         }
-    
+
     async def track_user_operation(self, operation: str, duration: float):
         """Track user operation metrics."""
-        
+
         await self.metrics.record_histogram(
             f"user_operation_{operation}_duration",
             duration,
             labels={"operation": operation}
         )
-    
+
     async def get_health_status(self):
         """Get system health status."""
-        
+
         return {
             "status": "healthy",
             "services": {

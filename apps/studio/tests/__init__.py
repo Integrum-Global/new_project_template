@@ -1,5 +1,7 @@
 """Test utilities for Studio Application."""
+
 from pathlib import Path
+
 
 def get_results_path(filename: str) -> Path:
     """Get path for test results in qa_results directory."""

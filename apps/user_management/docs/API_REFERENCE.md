@@ -75,7 +75,7 @@ Initiate SSO authentication with specified provider.
 #### Azure AD
 ```json
 {
-  "provider": "azure", 
+  "provider": "azure",
   "redirect_uri": "https://app.company.com/auth/azure/callback",
   "scope": "openid profile email User.Read"
 }
@@ -409,7 +409,7 @@ Update user information.
 ```json
 {
   "first_name": "John",
-  "last_name": "Smith", 
+  "last_name": "Smith",
   "department": "Platform Engineering",
   "job_title": "Principal Engineer",
   "groups": ["engineers", "principals", "architects"],
@@ -483,7 +483,7 @@ List all roles and permissions.
         "description": "Manages engineering teams",
         "permissions": [
           "users.read",
-          "users.write", 
+          "users.write",
           "projects.manage",
           "deployments.approve"
         ],
@@ -533,7 +533,7 @@ List all available permissions.
     ],
     "categories": [
       "user_management",
-      "system_admin", 
+      "system_admin",
       "security",
       "compliance"
     ]
@@ -616,7 +616,7 @@ Perform risk assessment for authentication attempt.
     "risk_level": "medium",
     "factors": [
       "unknown_device",
-      "external_ip", 
+      "external_ip",
       "unusual_hour"
     ],
     "recommendations": [
@@ -872,7 +872,7 @@ Process GDPR data deletion request.
     "estimated_completion": "2024-01-16T10:30:00Z",
     "data_to_delete": [
       "profile_information",
-      "session_data", 
+      "session_data",
       "authentication_history"
     ],
     "data_to_retain": [
@@ -975,7 +975,7 @@ const ws = new WebSocket('wss://api.company.com/ws/admin');
 }
 ```
 
-#### Authentication Events  
+#### Authentication Events
 ```json
 {
   "type": "authentication_success",
@@ -1009,7 +1009,7 @@ const ws = new WebSocket('wss://api.company.com/ws/admin');
 ```json
 {
   "type": "system_alert",
-  "timestamp": "2024-01-15T10:30:00Z", 
+  "timestamp": "2024-01-15T10:30:00Z",
   "data": {
     "alert_type": "high_cpu_usage",
     "severity": "warning",
@@ -1034,7 +1034,7 @@ Perform batch operations on multiple users.
   "operation": "update", // create, update, delete, activate, deactivate
   "users": [
     {
-      "user_id": "user123", 
+      "user_id": "user123",
       "data": {"department": "Platform Engineering"}
     },
     {
@@ -1087,7 +1087,7 @@ Set user custom attributes.
 {
   "attributes": {
     "employee_id": "EMP001234",
-    "cost_center": "ENGINEERING_001", 
+    "cost_center": "ENGINEERING_001",
     "clearance_level": "SECRET",
     "emergency_contact": "+1234567890"
   }
@@ -1111,7 +1111,7 @@ Health check endpoint.
   "version": "1.0.0",
   "components": {
     "database": "healthy",
-    "redis": "healthy", 
+    "redis": "healthy",
     "sso_providers": "healthy",
     "ai_services": "healthy"
   },
@@ -1208,7 +1208,7 @@ user = await client.users.create({
 })
 
 # Setup SSO
-sso_url = await client.auth.initiate_sso("azure", 
+sso_url = await client.auth.initiate_sso("azure",
                                         redirect_uri="https://app.company.com/callback")
 
 # Real-time events
@@ -1229,9 +1229,9 @@ const client = new UserManagementClient({
 });
 
 // List users with real-time updates
-const users = await client.users.list({ 
+const users = await client.users.list({
   department: 'Engineering',
-  sso_enabled: true 
+  sso_enabled: true
 });
 
 // WebSocket events

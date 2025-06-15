@@ -9,28 +9,32 @@ This workflow handles complete user lifecycle operations including:
 - Access reviews and compliance
 """
 
-import sys
-import os
-from datetime import datetime, timedelta
-from typing import Dict, Any, List, Optional
 import csv
 import json
+import os
+import sys
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 # Add shared utilities to path
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', 'shared'))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", "shared"))
 
-from workflow_runner import WorkflowRunner, create_user_context_node, create_validation_node
+from workflow_runner import (
+    WorkflowRunner,
+    create_user_context_node,
+    create_validation_node,
+)
 
 
 class UserLifecycleWorkflow:
     """
     Complete user lifecycle management workflow for administrators.
     """
-    
+
     def __init__(self, admin_user_id: str = "admin"):
         """
         Initialize the user lifecycle workflow.
-        
+
         Args:
             admin_user_id: ID of the administrator performing operations
         """
@@ -40,39 +44,45 @@ class UserLifecycleWorkflow:
             user_id=admin_user_id,
             enable_debug=True,
             enable_audit=False,  # Disable for testing
-            enable_monitoring=True
+            enable_monitoring=True,
         )
-    
+
     def create_single_user(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Create a single user with complete profile setup.
-        
+
         Args:
             user_data: User information dictionary
-            
+
         Returns:
             User creation results
         """
         print(f"👤 Creating user: {user_data.get('email', 'Unknown')}")
-        
+
         builder = self.runner.create_workflow("single_user_creation")
-        
+
         # Input validation
         validation_rules = {
             "email": {"required": True, "type": str, "min_length": 5},
             "first_name": {"required": True, "type": str, "min_length": 1},
             "last_name": {"required": True, "type": str, "min_length": 1},
             "department": {"required": True, "type": str, "min_length": 2},
-            "role": {"required": False, "type": str}
+            "role": {"required": False, "type": str},
         }
-        
-        builder.add_node("PythonCodeNode", "validate_user_input", 
-                        create_validation_node(validation_rules))
-        
+
+        builder.add_node(
+            "PythonCodeNode",
+            "validate_user_input",
+            create_validation_node(validation_rules),
+        )
+
         # User creation with profile setup
-        builder.add_node("PythonCodeNode", "create_user_profile", {
-            "name": "create_complete_user_profile",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "create_user_profile",
+            {
+                "name": "create_complete_user_profile",
+                "code": """
 import random
 import string
 
@@ -124,13 +134,17 @@ result = {
         ]
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Role assignment
-        builder.add_node("PythonCodeNode", "assign_user_role", {
-            "name": "assign_initial_user_role",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "assign_user_role",
+            {
+                "name": "assign_initial_user_role",
+                "code": """
 # Assign initial role based on department and position
 role_assignments = []
 
@@ -140,7 +154,7 @@ assigned_role = user_creation.get("default_role", "employee")
 # Department-specific role mapping
 department_roles = {
     "Engineering": ["developer", "employee"],
-    "Sales": ["sales_rep", "employee"], 
+    "Sales": ["sales_rep", "employee"],
     "Marketing": ["marketing_specialist", "employee"],
     "HR": ["hr_specialist", "employee"],
     "Finance": ["finance_analyst", "employee"],
@@ -166,13 +180,17 @@ result = {
         "assignment_date": datetime.now().isoformat()
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Welcome notification
-        builder.add_node("PythonCodeNode", "send_welcome_notification", {
-            "name": "send_user_welcome_email",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "send_welcome_notification",
+            {
+                "name": "send_user_welcome_email",
+                "code": """
 # Generate welcome email notification
 welcome_email = {
     "to": user_creation.get("email"),
@@ -185,7 +203,7 @@ welcome_email = {
         "support_email": "support@company.com",
         "setup_instructions": [
             "1. Login with your temporary password",
-            "2. Complete your profile information", 
+            "2. Complete your profile information",
             "3. Set up a new secure password",
             "4. Enable multi-factor authentication",
             "5. Review privacy settings"
@@ -212,41 +230,59 @@ result = {
         "user_setup_complete": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect workflow nodes
-        builder.add_connection("validate_user_input", "result", "create_user_profile", "validation_result")
-        builder.add_connection("create_user_profile", "result.result", "assign_user_role", "user_creation")
-        builder.add_connection("create_user_profile", "result.result", "send_welcome_notification", "user_creation")
-        builder.add_connection("assign_user_role", "result.result", "send_welcome_notification", "role_assignment")
-        
+        builder.add_connection(
+            "validate_user_input", "result", "create_user_profile", "validation_result"
+        )
+        builder.add_connection(
+            "create_user_profile", "result.result", "assign_user_role", "user_creation"
+        )
+        builder.add_connection(
+            "create_user_profile",
+            "result.result",
+            "send_welcome_notification",
+            "user_creation",
+        )
+        builder.add_connection(
+            "assign_user_role",
+            "result.result",
+            "send_welcome_notification",
+            "role_assignment",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, user_data, "single_user_creation"
         )
-        
+
         return results
-    
+
     def bulk_create_users(self, users_data: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
         Create multiple users from a list of user data.
-        
+
         Args:
             users_data: List of user information dictionaries
-            
+
         Returns:
             Bulk creation results
         """
         print(f"👥 Creating {len(users_data)} users in bulk...")
-        
+
         builder = self.runner.create_workflow("bulk_user_creation")
-        
+
         # Bulk user processing
-        builder.add_node("PythonCodeNode", "process_bulk_users", {
-            "name": "process_bulk_user_creation",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "process_bulk_users",
+            {
+                "name": "process_bulk_user_creation",
+                "code": f"""
 import random
 import string
 
@@ -266,19 +302,19 @@ for user_data in users_data_list:
         # Validate required fields
         required_fields = ["email", "first_name", "last_name", "department"]
         missing_fields = [field for field in required_fields if not user_data.get(field)]
-        
+
         if missing_fields:
             failed_users.append({{
                 "email": user_data.get("email", "unknown"),
                 "error": f"Missing required fields: {{missing_fields}}"
             }})
             continue
-        
+
         # Create user profile
         user_id = generate_id()
         temp_password = secrets.token_urlsafe(12)
         password_hash = hashlib.sha256((temp_password + "salt123").encode()).hexdigest()
-        
+
         user_profile = {{
             "id": user_id,
             "email": user_data["email"],
@@ -291,9 +327,9 @@ for user_data in users_data_list:
             "created_at": datetime.now().isoformat(),
             "created_by": "admin_bulk_import"
         }}
-        
+
         created_users.append(user_profile)
-        
+
     except Exception as e:
         failed_users.append({{
             "email": user_data.get("email", "unknown"),
@@ -310,13 +346,17 @@ result = {{
         "success_rate": len(created_users) / len(users_data_list) * 100 if users_data_list else 0
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Generate bulk welcome notifications
-        builder.add_node("PythonCodeNode", "generate_bulk_notifications", {
-            "name": "generate_bulk_welcome_notifications",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "generate_bulk_notifications",
+            {
+                "name": "generate_bulk_welcome_notifications",
+                "code": """
 # Generate welcome notifications for all successfully created users
 bulk_notifications = []
 admin_summary = {
@@ -341,7 +381,7 @@ for user in bulk_results.get("created_users", []):
         }
         bulk_notifications.append(welcome_notification)
         admin_summary["notifications_generated"] += 1
-        
+
     except Exception as e:
         admin_summary["failed_notifications"] += 1
 
@@ -352,39 +392,50 @@ result = {
         "bulk_import_complete": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect bulk processing nodes
-        builder.add_connection("process_bulk_users", "result.result", "generate_bulk_notifications", "bulk_results")
-        
+        builder.add_connection(
+            "process_bulk_users",
+            "result.result",
+            "generate_bulk_notifications",
+            "bulk_results",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {}, "bulk_user_creation"
         )
-        
+
         return results
-    
-    def deactivate_user(self, user_id: str, reason: str = "standard_deactivation") -> Dict[str, Any]:
+
+    def deactivate_user(
+        self, user_id: str, reason: str = "standard_deactivation"
+    ) -> Dict[str, Any]:
         """
         Deactivate a user account (soft deletion).
-        
+
         Args:
             user_id: ID of user to deactivate
             reason: Reason for deactivation
-            
+
         Returns:
             Deactivation results
         """
         print(f"🔒 Deactivating user: {user_id}")
-        
+
         builder = self.runner.create_workflow("user_deactivation")
-        
+
         # User deactivation process
-        builder.add_node("PythonCodeNode", "deactivate_user_account", {
-            "name": "perform_user_deactivation",
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "deactivate_user_account",
+            {
+                "name": "perform_user_deactivation",
+                "code": f"""
 from datetime import datetime
 
 # Deactivation parameters
@@ -412,7 +463,7 @@ deactivation_steps.append({{
 
 # 2. Revoke active sessions
 deactivation_steps.append({{
-    "step": "revoke_sessions", 
+    "step": "revoke_sessions",
     "status": "completed",
     "sessions_revoked": 3
 }})
@@ -450,13 +501,17 @@ result = {{
         "compliance_status": "compliant"
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # GDPR compliance check
-        builder.add_node("PythonCodeNode", "gdpr_compliance_check", {
-            "name": "verify_gdpr_compliance",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "gdpr_compliance_check",
+            {
+                "name": "verify_gdpr_compliance",
+                "code": """
 # GDPR compliance verification for deactivation
 compliance_checks = []
 
@@ -471,7 +526,7 @@ compliance_checks.append({
 # Check data subject rights
 compliance_checks.append({
     "check": "data_subject_rights",
-    "status": "compliant", 
+    "status": "compliant",
     "rights_preserved": ["access", "portability", "rectification"]
 })
 
@@ -490,39 +545,50 @@ result = {
         "retention_schedule_set": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect deactivation nodes
-        builder.add_connection("deactivate_user_account", "result.result", "gdpr_compliance_check", "deactivation_info")
-        
+        builder.add_connection(
+            "deactivate_user_account",
+            "result.result",
+            "gdpr_compliance_check",
+            "deactivation_info",
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"user_id": user_id, "reason": reason}, "user_deactivation"
         )
-        
+
         return results
-    
-    def export_user_data(self, user_id: str, export_format: str = "json") -> Dict[str, Any]:
+
+    def export_user_data(
+        self, user_id: str, export_format: str = "json"
+    ) -> Dict[str, Any]:
         """
         Export user data for GDPR compliance or backup purposes.
-        
+
         Args:
             user_id: ID of user whose data to export
             export_format: Format for export (json, csv, xml)
-            
+
         Returns:
             Export results
         """
         print(f"📁 Exporting data for user: {user_id} in {export_format} format")
-        
+
         builder = self.runner.create_workflow("user_data_export")
-        
+
         # Data collection and export
-        builder.add_node("PythonCodeNode", "collect_user_data", {
-            "name": "collect_complete_user_data", 
-            "code": f"""
+        builder.add_node(
+            "PythonCodeNode",
+            "collect_user_data",
+            {
+                "name": "collect_complete_user_data",
+                "code": f"""
 from datetime import datetime
 import json
 
@@ -570,7 +636,7 @@ user_data_export = {{
                 "success": True
             }},
             {{
-                "timestamp": "2024-06-14T09:00:00Z", 
+                "timestamp": "2024-06-14T09:00:00Z",
                 "ip_address": "192.168.1.100",
                 "user_agent": "Mozilla/5.0...",
                 "success": True
@@ -636,13 +702,17 @@ result = {{
         "data_integrity_verified": True
     }}
 }}
-"""
-        })
-        
+""",
+            },
+        )
+
         # Data validation and packaging
-        builder.add_node("PythonCodeNode", "package_export", {
-            "name": "package_user_data_export",
-            "code": """
+        builder.add_node(
+            "PythonCodeNode",
+            "package_export",
+            {
+                "name": "package_user_data_export",
+                "code": """
 # Package export with metadata and validation
 export_package = {
     "package_info": {
@@ -677,115 +747,146 @@ result = {
         "export_complete": True
     }
 }
-"""
-        })
-        
+""",
+            },
+        )
+
         # Connect export nodes
-        builder.add_connection("collect_user_data", "result.result", "package_export", "export_data")
-        
+        builder.add_connection(
+            "collect_user_data", "result.result", "package_export", "export_data"
+        )
+
         # Execute workflow
         workflow = builder.build()
         results, execution_id = self.runner.execute_workflow(
             workflow, {"user_id": user_id, "format": export_format}, "user_data_export"
         )
-        
+
         return results
-    
+
     def run_comprehensive_user_lifecycle_demo(self) -> Dict[str, Any]:
         """
         Run a comprehensive demonstration of all user lifecycle operations.
-        
+
         Returns:
             Complete demonstration results
         """
         print("🚀 Starting Comprehensive User Lifecycle Demonstration...")
         print("=" * 70)
-        
+
         demo_results = {}
-        
+
         try:
             # 1. Create single user
             print("\\n1. Creating Single User...")
             single_user_data = {
                 "email": "john.doe@company.com",
-                "first_name": "John", 
+                "first_name": "John",
                 "last_name": "Doe",
                 "department": "Engineering",
-                "role": "developer"
+                "role": "developer",
             }
             demo_results["single_user"] = self.create_single_user(single_user_data)
-            
+
             # 2. Bulk create users
             print("\\n2. Creating Multiple Users...")
             bulk_users_data = [
                 {
                     "email": "alice.smith@company.com",
                     "first_name": "Alice",
-                    "last_name": "Smith", 
-                    "department": "Marketing"
+                    "last_name": "Smith",
+                    "department": "Marketing",
                 },
                 {
                     "email": "bob.johnson@company.com",
                     "first_name": "Bob",
                     "last_name": "Johnson",
-                    "department": "Sales"
+                    "department": "Sales",
                 },
                 {
                     "email": "carol.brown@company.com",
                     "first_name": "Carol",
                     "last_name": "Brown",
-                    "department": "HR"
-                }
+                    "department": "HR",
+                },
             ]
             demo_results["bulk_users"] = self.bulk_create_users(bulk_users_data)
-            
+
             # 3. Export user data
             print("\\n3. Exporting User Data...")
             demo_results["data_export"] = self.export_user_data("user123", "json")
-            
+
             # 4. Deactivate user
             print("\\n4. Deactivating User...")
-            demo_results["user_deactivation"] = self.deactivate_user("user123", "employee_departure")
-            
+            demo_results["user_deactivation"] = self.deactivate_user(
+                "user123", "employee_departure"
+            )
+
             # Print comprehensive summary
             self.print_lifecycle_summary(demo_results)
-            
+
             return demo_results
-            
+
         except Exception as e:
             print(f"❌ Demonstration failed: {str(e)}")
             raise
-    
+
     def print_lifecycle_summary(self, results: Dict[str, Any]):
         """
         Print a comprehensive lifecycle demonstration summary.
-        
+
         Args:
             results: Demonstration results from all workflows
         """
         print("\\n" + "=" * 70)
         print("USER LIFECYCLE DEMONSTRATION COMPLETE")
         print("=" * 70)
-        
+
         # Single user creation summary
-        single_user = results.get("single_user", {}).get("create_user_profile", {}).get("result", {}).get("result", {})
+        single_user = (
+            results.get("single_user", {})
+            .get("create_user_profile", {})
+            .get("result", {})
+            .get("result", {})
+        )
         print(f"👤 Single User: Created {single_user.get('email', 'N/A')}")
-        
+
         # Bulk user creation summary
-        bulk_users = results.get("bulk_users", {}).get("process_bulk_users", {}).get("result", {}).get("result", {})
-        print(f"👥 Bulk Users: {bulk_users.get('successful_creations', 0)}/{bulk_users.get('total_processed', 0)} created")
-        
+        bulk_users = (
+            results.get("bulk_users", {})
+            .get("process_bulk_users", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"👥 Bulk Users: {bulk_users.get('successful_creations', 0)}/{bulk_users.get('total_processed', 0)} created"
+        )
+
         # Data export summary
-        export_result = results.get("data_export", {}).get("collect_user_data", {}).get("result", {}).get("result", {})
-        print(f"📁 Data Export: {export_result.get('export_size_kb', 0):.1f} KB exported")
-        
+        export_result = (
+            results.get("data_export", {})
+            .get("collect_user_data", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"📁 Data Export: {export_result.get('export_size_kb', 0):.1f} KB exported"
+        )
+
         # Deactivation summary
-        deactivation = results.get("user_deactivation", {}).get("deactivate_user_account", {}).get("result", {}).get("result", {})
-        print(f"🔒 Deactivation: {deactivation.get('steps_completed', 0)} steps completed")
-        
+        deactivation = (
+            results.get("user_deactivation", {})
+            .get("deactivate_user_account", {})
+            .get("result", {})
+            .get("result", {})
+        )
+        print(
+            f"🔒 Deactivation: {deactivation.get('steps_completed', 0)} steps completed"
+        )
+
         print("\\n🎉 All user lifecycle operations completed successfully!")
         print("=" * 70)
-        
+
         # Print execution statistics
         self.runner.print_stats()
 
@@ -793,35 +894,40 @@ result = {
 def test_workflow(test_params: Optional[Dict[str, Any]] = None) -> bool:
     """
     Test the user lifecycle workflow.
-    
+
     Args:
         test_params: Optional test parameters
-        
+
     Returns:
         True if test passes, False otherwise
     """
     try:
         print("🧪 Testing User Lifecycle Workflow...")
-        
+
         # Create test workflow
         lifecycle = UserLifecycleWorkflow("test_admin")
-        
+
         # Test single user creation
         test_user = {
             "email": "test.user@company.com",
             "first_name": "Test",
             "last_name": "User",
             "department": "Engineering",
-            "role": "developer"
+            "role": "developer",
         }
-        
+
         result = lifecycle.create_single_user(test_user)
-        if not result.get("create_user_profile", {}).get("result", {}).get("result", {}).get("user_created"):
+        if (
+            not result.get("create_user_profile", {})
+            .get("result", {})
+            .get("result", {})
+            .get("user_created")
+        ):
             return False
-        
+
         print("✅ User lifecycle workflow test passed")
         return True
-        
+
     except Exception as e:
         print(f"❌ User lifecycle workflow test failed: {str(e)}")
         return False
@@ -835,7 +941,7 @@ if __name__ == "__main__":
     else:
         # Run comprehensive demonstration
         lifecycle = UserLifecycleWorkflow()
-        
+
         try:
             results = lifecycle.run_comprehensive_user_lifecycle_demo()
             print("🎉 User lifecycle demonstration completed successfully!")

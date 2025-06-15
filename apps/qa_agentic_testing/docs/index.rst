@@ -21,7 +21,7 @@ Overview
 The QA Agentic Testing framework provides comprehensive AI-powered testing with:
 
 * **⚡ Async app discovery** - Concurrent file scanning and analysis (3x faster)
-* **🧠 Intelligent persona generation** from discovered permissions and roles  
+* **🧠 Intelligent persona generation** from discovered permissions and roles
 * **🔄 Concurrent scenario creation** - Parallel test generation (4.5x faster)
 * **🤖 AI agent consensus testing** with A2A communication and self-organizing pools
 * **📊 Non-blocking report generation** - Simultaneous HTML/JSON creation
