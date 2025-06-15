@@ -1,7 +1,7 @@
 name: Sync from Template
 
 on:
-  # Manual trigger only - no automatic syncs
+  # Manual trigger only - downstream repos run this workflow
   workflow_dispatch:
     inputs:
       create_pr:
@@ -66,6 +66,7 @@ jobs:
             "apps/README.md"
             "apps/APP_DEVELOPMENT_GUIDE.md"
             "solutions"
+            "deployment"
             "infrastructure"
             "data"
             "docs"
@@ -191,7 +192,7 @@ jobs:
 - Client customizations and implementations remain completely protected
 - Template structure additions only happen if directories are missing
 
-Note: This is a template sync PR - CI validation focuses on template structure." \
+**Note:** This is a template sync PR - CI validation focuses on template structure." \
               --base main
           else
             echo "No changes to sync"
