@@ -29,8 +29,8 @@ jobs:
           # Get all repositories in the organization
           echo "🔍 Finding downstream repositories..."
           
-          # Get repos that have the template sync workflow
-          REPOS=$(gh repo list Integrum-Global --limit 200 --json name,isTemplate,templateRepository --jq '.[] | select(.isTemplate == false) | select(.templateRepository.name == "new_project_template" or .name != "new_project_template") | .name')
+          # Get repos with kailash-template topic (indicates they use the template)
+          REPOS=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name')
           
           # Count repos
           REPO_COUNT=$(echo "$REPOS" | wc -l)

@@ -160,7 +160,8 @@ jobs:
 
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ).
+              --body "$(cat <<EOF
+Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ).
 
 ## 🔄 What was synced (always replaced):
 - **sdk-users/**: Latest SDK documentation and guides
@@ -192,7 +193,9 @@ jobs:
 - Client customizations and implementations remain completely protected
 - Template structure additions only happen if directories are missing
 
-**Note:** This is a template sync PR - CI validation focuses on template structure." \
+**Note:** This is a template sync PR - CI validation focuses on template structure.
+EOF
+)" \
               --base main
           else
             echo "No changes to sync"
