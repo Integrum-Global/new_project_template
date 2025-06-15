@@ -1,0 +1,16 @@
+{
+  "test_name": "Basic Functionality Test",
+  "timestamp": "2025-06-15 17:51:17.109250",
+  "results": {
+    "models": false,
+    "database": true,
+    "personas": true,
+    "scenarios": false,
+    "test_executor": true
+  },
+  "summary": {
+    "passed": true,
+    "total": 5,
+    "percentage": 20.0
+  }
+}

@@ -1,0 +1,40 @@
+# Core Kailash SDK
+kailash-sdk>=1.0.0
+
+# FastAPI and async support
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+websockets>=12.0
+pydantic>=2.0.0
+
+# Database and async operations
+aiosqlite>=0.19.0
+asyncpg>=0.29.0
+
+# CLI interface
+click>=8.0.0
+rich>=13.0.0
+
+# Authentication and security
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+
+# Data processing
+pyyaml>=6.0
+orjson>=3.9.0
+
+# HTTP client
+httpx>=0.25.0
+
+# Logging and monitoring
+structlog>=23.0.0
+
+# Development dependencies (optional)
+# pytest>=7.0.0
+# pytest-asyncio>=0.21.0
+# pytest-cov>=4.0.0
+# black>=23.0.0
+# isort>=5.12.0
+# flake8>=6.0.0
+# mypy>=1.5.0

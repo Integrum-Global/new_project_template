@@ -1,0 +1,148 @@
+📋 Fetching template repository topics...
+✅ Template topics: kailash-template
+
+🔍 Fetching downstream repositories...
+📊 Found 98 repositories to check
+
+🔄 Processing repositories...
+
+📦 tpc_backend:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 hmi-panel-OCR:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 talentverse:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 kailash_python_sdk:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 pg:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 tpc_shipping_migration:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 corpsec:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 tpc-migration:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+Error running gh api repos/Integrum-Global/kaizen_react_sdk/contents --jq .[].name: gh: This repository is empty. (HTTP 404)
+
+
+📦 ai_bpo:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 ESG-report:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 cdl_kailash_migration:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 kailash-n8n-comparison-study:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 decisiontrackerfe:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 tpc_shipping_fe:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 narrated_derivations:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 ai_coaching_demo:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 gba-backend:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 astra:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 mercury:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+Error running gh api repos/Integrum-Global/Megapixel/contents --jq .[].name: gh: This repository is empty. (HTTP 404)
+
+
+📦 xaizen_ai:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 prometheus:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📦 lp_customer_portal:
+  Current topics: (none)
+  Missing topics: kailash-template
+  New topics: kailash-template
+  ✅ Successfully updated topics
+
+📊 Summary:
+  - Checked 31 repositories
+  - Found 31 created from template
+  - Updated 22 repositories with missing topics

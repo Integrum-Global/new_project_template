@@ -14,6 +14,8 @@
 # =============================================================================
 
 # Client app implementations (preserve existing apps)
+# Note: Example apps (qa_agentic_testing, studio, user_management) are NOT listed here
+# because they SHOULD be synced from template
 apps/*/adr/
 apps/*/todos/
 apps/*/mistakes/

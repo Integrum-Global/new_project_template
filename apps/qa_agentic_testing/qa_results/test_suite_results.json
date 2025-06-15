@@ -1,0 +1,150 @@
+{
+  "metadata": {
+    "app_name": "QA Agentic Testing",
+    "app_path": "/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing",
+    "test_date": "2025-06-15T16:42:49.617942",
+    "test_count": 6,
+    "duration": 1.7413990497589111
+  },
+  "execution_summary": {
+    "total_tests": 6,
+    "passed": 3,
+    "failed": 3,
+    "timeout": 0,
+    "error": 0,
+    "success_rate": 50.0,
+    "total_duration": 1.7413990497589111,
+    "average_duration": 0.29023317495981854
+  },
+  "test_results": [
+    {
+      "test_id": "test_basic_functionality",
+      "category": "unit",
+      "status": "fail",
+      "duration": 0.7823519706726074,
+      "stdout": "\ud83e\uddea Basic QA Agentic Testing App Test\n==================================================\n\n1\ufe0f\u20e3 Testing Models...\n   \u2705 Models working correctly\n\n2\ufe0f\u20e3 Testing Database...\n   \u274c Database failed: cannot import name 'DatabaseConnection' from 'core.database' (/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/core/database.py)\n\n3\ufe0f\u20e3 Testing Personas...\n   \u2705 Personas working (9 built-in)\n\n4\ufe0f\u20e3 Testing Scenario Generation...\n   \u274c Scenario generation failed: 'ScenarioGenerator' object has no attribute 'generate_scenarios'\n\n5\ufe0f\u20e3 Testing Test Executor...\n   \u274c Test executor failed: cannot import name 'TestExecutor' from 'core.test_executor' (/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/core/test_executor.py)\n\n==================================================\n\ud83d\udcca Test Summary:\n   \u2705 models\n   \u274c database\n   \u2705 personas\n   \u274c scenarios\n   \u274c test_executor\n\n\ud83c\udfaf Overall: False/5 tests passed (0.0%)\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_basic_functionality.py\", line 58, in test_basic_functionality\n    from core.database import DatabaseConnection\nImportError: cannot import name 'DatabaseConnection' from 'core.database' (/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/core/database.py)\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_basic_functionality.py\", line 121, in test_basic_functionality\n    scenarios = generator.generate_scenarios([admin], app_analysis)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'ScenarioGenerator' object has no attribute 'generate_scenarios'. Did you mean: 'generated_scenarios'?\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_basic_functionality.py\", line 134, in test_basic_functionality\n    from core.test_executor import TestExecutor\nImportError: cannot import name 'TestExecutor' from 'core.test_executor' (/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/core/test_executor.py). Did you mean: 'test_executor'?\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_basic_functionality.py\", line 180, in <module>\n    success = asyncio.run(test_basic_functionality())\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/esperie/.pyenv/versions/3.12.9/lib/python3.12/asyncio/runners.py\", line 195, in run\n    return runner.run(main)\n           ^^^^^^^^^^^^^^^^\n  File \"/Users/esperie/.pyenv/versions/3.12.9/lib/python3.12/asyncio/runners.py\", line 118, in run\n    return self._loop.run_until_complete(task)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/esperie/.pyenv/versions/3.12.9/lib/python3.12/asyncio/base_events.py\", line 691, in run_until_complete\n    return future.result()\n           ^^^^^^^^^^^^^^^\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_basic_functionality.py\", line 166, in test_basic_functionality\n    \"timestamp\": str(Path.ctime(Path(__file__))),\n                     ^^^^^^^^^^\nAttributeError: type object 'Path' has no attribute 'ctime'\n",
+      "returncode": 1,
+      "timestamp": "2025-06-15T16:42:48.658910"
+    },
+    {
+      "test_id": "test_working_components",
+      "category": "unit",
+      "status": "fail",
+      "duration": 0.0563199520111084,
+      "stdout": "\ud83e\uddea Testing Working Components\n========================================\n\n1\ufe0f\u20e3 Testing Basic Models...\n   \u274c Basic models failed: No module named 'core'\n\n2\ufe0f\u20e3 Testing Database...\n   \u274c Database failed: No module named 'core'\n\n3\ufe0f\u20e3 Testing Personas...\n   \u274c Personas failed: No module named 'core'\n\n4\ufe0f\u20e3 Testing Scenarios...\n   \u274c Scenarios failed: No module named 'core'\n\n========================================\n\ud83d\udcca TEST SUMMARY\n========================================\n\u274c FAIL Models Basic\n\u274c FAIL Database Basic\n\u274c FAIL Personas Basic\n\u274c FAIL Scenarios Basic\n\n\ud83c\udfaf Success Rate: 0.0% (0/4)\n\ud83d\udd27 Core components need work\n\n\u274c Core components need fixes (0.0% working)\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_working_components.py\", line 30, in test_working_components\n    import core.models as models\nModuleNotFoundError: No module named 'core'\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_working_components.py\", line 50, in test_working_components\n    import core.database as db_module\nModuleNotFoundError: No module named 'core'\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_working_components.py\", line 77, in test_working_components\n    import core.personas as personas_module\nModuleNotFoundError: No module named 'core'\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/unit/test_working_components.py\", line 101, in test_working_components\n    import core.scenario_generator as scenario_module\nModuleNotFoundError: No module named 'core'\n",
+      "returncode": 1,
+      "timestamp": "2025-06-15T16:42:48.715442"
+    },
+    {
+      "test_id": "test_imports_and_functionality",
+      "category": "unit",
+      "status": "pass",
+      "duration": 0.7653708457946777,
+      "stdout": "\ud83d\ude80 Starting QA Agentic Testing App Import and Functionality Tests\n============================================================\n\n\ud83d\udd0d Testing basic imports...\n\u2705 Basic Python imports\n\n\ud83d\udd0d Testing third-party dependency imports...\n\u2705 FastAPI imports\n\u2705 Pydantic imports\n\u2705 Click imports\n\u2705 aiosqlite imports\n\u2705 Jinja2 imports\n\u2705 HTTPX imports\n\n\ud83d\udd0d Testing Kailash SDK imports...\n\u2705 Kailash SDK base import\n\u2705 Kailash LLM Agent Node import\n\u2705 Kailash Workflow import\n\n\ud83d\udd0d Testing core models...\n\u274c Core models: No module named 'core'\n\n\ud83d\udd0d Testing database functionality...\n\u274c Database functionality: No module named 'core'\n\n\ud83d\udd0d Testing core component imports...\n\u274c Personas import: No module named 'core'\n\u274c Scenario generator import: No module named 'core'\n\u274c LLM/Agent coordinator import: llm_coordinator: No module named 'core', agent_coordinator: No module named 'core'\n\u274c Test executor import: No module named 'core'\n\u274c Report generator import: No module named 'core'\n\n\ud83d\udd0d Testing service imports...\n\u274c Services import: No module named 'core'\n\n\ud83d\udd0d Testing API component imports...\n\u274c API main import: No module named 'api'\n\u274c API route analytics import: No module named 'api'\n\u274c API route projects import: No module named 'api'\n\u274c API route reports import: No module named 'api'\n\u274c API route results import: No module named 'api'\n\u274c API route runs import: No module named 'api'\n\n\ud83d\udd0d Testing CLI component imports...\n\u274c CLI import: No module named 'cli.main'\n\n\ud83d\udd0d Testing main package import...\n\u274c Main package import: No module named 'qa_agentic_testing'\n\n\ud83d\udd0d Testing example usage patterns...\n\u274c Example script import: No module named 'examples'\n\n\ud83d\udd0d Testing async database operations...\n\u274c Async database operations: No module named 'core'\n\n============================================================\n\ud83c\udfaf TEST SUMMARY\n============================================================\n\u2705 Passed: 10\n   \u2022 Basic Python imports\n   \u2022 FastAPI imports\n   \u2022 Pydantic imports\n   \u2022 Click imports\n   \u2022 aiosqlite imports\n   \u2022 Jinja2 imports\n   \u2022 HTTPX imports\n   \u2022 Kailash SDK base import\n   \u2022 Kailash LLM Agent Node import\n   \u2022 Kailash Workflow import\n\n\u274c Failed: 18\n   \u2022 Core models: No module named 'core'\n   \u2022 Database functionality: No module named 'core'\n   \u2022 Personas import: No module named 'core'\n   \u2022 Scenario generator import: No module named 'core'\n   \u2022 LLM/Agent coordinator import: llm_coordinator: No module named 'core', agent_coordinator: No module named 'core'\n   \u2022 Test executor import: No module named 'core'\n   \u2022 Report generator import: No module named 'core'\n   \u2022 Services import: No module named 'core'\n   \u2022 API main import: No module named 'api'\n   \u2022 API route analytics import: No module named 'api'\n   \u2022 API route projects import: No module named 'api'\n   \u2022 API route reports import: No module named 'api'\n   \u2022 API route results import: No module named 'api'\n   \u2022 API route runs import: No module named 'api'\n   \u2022 CLI import: No module named 'cli.main'\n   \u2022 Main package import: No module named 'qa_agentic_testing'\n   \u2022 Example script import: No module named 'examples'\n   \u2022 Async database operations: No module named 'core'\n\n\ud83d\udcca Success Rate: 35.7% (10/28)\n\u26a0\ufe0f  Some issues found. See failed tests above for details.\n",
+      "stderr": "",
+      "returncode": 0,
+      "timestamp": "2025-06-15T16:42:49.480927"
+    },
+    {
+      "test_id": "test_imports_fixed",
+      "category": "unit",
+      "status": "pass",
+      "duration": 0.052969932556152344,
+      "stdout": "\ud83d\ude80 QA Agentic Testing App - Fixed Import and Functionality Tests\n======================================================================\n\n\ud83d\udd0d Analyzing package structure...\n\u2705 __init__.py exists: __init__.py\n\u274c __init__.py missing: core/__init__.py: Missing __init__.py file\n\ud83d\udd27 __init__.py missing: core/__init__.py: Create missing __init__.py file\n\u274c __init__.py missing: api/__init__.py: Missing __init__.py file\n\ud83d\udd27 __init__.py missing: api/__init__.py: Create missing __init__.py file\n\u274c __init__.py missing: cli/__init__.py: Missing __init__.py file\n\ud83d\udd27 __init__.py missing: cli/__init__.py: Create missing __init__.py file\n\u274c __init__.py missing: api/routes/__init__.py: Missing __init__.py file\n\ud83d\udd27 __init__.py missing: api/routes/__init__.py: Create missing __init__.py file\n\n\ud83d\udd0d Testing direct core module imports...\n\u274c Direct core imports: No module named 'core'\n\n\ud83d\udd0d Testing package imports with path fixes...\n\u274c Apps-prefixed core import: No module named 'apps'\n\ud83d\udd27 Apps-prefixed core import: Need to add apps directory to Python path or use relative imports\n\n\ud83d\udd0d Testing API imports with fixes...\n\u274c API components fixed: No module named 'api'\n\ud83d\udd27 API components fixed: API uses relative imports, needs proper package structure\n\n\ud83d\udd0d Testing CLI imports with fixes...\n\u274c CLI import fixed: No module named 'cli'\n\ud83d\udd27 CLI import fixed: CLI uses relative imports, needs proper package structure\n\n\ud83d\udd0d Testing database operations...\n\u274c Database operations: No module named 'core'\n\n\ud83d\udd0d Testing for import inconsistencies...\n\u274c Import consistency check: No module named 'core'\n\n\ud83d\udd0d Testing example with fixes...\n\u274c Example fixes: No module named 'core'\n\n\ud83d\udd0d Testing async functionality...\n\u274c Async functionality: No module named 'core'\n\n============================================================\n\ud83c\udfaf TEST SUMMARY\n============================================================\n\u2705 Passed: 1\n   \u2022 __init__.py exists: __init__.py\n\n\u274c Failed: 12\n   \u2022 __init__.py missing: core/__init__.py\n     Error: Missing __init__.py file\n   \u2022 __init__.py missing: api/__init__.py\n     Error: Missing __init__.py file\n   \u2022 __init__.py missing: cli/__init__.py\n     Error: Missing __init__.py file\n   \u2022 __init__.py missing: api/routes/__init__.py\n     Error: Missing __init__.py file\n   \u2022 Direct core imports\n     Error: No module named 'core'\n   \u2022 Apps-prefixed core import\n     Error: No module named 'apps'\n   \u2022 API components fixed\n     Error: No module named 'api'\n   \u2022 CLI import fixed\n     Error: No module named 'cli'\n   \u2022 Database operations\n     Error: No module named 'core'\n   \u2022 Import consistency check\n     Error: No module named 'core'\n   \u2022 Example fixes\n     Error: No module named 'core'\n   \u2022 Async functionality\n     Error: No module named 'core'\n\n\ud83d\udcca Success Rate: 7.7% (1/13)\n\n\ud83d\udd27 FIXES NEEDED:\n==================================================\n\n1. apps/qa_agentic_testing/__init__.py\n   Issue: Imports from 'agent_coordinator' but file is 'llm_coordinator'\n   Fix: Change line 42: from .core.agent_coordinator import AgentCoordinator\n      To: from .core.llm_coordinator import AgentCoordinator\n\n2. apps/qa_agentic_testing/core/__init__.py\n   Issue: Imports from 'agent_coordinator' but file is 'llm_coordinator'\n   Fix: Change line 14: from .llm_coordinator import AgentCoordinator\n      (This line is actually correct, but check for consistency)\n\n3. apps/qa_agentic_testing/examples/simple_test_example.py\n   Issue: Import path assumes agent_coordinator exists\n   Fix: Update imports to use correct module names\n\n4. Package structure\n   Issue: Relative imports fail when running modules directly\n   Fix: Either:\n      1. Always run from parent directory with 'python -m apps.qa_agentic_testing.module'\n      2. Use absolute imports with proper PYTHONPATH setup\n      3. Add proper package installation\n",
+      "stderr": "",
+      "returncode": 0,
+      "timestamp": "2025-06-15T16:42:49.534055"
+    },
+    {
+      "test_id": "test_complete_functionality",
+      "category": "integration",
+      "status": "fail",
+      "duration": 0.04509592056274414,
+      "stdout": "\ud83e\uddea Comprehensive QA Agentic Testing App Test\n============================================================\n\n1\ufe0f\u20e3 Testing Core Imports...\n   \u274c Core imports failed: No module named 'core'\n\n2\ufe0f\u20e3 Testing Database Operations...\n   \u274c Database operations failed: cannot access local variable 'setup_database' where it is not associated with a value\n\n3\ufe0f\u20e3 Testing Service Layer...\n   \u274c Service layer failed: cannot access local variable 'ProjectService' where it is not associated with a value\n\n4\ufe0f\u20e3 Testing Autonomous Tester...\n   \u274c Autonomous tester failed: cannot access local variable 'AutonomousQATester' where it is not associated with a value\n\n5\ufe0f\u20e3 Testing API Initialization...\n   \u274c API initialization failed: No module named 'api'\n\n6\ufe0f\u20e3 Testing Report Generation...\n   \u274c Report generation failed: cannot access local variable 'ReportGenerator' where it is not associated with a value\n\n============================================================\n\ud83d\udcca TEST SUMMARY\n============================================================\n\u274c FAIL Core Imports\n\u274c FAIL Database Operations\n\u274c FAIL Service Layer\n\u274c FAIL Autonomous Tester\n\u274c FAIL Api Initialization\n\u274c FAIL Personas Scenarios\n\u274c FAIL Report Generation\n\n\ud83c\udfaf Overall Success Rate: 0.0% (0/7)\n\ud83d\udd27 QA Agentic Testing App needs significant work\n",
+      "stderr": "Traceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 36, in test_complete_functionality\n    from core.models import (\nModuleNotFoundError: No module named 'core'\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 63, in test_complete_functionality\n    await setup_database(db_path)\n          ^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'setup_database' where it is not associated with a value\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 105, in test_complete_functionality\n    project_service = ProjectService(QADatabase(db_path))\n                      ^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'ProjectService' where it is not associated with a value\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 135, in test_complete_functionality\n    tester = AutonomousQATester()\n             ^^^^^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'AutonomousQATester' where it is not associated with a value\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 172, in test_complete_functionality\n    from api.main import create_app\nModuleNotFoundError: No module named 'api'\nTraceback (most recent call last):\n  File \"/Users/esperie/repos/projects/kailash_python_sdk/apps/qa_agentic_testing/tests/integration/test_complete_functionality.py\", line 188, in test_complete_functionality\n    report_generator = ReportGenerator()\n                       ^^^^^^^^^^^^^^^\nUnboundLocalError: cannot access local variable 'ReportGenerator' where it is not associated with a value\n",
+      "returncode": 1,
+      "timestamp": "2025-06-15T16:42:49.579285"
+    },
+    {
+      "test_id": "final_validation_test",
+      "category": "integration",
+      "status": "pass",
+      "duration": 0.03812408447265625,
+      "stdout": "\ud83d\ude80 QA Agentic Testing App - Final Validation After Fixes\n============================================================\n\ud83d\udd0d Testing core functionality...\n  \u274c Core functionality test failed: No module named 'core'\n\ud83d\udd0d Testing package import after fix...\n  \u274c Package import test failed: No module named 'apps'\n\ud83d\udd0d Testing API imports...\n  \u274c API imports test failed: No module named 'api'\n\ud83d\udd0d Testing CLI imports...\n  \u274c CLI imports test failed: No module named 'cli'\n\ud83d\udd0d Testing example functionality...\n  \u274c Example functionality test failed: No module named 'core'\n\ud83d\udd0d Running basic workflow test...\n  \u274c Basic workflow test failed: No module named 'core'\n\ud83d\udd0d Testing async operations...\n  \u274c Async operations test failed: No module named 'core'\n\n============================================================\n\ud83c\udfaf FINAL VALIDATION RESULTS\n============================================================\n\u274c FAIL Core Functionality\n\u274c FAIL Package Import\n\u274c FAIL API Imports\n\u274c FAIL CLI Imports\n\u274c FAIL Example Functionality\n\u274c FAIL Basic Workflow\n\u274c FAIL Async Operations\n\n\ud83d\udcca Overall: 0/7 tests passed (0.0%)\n\u26a0\ufe0f  Some issues remain. See failed tests above.\n\n\ud83d\udd27 TROUBLESHOOTING:\n   \u2022 For relative import issues: Always run from the app directory\n   \u2022 For package import issues: Add parent directory to PYTHONPATH\n   \u2022 For missing dependencies: pip install -e .\n",
+      "stderr": "",
+      "returncode": 0,
+      "timestamp": "2025-06-15T16:42:49.617565"
+    }
+  ],
+  "app_analysis": {
+    "interfaces": [
+      "CLI",
+      "API",
+      "Library"
+    ],
+    "operations": [
+      {
+        "name": "test_models",
+        "type": "validate"
+      },
+      {
+        "name": "test_database",
+        "type": "validate"
+      },
+      {
+        "name": "test_personas",
+        "type": "validate"
+      },
+      {
+        "name": "test_models",
+        "type": "validate"
+      },
+      {
+        "name": "test_database",
+        "type": "validate"
+      },
+      {
+        "name": "test_personas",
+        "type": "validate"
+      },
+      {
+        "name": "test_scenarios",
+        "type": "validate"
+      },
+      {
+        "name": "test_database",
+        "type": "validate"
+      },
+      {
+        "name": "test_personas",
+        "type": "validate"
+      },
+      {
+        "name": "test_database",
+        "type": "validate"
+      },
+      {
+        "name": "test_database",
+        "type": "validate"
+      },
+      {
+        "name": "test_personas",
+        "type": "validate"
+      },
+      {
+        "name": "test_scenarios",
+        "type": "validate"
+      }
+    ],
+    "permissions": [
+      "test:read",
+      "test:write",
+      "test:execute"
+    ]
+  },
+  "scenarios": [],
+  "personas": {},
+  "llm_analysis_history": []
+}

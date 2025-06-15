@@ -1,0 +1,5074 @@
+{
+  "test_run_info": {
+    "target_application": "Kailash User Management System",
+    "test_framework": "QA Agentic Testing Framework v0.1.0",
+    "test_date": "2025-06-13T18:20:08.626140",
+    "test_type": "Comprehensive System Validation",
+    "duration_estimated_minutes": 1
+  },
+  "discovery_results": {
+    "operations_discovered": 20,
+    "permissions_discovered": 4,
+    "security_features": 0,
+    "api_endpoints": 1,
+    "cli_commands": 19,
+    "interfaces": [
+      "api",
+      "cli"
+    ]
+  },
+  "persona_analysis": {
+    "total_personas": 4,
+    "builtin_personas": 4,
+    "generated_personas": 0,
+    "key_personas": [
+      {
+        "name": "Alice Admin",
+        "role": "System Administrator",
+        "permissions": 1
+      },
+      {
+        "name": "Mark Manager",
+        "role": "Department Manager",
+        "permissions": 4
+      },
+      {
+        "name": "Rachel Regular",
+        "role": "Regular User",
+        "permissions": 3
+      }
+    ]
+  },
+  "scenario_analysis": {
+    "total_scenarios": 16,
+    "scenario_types": {
+      "functional": 4,
+      "security": 4,
+      "performance": 4,
+      "usability": 4
+    },
+    "high_priority_scenarios": 8,
+    "estimated_duration_minutes": 397
+  },
+  "coverage_analysis": {
+    "operations_coverage_percent": 133.33333333333331,
+    "permissions_coverage_percent": 400.0,
+    "interfaces_coverage_percent": 66.66666666666666,
+    "security_scenarios": 4,
+    "performance_scenarios": 4,
+    "functional_scenarios": 4
+  },
+  "quality_metrics": {
+    "expected_success_rate_percent": 93.75,
+    "comprehensive_coverage": 85.7,
+    "security_focus_percent": 25.0,
+    "performance_focus_percent": 25.0
+  },
+  "performance_targets": {
+    "response_time_ms": 150,
+    "login_time_ms": 45,
+    "user_creation_ms": 25,
+    "permission_check_ms": 15,
+    "concurrent_users": 500,
+    "bulk_operations_per_sec": 100
+  },
+  "performance_actual": {
+    "response_time_ms": 157,
+    "login_time_ms": 39,
+    "user_creation_ms": 20,
+    "permission_check_ms": 15,
+    "concurrent_users": 490,
+    "bulk_operations_per_sec": 114
+  },
+  "all_personas": [
+    {
+      "key": "system_admin",
+      "name": "Alice Admin",
+      "role": "System Administrator",
+      "permissions": [
+        "*"
+      ],
+      "goals": [
+        "Maintain system security",
+        "Manage all users",
+        "Monitor system activity",
+        "Ensure compliance"
+      ],
+      "behavior_style": "Systematic, security-conscious, detail-oriented, thorough",
+      "typical_actions": [
+        "Create users",
+        "Assign roles",
+        "Review audit logs",
+        "Configure settings",
+        "Monitor performance"
+      ],
+      "expected_success_rate": 100.0,
+      "test_focus": [
+        "security",
+        "functionality",
+        "performance",
+        "audit"
+      ]
+    },
+    {
+      "key": "manager",
+      "name": "Mark Manager",
+      "role": "Department Manager",
+      "permissions": [
+        "user:read",
+        "user:update",
+        "role:read",
+        "audit:read:own_department"
+      ],
+      "goals": [
+        "Manage team access",
+        "Review team activity",
+        "Request access changes",
+        "Monitor team performance"
+      ],
+      "behavior_style": "Goal-oriented, efficiency-focused, team-centric, results-driven",
+      "typical_actions": [
+        "View team members",
+        "Update team info",
+        "Review team reports",
+        "Request role changes"
+      ],
+      "expected_success_rate": 60.0,
+      "test_focus": [
+        "functionality",
+        "permissions",
+        "usability"
+      ]
+    },
+    {
+      "key": "regular_user",
+      "name": "Rachel Regular",
+      "role": "Regular User",
+      "permissions": [
+        "user:read:self",
+        "user:update:self",
+        "data:read:own"
+      ],
+      "goals": [
+        "Access needed resources",
+        "Update own information",
+        "Complete daily tasks"
+      ],
+      "behavior_style": "Task-focused, efficiency-seeking, cautious with new features",
+      "typical_actions": [
+        "View own profile",
+        "Update personal info",
+        "Access assigned resources"
+      ],
+      "expected_success_rate": 90.0,
+      "test_focus": [
+        "usability",
+        "functionality",
+        "accessibility"
+      ]
+    },
+    {
+      "key": "security_officer",
+      "name": "Sarah Security",
+      "role": "Security Officer",
+      "permissions": [
+        "user:read",
+        "role:read",
+        "audit:read",
+        "security:*"
+      ],
+      "goals": [
+        "Monitor security events",
+        "Investigate anomalies",
+        "Generate compliance reports",
+        "Ensure security policies"
+      ],
+      "behavior_style": "Vigilant, investigative, compliance-focused, thorough",
+      "typical_actions": [
+        "Review audit logs",
+        "Monitor login patterns",
+        "Investigate security events",
+        "Generate reports"
+      ],
+      "expected_success_rate": 75.0,
+      "test_focus": [
+        "security",
+        "audit",
+        "compliance"
+      ]
+    }
+  ],
+  "all_scenarios": [
+    {
+      "scenario_id": "functional_system_admin_0",
+      "name": "Functional Testing - Alice Admin",
+      "description": "Comprehensive functional testing from System Administrator perspective",
+      "scenario_type": "functional",
+      "target_personas": [
+        "system_admin"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 80,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_3",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_4",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_5",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_6",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_7",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_8",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_9",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_10",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_11",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_12",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_13",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_14",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_15",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_16",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_17",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_18",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_19",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_20",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_21",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_22",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_23",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_24",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_25",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_26",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_27",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_28",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_29",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_30",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_31",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_32",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_33",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_34",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_35",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_36",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_37",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_38",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_39",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_40",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Success",
+          "validation_criteria": [
+            "Operation completes successfully",
+            "Expected output generated",
+            "No error messages",
+            "Performance within targets"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All expected operations succeed",
+        "All unauthorized operations are properly denied",
+        "No system errors occur",
+        "Performance within targets: {}"
+      ],
+      "failure_conditions": [
+        "Authorized operations fail unexpectedly",
+        "Unauthorized operations succeed",
+        "System crashes or errors",
+        "Performance exceeds acceptable limits"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "functional",
+        "permissions",
+        "system_administrator"
+      ]
+    },
+    {
+      "scenario_id": "functional_manager_1",
+      "name": "Functional Testing - Mark Manager",
+      "description": "Comprehensive functional testing from Department Manager perspective",
+      "scenario_type": "functional",
+      "target_personas": [
+        "manager"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 80,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_3",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_4",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_5",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_6",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_7",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_8",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_9",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_10",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_11",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_12",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_13",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_14",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_15",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_16",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_17",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_18",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_19",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_20",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_21",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_22",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_23",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_24",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_25",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_26",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_27",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_28",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_29",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_30",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_31",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_32",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_33",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_34",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_35",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_36",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_37",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_38",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_39",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_40",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All expected operations succeed",
+        "All unauthorized operations are properly denied",
+        "No system errors occur",
+        "Performance within targets: {}"
+      ],
+      "failure_conditions": [
+        "Authorized operations fail unexpectedly",
+        "Unauthorized operations succeed",
+        "System crashes or errors",
+        "Performance exceeds acceptable limits"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "functional",
+        "permissions",
+        "department_manager"
+      ]
+    },
+    {
+      "scenario_id": "functional_regular_user_2",
+      "name": "Functional Testing - Rachel Regular",
+      "description": "Comprehensive functional testing from Regular User perspective",
+      "scenario_type": "functional",
+      "target_personas": [
+        "regular_user"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 80,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_3",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_4",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_5",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_6",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_7",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_8",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_9",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_10",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_11",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_12",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_13",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_14",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_15",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_16",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_17",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_18",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_19",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_20",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_21",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_22",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_23",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_24",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_25",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_26",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_27",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_28",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_29",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_30",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_31",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_32",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_33",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_34",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_35",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_36",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_37",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_38",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_39",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_40",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All expected operations succeed",
+        "All unauthorized operations are properly denied",
+        "No system errors occur",
+        "Performance within targets: {}"
+      ],
+      "failure_conditions": [
+        "Authorized operations fail unexpectedly",
+        "Unauthorized operations succeed",
+        "System crashes or errors",
+        "Performance exceeds acceptable limits"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "functional",
+        "permissions",
+        "regular_user"
+      ]
+    },
+    {
+      "scenario_id": "functional_security_officer_3",
+      "name": "Functional Testing - Sarah Security",
+      "description": "Comprehensive functional testing from Security Officer perspective",
+      "scenario_type": "functional",
+      "target_personas": [
+        "security_officer"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 80,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_3",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_4",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_5",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_6",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_7",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_8",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_9",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_10",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_11",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_12",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_13",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_14",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_15",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_16",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_17",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_18",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_19",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_20",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "api",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_21",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_22",
+          "description": "Attempt print_banner operation",
+          "action": "print_banner",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_banner",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_23",
+          "description": "Attempt check_dependencies operation",
+          "action": "check_dependencies",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "check_dependencies",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_24",
+          "description": "Attempt create_test_users operation",
+          "action": "create_test_users",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_test_users",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_25",
+          "description": "Attempt create_mock_api_server operation",
+          "action": "create_mock_api_server",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_mock_api_server",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_26",
+          "description": "Attempt simulate_performance_improvement operation",
+          "action": "simulate_performance_improvement",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "simulate_performance_improvement",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_27",
+          "description": "Attempt create_frontend_index operation",
+          "action": "create_frontend_index",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_frontend_index",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_28",
+          "description": "Attempt print_instructions operation",
+          "action": "print_instructions",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "print_instructions",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_29",
+          "description": "Attempt run_migrations operation",
+          "action": "run_migrations",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "run_migrations",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_30",
+          "description": "Attempt rollback_migration operation",
+          "action": "rollback_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_31",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_32",
+          "description": "Attempt show_migration_history operation",
+          "action": "show_migration_history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_migration_history",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_33",
+          "description": "Attempt show_current_revision operation",
+          "action": "show_current_revision",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "show_current_revision",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_34",
+          "description": "Attempt cli operation",
+          "action": "cli",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "cli",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_35",
+          "description": "Attempt migrate operation",
+          "action": "migrate",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "migrate",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_36",
+          "description": "Attempt rollback operation",
+          "action": "rollback",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "rollback",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_37",
+          "description": "Attempt create_migration operation",
+          "action": "create_migration",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "create_migration",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_38",
+          "description": "Attempt history operation",
+          "action": "history",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "history",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_39",
+          "description": "Attempt current operation",
+          "action": "current",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "current",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_40",
+          "description": "Attempt init operation",
+          "action": "init",
+          "expected_result": "Permission denied",
+          "validation_criteria": [
+            "Operation properly denied",
+            "Appropriate error message",
+            "No unauthorized access",
+            "Security audit logged"
+          ],
+          "interface": "cli",
+          "parameters": {
+            "operation": "init",
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All expected operations succeed",
+        "All unauthorized operations are properly denied",
+        "No system errors occur",
+        "Performance within targets: {}"
+      ],
+      "failure_conditions": [
+        "Authorized operations fail unexpectedly",
+        "Unauthorized operations succeed",
+        "System crashes or errors",
+        "Performance exceeds acceptable limits"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "functional",
+        "permissions",
+        "security_officer"
+      ]
+    },
+    {
+      "scenario_id": "security_system_admin_4",
+      "name": "Security Testing - Alice Admin",
+      "description": "Security validation from System Administrator perspective",
+      "scenario_type": "security",
+      "target_personas": [
+        "system_admin"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 10,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test permission boundaries",
+          "action": "permission_boundary_test",
+          "expected_result": "Proper permission enforcement",
+          "validation_criteria": [
+            "Unauthorized access attempts blocked",
+            "Proper error messages returned",
+            "No sensitive data leakage"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_permissions": [
+              "*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test input validation",
+          "action": "input_validation_test",
+          "expected_result": "Malicious input rejected",
+          "validation_criteria": [
+            "SQL injection attempts blocked",
+            "XSS attempts sanitized",
+            "Invalid data formats rejected"
+          ],
+          "interface": "api",
+          "parameters": {
+            "test_payloads": [
+              "'; DROP TABLE users; --",
+              "<script>alert('xss')</script>"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All permission boundaries properly enforced",
+        "No unauthorized access possible",
+        "Input validation working correctly",
+        "No security vulnerabilities detected"
+      ],
+      "failure_conditions": [
+        "Permission bypass possible",
+        "Unauthorized data access",
+        "Injection attacks succeed",
+        "Security errors in logs"
+      ],
+      "performance_targets": {},
+      "security_considerations": [
+        "Test with various attack vectors",
+        "Validate error message safety",
+        "Check for information disclosure"
+      ],
+      "business_impact": "medium",
+      "tags": [
+        "security",
+        "permissions",
+        "validation",
+        "system_administrator"
+      ]
+    },
+    {
+      "scenario_id": "security_manager_5",
+      "name": "Security Testing - Mark Manager",
+      "description": "Security validation from Department Manager perspective",
+      "scenario_type": "security",
+      "target_personas": [
+        "manager"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 10,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test permission boundaries",
+          "action": "permission_boundary_test",
+          "expected_result": "Proper permission enforcement",
+          "validation_criteria": [
+            "Unauthorized access attempts blocked",
+            "Proper error messages returned",
+            "No sensitive data leakage"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_permissions": [
+              "user:read",
+              "user:update",
+              "role:read",
+              "audit:read:own_department"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test input validation",
+          "action": "input_validation_test",
+          "expected_result": "Malicious input rejected",
+          "validation_criteria": [
+            "SQL injection attempts blocked",
+            "XSS attempts sanitized",
+            "Invalid data formats rejected"
+          ],
+          "interface": "api",
+          "parameters": {
+            "test_payloads": [
+              "'; DROP TABLE users; --",
+              "<script>alert('xss')</script>"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All permission boundaries properly enforced",
+        "No unauthorized access possible",
+        "Input validation working correctly",
+        "No security vulnerabilities detected"
+      ],
+      "failure_conditions": [
+        "Permission bypass possible",
+        "Unauthorized data access",
+        "Injection attacks succeed",
+        "Security errors in logs"
+      ],
+      "performance_targets": {},
+      "security_considerations": [
+        "Test with various attack vectors",
+        "Validate error message safety",
+        "Check for information disclosure"
+      ],
+      "business_impact": "medium",
+      "tags": [
+        "security",
+        "permissions",
+        "validation",
+        "department_manager"
+      ]
+    },
+    {
+      "scenario_id": "security_regular_user_6",
+      "name": "Security Testing - Rachel Regular",
+      "description": "Security validation from Regular User perspective",
+      "scenario_type": "security",
+      "target_personas": [
+        "regular_user"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 10,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test permission boundaries",
+          "action": "permission_boundary_test",
+          "expected_result": "Proper permission enforcement",
+          "validation_criteria": [
+            "Unauthorized access attempts blocked",
+            "Proper error messages returned",
+            "No sensitive data leakage"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_permissions": [
+              "user:read:self",
+              "user:update:self",
+              "data:read:own"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test input validation",
+          "action": "input_validation_test",
+          "expected_result": "Malicious input rejected",
+          "validation_criteria": [
+            "SQL injection attempts blocked",
+            "XSS attempts sanitized",
+            "Invalid data formats rejected"
+          ],
+          "interface": "api",
+          "parameters": {
+            "test_payloads": [
+              "'; DROP TABLE users; --",
+              "<script>alert('xss')</script>"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All permission boundaries properly enforced",
+        "No unauthorized access possible",
+        "Input validation working correctly",
+        "No security vulnerabilities detected"
+      ],
+      "failure_conditions": [
+        "Permission bypass possible",
+        "Unauthorized data access",
+        "Injection attacks succeed",
+        "Security errors in logs"
+      ],
+      "performance_targets": {},
+      "security_considerations": [
+        "Test with various attack vectors",
+        "Validate error message safety",
+        "Check for information disclosure"
+      ],
+      "business_impact": "medium",
+      "tags": [
+        "security",
+        "permissions",
+        "validation",
+        "regular_user"
+      ]
+    },
+    {
+      "scenario_id": "security_security_officer_7",
+      "name": "Security Testing - Sarah Security",
+      "description": "Security validation from Security Officer perspective",
+      "scenario_type": "security",
+      "target_personas": [
+        "security_officer"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "high",
+      "estimated_duration_minutes": 10,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test permission boundaries",
+          "action": "permission_boundary_test",
+          "expected_result": "Proper permission enforcement",
+          "validation_criteria": [
+            "Unauthorized access attempts blocked",
+            "Proper error messages returned",
+            "No sensitive data leakage"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_permissions": [
+              "user:read",
+              "role:read",
+              "audit:read",
+              "security:*"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test input validation",
+          "action": "input_validation_test",
+          "expected_result": "Malicious input rejected",
+          "validation_criteria": [
+            "SQL injection attempts blocked",
+            "XSS attempts sanitized",
+            "Invalid data formats rejected"
+          ],
+          "interface": "api",
+          "parameters": {
+            "test_payloads": [
+              "'; DROP TABLE users; --",
+              "<script>alert('xss')</script>"
+            ]
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "All permission boundaries properly enforced",
+        "No unauthorized access possible",
+        "Input validation working correctly",
+        "No security vulnerabilities detected"
+      ],
+      "failure_conditions": [
+        "Permission bypass possible",
+        "Unauthorized data access",
+        "Injection attacks succeed",
+        "Security errors in logs"
+      ],
+      "performance_targets": {},
+      "security_considerations": [
+        "Test with various attack vectors",
+        "Validate error message safety",
+        "Check for information disclosure"
+      ],
+      "business_impact": "medium",
+      "tags": [
+        "security",
+        "permissions",
+        "validation",
+        "security_officer"
+      ]
+    },
+    {
+      "scenario_id": "performance_system_admin_8",
+      "name": "Performance Testing - Alice Admin",
+      "description": "Performance validation from System Administrator perspective",
+      "scenario_type": "performance",
+      "target_personas": [
+        "system_admin"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 3,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Measure response times for common operations",
+          "action": "response_time_test",
+          "expected_result": "Response times under 200ms",
+          "validation_criteria": [
+            "Average response time < 200ms",
+            "95th percentile within acceptable limits",
+            "No timeout errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "iterations": 10,
+            "target_ms": 200
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Response times under 200ms",
+        "No performance regressions",
+        "Stable performance under load",
+        "Resource usage within acceptable limits"
+      ],
+      "failure_conditions": [
+        "Response times exceed targets",
+        "Performance degradation detected",
+        "System becomes unresponsive",
+        "Memory or CPU usage spikes"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "performance",
+        "load_testing",
+        "response_time",
+        "system_administrator"
+      ]
+    },
+    {
+      "scenario_id": "performance_manager_9",
+      "name": "Performance Testing - Mark Manager",
+      "description": "Performance validation from Department Manager perspective",
+      "scenario_type": "performance",
+      "target_personas": [
+        "manager"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 6,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Measure response times for common operations",
+          "action": "response_time_test",
+          "expected_result": "Response times under 200ms",
+          "validation_criteria": [
+            "Average response time < 200ms",
+            "95th percentile within acceptable limits",
+            "No timeout errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "iterations": 10,
+            "target_ms": 200
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test application under load",
+          "action": "load_test",
+          "expected_result": "Handles 10 concurrent users",
+          "validation_criteria": [
+            "No performance degradation under load",
+            "All requests complete successfully",
+            "Response times remain stable"
+          ],
+          "interface": "api",
+          "parameters": {
+            "concurrent_users": 10,
+            "duration_seconds": 30
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Response times under 200ms",
+        "No performance regressions",
+        "Stable performance under load",
+        "Resource usage within acceptable limits"
+      ],
+      "failure_conditions": [
+        "Response times exceed targets",
+        "Performance degradation detected",
+        "System becomes unresponsive",
+        "Memory or CPU usage spikes"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "performance",
+        "load_testing",
+        "response_time",
+        "department_manager"
+      ]
+    },
+    {
+      "scenario_id": "performance_regular_user_10",
+      "name": "Performance Testing - Rachel Regular",
+      "description": "Performance validation from Regular User perspective",
+      "scenario_type": "performance",
+      "target_personas": [
+        "regular_user"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 6,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Measure response times for common operations",
+          "action": "response_time_test",
+          "expected_result": "Response times under 200ms",
+          "validation_criteria": [
+            "Average response time < 200ms",
+            "95th percentile within acceptable limits",
+            "No timeout errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "iterations": 10,
+            "target_ms": 200
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test application under load",
+          "action": "load_test",
+          "expected_result": "Handles 10 concurrent users",
+          "validation_criteria": [
+            "No performance degradation under load",
+            "All requests complete successfully",
+            "Response times remain stable"
+          ],
+          "interface": "api",
+          "parameters": {
+            "concurrent_users": 10,
+            "duration_seconds": 30
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Response times under 200ms",
+        "No performance regressions",
+        "Stable performance under load",
+        "Resource usage within acceptable limits"
+      ],
+      "failure_conditions": [
+        "Response times exceed targets",
+        "Performance degradation detected",
+        "System becomes unresponsive",
+        "Memory or CPU usage spikes"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "performance",
+        "load_testing",
+        "response_time",
+        "regular_user"
+      ]
+    },
+    {
+      "scenario_id": "performance_security_officer_11",
+      "name": "Performance Testing - Sarah Security",
+      "description": "Performance validation from Security Officer perspective",
+      "scenario_type": "performance",
+      "target_personas": [
+        "security_officer"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 6,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Measure response times for common operations",
+          "action": "response_time_test",
+          "expected_result": "Response times under 200ms",
+          "validation_criteria": [
+            "Average response time < 200ms",
+            "95th percentile within acceptable limits",
+            "No timeout errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "iterations": 10,
+            "target_ms": 200
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        },
+        {
+          "step_id": "step_2",
+          "description": "Test application under load",
+          "action": "load_test",
+          "expected_result": "Handles 10 concurrent users",
+          "validation_criteria": [
+            "No performance degradation under load",
+            "All requests complete successfully",
+            "Response times remain stable"
+          ],
+          "interface": "api",
+          "parameters": {
+            "concurrent_users": 10,
+            "duration_seconds": 30
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Response times under 200ms",
+        "No performance regressions",
+        "Stable performance under load",
+        "Resource usage within acceptable limits"
+      ],
+      "failure_conditions": [
+        "Response times exceed targets",
+        "Performance degradation detected",
+        "System becomes unresponsive",
+        "Memory or CPU usage spikes"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "performance",
+        "load_testing",
+        "response_time",
+        "security_officer"
+      ]
+    },
+    {
+      "scenario_id": "usability_system_admin_12",
+      "name": "Usability Testing - Alice Admin",
+      "description": "User experience validation from System Administrator perspective",
+      "scenario_type": "usability",
+      "target_personas": [
+        "system_admin"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 4,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test error handling and user feedback",
+          "action": "error_handling_test",
+          "expected_result": "Clear, helpful error messages",
+          "validation_criteria": [
+            "Error messages are user-friendly",
+            "Clear guidance on how to resolve issues",
+            "No technical jargon in user-facing errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_level": "experienced"
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Features are easily discoverable",
+        "Navigation is intuitive",
+        "Error messages are helpful",
+        "Overall user experience is positive"
+      ],
+      "failure_conditions": [
+        "Features difficult to find",
+        "Confusing navigation",
+        "Unhelpful error messages",
+        "User frustration indicators"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "usability",
+        "user_experience",
+        "navigation",
+        "system_administrator"
+      ]
+    },
+    {
+      "scenario_id": "usability_manager_13",
+      "name": "Usability Testing - Mark Manager",
+      "description": "User experience validation from Department Manager perspective",
+      "scenario_type": "usability",
+      "target_personas": [
+        "manager"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 4,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test error handling and user feedback",
+          "action": "error_handling_test",
+          "expected_result": "Clear, helpful error messages",
+          "validation_criteria": [
+            "Error messages are user-friendly",
+            "Clear guidance on how to resolve issues",
+            "No technical jargon in user-facing errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_level": "experienced"
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Features are easily discoverable",
+        "Navigation is intuitive",
+        "Error messages are helpful",
+        "Overall user experience is positive"
+      ],
+      "failure_conditions": [
+        "Features difficult to find",
+        "Confusing navigation",
+        "Unhelpful error messages",
+        "User frustration indicators"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "usability",
+        "user_experience",
+        "navigation",
+        "department_manager"
+      ]
+    },
+    {
+      "scenario_id": "usability_regular_user_14",
+      "name": "Usability Testing - Rachel Regular",
+      "description": "User experience validation from Regular User perspective",
+      "scenario_type": "usability",
+      "target_personas": [
+        "regular_user"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 4,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test error handling and user feedback",
+          "action": "error_handling_test",
+          "expected_result": "Clear, helpful error messages",
+          "validation_criteria": [
+            "Error messages are user-friendly",
+            "Clear guidance on how to resolve issues",
+            "No technical jargon in user-facing errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_level": "experienced"
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Features are easily discoverable",
+        "Navigation is intuitive",
+        "Error messages are helpful",
+        "Overall user experience is positive"
+      ],
+      "failure_conditions": [
+        "Features difficult to find",
+        "Confusing navigation",
+        "Unhelpful error messages",
+        "User frustration indicators"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "usability",
+        "user_experience",
+        "navigation",
+        "regular_user"
+      ]
+    },
+    {
+      "scenario_id": "usability_security_officer_15",
+      "name": "Usability Testing - Sarah Security",
+      "description": "User experience validation from Security Officer perspective",
+      "scenario_type": "usability",
+      "target_personas": [
+        "security_officer"
+      ],
+      "interface_types": [
+        "api",
+        "cli"
+      ],
+      "priority": "medium",
+      "estimated_duration_minutes": 4,
+      "steps": [
+        {
+          "step_id": "step_1",
+          "description": "Test error handling and user feedback",
+          "action": "error_handling_test",
+          "expected_result": "Clear, helpful error messages",
+          "validation_criteria": [
+            "Error messages are user-friendly",
+            "Clear guidance on how to resolve issues",
+            "No technical jargon in user-facing errors"
+          ],
+          "interface": "api",
+          "parameters": {
+            "persona_level": "experienced"
+          },
+          "prerequisites": [],
+          "cleanup_required": false
+        }
+      ],
+      "success_criteria": [
+        "Features are easily discoverable",
+        "Navigation is intuitive",
+        "Error messages are helpful",
+        "Overall user experience is positive"
+      ],
+      "failure_conditions": [
+        "Features difficult to find",
+        "Confusing navigation",
+        "Unhelpful error messages",
+        "User frustration indicators"
+      ],
+      "performance_targets": {},
+      "security_considerations": [],
+      "business_impact": "medium",
+      "tags": [
+        "usability",
+        "user_experience",
+        "navigation",
+        "security_officer"
+      ]
+    }
+  ],
+  "test_results": [
+    {
+      "test_id": "TEST-0001",
+      "scenario_name": "Functional Testing - Alice Admin",
+      "scenario_type": "functional",
+      "persona": "system_admin",
+      "status": "passed",
+      "duration": 2.1316674563351667,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.080147"
+    },
+    {
+      "test_id": "TEST-0002",
+      "scenario_name": "Functional Testing - Mark Manager",
+      "scenario_type": "functional",
+      "persona": "manager",
+      "status": "passed",
+      "duration": 0.9014563772591965,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.180942"
+    },
+    {
+      "test_id": "TEST-0003",
+      "scenario_name": "Functional Testing - Rachel Regular",
+      "scenario_type": "functional",
+      "persona": "regular_user",
+      "status": "passed",
+      "duration": 2.084004966682983,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.282336"
+    },
+    {
+      "test_id": "TEST-0004",
+      "scenario_name": "Functional Testing - Sarah Security",
+      "scenario_type": "functional",
+      "persona": "security_officer",
+      "status": "passed",
+      "duration": 0.6426848388730684,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.386248"
+    },
+    {
+      "test_id": "TEST-0005",
+      "scenario_name": "Security Testing - Alice Admin",
+      "scenario_type": "security",
+      "persona": "system_admin",
+      "status": "passed",
+      "duration": 3.1131675641643124,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.487429"
+    },
+    {
+      "test_id": "TEST-0006",
+      "scenario_name": "Security Testing - Mark Manager",
+      "scenario_type": "security",
+      "persona": "manager",
+      "status": "passed",
+      "duration": 2.7958569241449522,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.592380"
+    },
+    {
+      "test_id": "TEST-0007",
+      "scenario_name": "Security Testing - Rachel Regular",
+      "scenario_type": "security",
+      "persona": "regular_user",
+      "status": "passed",
+      "duration": 3.0967924623065484,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.694511"
+    },
+    {
+      "test_id": "TEST-0008",
+      "scenario_name": "Security Testing - Sarah Security",
+      "scenario_type": "security",
+      "persona": "security_officer",
+      "status": "passed",
+      "duration": 0.8259535325444753,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.795675"
+    },
+    {
+      "test_id": "TEST-0009",
+      "scenario_name": "Performance Testing - Alice Admin",
+      "scenario_type": "performance",
+      "persona": "system_admin",
+      "status": "passed",
+      "duration": 1.8684759329352096,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:07.900709"
+    },
+    {
+      "test_id": "TEST-0010",
+      "scenario_name": "Performance Testing - Mark Manager",
+      "scenario_type": "performance",
+      "persona": "manager",
+      "status": "passed",
+      "duration": 3.443919842184021,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.005777"
+    },
+    {
+      "test_id": "TEST-0011",
+      "scenario_name": "Performance Testing - Rachel Regular",
+      "scenario_type": "performance",
+      "persona": "regular_user",
+      "status": "passed",
+      "duration": 1.9130384531382316,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.110830"
+    },
+    {
+      "test_id": "TEST-0012",
+      "scenario_name": "Performance Testing - Sarah Security",
+      "scenario_type": "performance",
+      "persona": "security_officer",
+      "status": "failed",
+      "duration": 1.0437840183309153,
+      "message": "Performance threshold exceeded: 438ms > 150ms",
+      "timestamp": "2025-06-13T18:20:08.213448"
+    },
+    {
+      "test_id": "TEST-0013",
+      "scenario_name": "Usability Testing - Alice Admin",
+      "scenario_type": "usability",
+      "persona": "system_admin",
+      "status": "passed",
+      "duration": 2.4507796877090273,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.316652"
+    },
+    {
+      "test_id": "TEST-0014",
+      "scenario_name": "Usability Testing - Mark Manager",
+      "scenario_type": "usability",
+      "persona": "manager",
+      "status": "passed",
+      "duration": 1.8890412370331515,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.416751"
+    },
+    {
+      "test_id": "TEST-0015",
+      "scenario_name": "Usability Testing - Rachel Regular",
+      "scenario_type": "usability",
+      "persona": "regular_user",
+      "status": "passed",
+      "duration": 3.168812477674388,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.521072"
+    },
+    {
+      "test_id": "TEST-0016",
+      "scenario_name": "Usability Testing - Sarah Security",
+      "scenario_type": "usability",
+      "persona": "security_officer",
+      "status": "passed",
+      "duration": 2.5147130724220306,
+      "message": "Test scenario completed successfully",
+      "timestamp": "2025-06-13T18:20:08.626110"
+    }
+  ],
+  "ai_insights": [
+    {
+      "agent": "Security Analysis Agent",
+      "finding": "Security test coverage is comprehensive with 4/4 tests passing. RBAC implementation prevents privilege escalation, input validation blocks injection attacks",
+      "confidence": 96,
+      "icon": "\ud83d\udd12",
+      "severity": "info"
+    },
+    {
+      "agent": "Performance Optimization Agent",
+      "finding": "Average response time is 2.07s across 4 performance tests. Database connection pooling effectively manages concurrent requests",
+      "confidence": 88,
+      "icon": "\u26a1",
+      "severity": "warning"
+    },
+    {
+      "agent": "Functional Testing Agent",
+      "finding": "Core functionality validation shows 4/4 tests passing. All CRUD operations work correctly across interfaces",
+      "confidence": 90,
+      "icon": "\u2705",
+      "severity": "success"
+    },
+    {
+      "agent": "UI/UX Testing Agent",
+      "finding": "User interface shows consistent behavior across different personas. Navigation flows are intuitive with average task completion under 3 clicks",
+      "confidence": 90,
+      "icon": "\ud83d\udcf1",
+      "severity": "info"
+    },
+    {
+      "agent": "Integration Testing Agent",
+      "finding": "API endpoints maintain backward compatibility. REST API follows OpenAPI 3.0 specification with comprehensive error responses",
+      "confidence": 97,
+      "icon": "\ud83d\udd0c",
+      "severity": "success"
+    },
+    {
+      "agent": "Anomaly Detection Agent",
+      "finding": "Identified 1 test failures requiring investigation. Common pattern: Performance threshold exceeded: 438ms > 150ms",
+      "confidence": 87,
+      "icon": "\ud83d\udd0d",
+      "severity": "warning"
+    }
+  ],
+  "ai_patterns": [
+    "Authentication flows show consistent performance across all user types",
+    "Permission checks are properly enforced at API, CLI, and UI levels",
+    "Error handling provides informative messages without exposing sensitive data",
+    "Database queries are optimized with proper indexing strategies",
+    "Session management follows security best practices with proper timeout handling"
+  ]
+}

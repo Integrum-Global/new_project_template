@@ -1,0 +1,132 @@
+[
+  {
+    "key": "clinical_user",
+    "name": "Dr. Clara Clinical",
+    "role": "Clinical Physician",
+    "permissions": [
+      "patient:read", "patient:update", "medical_records:access",
+      "prescriptions:create", "lab_results:view", "notes:create"
+    ],
+    "goals": [
+      "Provide quality patient care",
+      "Access medical histories",
+      "Document treatment plans",
+      "Review lab results",
+      "Maintain patient privacy"
+    ],
+    "behavior_style": "Patient-focused, time-sensitive, accuracy-critical, privacy-conscious",
+    "typical_actions": [
+      "Review patient charts",
+      "Update medical records",
+      "Prescribe medications",
+      "Order lab tests",
+      "Document consultations"
+    ],
+    "expected_success_rate": 95.0,
+    "test_focus": ["functionality", "security", "privacy", "accuracy"]
+  },
+  {
+    "key": "nurse_practitioner",
+    "name": "Nancy Nurse",
+    "role": "Registered Nurse Practitioner",
+    "permissions": [
+      "patient:read", "vitals:record", "medications:administer",
+      "schedules:view", "alerts:receive", "notes:create"
+    ],
+    "goals": [
+      "Monitor patient conditions",
+      "Administer treatments",
+      "Record vital signs",
+      "Respond to alerts",
+      "Coordinate care"
+    ],
+    "behavior_style": "Care-focused, responsive, detail-oriented, team-collaborative",
+    "typical_actions": [
+      "Check patient vitals",
+      "Administer medications",
+      "Update nursing notes",
+      "Respond to alarms",
+      "Coordinate with doctors"
+    ],
+    "expected_success_rate": 92.0,
+    "test_focus": ["functionality", "real_time", "usability", "reliability"]
+  },
+  {
+    "key": "hospital_administrator",
+    "name": "Harold Admin",
+    "role": "Hospital Administrator",
+    "permissions": [
+      "users:manage", "departments:oversee", "reports:access",
+      "policies:implement", "budgets:monitor", "compliance:ensure"
+    ],
+    "goals": [
+      "Manage hospital operations",
+      "Ensure regulatory compliance",
+      "Monitor department performance",
+      "Control costs",
+      "Maintain quality standards"
+    ],
+    "behavior_style": "Leadership-oriented, efficiency-focused, compliance-aware, strategic",
+    "typical_actions": [
+      "Review operational reports",
+      "Manage staff assignments",
+      "Monitor compliance metrics",
+      "Approve policy changes",
+      "Oversee budget allocations"
+    ],
+    "expected_success_rate": 90.0,
+    "test_focus": ["functionality", "reporting", "security", "performance"]
+  },
+  {
+    "key": "privacy_officer",
+    "name": "Patricia Privacy",
+    "role": "HIPAA Privacy Officer",
+    "permissions": [
+      "audit:access", "privacy:monitor", "breaches:investigate",
+      "training:manage", "policies:create", "violations:report"
+    ],
+    "goals": [
+      "Ensure HIPAA compliance",
+      "Monitor data access",
+      "Investigate breaches",
+      "Train staff on privacy",
+      "Maintain audit trails"
+    ],
+    "behavior_style": "Compliance-focused, investigative, detail-oriented, policy-driven",
+    "typical_actions": [
+      "Review access logs",
+      "Investigate privacy incidents",
+      "Conduct staff training",
+      "Update privacy policies",
+      "Generate compliance reports"
+    ],
+    "expected_success_rate": 98.0,
+    "test_focus": ["security", "audit", "compliance", "privacy"]
+  },
+  {
+    "key": "lab_technician",
+    "name": "Laura Lab",
+    "role": "Laboratory Technician",
+    "permissions": [
+      "lab_orders:view", "results:enter", "specimens:track",
+      "equipment:operate", "quality:control", "reports:generate"
+    ],
+    "goals": [
+      "Process lab specimens",
+      "Enter accurate results",
+      "Maintain quality standards",
+      "Track specimen status",
+      "Ensure timely reporting"
+    ],
+    "behavior_style": "Precision-focused, quality-oriented, process-driven, reliable",
+    "typical_actions": [
+      "Process lab orders",
+      "Enter test results",
+      "Calibrate equipment",
+      "Track specimens",
+      "Perform quality checks"
+    ],
+    "expected_success_rate": 94.0,
+    "test_focus": ["accuracy", "functionality", "workflows", "quality"]
+  }
+]

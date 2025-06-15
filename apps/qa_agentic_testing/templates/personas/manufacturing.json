@@ -1,0 +1,132 @@
+[
+  {
+    "key": "plant_manager",
+    "name": "Marcus Manager",
+    "role": "Manufacturing Plant Manager",
+    "permissions": [
+      "operations:oversee", "production:schedule", "safety:monitor",
+      "quality:control", "staff:manage", "reports:access", "decisions:make"
+    ],
+    "goals": [
+      "Optimize production efficiency",
+      "Ensure workplace safety",
+      "Maintain quality standards", 
+      "Manage production schedules",
+      "Control operational costs"
+    ],
+    "behavior_style": "Results-driven, safety-conscious, efficiency-focused, leadership-oriented",
+    "typical_actions": [
+      "Review production metrics",
+      "Schedule production runs",
+      "Monitor safety incidents",
+      "Approve overtime",
+      "Meet with department heads"
+    ],
+    "expected_success_rate": 93.0,
+    "test_focus": ["functionality", "performance", "reporting", "security"]
+  },
+  {
+    "key": "quality_inspector",
+    "name": "Quincy Quality",
+    "role": "Quality Control Inspector", 
+    "permissions": [
+      "quality:inspect", "defects:report", "standards:enforce",
+      "testing:perform", "documentation:create", "batches:approve"
+    ],
+    "goals": [
+      "Ensure product quality",
+      "Identify defects early",
+      "Enforce quality standards",
+      "Document test results",
+      "Prevent defective shipments"
+    ],
+    "behavior_style": "Detail-oriented, quality-focused, methodical, compliance-driven",
+    "typical_actions": [
+      "Inspect product samples",
+      "Document quality tests",
+      "Report defects",
+      "Calibrate test equipment",
+      "Review quality metrics"
+    ],
+    "expected_success_rate": 96.0,
+    "test_focus": ["accuracy", "functionality", "audit", "validation"]
+  },
+  {
+    "key": "maintenance_technician",
+    "name": "Mike Maintenance",
+    "role": "Equipment Maintenance Technician",
+    "permissions": [
+      "equipment:access", "maintenance:schedule", "repairs:perform",
+      "diagnostics:run", "parts:order", "work_orders:manage"
+    ],
+    "goals": [
+      "Maintain equipment uptime",
+      "Perform preventive maintenance",
+      "Diagnose equipment issues",
+      "Minimize production downtime",
+      "Ensure equipment safety"
+    ],
+    "behavior_style": "Problem-solving, hands-on, preventive-minded, technical-focused",
+    "typical_actions": [
+      "Perform equipment inspections",
+      "Execute maintenance schedules",
+      "Diagnose equipment failures",
+      "Order replacement parts",
+      "Update work order status"
+    ],
+    "expected_success_rate": 89.0,
+    "test_focus": ["functionality", "reliability", "workflows", "usability"]
+  },
+  {
+    "key": "production_supervisor",
+    "name": "Susan Supervisor",
+    "role": "Production Line Supervisor",
+    "permissions": [
+      "line:monitor", "workers:supervise", "targets:track",
+      "issues:resolve", "schedules:adjust", "metrics:view"
+    ],
+    "goals": [
+      "Meet production targets",
+      "Supervise line workers",
+      "Resolve production issues",
+      "Monitor quality metrics",
+      "Ensure safety compliance"
+    ],
+    "behavior_style": "Team-focused, target-oriented, problem-solving, communication-strong",
+    "typical_actions": [
+      "Monitor production lines",
+      "Assign worker tasks",
+      "Track production metrics",
+      "Resolve line stoppages",
+      "Conduct safety briefings"
+    ],
+    "expected_success_rate": 91.0,
+    "test_focus": ["functionality", "real_time", "performance", "usability"]
+  },
+  {
+    "key": "safety_coordinator",
+    "name": "Samuel Safety",
+    "role": "Workplace Safety Coordinator",
+    "permissions": [
+      "safety:monitor", "incidents:investigate", "training:manage",
+      "inspections:conduct", "policies:enforce", "reports:generate"
+    ],
+    "goals": [
+      "Prevent workplace accidents",
+      "Ensure OSHA compliance",
+      "Investigate safety incidents",
+      "Train workers on safety",
+      "Maintain safety records"
+    ],
+    "behavior_style": "Safety-first, proactive, detail-oriented, training-focused",
+    "typical_actions": [
+      "Conduct safety inspections",
+      "Investigate incidents",
+      "Deliver safety training",
+      "Update safety policies",
+      "Generate compliance reports"
+    ],
+    "expected_success_rate": 97.0,
+    "test_focus": ["compliance", "security", "audit", "functionality"]
+  }
+]

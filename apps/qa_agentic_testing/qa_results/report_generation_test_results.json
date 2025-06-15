@@ -1,0 +1,15 @@
+{
+  "test_name": "Report Generation Test",
+  "timestamp": "2025-06-15T17:51:17.174805",
+  "results": {
+    "report_generator_import": true,
+    "html_generation": false,
+    "json_generation": true,
+    "report_features": false
+  },
+  "summary": {
+    "passed": 2,
+    "total": 4,
+    "percentage": 50.0
+  }
+}

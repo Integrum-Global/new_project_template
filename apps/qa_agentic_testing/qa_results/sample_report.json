@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "app_name": "Test Application",
+    "app_path": "/test/path",
+    "test_date": "2025-06-15T17:51:17.173749",
+    "test_count": 10,
+    "duration": 45.2
+  },
+  "execution_summary": {
+    "total_tests": 10,
+    "passed": 8,
+    "failed": 1,
+    "timeout": 0,
+    "error": 1,
+    "success_rate": 80.0,
+    "total_duration": 45.2,
+    "average_duration": 4.52
+  },
+  "test_results": [
+    {
+      "test_id": "test_sample_1",
+      "persona": "admin",
+      "scenario": "create_user",
+      "status": "pass",
+      "confidence": 95,
+      "duration": 3.2,
+      "timestamp": "2025-06-15T17:51:17.173755"
+    },
+    {
+      "test_id": "test_sample_2",
+      "persona": "user",
+      "scenario": "read_data",
+      "status": "pass",
+      "confidence": 90,
+      "duration": 2.1,
+      "timestamp": "2025-06-15T17:51:17.173756"
+    },
+    {
+      "test_id": "test_sample_3",
+      "persona": "manager",
+      "scenario": "approve_request",
+      "status": "warning",
+      "confidence": 75,
+      "duration": 5.5,
+      "timestamp": "2025-06-15T17:51:17.173757"
+    },
+    {
+      "test_id": "test_sample_4",
+      "persona": "user",
+      "scenario": "unauthorized_access",
+      "status": "fail",
+      "confidence": 100,
+      "duration": 1.2,
+      "timestamp": "2025-06-15T17:51:17.173758"
+    }
+  ],
+  "app_analysis": {
+    "interfaces": [
+      "CLI",
+      "Web",
+      "API"
+    ],
+    "operations": [
+      {
+        "name": "create",
+        "type": "write"
+      },
+      {
+        "name": "read",
+        "type": "read"
+      },
+      {
+        "name": "update",
+        "type": "write"
+      },
+      {
+        "name": "delete",
+        "type": "write"
+      }
+    ],
+    "permissions": [
+      "user:read",
+      "user:write",
+      "admin:all",
+      "manager:approve",
+      "data:export"
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "Admin User Creation",
+      "type": "functional",
+      "priority": "high",
+      "personas": [
+        "admin"
+      ],
+      "steps": 5
+    },
+    {
+      "name": "Security Boundary Test",
+      "type": "security",
+      "priority": "high",
+      "personas": [
+        "user",
+        "admin"
+      ],
+      "steps": 8
+    }
+  ],
+  "personas": {
+    "admin": {
+      "name": "Admin User",
+      "role": "System Administrator",
+      "permissions": [
+        "*"
+      ],
+      "goals": [
+        "Manage system",
+        "Ensure security"
+      ]
+    },
+    "user": {
+      "name": "Regular User",
+      "role": "Standard User",
+      "permissions": [
+        "user:read:self",
+        "data:read:own"
+      ],
+      "goals": [
+        "Access data",
+        "Complete tasks"
+      ]
+    },
+    "manager": {
+      "name": "Department Manager",
+      "role": "Manager",
+      "permissions": [
+        "user:read",
+        "user:update",
+        "manager:approve"
+      ],
+      "goals": [
+        "Manage team",
+        "Approve requests"
+      ]
+    }
+  }
+}

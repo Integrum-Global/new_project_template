@@ -1,0 +1,208 @@
+{
+  "test_run_info": {
+    "test_name": "User Management System Test",
+    "test_framework": "QA Agentic Testing v0.1.0",
+    "target_application": "User Management System",
+    "test_type": "Comprehensive Automated Testing",
+    "test_date": "2025-06-15T20:52:06.632417",
+    "duration_estimated_minutes": 5,
+    "app_path": "/apps/user_management"
+  },
+  "discovery_results": {
+    "interfaces": [
+      "CLI",
+      "API",
+      "Web"
+    ],
+    "permissions": [
+      "admin.users.create",
+      "admin.users.read",
+      "admin.users.update"
+    ],
+    "operations": [
+      {
+        "name": "create_user",
+        "interface": "api"
+      },
+      {
+        "name": "list_users",
+        "interface": "cli"
+      },
+      {
+        "name": "update_user",
+        "interface": "web"
+      }
+    ],
+    "user_roles": [
+      "admin",
+      "user",
+      "manager"
+    ],
+    "endpoints": [
+      "/api/users",
+      "/api/roles"
+    ],
+    "total_operations": 3,
+    "total_permissions": 3,
+    "total_interfaces": 3,
+    "operations_discovered": 3,
+    "permissions_discovered": 3,
+    "security_features": 2,
+    "cli_commands": 1,
+    "api_endpoints": 1,
+    "web_routes": 1,
+    "mcp_services": 0,
+    "mcp_tools": 0
+  },
+  "persona_analysis": {
+    "total_personas": 2,
+    "personas_list": [
+      {
+        "name": "System Administrator",
+        "role": "System Administrator",
+        "permissions": [
+          "admin.*"
+        ]
+      },
+      {
+        "name": "Regular User",
+        "role": "User",
+        "permissions": [
+          "user.read"
+        ]
+      }
+    ],
+    "persona_coverage": {
+      "admin": true,
+      "manager": false,
+      "user": true,
+      "security": false
+    }
+  },
+  "scenario_analysis": {
+    "total_scenarios": 2,
+    "by_type": {
+      "functional": 1,
+      "security": 1
+    },
+    "by_priority": {
+      "high": 2,
+      "medium": 0,
+      "low": 0
+    },
+    "scenario_types": {
+      "functional": 1,
+      "security": 1
+    },
+    "interfaces_tested": [
+      "api"
+    ],
+    "average_duration": 2.5
+  },
+  "coverage_analysis": {
+    "operations_coverage_percent": 100.0,
+    "permissions_coverage_percent": 100.0,
+    "interfaces_coverage_percent": 100.0,
+    "interface_coverage": 100.0,
+    "permission_coverage": 100.0,
+    "operation_coverage": 100.0,
+    "comprehensive_coverage": 80.0,
+    "security_scenarios": 1,
+    "performance_scenarios": 0,
+    "functional_scenarios": 1
+  },
+  "quality_metrics": {
+    "expected_success_rate_percent": 80.0,
+    "test_success_rate": 80.0,
+    "average_confidence": 85.0,
+    "test_reliability": 85.0,
+    "comprehensive_coverage": 80.0
+  },
+  "performance_targets": {
+    "response_time_ms": 200,
+    "throughput_ops": 100,
+    "cpu_usage": 80,
+    "memory_usage": 75
+  },
+  "performance_actual": {
+    "response_time_ms": 500.0,
+    "throughput_ops": 200.0,
+    "cpu_usage": 45,
+    "memory_usage": 60
+  },
+  "test_results": [
+    {
+      "test_id": "TEST-0001",
+      "scenario_name": "Admin creates user",
+      "scenario_type": "functional",
+      "persona": "admin",
+      "status": "passed",
+      "duration": 0.3,
+      "message": "User created successfully",
+      "timestamp": "2025-06-15T20:52:06.632423"
+    },
+    {
+      "test_id": "TEST-0002",
+      "scenario_name": "SQL injection test",
+      "scenario_type": "security",
+      "persona": "attacker",
+      "status": "passed",
+      "duration": 0.8,
+      "message": "SQL injection blocked successfully",
+      "timestamp": "2025-06-15T20:52:06.632425"
+    }
+  ],
+  "all_scenarios": [
+    {
+      "id": "SCENARIO-001",
+      "name": "Admin creates user",
+      "scenario_type": "functional",
+      "priority": "high",
+      "interface": "api",
+      "estimated_duration_minutes": 2
+    },
+    {
+      "id": "SCENARIO-002",
+      "name": "SQL injection test",
+      "scenario_type": "security",
+      "priority": "high",
+      "interface": "api",
+      "estimated_duration_minutes": 3
+    }
+  ],
+  "all_personas": [
+    {
+      "name": "System Administrator",
+      "role": "System Administrator",
+      "permissions": [
+        "admin.*"
+      ]
+    },
+    {
+      "name": "Regular User",
+      "role": "User",
+      "permissions": [
+        "user.read"
+      ]
+    }
+  ],
+  "ai_insights": [
+    {
+      "insight": "Successfully tested 8 out of 10 scenarios",
+      "category": "summary",
+      "severity": "info"
+    },
+    {
+      "insight": "Test success rate is 80.0%",
+      "category": "performance",
+      "severity": "success"
+    }
+  ],
+  "ai_patterns": [
+    {
+      "pattern": "Authentication and authorization flows tested",
+      "frequency": 0,
+      "impact": "high"
+    }
+  ]
+}

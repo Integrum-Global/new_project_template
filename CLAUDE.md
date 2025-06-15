@@ -4,13 +4,13 @@ This template helps you build enterprise applications using the [Kailash Python 
 
 ## 📁 Quick Directory Access
 
-| **Purpose** | **Location** | **Description** |
-|-------------|--------------|-----------------|
-| **Build Apps** | [apps/](apps/) | Self-contained client applications |
-| **Cross-App Coordination** | [solutions/](solutions/) | Tenant-level orchestration |
-| **SDK Guidance** | [sdk-users/](sdk-users/) | Curated SDK documentation |
-| **Infrastructure** | [infrastructure/](infrastructure/) | Deployment & DevOps |
-| **Project Data** | [data/](data/) | Inputs, outputs, configurations |
+| **Purpose**                | **Location**               | **Description** |
+|----------------------------|----------------------------|-----------------|
+| **Build Apps**             | [apps/](apps/)             | Self-contained client applications |
+| **Cross-App Coordination** | [solutions/](solutions/)   | Tenant-level orchestration |
+| **SDK Guidance**           | [sdk-users/](sdk-users/)   | Curated SDK documentation |
+| **Deployment**             | [deployment/](deployment/) | Deployment & DevOps |
+| **Project Data**           | [data/](data/)             | Inputs, outputs, configurations |
 
 ## ⚠️ MUST FOLLOW - Kailash SDK Best Practices
 
