@@ -62,15 +62,13 @@ jobs:
             ".env.example"
 
             # Template structure - sync if missing but preserve client implementations
-            "apps/_template"
-            "apps/README.md"
-            "apps/APP_DEVELOPMENT_GUIDE.md"
             "solutions"
             "deployment"
             "infrastructure"
             "data"
             "docs"
             "scripts"
+            # src/ directory is NEVER synced - this is where client projects live
           )
 
           # Files that need special merge handling
@@ -83,6 +81,9 @@ jobs:
             # No directories need merging with current sync-if-missing strategy
           )
 
+          # IMPORTANT: src/ directory is NEVER synced - it contains client project code
+          # Client projects should be in src/project_name/module_name structure
+          
           # Sync each file/directory (always overwrite)
           for item in "${SYNC_FILES[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item"; then
@@ -181,10 +182,10 @@ Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ).
 - **Template structure**: Added if missing (apps/_template/, solutions/, etc.)
 
 ## 📋 What was preserved:
-- **Client apps**: All custom apps in apps/ (except _template/, qa_agentic_testing, studio, user_management)
+- **Client code**: Everything in src/ directory (your project code)
 - **Client solutions**: All content in solutions/
 - **Project management**: Client-specific todos/, adr/, mistakes/
-- **Configuration**: Client-specific .env, pyproject.toml customizations
+- **Configuration**: Client-specific .env, existing pyproject.toml (if present)
 - **Data**: Client-specific data/ directory
 - **Custom workflows**: Client-specific GitHub Actions remain untouched
 

@@ -85,19 +85,18 @@ This template helps you build enterprise applications using the [Kailash Python 
 - ✅ **Use packager pattern for SwitchNode cycles**: see [developer guide](sdk-users/developer/09-cyclic-workflows-guide.md)
 - ⚠️ Always explicitly map parameters in cycle connections
  
-### App Development (`apps/`)
+### App Development
 ```
-apps/
-├── _template/             # Template for new client apps
-│   ├── adr/               # App-specific architecture decisions
-│   ├── todos/             # App-specific task tracking
-│   ├── mistakes/          # App-specific learning
-│   ├── core/              # Business logic
-│   ├── workflows/         # Kailash SDK workflows
-│   └── tests/             # Comprehensive testing
-├── user_management/       # Example: Enterprise user management
-├── analytics/             # Example: Data analytics
-└── document_processor/    # Example: Document processing
+apps/                      # Template-provided example apps (sync-replaced)
+├── qa_agentic_testing/    # QA testing example
+├── studio/                # Workflow studio example  
+└── user_management/       # User management example
+
+src/                       # Client project code (NEVER synced)
+└── your_project/          # Your project name
+    ├── module1/           # First module
+    ├── module2/           # Second module
+    └── shared/            # Shared code between modules
 ```
 
 ### Cross-App Orchestration (`solutions/`)
@@ -114,11 +113,11 @@ solutions/
 
 ## 🚫 Conflict Prevention Strategy
 
-### Isolated Project Management
-- ✅ **Each app has isolated** `adr/`, `todos/`, `mistakes/` folders
-- ✅ **Solutions level has isolated** project management for cross-app work
-- ✅ **No shared files** that multiple teams modify
-- ✅ **Clear ownership** boundaries between apps and solutions
+### Clear Separation
+- ✅ **Template apps in `apps/`** - Sync-replaced example apps from template
+- ✅ **Client code in `src/`** - Never synced, fully owned by client
+- ✅ **No merge conflicts** - Template updates never touch your code
+- ✅ **Clear boundaries** - Your code is safe in `src/`
 
 ## 🔧 Core Nodes (110+ available)
 **AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, SelfOrganizingAgentNode
@@ -134,8 +133,8 @@ solutions/
 
 | **Need** | **File** | **Purpose** |
 |----------|----------|-------------|
-| **Start Building** | [apps/APP_DEVELOPMENT_GUIDE.md](apps/APP_DEVELOPMENT_GUIDE.md) | Complete app development guide |
-| **Cross-App Work** | [solutions/README.md](solutions/README.md) | Multi-app coordination patterns |
+| **Start Building** | Create your project in `src/your_project/` | Client code safe from sync |
+| **Example Apps** | See `apps/` for qa_agentic_testing, studio, user_management | Reference implementations |
 | **SDK Usage** | [sdk-users/developer/QUICK_REFERENCE.md](sdk-users/developer/QUICK_REFERENCE.md) | SDK patterns and examples |
 | **Node Catalog** | [sdk-users/nodes/comprehensive-node-catalog.md](sdk-users/nodes/comprehensive-node-catalog.md) | All available SDK nodes |
 | **Troubleshooting** | [sdk-users/developer/07-troubleshooting.md](sdk-users/developer/07-troubleshooting.md) | Common issues and solutions |
@@ -143,13 +142,12 @@ solutions/
 ## 🎯 Primary Development Tasks
 
 ### Every Development Session:
-1. **Check app todos**: `cat apps/my_app/todos/000-master.md`
-2. **Update task status**: Mark `[~]` when starting, `[x]` when completing
-3. **Plan**: Check ADRs, use `sdk-users/essentials/` for patterns
-4. **Document decisions**: Add to `apps/my_app/adr/` for app-specific choices
-5. **Implement**: Use node catalog, create tests in `examples/`
-6. **Document all the time**: Update todos, add to workflows, align docs
-7. **Track learnings**: Add to `apps/my_app/mistakes/` when you solve issues
+1. **Start in src/**: `cd src/your_project/` - Your code is safe here
+2. **Reference examples**: Check `apps/` for patterns from qa_agentic_testing, studio, user_management
+3. **Use SDK docs**: Follow patterns in `sdk-users/developer/`
+4. **Plan with todos**: Track tasks in your project's todos
+5. **Implement**: Use node catalog, test thoroughly
+6. **No sync worries**: Your `src/` code is never touched by template updates
 
 ### Multi-App Coordination:
 1. **Solutions planning**: Use `solutions/todos/000-master.md` for cross-app work
