@@ -31,7 +31,7 @@ def get_downstream_repos():
         'gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq \'.items[].name\''
     )
     
-    repos = [r for r in repos_json.split('\n') if r and r != 'new_project_template']
+    repos = [r for r in repos_json.split('\n') if r and r not in ['new_project_template', 'kailash_python_sdk']]
     
     if not repos:
         print("⚠️  No repos found with topic, checking template relationships...")
@@ -39,7 +39,7 @@ def get_downstream_repos():
             'gh repo list Integrum-Global --limit 200 --json name,templateRepository'
         )
         data = json.loads(repos_json) if repos_json else []
-        repos = [r['name'] for r in data if r.get('templateRepository', {}).get('name') == 'new_project_template']
+        repos = [r['name'] for r in data if r.get('templateRepository', {}).get('name') == 'new_project_template' and r['name'] != 'kailash_python_sdk']
     
     print(f"📊 Found {len(repos)} downstream repositories")
     return repos
