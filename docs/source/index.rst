@@ -43,7 +43,7 @@ Quick Links
 -----------
 
 * `GitHub Repository <https://github.com/Integrum-Global/new_project_template>`_
-* `Kailash SDK Documentation <https://kailash-sdk.readthedocs.io/>`_
+* `Kailash SDK Documentation <https://kailash.readthedocs.io/>`_
 * `Issue Tracker <https://github.com/Integrum-Global/new_project_template/issues>`_
 
 Overview

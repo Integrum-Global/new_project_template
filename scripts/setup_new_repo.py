@@ -20,7 +20,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Required topics for template sync discovery
-REQUIRED_TOPICS = ["kailash-template", "kailash-sdk", "business-solutions"]
+REQUIRED_TOPICS = ["kailash-template", "kailash", "business-solutions"]
 
 # Default labels for issue tracking
 DEFAULT_LABELS = [
@@ -35,7 +35,7 @@ DEFAULT_LABELS = [
         "description": "Solution-specific development tasks",
     },
     {
-        "name": "kailash-sdk",
+        "name": "kailash",
         "color": "1d76db",
         "description": "Issues related to Kailash SDK usage",
     },

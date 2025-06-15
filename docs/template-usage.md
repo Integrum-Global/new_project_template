@@ -50,7 +50,7 @@ The setup script (`scripts/setup_new_repo.py`) automatically:
 
 #### ✅ **Template Sync Setup**
 - Adds `kailash-template` topic to enable automatic template updates
-- Adds `kailash-sdk` and `business-solutions` topics for organization
+- Adds `kailash` and `business-solutions` topics for organization
 - Repository will now automatically receive template updates via PR
 
 #### ✅ **Development Environment**
@@ -78,7 +78,7 @@ tests/                         # Test files
 ```
 
 #### ✅ **Issue Tracking**
-- Creates labels: `template-sync`, `solution-development`, `kailash-sdk`
+- Creates labels: `template-sync`, `solution-development`, `kailash`
 - Sets up standard labels for enhancement, documentation, etc.
 
 ### 3. Initial Solution Template
@@ -126,7 +126,7 @@ python scripts/setup_new_repo.py
 ### Manual Topic Addition
 ```bash
 # Add template topic for sync discovery
-gh api /repos/YOUR-ORG/YOUR-REPO/topics --method PUT --raw-field names='["kailash-template","kailash-sdk","business-solutions"]'
+gh api /repos/YOUR-ORG/YOUR-REPO/topics --method PUT --raw-field names='["kailash-template","kailash","business-solutions"]'
 ```
 
 ### Manual Workflow Trigger

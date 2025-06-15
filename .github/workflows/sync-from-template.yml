@@ -32,52 +32,50 @@ jobs:
           BRANCH_NAME="template-sync-$(date +%Y%m%d-%H%M%S)"
           git checkout -b $BRANCH_NAME
 
-          # Get list of files to sync from template
+          # Get list of files to sync from template (ALWAYS REPLACE)
           SYNC_FILES=(
-            # SDK guidance - sync specific subdirectories only
-            "sdk-users/api"
-            "sdk-users/developer"
-            "sdk-users/essentials"
-            "sdk-users/features"
-            "sdk-users/instructions"
-            "sdk-users/nodes"
-            "sdk-users/patterns"
-            "sdk-users/templates"
-            "sdk-users/workflows"
-            "sdk-users/CLAUDE.md"
-            "sdk-users/README.md"
-            "sdk-users/validation-guide.md"
-            # Note: CLAUDE.md moved to SYNC_IF_MISSING - contains user-specific workflow instructions
+            # SDK guidance - always sync entire directory
+            "sdk-users"
+            # Main CLAUDE.md - always sync (contains latest development patterns)
+            "CLAUDE.md"
+            # Essential GitHub workflows for client CI/CD
+            ".github/workflows/unified-ci.yml"
+            ".github/workflows/security-report.yml"
+            ".github/workflows/sync-from-template.yml"
+            ".github/workflows/template-sync-check.yml"
+            ".github/workflows/template-init.yml"
+            ".github/workflows/template-cleanup.yml"
+            ".github/workflows/README.md"
           )
 
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
-            # Root files - create if missing but don't overwrite
+            # Root files - create if missing but don't overwrite client customizations
             "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
-            "CLAUDE.md"  # User-specific workflow instructions
+            ".gitignore"
+            ".env.example"
 
-            # Project-specific directories - sync all content if directory missing
-            "adr"
-            "prd"
-            "mistakes"
-            "todos"
-            "migrations"
+            # Template structure - sync if missing but preserve client implementations
+            "apps/_template"
+            "apps/README.md"
+            "apps/APP_DEVELOPMENT_GUIDE.md"
+            "solutions"
+            "infrastructure"
             "data"
             "docs"
-            "examples"
-            "src/solutions"
+            "scripts"
           )
 
           # Files that need special merge handling
           MERGE_FILES=(
+            # No files need special merging with current sync-if-missing strategy
           )
 
           # Directories that should be merged (add new, preserve existing)
           MERGE_DIRS=(
-            "src/shared"
-            "scripts"
+            # No directories need merging with current sync-if-missing strategy
           )
 
           # Sync each file/directory (always overwrite)
@@ -157,9 +155,35 @@ jobs:
 
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ). Synced sdk-users/ (SDK reference) and CLAUDE.md. Project-specific content preserved: adr/, prd/, mistakes/, todos/, migrations/, docs/, src/solutions/. Please review changes.
+              --body "Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ).
 
-Note: This is a template sync PR - CI tests are automatically skipped." \
+## 🔄 What was synced (always replaced):
+- **sdk-users/**: Latest SDK documentation and guides
+- **CLAUDE.md**: Latest development patterns and workflows
+- **GitHub Workflows**: Essential CI/CD workflows for client projects
+  - unified-ci.yml (Primary CI/CD pipeline)
+  - security-report.yml (Security scanning)
+  - sync-from-template.yml (Template sync capability)
+  - template-sync-check.yml (Sync validation)
+  - template-init.yml (Repository setup)
+  - template-cleanup.yml (Post-creation cleanup)
+  - README.md (Workflow documentation)
+- **Template structure**: Added if missing (apps/_template/, solutions/, etc.)
+
+## 📋 What was preserved:
+- **Client apps**: All content in apps/ (except _template/)
+- **Client solutions**: All content in solutions/
+- **Project management**: Client-specific todos/, adr/, mistakes/
+- **Configuration**: Client-specific .env, pyproject.toml customizations
+- **Data**: Client-specific data/ directory
+- **Custom workflows**: Client-specific GitHub Actions remain untouched
+
+## ✅ Review notes:
+- Essential workflows ensure your CI/CD stays current with template improvements
+- Client customizations and implementations remain completely protected
+- Template structure additions only happen if directories are missing
+
+Note: This is a template sync PR - CI validation focuses on template structure." \
               --base main
           else
             echo "No changes to sync"

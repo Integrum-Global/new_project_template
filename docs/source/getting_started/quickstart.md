@@ -53,8 +53,8 @@ This guide will help you get started with the Kailash SDK Template in just a few
 3. **Define a simple workflow** in `workflow.py`:
 
    ```python
-   >>> from kailash_sdk import Workflow, Runtime
-   >>> from kailash_sdk.nodes import FileReaderNode, DataTransformerNode, FileWriterNode
+   >>> from kailash import Workflow, Runtime
+   >>> from kailash.nodes import FileReaderNode, DataTransformerNode, FileWriterNode
 
    >>> def create_workflow():
    ...     workflow = Workflow("my_first_workflow")
@@ -171,4 +171,4 @@ chmod +x scripts/*.py
 
 - Check the ``sdk-users/developer/`` directory for troubleshooting guides
 - Open an issue on [GitHub](https://github.com/Integrum-Global/new_project_template/issues)
-- Review the [Kailash SDK documentation](https://kailash-sdk.readthedocs.io/)
+- Review the [Kailash SDK documentation](https://kailash.readthedocs.io/)

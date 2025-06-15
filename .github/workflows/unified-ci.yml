@@ -1,8 +1,8 @@
-name: CI Pipeline
+name: Template Validation
 
 on:
   push:
-    branches: [ feat/*, feature/* ]
+    branches: [ main, develop ]
   pull_request:
     branches: [ main ]
     types: [opened, synchronize, reopened]
@@ -47,9 +47,12 @@ jobs:
 
               // Check various indicators of template sync
               const isTemplateSync =
+                prTitle.includes('Sync template updates') ||
                 prTitle.includes('Sync template updates from') ||
                 prBranch.startsWith('template-sync-') ||
+                prBody.includes('Automated template sync from') ||
                 prBody.includes('Automated sync at') ||
+                prBody.includes('What was synced (always replaced)') ||
                 prBody.includes('This PR automatically syncs updates from the template repository');
 
               if (isTemplateSync) {
@@ -164,11 +167,27 @@ jobs:
           fi
           uv sync
 
-      - name: Run basic smoke tests
+      - name: Run template validation tests
         run: |
-          echo "Running basic smoke tests..."
-          uv run pytest scripts/tests/test_template_setup.py -v
-          uv run python -m kailash --version
+          echo "Running template structure validation..."
+          # Validate template structure
+          if [ -f "scripts/tests/test_template_setup.py" ]; then
+            uv run pytest scripts/tests/test_template_setup.py -v
+          else
+            echo "Template validation tests not found - skipping"
+          fi
+          
+          # Validate app template structure
+          if [ -d "apps/_template" ]; then
+            echo "✅ App template structure exists"
+          else
+            echo "❌ App template structure missing"
+            exit 1
+          fi
+          
+          # Validate that kailash-sdk can be imported (from PyPI)
+          echo "Validating kailash-sdk installation..."
+          uv run python -c "import kailash; print(f'Kailash SDK version: {kailash.__version__}')"
 
   # Full test suite for PRs and manual triggers
   lint-and-format:
@@ -201,17 +220,47 @@ jobs:
 
       - name: Check formatting with black
         run: |
-          uv run black --check src/ scripts/tests/
+          # Only check directories that exist
+          DIRS_TO_CHECK=""
+          [ -d "apps" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK apps/"
+          [ -d "solutions" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK solutions/"
+          [ -d "scripts/tests" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK scripts/tests/"
+          
+          if [ -n "$DIRS_TO_CHECK" ]; then
+            uv run black --check $DIRS_TO_CHECK
+          else
+            echo "No Python code directories found to check"
+          fi
 
       - name: Check import sorting with isort
         run: |
-          uv run isort --check-only src/ scripts/tests/
+          # Only check directories that exist
+          DIRS_TO_CHECK=""
+          [ -d "apps" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK apps/"
+          [ -d "solutions" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK solutions/"
+          [ -d "scripts/tests" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK scripts/tests/"
+          
+          if [ -n "$DIRS_TO_CHECK" ]; then
+            uv run isort --check-only $DIRS_TO_CHECK
+          else
+            echo "No Python code directories found to check"
+          fi
 
       - name: Lint with ruff
         run: |
-          # Check for critical errors only (syntax errors, undefined names, etc.)
-          uv run ruff check src/ scripts/tests/ --select=E9,F63,F7,F82
-          echo "✅ No critical linting errors found"
+          # Only check directories that exist
+          DIRS_TO_CHECK=""
+          [ -d "apps" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK apps/"
+          [ -d "solutions" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK solutions/"
+          [ -d "scripts/tests" ] && DIRS_TO_CHECK="$DIRS_TO_CHECK scripts/tests/"
+          
+          if [ -n "$DIRS_TO_CHECK" ]; then
+            # Check for critical errors only (syntax errors, undefined names, etc.)
+            uv run ruff check $DIRS_TO_CHECK --select=E9,F63,F7,F82
+            echo "✅ No critical linting errors found"
+          else
+            echo "No Python code directories found to check"
+          fi
 
   test-matrix:
     name: Test Python ${{ matrix.python-version }}
@@ -247,9 +296,50 @@ jobs:
           fi
           uv sync
 
-      - name: Run tests with coverage
+      - name: Run template tests
         run: |
-          uv run pytest scripts/tests/ -v --cov=src --cov-report=xml --cov-report=term
+          # Run tests that exist
+          if [ -d "scripts/tests" ]; then
+            echo "Running template validation tests..."
+            uv run pytest scripts/tests/ -v
+          elif [ -d "tests" ]; then
+            echo "Running client project tests..."
+            uv run pytest tests/ -v --cov=apps --cov=solutions 2>/dev/null || uv run pytest tests/ -v
+          else
+            echo "No test directory found - creating basic validation test"
+            mkdir -p tests
+            cat > tests/test_basic_validation.py << 'EOF'
+import os
+import sys
+from pathlib import Path
+
+def test_template_structure():
+    """Test that basic template structure exists."""
+    root = Path(".")
+    
+    # Check for essential directories
+    assert (root / "apps").exists(), "apps/ directory should exist"
+    assert (root / "apps" / "_template").exists(), "apps/_template/ should exist"
+    assert (root / "solutions").exists(), "solutions/ directory should exist"
+    
+    # Check for essential files
+    assert (root / "CLAUDE.md").exists(), "CLAUDE.md should exist"
+    assert (root / "README.md").exists(), "README.md should exist"
+    assert (root / "pyproject.toml").exists(), "pyproject.toml should exist"
+    
+    print("✅ Template structure validation passed")
+
+def test_kailash_sdk_importable():
+    """Test that kailash SDK can be imported."""
+    try:
+        import kailash
+        print(f"✅ Kailash SDK imported successfully: {kailash.__version__}")
+    except ImportError as e:
+        print(f"❌ Failed to import kailash SDK: {e}")
+        raise
+EOF
+            uv run pytest tests/test_basic_validation.py -v
+          fi
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5

@@ -1,185 +1,197 @@
-# GitHub Actions Workflow Strategy
+# GitHub Actions Workflow Strategy for Client Projects
 
 ## Overview
 
-This repository uses a unified CI pipeline that intelligently avoids duplicate test runs while maintaining code quality standards.
+This repository provides a focused CI/CD pipeline optimized for **Kailash SDK client projects**. The workflows are designed to validate client applications and solutions while maintaining the template synchronization ecosystem.
 
-## Workflow Files
+## Active Workflows for Client Projects
 
-### 1. `unified-ci.yml` - Unified CI Pipeline (ACTIVE)
-- **Purpose**: Smart CI pipeline that eliminates duplicate runs
+### 1. `unified-ci.yml` - Template Validation ⭐ **PRIMARY CI**
+- **Purpose**: Smart CI pipeline for client project validation
 - **Triggers**:
   - Push to feature branches (`feat/*`, `feature/*`)
   - Pull requests to `main`
   - Manual dispatch
-- **Smart Detection**:
-  - For pushes: Checks if PR exists, skips if yes
-  - For PRs: Always runs full test suite
-  - For manual: Always runs full test suite
-- **Jobs**:
-  - Basic tests (push without PR)
-  - Full suite (PRs and manual):
-    - Lint and format checks
-    - Test matrix (Python 3.11, 3.12)
-    - Security scanning
-    - Example validation
-    - PR summary with bot comments
-- **Duration**:
-  - Basic: ~2-3 minutes
-  - Full: ~5-10 minutes
+- **Smart Features**:
+  - For pushes: Checks if PR exists, skips duplicate runs
+  - For PRs: Always runs full validation suite
+  - For manual: Always runs comprehensive tests
+- **Validation Includes**:
+  - Template structure validation (apps/, solutions/)
+  - Code formatting (black, isort)
+  - Linting (ruff critical errors)
+  - Python compatibility (3.11, 3.12)
+  - Security scanning (Trivy)
+  - Kailash SDK import validation
+- **Duration**: 5-10 minutes
 
-### 2. `full-test.yml` - Full Test Suite
-- **Purpose**: Complete test coverage and artifact generation
-- **Triggers**:
-  - Push to `main` branch
-  - Daily schedule (2 AM UTC)
-  - Manual dispatch
-- **Jobs**:
-  - Full test matrix with coverage
-  - Example execution tests
-  - Coverage report uploads
-- **Duration**: ~10-15 minutes
+### 2. `template-init.yml` - Repository Initialization
+- **Purpose**: Automatically configures new client repositories
+- **Triggers**: Runs once when repository is created from template
+- **Setup Includes**:
+  - Creates `.env.example` with Kailash SDK configuration
+  - Configures `.gitignore` for client projects
+  - Creates `data/inputs/` and `data/outputs/` directories
+  - Adds `kailash-template` topic for automatic updates
+- **Duration**: 1-2 minutes
 
-### 3. `local-test.yml` - Local Testing Validation
-- **Purpose**: Validate workflows work with `act` for local testing
-- **Triggers**:
-  - Manual dispatch only
-- **Jobs**: Simple validation tests
-- **Duration**: ~1 minute
+### 3. `sync-from-template.yml` - Template Updates
+- **Purpose**: Syncs latest SDK guidance and development patterns
+- **Triggers**: Manual dispatch only (no automatic runs)
+- **Sync Strategy**: **Sync-If-Missing**
+  - **Always Replace**: `sdk-users/` (latest SDK docs), `CLAUDE.md` (development patterns)
+  - **Add If Missing**: Template structure (apps/_template/, solutions/, etc.)
+  - **Never Touch**: Client apps, client solutions, project management
+- **Duration**: 2-3 minutes
 
-## Workflow Strategy & Optimization
+### 4. `template-sync-check.yml` - Sync Validation
+- **Purpose**: Lightweight validation for template sync PRs
+- **Triggers**: Pull requests containing template updates
+- **Benefits**: Faster validation (1-2 min) vs full CI (5-10 min)
+- **Checks**: Template structure integrity, basic validation
 
-### Unified CI Pipeline Flow
+### 5. `security-report.yml` - Security Scanning
+- **Purpose**: Provides security feedback on pull requests
+- **Triggers**: Pull requests to `main` branch
+- **Features**:
+  - Trivy vulnerability scanning
+  - Severity breakdown (Critical, High, Medium)
+  - Automated PR comments with results
+  - Smart skipping for template sync PRs
+- **Duration**: 2-3 minutes
 
-1. **Feature Development** (on `feat/*` branches):
-   - Push without PR: Runs basic smoke tests only
-   - Push with existing PR: Skips tests (PR will handle)
-   - Smart detection prevents duplicate runs
+### 6. `template-cleanup.yml` - Post-Creation Cleanup
+- **Purpose**: Removes template-specific files from new repositories
+- **Triggers**: Runs once in new repositories, then self-disables
+- **Cleanup Actions**:
+  - Removes `sync-to-downstream.yml` (template-only workflow)
+  - Removes template sync scripts
+  - Creates client project directories
+  - Self-disables after completion
 
-2. **Pull Request** (to `main`):
-   - Always runs full test suite
-   - Comprehensive validation before merge
-   - Bot comments with status summary
+## Template Synchronization Ecosystem
 
-3. **Main Branch** (after merge):
-   - `full-test.yml` runs complete test suite
-   - Generates coverage reports and artifacts
-   - Additional integration tests
+### How Template Updates Work
 
-4. **Nightly**:
-   - `full-test.yml` runs daily to catch issues early
+1. **Template Repository** (`new_project_template`):
+   - Contains latest SDK guidance in `sdk-users/`
+   - Contains development patterns in `CLAUDE.md`
+   - Provides app/solution templates
 
-### Key Benefits
+2. **Client Repositories** (created from template):
+   - Automatically receive SDK updates via `sync-from-template.yml`
+   - **Protected Content**: Apps, solutions, project management remain untouched
+   - **Updated Content**: Only SDK documentation and development patterns
 
-1. **No Duplicate Runs**: Smart detection prevents running tests twice
-2. **40-50% CI Resource Savings**: Tests run only where needed
-3. **Faster Feedback**: Basic tests in 2-3 min, full suite in 5-10 min
-4. **Single Source of Truth**: One workflow handles all scenarios
-5. **Intelligent Context Detection**: Automatically determines what to run
+3. **Sync-If-Missing Strategy**:
+   - **Zero Risk**: Client customizations are never overwritten
+   - **Always Current**: SDK guidance stays up-to-date
+   - **Template Structure**: Added if missing, preserved if exists
 
-## Optimization History
+### Manual Template Sync
 
-### Problem Solved
-Previously, when creating a PR from a feature branch to main, CI runs were duplicated:
-1. `ci.yml` was triggered by the pull_request event
-2. `pr-checks.yml` was also triggered by the pull_request event
-3. If pushing to the feature branch, `ci.yml` had already run on those commits
-
-### Solution Evolution
-
-**Phase 1**: Removed `pull_request` trigger from `ci.yml` (partial fix)
-
-**Phase 2**: Implemented unified CI pipeline with smart detection:
-- Single workflow handles all scenarios
-- Detects if PR exists for branch
-- Skips duplicate runs automatically
-- Provides clear feedback about decisions
-
-This ensures:
-- **Zero Duplicate Runs**: Smart detection prevents any redundancy
-- **40-50% Resource Savings**: Tests only run where needed
-- **Better Developer Experience**: Clear messages about what's running and why
-
-## Manual Workflow Execution
-
-All workflows support `workflow_dispatch` for manual runs:
+Client repositories can manually sync template updates:
 
 ```bash
-# Using GitHub CLI
-gh workflow run unified-ci.yml
-gh workflow run full-test.yml
-gh workflow run local-test.yml
-
-# Check status
-gh run list
+# In client repository
+gh workflow run sync-from-template.yml
 ```
 
-## Local Testing with act
+## Workflow Optimization Features
 
-Test workflows locally before pushing:
+### 1. Smart Duplicate Prevention
+- Detects when PR exists for a branch
+- Skips redundant test runs on push events
+- **40-50% CI resource savings**
 
+### 2. Context-Aware Execution
+- Template sync PRs use lightweight validation
+- Documentation-only changes skip heavy testing
+- Security scanning skips for template updates
+
+### 3. Intelligent Test Selection
+- Basic validation for template structure
+- Full testing matrix for client code changes
+- Security scanning for all client changes
+
+## Client Development Workflow
+
+### 1. Creating New Apps
 ```bash
-# List available workflows
-act -l
+# Copy template structure
+cp -r apps/_template/ apps/my_new_app/
+cd apps/my_new_app/
 
-# Run unified CI workflow
-act push -W .github/workflows/unified-ci.yml
-act pull_request -W .github/workflows/unified-ci.yml
-
-# Run specific jobs
-act -j basic-tests -W .github/workflows/unified-ci.yml
-act -j lint-and-format -W .github/workflows/unified-ci.yml
-
-# Run with specific event
-act workflow_dispatch -W .github/workflows/unified-ci.yml
+# Customize configuration
+vim config.py  # Update app name and settings
 ```
 
-## Coverage Requirements
+### 2. Running Tests Locally
+```bash
+# Install dependencies
+pip install kailash-sdk
+pip install -e .
 
-- **Target**: 80% code coverage
-- **Current**: ~54% (focusing on critical paths)
-- **Reports**: Available in Codecov and as artifacts
+# Run validation
+pytest apps/my_app/tests/
+black apps/my_app/
+ruff check apps/my_app/
+```
 
-## Optimization Tips
+### 3. Push and CI Validation
+- Push to feature branch: Basic validation (2-3 min)
+- Create PR: Full validation suite (5-10 min)
+- Merge to main: Complete validation with reports
 
-1. Use `[skip ci]` in commit messages to skip CI runs
-2. Use manual dispatch for experimental changes
-3. Check workflow status before pushing to avoid queuing
+## Security and Compliance
+
+### Automated Security Scanning
+- **Trivy Integration**: Scans for vulnerabilities in dependencies
+- **PR Comments**: Immediate feedback on security issues
+- **Severity Tracking**: Critical, High, Medium vulnerability counts
+- **Actionable Reports**: Detailed findings for remediation
+
+### Secret Protection
+- `.env` files excluded from repository
+- `.env.example` provides configuration template
+- Gitignore configured for client secrets
 
 ## Troubleshooting
 
-### Duplicate Runs
-If you see duplicate runs:
-1. Check branch protection rules
-2. Verify workflow triggers don't overlap
-3. Review recent workflow file changes
+### Common Issues
 
-### Failed Workflows
-1. Check the workflow logs in Actions tab
-2. Run locally with `act` to debug
-3. Verify all dependencies are installed
+1. **Template Sync Failures**
+   - Check repository has `kailash-template` topic
+   - Verify workflow permissions (write access needed)
+   - Review sync logs for conflicts
 
-### Rate Limiting
-- Codecov uploads may be rate-limited without token
-- Configure `CODECOV_TOKEN` in repository secrets
+2. **CI Test Failures**
+   - Ensure `kailash-sdk` is in dependencies
+   - Check Python version compatibility (3.11+)
+   - Verify app structure follows template
 
-## Migration Notes
+3. **Security Scan Issues**
+   - Review vulnerability details in PR comments
+   - Update dependencies to fix known issues
+   - Consider ignore-unfixed for unavoidable issues
 
-### Transition to Unified CI
-- New pushes and PRs will use `unified-ci.yml` automatically
-- Existing PRs may need to be rebased to pick up the new workflow
-- `ci.yml` and `pr-checks.yml` are deprecated but kept for reference
-- No changes needed to developer workflow - just push as usual
+### Getting Help
 
-### Branch Protection Updates
-- Update required status checks to use `unified-ci.yml` jobs:
-  - `CI Pipeline / Lint and Format Check`
-  - `CI Pipeline / Test Python 3.11`
-  - `CI Pipeline / Test Python 3.12`
-  - `CI Pipeline / Security Scan`
-  - `CI Pipeline / Validate Examples`
+- **SDK Documentation**: Check `sdk-users/developer/` for usage patterns
+- **Development Patterns**: Review `CLAUDE.md` for workflow guidance
+- **Template Issues**: Report in template repository issues
 
-### Timeline
-1. **Immediate**: Unified workflow active for new pushes/PRs
-2. **1 week**: Monitor for issues, adjust as needed
-3. **2 weeks**: Remove deprecated workflows if stable
+## Migration from SDK Development
+
+This template is specifically designed for **client projects** that:
+- Install `kailash-sdk` from PyPI (not source)
+- Build applications using the SDK
+- Focus on business solutions, not SDK development
+
+**Not Included** (intentionally removed):
+- SDK source code testing workflows
+- Documentation build/deploy for SDK
+- SDK development specific tools
+- Complex test matrices for SDK internals
+
+The streamlined workflow focuses on what client projects actually need while maintaining connection to the latest SDK guidance and development patterns.

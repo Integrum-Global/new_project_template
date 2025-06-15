@@ -1,294 +1,280 @@
-# Enterprise Workflow Development Template
+# Client Project Template
 
-A comprehensive template for translating enterprise workflows into executable code using the [Kailash Python SDK](https://integrum-global.github.io/kailash_python_sdk/) with [Claude Code](https://claude.ai/code) as the primary development workflow tool.
+A comprehensive template for client projects using the [Kailash Python SDK](https://pypi.org/project/kailash/) to build enterprise applications and cross-app orchestration solutions.
 
-## Overview
+## 🎯 What This Template Provides
 
-This template provides a foundation for building node-based workflow architectures that transform complex business processes into automated, maintainable code pipelines. It's specifically designed to work seamlessly with Claude Code for AI-assisted development of enterprise workflows using the Kailash SDK.
+This template gives you everything needed to build enterprise applications for your clients:
 
-### Why Claude Code + Kailash SDK?
+- **📱 Self-Contained Apps**: Each app has isolated project management (no merge conflicts)
+- **🔄 Cross-App Orchestration**: Solutions layer for coordinating multiple apps  
+- **📚 SDK Guidance**: Curated documentation and examples from the Kailash team
+- **🏗️ Production Ready**: Enterprise patterns, monitoring, and deployment setup
+- **👥 Multi-Developer**: Designed for teams working on different apps simultaneously
 
-- **AI-Assisted Workflow Development**: Claude Code understands the Kailash SDK patterns and can help generate, refactor, and optimize workflow code
-- **Comprehensive Documentation Integration**: Built-in support for ADRs, PRDs, and todo management that Claude Code can leverage
-- **Quality Assurance**: Automated testing, code formatting, and quality checks that ensure high-quality workflow implementations
-- **Enterprise-Ready**: Structured approach to translating complex business processes into maintainable code
+## 🚀 Quick Start
 
-## Getting Started
-
-### Prerequisites
-- Python 3.11+ (required)
-- [uv](https://docs.astral.sh/uv/) for fast Python package management
-- [Claude Code](https://claude.ai/code) for AI-assisted development
-- Git for version control
-- IDE with Python support (VS Code, PyCharm, etc.)
-
-### Quick Setup
-
-1. **Install uv** (if not already installed)
-   ```bash
-   # macOS/Linux
-   curl -LsSf https://astral.sh/uv/install.sh | sh
-
-   # Windows
-   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
-   ```
-
-2. **Clone and Setup Environment**
-   ```bash
-   git clone <your-repo-url>
-   cd new_project_template
-   ```
-
-3. **Install Dependencies**
-   ```bash
-   uv sync
-   ```
-   This creates a virtual environment and installs all dependencies from pyproject.toml.
-
-4. **Activate Environment**
-   Automated if using uv, but you can manually activate it:
-   ```bash
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   ```
-
-5. **Install Pre-commit Hooks** (Recommended)
-   ```bash
-   uv run pre-commit install
-   ```
-
-6. **Initialize Claude Code Session**
-   ```bash
-   # Open your project in Claude Code
-   claude-code .
-   ```
-   Claude Code will automatically detect the project structure and documentation framework.
-
-### Infrastructure Support (Optional)
-
-For advanced development with databases and services:
+### 1. Create Your Project
 ```bash
-# Start full development environment
-./infrastructure/scripts/start-sdk-dev.sh
+# Use this template to create a new client project
+git clone <your-template-repo> my-client-project
+cd my-client-project
 
-# Check status
-./infrastructure/scripts/sdk-dev-status.sh
+# Install the Kailash SDK from PyPI
+pip install kailash
 
-# Stop services
-./infrastructure/scripts/stop-sdk-dev.sh
+# Set up your environment
+cp .env.template .env
+# Edit .env with your project-specific settings
 ```
 
-See [`infrastructure/README.md`](infrastructure/README.md) for detailed setup instructions including PostgreSQL, MongoDB, Redis, and mock API services.
+### 2. Create Your First App
+```bash
+# Copy the app template
+cp -r apps/_template apps/my_first_app
+cd apps/my_first_app
 
-## Enterprise Workflow Translation
+# Customize for your app
+# 1. Edit setup.py (change app name, description)
+# 2. Update README.md
+# 3. Modify config.py with your settings
 
-### Core Concept
-**Enterprise Process -> Kailash Nodes -> Executable Workflows**
+# Install your app
+pip install -e .
+```
 
-### Claude Code Development Process
-1. **Analyze Client Workflow**: Use Claude Code to break down business process into discrete steps
-2. **Map to Kailash Nodes**: Let Claude Code suggest appropriate built-in nodes or generate custom ones
-3. **Define Connections**: Claude Code can help design the workflow pipeline architecture
-4. **Configure & Execute**: Claude Code assists with parameter setup and workflow execution
-5. **Document & Test**: Automated generation of documentation, examples, and tests
+### 3. Start Development
+```bash
+# Your app has isolated project management
+echo "# Initial Architecture Decision" > adr/001-app-setup.md
+echo "- [ ] Set up core models" > todos/000-master.md
+echo "- [ ] Implement main workflows" >> todos/000-master.md
 
-### Example Workflow
+# Start building with the Kailash SDK
+# See sdk-users/ for complete guidance and examples
+```
+
+## 📁 Project Structure
+
+```
+my-client-project/
+├── apps/                      # Client applications (self-contained)
+│   ├── _template/             # Template for new apps
+│   ├── user_management/       # Example: Enterprise user management
+│   ├── analytics/             # Example: Data analytics dashboard
+│   └── document_processor/    # Example: Document processing pipeline
+│
+├── solutions/                 # Cross-app orchestration
+│   ├── tenant_orchestration/  # Multi-app workflows
+│   ├── shared_services/       # Common services (auth, caching, etc.)
+│   ├── data_integration/      # Cross-app data flows
+│   └── monitoring/            # System-wide monitoring
+│
+├── sdk-users/                 # Kailash SDK guidance (from Kailash team)
+│   ├── developer/             # Development patterns and guides
+│   ├── workflows/             # Production workflow examples
+│   ├── essentials/            # Quick reference and cheatsheets
+│   └── templates/             # Starter templates
+│
+├── infrastructure/            # Deployment and DevOps
+│   ├── docker/                # Container configurations
+│   ├── kubernetes/            # K8s manifests (if needed)
+│   └── scripts/               # Setup and deployment scripts
+│
+└── data/                      # Project data
+    ├── inputs/                # Sample/test data
+    ├── outputs/               # Generated results
+    └── configs/               # Configuration files
+```
+
+## 🏗️ Building Applications
+
+### App Development Workflow
+
+1. **Copy Template**: Start with `apps/_template/`
+2. **Customize**: Update setup.py, README.md, config.py  
+3. **Develop**: Build using Kailash SDK patterns
+4. **Test**: Use isolated testing in `apps/my_app/tests/`
+5. **Document**: Track in `apps/my_app/adr/`, `todos/`, `mistakes/`
+
+### Example Apps Included
+
+#### **User Management** (`apps/user_management/`)
+- Enterprise authentication (SSO, MFA, passwordless)
+- AI-powered ABAC authorization  
+- Real-time WebSocket updates
+- Performance: 15.9x faster than Django Admin
+
+#### **Analytics Dashboard** (`apps/analytics/`)
+- Real-time data processing pipelines
+- Interactive dashboards with visualizations
+- Multi-tenant data isolation
+- Scheduled reporting automation
+
+#### **Document Processor** (`apps/document_processor/`)
+- AI-powered document analysis
+- Batch and real-time processing
+- Multiple format support (PDF, Word, Excel)
+- Workflow automation for document lifecycle
+
+### Creating Custom Apps
+
+```bash
+# Start with the template
+cp -r apps/_template apps/my_custom_app
+cd apps/my_custom_app
+
+# Essential customizations
+1. Edit setup.py:
+   - Change 'name' from "my-template-app" to "my-custom-app"
+   - Update description and author
+   - Add app-specific dependencies
+
+2. Update config.py:
+   - Change app_name from "my_template_app" to "my_custom_app"  
+   - Add your app-specific configuration
+
+3. Edit README.md:
+   - Replace template content with your app description
+   - Update all references from "template" to your app name
+
+# Install and start developing
+pip install -e .
+```
+
+## 🔄 Cross-App Orchestration
+
+Use the `solutions/` folder for coordinating multiple apps:
+
+### Tenant Orchestration
 ```python
-from kailash import Workflow
+# solutions/tenant_orchestration/user_onboarding.py
+from apps.user_management.workflows import CreateUserWorkflow
+from apps.analytics.workflows import SetupUserTrackingWorkflow
 
-# Create workflow for client data processing
-workflow = Workflow("client_enterprise_process")
-
-# Add nodes for each step
-data_reader = workflow.add_node("CSVReader", config={"file_path": "client_data.csv"})
-transformer = workflow.add_node("DataTransformer", config={"rules": client_rules})
-api_sender = workflow.add_node("APIClient", config={"endpoint": client_api})
-
-# Connect the workflow
-workflow.add_edge("data_reader", "transformer")
-workflow.add_edge("transformer", "api_sender")
-
-# Execute
-results = workflow.run()
+def complete_user_onboarding(user_data):
+    # Coordinate across multiple apps
+    user = CreateUserWorkflow().execute(user_data)
+    SetupUserTrackingWorkflow().execute(user.id)
+    return user
 ```
 
-## Claude Code Development Workflow
-
-### Session-Based Development
-Claude Code provides structured development sessions that align with enterprise workflow requirements:
-
-1. **Document Requirements**:
-   - Use Claude Code to create comprehensive PRDs in `prd/`
-   - Leverage AI to translate business requirements into technical specifications
-
-2. **Design Architecture**:
-   - Claude Code helps document architectural decisions in `adr/`
-   - AI-assisted analysis of Kailash SDK patterns and best practices
-
-3. **Implement Nodes**:
-   - Generate custom nodes in `src/` with proper "Node" suffix naming
-   - Claude Code ensures adherence to coding standards and patterns
-
-4. **Create Examples**:
-   - Auto-generate working examples in `examples/` with proper categorization
-   - Claude Code creates comprehensive usage demonstrations
-
-5. **Write Tests**:
-   - Generate unit tests in `tests/` and integration tests for workflows
-   - Automated test coverage and quality assurance
-
-6. **Update Documentation**:
-   - Auto-update Sphinx docs in `docs/`
-   - Maintain comprehensive API documentation with examples
-
-### Claude Code Integration Features
-
-- **Todo Management**: Integrated with `todos/` system for session tracking
-- **Quality Assurance**: Automatic code formatting, linting, and testing
-- **Documentation**: Auto-generation of docstrings, examples, and API docs
-- **Mistake Prevention**: References `mistakes/` to avoid common pitfalls
-
-## Project Structure
-
-```
-new_project_template/
-├── src/                        # SOURCE CODE - All Python packages
-│   ├── shared/                 # Shared components package
-│   │   ├── nodes/             # Custom shared nodes
-│   │   ├── workflows/         # Reusable workflow components
-│   │   └── utils/             # Shared utilities
-│   └── solutions/              # Individual solution packages
-│       └── new_module/        # Example solution module
-├── docs/                       # Documentation (Sphinx)
-│   ├── api/                   # API documentation
-│   ├── guides/               # User guides
-│   │   ├── solution-development.md  # Detailed solution workflows
-│   │   ├── solution-templates.md    # Ready-to-use templates
-│   │   ├── checklists.md           # Quick reference checklists
-│   │   └── best-practices.md       # Development best practices
-│   └── examples/             # Example usage
-├── sdk-users/                  # Solution development guides (SDK reference)
-│   ├── api/                   # API references
-│   ├── developer/             # Developer guides
-│   ├── patterns/              # Pattern library
-│   └── workflows/             # Workflow examples
-├── adr/                        # Architecture Decision Records
-├── prd/                        # Product Requirements Documents
-├── mistakes/                   # Mistakes and lessons learned
-├── todos/                      # Solution tracking
-│   ├── 000-master.md         # Active solution priorities
-│   └── completed-archive.md  # Completed solutions
-├── data/                       # Data files (not in src/)
-│   ├── samples/               # Sample data for testing
-│   ├── configs/              # Configuration files
-│   └── outputs/              # Output directory
-├── scripts/                    # Utility scripts
-│   ├── deploy.py             # Deployment script
-│   ├── validate.py           # Validation script
-│   └── setup_env.py          # Environment setup
-├── CLAUDE.md                   # Claude Code instructions & quick reference
-├── pyproject.toml              # Modern Python packaging config
-└── uv.lock                    # Dependency lock file
+### Shared Services
+```python
+# solutions/shared_services/authentication.py
+class TenantAuthService:
+    def authenticate_across_apps(self, token):
+        # Single sign-on across all apps
+        user = self.verify_token(token)
+        self.track_login(user.id)
+        return user
 ```
 
-## Key Kailash SDK Concepts
+## 👥 Multi-Developer Workflow
 
-- **Nodes**: Discrete processing units (data readers, transformers, API clients)
-- **Workflows**: Connected sequences of nodes
-- **Edges**: Data flow connections between nodes
-- **Runtime**: Execution environment (local, Docker, async, parallel)
+### Conflict Prevention
+- ✅ **Each app has isolated project management** (`adr/`, `todos/`, `mistakes/`)
+- ✅ **Teams work in separate app folders**
+- ✅ **No shared files that everyone modifies**
+- ✅ **Clear ownership boundaries**
 
-## Testing
-
+### Team Coordination
 ```bash
-# Run all tests
-uv run pytest
+# Team A works on user management
+cd apps/user_management
+echo "- [ ] Add password reset" >> todos/000-master.md
 
-# Test examples
-cd examples
-uv run python _utils/test_all_examples.py
+# Team B works on analytics (no conflicts!)
+cd apps/analytics  
+echo "- [ ] Add real-time dashboard" >> todos/000-master.md
 
-# Build documentation
-cd docs
-uv run python build_docs.py
+# Solutions architect coordinates cross-app work
+cd solutions
+echo "- [ ] Integrate user events with analytics" >> todos/000-master.md
 ```
 
-## Code Quality
+## 📚 SDK Guidance
 
-This template includes automated code quality tools:
-- **Black**: Code formatting
-- **isort**: Import sorting
-- **Ruff**: Fast Python linting
-- **mypy**: Type checking
-- **Pre-commit hooks**: Automated quality checks
+The `sdk-users/` folder contains curated guidance from the Kailash team:
 
-## Documentation
+- **Getting Started**: `sdk-users/developer/01-node-basics.md`
+- **Quick Reference**: `sdk-users/essentials/cheatsheet/`
+- **Production Workflows**: `sdk-users/workflows/by-pattern/`
+- **Node Catalog**: `sdk-users/nodes/comprehensive-node-catalog.md`
 
-- **API Documentation**: Auto-generated with Sphinx
-- **Architecture Decisions**: Documented in `adr/`
-- **Development Guide**: See `CLAUDE.md` for detailed coding standards
+## 🚢 Deployment
 
-## Contributing
+### Development
+```bash
+# Run individual apps
+cd apps/my_app
+python -m api.main  # Start API server
+python -m cli.main --help  # See CLI commands
+```
 
-1. Follow the coding standards in `CLAUDE.md`
-2. Create examples for new functionality
-3. Write comprehensive tests
-4. Document architectural decisions
-5. Update relevant PRDs and ADRs
+### Production
+```bash
+# Docker deployment
+docker-compose up -d
 
-## Resources
+# Kubernetes deployment  
+kubectl apply -f infrastructure/kubernetes/
 
-### Primary Tools
-- [Claude Code](https://claude.ai/code) - AI-assisted development workflow
-- [Kailash SDK Documentation](https://integrum-global.github.io/kailash_python_sdk/) - Node-based workflow framework
+# Monitor all apps
+./infrastructure/scripts/monitor-all-apps.sh
+```
 
-### Project Documentation
-- [Project ADRs](adr/) - Architecture Decision Records
-- [Current Todos](todos/000-master.md) - Active development tasks
-- [Development Mistakes to Avoid](mistakes/000-master.md) - Common pitfalls
-- [Coding Standards](CLAUDE.md) - Comprehensive development guidelines
+## 🛡️ Security & Best Practices
 
-### Claude Code Workflow Tips
-1. **Start each session** by reading current todos: `todos/000-master.md`
-2. **Follow the documentation structure** outlined in `CLAUDE.md`
-3. **Use the ADR process** for architectural decisions
-4. **Leverage automated testing** with `examples/_utils/test_all_examples.py`
-5. **Maintain code quality** with pre-commit hooks and automated formatting
+- **Environment Variables**: Use `.env` files for configuration
+- **Database Security**: Connection strings in environment variables
+- **API Security**: JWT authentication across all apps
+- **Audit Logging**: Centralized logging in `solutions/monitoring/`
+- **Access Control**: RBAC/ABAC patterns from SDK examples
 
-## Using as a Template Repository
+## 📊 Monitoring & Observability
 
-This repository is designed to be used as a template for new projects. It includes automatic synchronization to keep downstream repositories updated with improvements to the template.
+- **App Health**: Each app exposes `/health` endpoint
+- **Metrics**: Prometheus metrics collection
+- **Logging**: Centralized logging with structured logs
+- **Tracing**: Cross-app request tracing
+- **Alerts**: Grafana dashboards and alerting
 
-### Creating a New Project from Template
+## 🆘 Support & Documentation
 
-1. **Use GitHub's Template Feature**:
-   - Click "Use this template" button on GitHub
-   - Create your new repository with your desired name
-   - **Automatic Setup**: Repository configures itself automatically! 🎉
+### Getting Help
+1. **Check SDK Guidance**: `sdk-users/developer/07-troubleshooting.md`
+2. **Search Mistakes**: `apps/my_app/mistakes/000-master.md`
+3. **Review Examples**: `sdk-users/workflows/by-pattern/`
+4. **Contact Kailash Team**: support@kailash.dev
 
-2. **Automatic Template Setup** ✨:
-   - **Instant Configuration**: Adds `kailash-template` topic for auto-sync
-   - **Project Structure**: Creates solution directories and initial templates
-   - **Development Environment**: Sets up `.env.example`, `.gitignore`, labels
-   - **Ready to Code**: Working solution template based on repository name
-   - **Duration**: ~30 seconds after repository creation
+### Documentation
+- **App Development**: `apps/APP_DEVELOPMENT_GUIDE.md`
+- **Cross-App Patterns**: `solutions/README.md`
+- **SDK Reference**: `sdk-users/developer/QUICK_REFERENCE.md`
 
-3. **Template Updates**:
-   - **Automatic Discovery**: Template finds your repository via `kailash-template` topic
-   - **Smart Sync**: Updates reference docs, guides, and shared components
-   - **Preservation**: Your solution code, data, and configs are never overwritten
-   - **Pull Request**: Updates create PRs for review (never auto-merged)
+## 🎯 Next Steps
 
-4. **Getting Started After Creation**:
-   ```bash
-   git clone https://github.com/your-org/your-repo.git
-   cd your-repo
-   cp .env.example .env  # Add your API keys
-   uv sync               # Install dependencies
-   python -m solutions.your_repo  # Run initial solution
-   ```
+1. **Read the Guides**:
+   - `apps/APP_DEVELOPMENT_GUIDE.md` - How to build apps
+   - `solutions/README.md` - Cross-app coordination
+   - `sdk-users/developer/README.md` - SDK usage patterns
 
-See [Template Usage Guide](docs/template-usage.md) for complete details.
+2. **Study the Examples**: 
+   - Explore `apps/user_management/` for enterprise patterns
+   - Check `apps/analytics/` for data processing
+   - Review `solutions/` for cross-app coordination
 
-<!-- PROJECT SPECIFIC START -->
-<!-- Add your project-specific content here. This section is preserved during template updates -->
-<!-- PROJECT SPECIFIC END -->
+3. **Start Building**:
+   - Copy `apps/_template/` to create your first app
+   - Follow the SDK patterns in `sdk-users/`
+   - Use isolated project management to avoid conflicts
+
+4. **Deploy with Confidence**:
+   - Use the infrastructure setup in `infrastructure/`
+   - Follow deployment patterns from example apps
+   - Monitor with built-in observability tools
+
+---
+
+**Built for enterprise clients who need powerful, scalable applications with the flexibility of the Kailash SDK and the reliability of production-tested patterns.**

@@ -14,8 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     # Skip for template sync PRs
     if: |
+      !contains(github.event.pull_request.title, 'Sync template updates') &&
       !contains(github.event.pull_request.title, 'Sync template updates from') &&
-      !startsWith(github.event.pull_request.head.ref, 'template-sync-')
+      !startsWith(github.event.pull_request.head.ref, 'template-sync-') &&
+      !contains(github.event.pull_request.body, 'Automated template sync from')
     steps:
     - uses: actions/checkout@v4
 
