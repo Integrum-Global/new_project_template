@@ -162,44 +162,10 @@ jobs:
             # Push and create PR
             git push origin HEAD
 
+            # Create PR with a simple one-line body to avoid YAML issues
             gh pr create \
               --title "Sync template updates" \
-              --body "$(cat <<EOF
-Automated template sync from ${TEMPLATE_REPO} at $(date -u +%Y-%m-%dT%H:%M:%SZ).
-
-## 🔄 What was synced (always replaced):
-- **sdk-users/**: Latest SDK documentation and guides
-- **CLAUDE.md**: Latest development patterns and workflows
-- **GitHub Workflows**: Essential CI/CD workflows for client projects
-  - unified-ci.yml (Primary CI/CD pipeline)
-  - security-report.yml (Security scanning)
-  - sync-from-template.yml (Template sync capability)
-  - template-sync-check.yml (Sync validation)
-  - template-init.yml (Repository setup)
-  - template-cleanup.yml (Post-creation cleanup)
-  - README.md (Workflow documentation)
-- **Example Apps**: Latest versions of template example apps
-  - apps/qa_agentic_testing (QA testing example)
-  - apps/studio (Workflow studio example)
-  - apps/user_management (User management example)
-- **Template structure**: src/new_project/ (template project structure)
-
-## 📋 What was preserved:
-- **Client code**: Everything in src/ except src/new_project/ (your project code)
-- **Client solutions**: All content in solutions/
-- **Project management**: Client-specific todos/, adr/, mistakes/
-- **Configuration**: Client-specific .env, existing pyproject.toml (if present)
-- **Data**: Client-specific data/ directory
-- **Custom workflows**: Client-specific GitHub Actions remain untouched
-
-## ✅ Review notes:
-- Essential workflows ensure your CI/CD stays current with template improvements
-- Client customizations and implementations remain completely protected
-- Template structure additions only happen if directories are missing
-
-**Note:** This is a template sync PR - CI validation focuses on template structure.
-EOF
-)" \
+              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, CLAUDE.md, GitHub workflows, example apps, and src/new_project/. Your code in other src/ directories is preserved." \
               --base main
           else
             echo "No changes to sync"
