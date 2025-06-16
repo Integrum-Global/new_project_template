@@ -272,8 +272,13 @@ class TemplateSyncer:
                 if file_path.is_file():
                     relative_path = file_path.relative_to(template_path)
 
-                    # Skip sync-to-downstream.yml - only for template repo
-                    if str(relative_path) == ".github/workflows/sync-to-downstream.yml":
+                    # Skip workflows that are only for template repo
+                    template_only_workflows = [
+                        ".github/workflows/sync-to-downstream.yml",
+                        ".github/workflows/notify-downstream-repos.yml",
+                        ".github/workflows/push-template-updates.yml"
+                    ]
+                    if str(relative_path) in template_only_workflows:
                         continue
 
                     dest_path = downstream_path / relative_path
@@ -382,16 +387,19 @@ class TemplateSyncer:
             shutil.rmtree(reference_dir)
             changes_made = True
 
-        # Remove sync-to-downstream.yml workflow (only for template repo)
-        sync_workflow = (
-            downstream_path / ".github" / "workflows" / "sync-to-downstream.yml"
-        )
-        if sync_workflow.exists():
-            logger.info(
-                "Removing sync-to-downstream.yml (only needed in template repo)"
-            )
-            sync_workflow.unlink()
-            changes_made = True
+        # Remove workflows that should only exist in template repo
+        template_only_workflows = [
+            "sync-to-downstream.yml",
+            "notify-downstream-repos.yml", 
+            "push-template-updates.yml"
+        ]
+        
+        for workflow_name in template_only_workflows:
+            workflow_path = downstream_path / ".github" / "workflows" / workflow_name
+            if workflow_path.exists():
+                logger.info(f"Removing {workflow_name} (only needed in template repo)")
+                workflow_path.unlink()
+                changes_made = True
 
         # Handle Claude.md → CLAUDE.md migration
         old_claude_file = downstream_path / "Claude.md"
