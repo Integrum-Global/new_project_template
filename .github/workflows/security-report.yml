@@ -15,9 +15,12 @@ jobs:
     # Skip for template sync PRs
     if: |
       !contains(github.event.pull_request.title, 'Sync template updates') &&
-      !contains(github.event.pull_request.title, 'Sync template updates from') &&
+      !contains(github.event.pull_request.title, 'template sync') &&
+      !contains(github.event.pull_request.title, 'Template sync') &&
       !startsWith(github.event.pull_request.head.ref, 'template-sync-') &&
-      !contains(github.event.pull_request.body, 'Automated template sync from')
+      !contains(github.event.pull_request.body, 'Automated template sync from') &&
+      !contains(github.event.pull_request.body, '## Template Sync') &&
+      !contains(github.event.pull_request.body, 'Full CI pipeline is skipped for template sync PRs')
     steps:
     - uses: actions/checkout@v4
 

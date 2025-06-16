@@ -12,11 +12,14 @@ jobs:
     # Only run on PRs created by the template sync process
     if: |
       contains(github.event.pull_request.title, 'Sync template updates') ||
-      contains(github.event.pull_request.title, 'Sync template updates from') ||
+      contains(github.event.pull_request.title, 'template sync') ||
+      contains(github.event.pull_request.title, 'Template sync') ||
       startsWith(github.event.pull_request.head.ref, 'template-sync-') ||
       contains(github.event.pull_request.body, 'Automated template sync from') ||
-      contains(github.event.pull_request.body, 'What was synced (always replaced)') ||
-      contains(github.event.pull_request.body, 'This PR automatically syncs updates from the template repository')
+      contains(github.event.pull_request.body, 'This PR automatically syncs updates from the template repository') ||
+      contains(github.event.pull_request.body, 'This updates sdk-users/, CLAUDE.md, GitHub workflows') ||
+      contains(github.event.pull_request.body, '## Template Sync') ||
+      contains(github.event.pull_request.body, 'Full CI pipeline is skipped for template sync PRs')
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

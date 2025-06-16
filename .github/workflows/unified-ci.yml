@@ -48,12 +48,15 @@ jobs:
               // Check various indicators of template sync
               const isTemplateSync =
                 prTitle.includes('Sync template updates') ||
-                prTitle.includes('Sync template updates from') ||
+                prTitle.includes('template sync') ||
+                prTitle.includes('Template sync') ||
                 prBranch.startsWith('template-sync-') ||
                 prBody.includes('Automated template sync from') ||
                 prBody.includes('Automated sync at') ||
-                prBody.includes('What was synced (always replaced)') ||
-                prBody.includes('This PR automatically syncs updates from the template repository');
+                prBody.includes('This PR automatically syncs updates from the template repository') ||
+                prBody.includes('This updates sdk-users/, CLAUDE.md, GitHub workflows') ||
+                prBody.includes('## Template Sync') ||
+                prBody.includes('Full CI pipeline is skipped for template sync PRs');
 
               if (isTemplateSync) {
                 core.setOutput('level', 'skip');

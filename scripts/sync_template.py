@@ -450,6 +450,8 @@ class TemplateSyncer:
 
 This PR automatically syncs updates from the template repository: {self.template_repo}
 
+🤖 **Automated Template Sync PR** - Full CI pipeline is skipped for template sync PRs
+
 ### Changes included:
 - Updated reference documentation
 - Updated guides and instructions
