@@ -92,8 +92,9 @@ apps/                      # Template-provided example apps (sync-replaced)
 ├── studio/                # Workflow studio example  
 └── user_management/       # User management example
 
-src/                       # Client project code (NEVER synced)
-└── your_project/          # Your project name
+src/                       # Client project directory
+├── new_project/           # Template project structure (sync-replaced)
+└── your_project/          # Your project name (NEVER synced)
     ├── module1/           # First module
     ├── module2/           # Second module
     └── shared/            # Shared code between modules
@@ -115,9 +116,10 @@ solutions/
 
 ### Clear Separation
 - ✅ **Template apps in `apps/`** - Sync-replaced example apps from template
-- ✅ **Client code in `src/`** - Never synced, fully owned by client
-- ✅ **No merge conflicts** - Template updates never touch your code
-- ✅ **Clear boundaries** - Your code is safe in `src/`
+- ✅ **Template structure in `src/new_project/`** - Sync-replaced template
+- ✅ **Client code in `src/your_project/`** - Never synced, fully owned by client
+- ✅ **No merge conflicts** - Use a different name than "new_project" for your code
+- ✅ **Clear boundaries** - Your code is safe with a unique project name
 
 ## 🔧 Core Nodes (110+ available)
 **AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, SelfOrganizingAgentNode
