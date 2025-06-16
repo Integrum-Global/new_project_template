@@ -17,11 +17,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.ORG_WORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Pull template updates
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ORG_WORKFLOW_TOKEN || secrets.GITHUB_TOKEN }}
           TEMPLATE_REPO: Integrum-Global/new_project_template
         run: |
           # Add template as remote
