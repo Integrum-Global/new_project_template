@@ -25,11 +25,11 @@ jobs:
         run: |
           echo "📢 Template has been updated. Creating notification issues..."
           
-          # Get list of downstream repos
-          REPOS=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name' | grep -v "^new_project_template$" || true)
+          # Get list of downstream repos (exclude template and kailash_python_sdk)
+          REPOS=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name' | grep -v -E "^(new_project_template|kailash_python_sdk)$" || true)
           
           if [ -z "$REPOS" ]; then
-            REPOS=$(gh repo list Integrum-Global --limit 200 --json name,templateRepository --jq '.[] | select(.templateRepository.name == "new_project_template") | .name')
+            REPOS=$(gh repo list Integrum-Global --limit 200 --json name,templateRepository --jq '.[] | select(.templateRepository.name == "new_project_template" and .name != "kailash_python_sdk") | .name')
           fi
           
           ISSUE_COUNT=0
