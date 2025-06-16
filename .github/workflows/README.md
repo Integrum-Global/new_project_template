@@ -1,197 +1,116 @@
-# GitHub Actions Workflow Strategy for Client Projects
+# GitHub Actions Workflow Strategy - Template Sync System
 
 ## Overview
 
-This repository provides a focused CI/CD pipeline optimized for **Kailash SDK client projects**. The workflows are designed to validate client applications and solutions while maintaining the template synchronization ecosystem.
+This repository provides a **template synchronization system** for distributing Kailash SDK updates, documentation, and development patterns to client projects. The workflows focus purely on template management and synchronization.
 
-## Active Workflows for Client Projects
+## Template Sync Workflows
 
-### 1. `unified-ci.yml` - Template Validation ⭐ **PRIMARY CI**
-- **Purpose**: Smart CI pipeline for client project validation
-- **Triggers**:
-  - Push to feature branches (`feat/*`, `feature/*`)
-  - Pull requests to `main`
-  - Manual dispatch
-- **Smart Features**:
-  - For pushes: Checks if PR exists, skips duplicate runs
-  - For PRs: Always runs full validation suite
-  - For manual: Always runs comprehensive tests
-- **Validation Includes**:
-  - Template structure validation (apps/, solutions/)
-  - Code formatting (black, isort)
-  - Linting (ruff critical errors)
-  - Python compatibility (3.11, 3.12)
-  - Security scanning (Trivy)
-  - Kailash SDK import validation
-- **Duration**: 5-10 minutes
+### 1. `sync-to-downstream.yml` - Template Distribution
+- **Purpose**: Syncs template updates to all downstream repositories
+- **Triggers**: 
+  - Push to `main` branch
+  - Manual dispatch with optional target repo
+- **Functions**:
+  - Distributes SDK documentation updates
+  - Syncs development patterns and guidelines
+  - Updates shared components and tools
+- **Target**: All repositories with `kailash-template` topic
 
-### 2. `template-init.yml` - Repository Initialization
-- **Purpose**: Automatically configures new client repositories
-- **Triggers**: Runs once when repository is created from template
-- **Setup Includes**:
-  - Creates `.env.example` with Kailash SDK configuration
-  - Configures `.gitignore` for client projects
-  - Creates `data/inputs/` and `data/outputs/` directories
-  - Adds `kailash-template` topic for automatic updates
-- **Duration**: 1-2 minutes
+### 2. `push-template-updates.yml` - Automated Sync Trigger  
+- **Purpose**: Automatically triggers sync workflows in downstream repos
+- **Triggers**: Push to `main` branch
+- **Functions**:
+  - Notifies downstream repositories of updates
+  - Triggers template sync workflows
+  - Handles rate limiting and error recovery
 
-### 3. `sync-from-template.yml` - Template Updates
-- **Purpose**: Syncs latest SDK guidance and development patterns
-- **Triggers**: Manual dispatch only (no automatic runs)
-- **Sync Strategy**: **Sync-If-Missing**
-  - **Always Replace**: `sdk-users/` (latest SDK docs), `CLAUDE.md` (development patterns)
-  - **Add If Missing**: Template structure (apps/_template/, solutions/, etc.)
-  - **Never Touch**: Client apps, client solutions, project management
-- **Duration**: 2-3 minutes
+### 3. `notify-downstream-repos.yml` - Update Notifications
+- **Purpose**: Creates notification issues in downstream repositories
+- **Triggers**: Push to `main` branch  
+- **Functions**:
+  - Creates GitHub issues alerting teams to template updates
+  - Provides summary of changes
+  - Links to template sync PRs
 
-### 4. `template-sync-check.yml` - Sync Validation
-- **Purpose**: Lightweight validation for template sync PRs
-- **Triggers**: Pull requests containing template updates
-- **Benefits**: Faster validation (1-2 min) vs full CI (5-10 min)
-- **Checks**: Template structure integrity, basic validation
+## Client Repository Workflows
 
-### 5. `security-report.yml` - Security Scanning
-- **Purpose**: Provides security feedback on pull requests
-- **Triggers**: Pull requests to `main` branch
-- **Features**:
-  - Trivy vulnerability scanning
-  - Severity breakdown (Critical, High, Medium)
-  - Automated PR comments with results
-  - Smart skipping for template sync PRs
-- **Duration**: 2-3 minutes
+### 4. `sync-from-template.yml` - Client-Side Sync
+- **Purpose**: Receives and applies template updates in client repositories
+- **Triggers**: 
+  - Workflow dispatch from template repository
+  - Manual dispatch for ad-hoc syncs
+- **Functions**:
+  - Creates template sync PRs
+  - Preserves client-specific code and configurations
+  - Merges template updates safely
 
-### 6. `template-cleanup.yml` - Post-Creation Cleanup
-- **Purpose**: Removes template-specific files from new repositories
-- **Triggers**: Runs once in new repositories, then self-disables
-- **Cleanup Actions**:
-  - Removes `sync-to-downstream.yml` (template-only workflow)
-  - Removes template sync scripts
-  - Creates client project directories
-  - Self-disables after completion
+### 5. `template-sync-check.yml` - Lightweight Validation
+- **Purpose**: Validates template sync PRs without full CI overhead
+- **Triggers**: Template sync PRs only
+- **Functions**:
+  - Basic syntax validation
+  - Template structure verification
+  - Prevents GitHub Actions credit consumption
+- **Duration**: 30-60 seconds
 
-## Template Synchronization Ecosystem
+### 6. `template-init.yml` - New Repository Setup
+- **Purpose**: Automatically configures repositories created from template
+- **Triggers**: Repository creation from template
+- **Functions**:
+  - Adds `kailash-template` topic for discovery
+  - Sets up initial project structure
+  - Configures template sync system
 
-### How Template Updates Work
+## File Sync Strategy
 
-1. **Template Repository** (`new_project_template`):
-   - Contains latest SDK guidance in `sdk-users/`
-   - Contains development patterns in `CLAUDE.md`
-   - Provides app/solution templates
+### Always Synced (Replace Mode)
+- `sdk-users/` - SDK documentation and guides
+- `CLAUDE.md` - Development patterns and workflows  
+- Template workflows - Essential sync functionality
+- `apps/` - Example applications
+- `src/new_project/` - Template project structure
 
-2. **Client Repositories** (created from template):
-   - Automatically receive SDK updates via `sync-from-template.yml`
-   - **Protected Content**: Apps, solutions, project management remain untouched
-   - **Updated Content**: Only SDK documentation and development patterns
+### Sync If Missing (Preserve Mode)
+- Root files: `README.md`, `pyproject.toml`, `.gitignore`
+- `solutions/`, `deployment/`, `data/` directories
 
-3. **Sync-If-Missing Strategy**:
-   - **Zero Risk**: Client customizations are never overwritten
-   - **Always Current**: SDK guidance stays up-to-date
-   - **Template Structure**: Added if missing, preserved if exists
+### Never Synced (Client-Owned)
+- Client applications and custom code
+- Project-specific configurations
+- Custom workflows (outside of template sync)
 
-### Manual Template Sync
+## Repository Discovery
 
-Client repositories can manually sync template updates:
+The template system uses **topic-based discovery**:
+- **Search**: `org:Integrum-Global+topic:kailash-template`
+- **Automatic**: Repositories created from template get the topic automatically
+- **Manual**: Use `scripts/link-existing-repo.sh` to add existing repos
 
-```bash
-# In client repository
-gh workflow run sync-from-template.yml
-```
+## Key Principles
 
-## Workflow Optimization Features
+1. **Client Code Protection**: Template sync never overwrites client applications or custom code
+2. **Selective Sync**: Only template-related files are synchronized
+3. **Conflict Prevention**: Client code is isolated from template updates
+4. **Automatic Cleanup**: Obsolete template files are automatically removed
+5. **Credit Conservation**: Template sync uses lightweight validation to minimize GitHub Actions usage
 
-### 1. Smart Duplicate Prevention
-- Detects when PR exists for a branch
-- Skips redundant test runs on push events
-- **40-50% CI resource savings**
+## For Client Projects
 
-### 2. Context-Aware Execution
-- Template sync PRs use lightweight validation
-- Documentation-only changes skip heavy testing
-- Security scanning skips for template updates
+Client projects receive template updates but maintain full control over:
+- Their application code
+- Custom CI/CD workflows  
+- Project-specific configurations
+- Development processes
 
-### 3. Intelligent Test Selection
-- Basic validation for template structure
-- Full testing matrix for client code changes
-- Security scanning for all client changes
+The template system provides:
+- Latest SDK documentation
+- Proven development patterns
+- Shared tooling and utilities
+- Example applications for reference
 
-## Client Development Workflow
+## Documentation
 
-### 1. Creating New Apps
-```bash
-# Copy template structure
-cp -r apps/_template/ apps/my_new_app/
-cd apps/my_new_app/
-
-# Customize configuration
-vim config.py  # Update app name and settings
-```
-
-### 2. Running Tests Locally
-```bash
-# Install dependencies
-pip install kailash-sdk
-pip install -e .
-
-# Run validation
-pytest apps/my_app/tests/
-black apps/my_app/
-ruff check apps/my_app/
-```
-
-### 3. Push and CI Validation
-- Push to feature branch: Basic validation (2-3 min)
-- Create PR: Full validation suite (5-10 min)
-- Merge to main: Complete validation with reports
-
-## Security and Compliance
-
-### Automated Security Scanning
-- **Trivy Integration**: Scans for vulnerabilities in dependencies
-- **PR Comments**: Immediate feedback on security issues
-- **Severity Tracking**: Critical, High, Medium vulnerability counts
-- **Actionable Reports**: Detailed findings for remediation
-
-### Secret Protection
-- `.env` files excluded from repository
-- `.env.example` provides configuration template
-- Gitignore configured for client secrets
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Template Sync Failures**
-   - Check repository has `kailash-template` topic
-   - Verify workflow permissions (write access needed)
-   - Review sync logs for conflicts
-
-2. **CI Test Failures**
-   - Ensure `kailash-sdk` is in dependencies
-   - Check Python version compatibility (3.11+)
-   - Verify app structure follows template
-
-3. **Security Scan Issues**
-   - Review vulnerability details in PR comments
-   - Update dependencies to fix known issues
-   - Consider ignore-unfixed for unavoidable issues
-
-### Getting Help
-
-- **SDK Documentation**: Check `sdk-users/developer/` for usage patterns
-- **Development Patterns**: Review `CLAUDE.md` for workflow guidance
-- **Template Issues**: Report in template repository issues
-
-## Migration from SDK Development
-
-This template is specifically designed for **client projects** that:
-- Install `kailash-sdk` from PyPI (not source)
-- Build applications using the SDK
-- Focus on business solutions, not SDK development
-
-**Not Included** (intentionally removed):
-- SDK source code testing workflows
-- Documentation build/deploy for SDK
-- SDK development specific tools
-- Complex test matrices for SDK internals
-
-The streamlined workflow focuses on what client projects actually need while maintaining connection to the latest SDK guidance and development patterns.# Template sync trigger
+- **Template Sync Guide**: `scripts/TEMPLATE_SYNC_GUIDE.md`
+- **PR Management**: `scripts/PR_AND_TOPIC_SYNC_SUMMARY.md`
+- **CLAUDE.md**: Development patterns and SDK best practices

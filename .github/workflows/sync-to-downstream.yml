@@ -6,13 +6,12 @@ on:
       - main
     paths:
       - '.github/**'
-      - 'docs/**'
       - 'sdk-users/**'
-      - 'reference/**'
-      - 'src/shared/**'
-      - 'scripts/*.py'
+      - 'src/new_project/**'
+      - 'scripts/**'
       - 'pyproject.toml'
       - 'CLAUDE.md'
+      - 'apps/**'
   workflow_dispatch:
     inputs:
       target_repo:

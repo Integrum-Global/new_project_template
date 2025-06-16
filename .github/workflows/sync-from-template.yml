@@ -38,13 +38,10 @@ jobs:
             "sdk-users"
             # Main CLAUDE.md - always sync (contains latest development patterns)
             "CLAUDE.md"
-            # Essential GitHub workflows for client CI/CD
-            ".github/workflows/unified-ci.yml"
-            ".github/workflows/security-report.yml"
+            # Essential GitHub workflows for template sync
             ".github/workflows/sync-from-template.yml"
             ".github/workflows/template-sync-check.yml"
             ".github/workflows/template-init.yml"
-            ".github/workflows/template-cleanup.yml"
             ".github/workflows/README.md"
             # Example apps - always sync/replace from template
             "apps/qa_agentic_testing"
