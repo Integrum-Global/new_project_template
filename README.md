@@ -316,4 +316,4 @@ See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for complete details.
 
 ---
 
-**Built for enterprise clients who need powerful, scalable applications with the flexibility of the Kailash SDK and the reliability of production-tested patterns.**
+**Built for enterprise clients who need powerful, scalable applications with the flexibility of the Kailash SDK and the reliability of production-tested patterns.**# Test update
