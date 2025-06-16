@@ -33,34 +33,22 @@ PRESERVE_PATTERNS = [
     # They sync if missing but preserve if existing
 ]
 
-# Files and directories to always sync from template
+# Files and directories to always sync from template (ALWAYS REPLACED)
 SYNC_PATTERNS = [
-    # GitHub configuration
+    # GitHub workflows and configuration - always sync/replace
     ".github/*",
     ".github/**/*",
+    # Scripts - always sync/replace  
+    "scripts/*",
+    "scripts/**/*",
     # SDK Users - always sync entire directory
-    "sdk-users/*",
+    "sdk-users/*", 
     "sdk-users/**/*",
     # Main CLAUDE.md - always sync (contains latest development patterns)
     "CLAUDE.md",
-    # Essential GitHub workflows
-    ".github/workflows/unified-ci.yml",
-    ".github/workflows/security-report.yml",
-    ".github/workflows/sync-from-template.yml",
-    ".github/workflows/template-sync-check.yml",
-    ".github/workflows/template-init.yml",
-    ".github/workflows/template-cleanup.yml",
-    ".github/workflows/README.md",
     # Example apps - always sync/replace from template
-    "apps/qa_agentic_testing/*",
-    "apps/qa_agentic_testing/**/*",
-    "apps/studio/*",
-    "apps/studio/**/*",
-    "apps/user_management/*",
-    "apps/user_management/**/*",
-    # Template project structure - always sync/replace
-    "src/new_project/*",
-    "src/new_project/**/*",
+    "apps/*",
+    "apps/**/*",
 ]
 
 # Files that require special merge handling
@@ -73,23 +61,21 @@ MERGE_FILES = {
 SYNC_IF_MISSING = [
     # Root files - create if missing but don't overwrite client customizations
     "README.md",
-    "pyproject.toml",
+    "pyproject.toml", 
     "CHANGELOG.md",
     ".gitignore",
     ".env.example",
     # Template structure - sync if missing but preserve client implementations
     "solutions/*",
     "solutions/**/*",
-    "deployment/*",
+    "deployment/*", 
     "deployment/**/*",
-    "infrastructure/*",
-    "infrastructure/**/*",
     "data/*",
     "data/**/*",
     "docs/*",
     "docs/**/*",
-    "scripts/*",
-    "scripts/**/*",
+    "src/new_project/*",
+    "src/new_project/**/*",
     # src/ directory is NEVER synced - this is where client projects live
 ]
 
