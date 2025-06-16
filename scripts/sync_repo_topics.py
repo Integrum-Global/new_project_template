@@ -67,6 +67,10 @@ def set_repo_topics(repo: str, topics: List[str]) -> bool:
 
 def check_template_creation(repo: str) -> bool:
     """Check if a repo was created from the template."""
+    # Explicitly exclude the SDK - it should never have the template topic
+    if repo == 'kailash_python_sdk':
+        return False
+    
     cmd = [
         "gh", "repo", "view", f"Integrum-Global/{repo}",
         "--json", "templateRepository"
@@ -79,12 +83,12 @@ def check_template_creation(repo: str) -> bool:
     data = json.loads(output)
     template = data.get('templateRepository')
     
-    # Check if it was created from our template
+    # Primary check: GitHub's official template tracking
     if template and template.get('name') == 'new_project_template':
         return True
     
-    # Also check if it has template structure (apps/, sdk-users/, etc.)
-    # This helps identify repos that were created from template even if GitHub doesn't track it
+    # Secondary check: Only for repos that might have lost GitHub template metadata
+    # Must have ALL key template structure AND be relatively recent
     structure_cmd = [
         "gh", "api", f"repos/Integrum-Global/{repo}/contents",
         "--jq", ".[].name"
@@ -92,11 +96,25 @@ def check_template_creation(repo: str) -> bool:
     
     structure_output = run_command(structure_cmd)
     if structure_output:
-        contents = structure_output.split('\n')
-        # Check for key template directories
-        template_markers = {'sdk-users', 'CLAUDE.md', '.github'}
-        if any(marker in contents for marker in template_markers):
-            return True
+        contents = set(structure_output.strip().split('\n'))
+        
+        # Require ALL template markers, not just any
+        required_markers = {'sdk-users', 'CLAUDE.md'}
+        template_structure_markers = {'apps', 'solutions', 'deployment'}
+        
+        # Must have core template files AND template directory structure
+        has_core_files = required_markers.issubset(contents)
+        has_template_structure = any(marker in contents for marker in template_structure_markers)
+        
+        if has_core_files and has_template_structure:
+            # Additional verification: check if CLAUDE.md contains template content
+            claude_cmd = [
+                "gh", "api", f"repos/Integrum-Global/{repo}/contents/CLAUDE.md",
+                "--jq", ".content | @base64d"
+            ]
+            claude_output = run_command(claude_cmd)
+            if claude_output and "Kailash SDK" in claude_output and "new_project_template" in claude_output:
+                return True
     
     return False
 

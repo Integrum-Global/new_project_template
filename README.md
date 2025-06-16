@@ -2,6 +2,8 @@
 
 A comprehensive template for client projects using the [Kailash Python SDK](https://pypi.org/project/kailash/) to build enterprise applications and cross-app orchestration solutions.
 
+<!-- Test CI fix: only repos created from template should sync -->
+
 ## 🎯 What This Template Provides
 
 This template gives you everything needed to build enterprise applications for your clients:

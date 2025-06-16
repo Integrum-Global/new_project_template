@@ -107,6 +107,44 @@ jobs:
                 return;
               }
 
+              // Check if this is a template sync merge to main by examining commit message
+              if (branch === 'main') {
+                try {
+                  const { data: commit } = await github.rest.repos.getCommit({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: context.sha
+                  });
+                  
+                  const commitMessage = commit.commit.message || '';
+                  const commitAuthor = commit.commit.author.name || '';
+                  
+                  console.log(`Commit message: ${commitMessage}`);
+                  console.log(`Commit author: ${commitAuthor}`);
+                  
+                  // Check for template sync indicators in commit message or merge commit
+                  const isTemplateSyncCommit = 
+                    commitMessage.includes('Sync template updates') ||
+                    commitMessage.includes('template sync') ||
+                    commitMessage.includes('Template sync') ||
+                    commitMessage.includes('Automated template sync') ||
+                    commitMessage.includes('sync-to-downstream') ||
+                    commitMessage.includes('template updates') ||
+                    commitAuthor === 'github-actions[bot]' ||
+                    (commit.parents && commit.parents.length > 1 && // Merge commit
+                     commit.parents.some(parent => parent.sha !== context.sha)); // Template sync merge
+                  
+                  if (isTemplateSyncCommit) {
+                    core.setOutput('level', 'skip');
+                    core.setOutput('skip-reason', 'Template sync merge to main - validation not needed');
+                    console.log('Template sync merge detected - skipping CI');
+                    return;
+                  }
+                } catch (error) {
+                  console.log(`Error checking commit: ${error.message}`);
+                }
+              }
+
               // Check if a PR exists for this branch
               try {
                 const { data: prs } = await github.rest.pulls.list({
