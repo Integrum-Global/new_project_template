@@ -49,6 +49,9 @@ SYNC_PATTERNS = [
     # Example apps - always sync/replace from template
     "apps/*",
     "apps/**/*",
+    # Template project structure - always sync/replace
+    "src/new_project/*",
+    "src/new_project/**/*",
 ]
 
 # Files that require special merge handling
@@ -74,9 +77,8 @@ SYNC_IF_MISSING = [
     "data/**/*",
     "docs/*",
     "docs/**/*",
-    "src/new_project/*",
-    "src/new_project/**/*",
-    # src/ directory is NEVER synced - this is where client projects live
+    # NOTE: src/new_project/ is in SYNC_PATTERNS (always replaced)
+    # Other src/ directories are NEVER synced - that's where client projects live
 ]
 
 # Directories that should be merged (not overwritten)
