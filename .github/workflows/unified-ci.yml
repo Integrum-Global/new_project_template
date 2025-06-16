@@ -94,11 +94,20 @@ jobs:
               return;
             }
 
-            // For pushes, check if a PR exists
+            // For pushes, check if this is a template sync branch first
             if (isPush) {
               const branch = context.ref.replace('refs/heads/', '');
-              console.log(`Checking for PRs on branch: ${branch}`);
+              console.log(`Checking branch: ${branch}`);
 
+              // Check if this is a template sync branch
+              if (branch.startsWith('template-sync-')) {
+                core.setOutput('level', 'skip');
+                core.setOutput('skip-reason', 'Template sync branch - validation handled by template-sync-check.yml');
+                console.log('Template sync branch detected - skipping CI');
+                return;
+              }
+
+              // Check if a PR exists for this branch
               try {
                 const { data: prs } = await github.rest.pulls.list({
                   owner: context.repo.owner,
