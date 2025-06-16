@@ -375,18 +375,45 @@ class TemplateSyncer:
             shutil.rmtree(reference_dir)
             changes_made = True
 
-        # Remove workflows that should only exist in template repo
-        template_only_workflows = [
+        # Remove workflows that should not exist in downstream repos
+        unwanted_workflows = [
             "sync-to-downstream.yml",
             "notify-downstream-repos.yml", 
-            "push-template-updates.yml"
+            "push-template-updates.yml",
+            "unified-ci.yml",
+            "security-report.yml",
+            "template-cleanup.yml"
         ]
         
-        for workflow_name in template_only_workflows:
+        for workflow_name in unwanted_workflows:
             workflow_path = downstream_path / ".github" / "workflows" / workflow_name
             if workflow_path.exists():
-                logger.info(f"Removing {workflow_name} (only needed in template repo)")
+                logger.info(f"Removing {workflow_name} (obsolete workflow)")
                 workflow_path.unlink()
+                changes_made = True
+
+        # Remove obsolete scripts that are no longer needed
+        unwanted_scripts = [
+            "cleanup_all_downstream_repos.sh",
+            "cleanup_duplicate_template_sync_prs.sh",
+            "cleanup_failed_sync_attempts.sh",
+            "emergency_fix_workflows.sh",
+            "force_template_sync.sh",
+            "cleanup_incorrect_topics.py",
+            "fix_downstream_workflows.py",
+            "remove_non_sync_workflows.py",
+            "validate.py",
+            "setup_env.py",
+            "deploy.py",
+            "manual_pr_cleanup_guide.md",
+            "remove_obsolete_scripts.py"
+        ]
+        
+        for script_name in unwanted_scripts:
+            script_path = downstream_path / "scripts" / script_name
+            if script_path.exists():
+                logger.info(f"Removing {script_name} (obsolete script)")
+                script_path.unlink()
                 changes_made = True
 
         # Handle Claude.md → CLAUDE.md migration
