@@ -15,13 +15,10 @@ The sync workflow in downstream repositories:
 ### Always Replaced (from template):
 - `sdk-users/` - Latest SDK documentation and guides
 - `CLAUDE.md` - Latest development patterns and workflows
-- `.github/workflows/` - Essential CI/CD workflows:
-  - `unified-ci.yml` - Primary CI/CD pipeline
-  - `security-report.yml` - Security scanning
+- `.github/workflows/` - Essential template sync workflows:
   - `sync-from-template.yml` - Template sync capability
   - `template-sync-check.yml` - Sync validation
   - `template-init.yml` - Repository setup
-  - `template-cleanup.yml` - Post-creation cleanup
   - `README.md` - Workflow documentation
 - Example apps:
   - `apps/qa_agentic_testing`

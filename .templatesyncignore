@@ -43,12 +43,9 @@ infrastructure/client-specific/
 .github/workflows/sync-to-downstream.yml
 
 # Note: Essential workflows ARE synced via sync-from-template.yml:
-# - unified-ci.yml (Primary CI/CD)
-# - security-report.yml (Security scanning)
 # - sync-from-template.yml (Template updates)
 # - template-sync-check.yml (Sync validation)
 # - template-init.yml (Repository setup)
-# - template-cleanup.yml (Post-creation cleanup)
 # - README.md (Workflow documentation)
 
 # Environment and configuration files
