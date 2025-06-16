@@ -194,4 +194,4 @@ This template is specifically designed for **client projects** that:
 - SDK development specific tools
 - Complex test matrices for SDK internals
 
-The streamlined workflow focuses on what client projects actually need while maintaining connection to the latest SDK guidance and development patterns.
+The streamlined workflow focuses on what client projects actually need while maintaining connection to the latest SDK guidance and development patterns.# Template sync trigger
