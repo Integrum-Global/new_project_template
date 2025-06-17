@@ -26,6 +26,7 @@
 | Find files | `DirectoryReaderNode` | `PythonCodeNode` with `os.listdir` |
 | Run Python | `PythonCodeNode(name="x")` | Missing `name` parameter |
 | HTTP calls | `HTTPRequestNode` | `HTTPClientNode` (deprecated) |
+| Send alerts | `DiscordAlertNode` | Manual webhook requests |
 | Transform data | `DataTransformer` | Complex PythonCodeNode |
 | Async operations | `LocalRuntime(enable_async=True)` | `AsyncLocalRuntime` (deprecated) |
 | Enterprise features | `LocalRuntime` with enterprise params | Custom implementations |
@@ -265,6 +266,49 @@ file_discoverer = DirectoryReaderNode(
     recursive=False,
     file_patterns=["*.csv", "*.json", "*.txt"],
     include_metadata=True
+)
+```
+
+### MCP Gateway Integration
+```python
+# Create gateway with MCP support
+from kailash.middleware import create_gateway
+from kailash.api.mcp_integration import MCPIntegration, MCPToolNode
+
+# 1. Create gateway
+gateway = create_gateway(
+    title="MCP-Enabled App",
+    cors_origins=["http://localhost:3000"]
+)
+
+# 2. Create MCP server
+mcp = MCPIntegration("tools")
+
+# Add tools (sync or async)
+async def search_web(query: str, limit: int = 10):
+    return {"results": ["result1", "result2"]}
+
+mcp.add_tool("search", search_web, "Search web", {
+    "query": {"type": "string", "required": True},
+    "limit": {"type": "integer", "default": 10}
+})
+
+# 3. Use in workflows
+from kailash.workflow.builder import WorkflowBuilder
+
+builder = WorkflowBuilder("mcp_workflow")
+
+# Add MCP tool node
+search_node = MCPToolNode(
+    mcp_server="tools",
+    tool_name="search",
+    parameter_mapping={"search_query": "query"}  # Map workflow -> tool params
+)
+builder.add_node("search", search_node)
+
+# Register workflow
+await gateway.agent_ui.register_workflow(
+    "mcp_workflow", builder.build(), make_shared=True
 )
 ```
 
