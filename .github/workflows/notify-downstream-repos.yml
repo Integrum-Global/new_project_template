@@ -39,24 +39,26 @@ jobs:
               EXISTING=$(gh issue list -R "Integrum-Global/$repo" --search "Template sync available" --state open --json number --jq '.[0].number' || echo "")
               
               if [ -z "$EXISTING" ]; then
+                echo "The Kailash template has been updated." > /tmp/issue_body.md
+                echo "" >> /tmp/issue_body.md
+                echo "## To sync the latest changes:" >> /tmp/issue_body.md
+                echo "" >> /tmp/issue_body.md
+                echo "1. Go to the **Actions** tab" >> /tmp/issue_body.md
+                echo "2. Click on **Sync from Template** workflow" >> /tmp/issue_body.md
+                echo "3. Click **Run workflow**" >> /tmp/issue_body.md
+                echo "4. Review and merge the created PR" >> /tmp/issue_body.md
+                echo "" >> /tmp/issue_body.md
+                echo "## What's updated:" >> /tmp/issue_body.md
+                echo "- SDK documentation (sdk-users/)" >> /tmp/issue_body.md
+                echo "- Development patterns (CLAUDE.md)" >> /tmp/issue_body.md
+                echo "- Example applications" >> /tmp/issue_body.md
+                echo "- Deployment configurations" >> /tmp/issue_body.md
+                echo "" >> /tmp/issue_body.md
+                echo "This issue will auto-close when sync is completed." >> /tmp/issue_body.md
+                
                 gh issue create -R "Integrum-Global/$repo" \
                   --title "🔄 Template sync available" \
-                  --body "The Kailash template has been updated. 
-
-## To sync the latest changes:
-
-1. Go to the **Actions** tab
-2. Click on **Sync from Template** workflow
-3. Click **Run workflow**
-4. Review and merge the created PR
-
-## What's updated:
-- SDK documentation (sdk-users/)
-- Development patterns (CLAUDE.md)
-- Example applications
-- Deployment configurations
-
-This issue will auto-close when sync is completed." \
+                  --body-file /tmp/issue_body.md \
                   --label "template-sync" 2>/dev/null && ((ISSUE_COUNT++)) || true
               fi
             fi
