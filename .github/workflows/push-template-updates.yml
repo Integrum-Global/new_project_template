@@ -9,7 +9,6 @@ on:
       - '.github/workflows/**'
       - 'apps/_template/**'
       - 'apps/qa_agentic_testing/**'
-      - 'apps/studio/**'
       - 'apps/user_management/**'
       - 'deployment/**'
       - 'solutions/**'

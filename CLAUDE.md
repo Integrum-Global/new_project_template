@@ -122,14 +122,14 @@ solutions/
 - ✅ **Clear boundaries** - Your code is safe with a unique project name
 
 ## 🔧 Core Nodes (110+ available)
-**AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, SelfOrganizingAgentNode
-**Data**: CSVReaderNode, JSONReaderNode, SQLDatabaseNode, AsyncSQLDatabaseNode, DirectoryReaderNode
-**RAG**: 47+ specialized nodes - see [comprehensive guide](sdk-users/developer/20-comprehensive-rag-guide.md)
-**API**: HTTPRequestNode, RESTClientNode, OAuth2Node, GraphQLClientNode
-**Logic**: SwitchNode, MergeNode, WorkflowNode, ConvergenceCheckerNode
-**Auth/Security**: MultiFactorAuthNode, ThreatDetectionNode, AccessControlManager, GDPRComplianceNode
-**Middleware**: AgentUIMiddleware, RealtimeMiddleware, APIGateway, AIChatMiddleware
-**Full catalog**: [sdk-users/nodes/comprehensive-node-catalog.md](sdk-users/nodes/comprehensive-node-catalog.md)
+1. **AI**: LLMAgentNode, MonitoredLLMAgentNode, EmbeddingGeneratorNode, A2AAgentNode, SelfOrganizingAgentNode
+2. **Data**: CSVReaderNode, JSONReaderNode, SQLDatabaseNode, AsyncSQLDatabaseNode, DirectoryReaderNode
+3. **RAG**: 47+ specialized nodes - see [comprehensive guide](sdk-users/developer/20-comprehensive-rag-guide.md)
+4. **API**: HTTPRequestNode, RESTClientNode, OAuth2Node, GraphQLClientNode
+5. **Logic**: SwitchNode, MergeNode, WorkflowNode, ConvergenceCheckerNode
+6. **Auth/Security**: MultiFactorAuthNode, ThreatDetectionNode, AccessControlManager, GDPRComplianceNode
+7. **Middleware**: AgentUIMiddleware, RealtimeMiddleware, APIGateway, AIChatMiddleware
+8. **Full catalog**: [sdk-users/nodes/comprehensive-node-catalog.md](sdk-users/nodes/comprehensive-node-catalog.md)
 
 ## 📚 Key Documentation
 

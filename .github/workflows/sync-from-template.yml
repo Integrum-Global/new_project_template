@@ -43,7 +43,6 @@ jobs:
             ".github/workflows/README.md"
             # Example apps - always sync/replace from template
             "apps/qa_agentic_testing"
-            "apps/studio"
             "apps/user_management"
             # Template project structure - always sync/replace
             "src/new_project"
@@ -62,7 +61,6 @@ jobs:
             # Template structure - sync if missing but preserve client implementations
             "solutions"
             "deployment"
-            "infrastructure"
             "data"
             "docs"
             # src/ directory is NEVER synced - this is where client projects live
@@ -160,7 +158,7 @@ jobs:
             # Create PR with a simple one-line body to avoid YAML issues
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, example apps, and src/new_project/. Your code in other src/ directories is preserved." \
+              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, qa_agentic_testing and user_management apps, and src/new_project/. Your code in other src/ directories is preserved." \
               --base main
           else
             echo "No changes to sync"
