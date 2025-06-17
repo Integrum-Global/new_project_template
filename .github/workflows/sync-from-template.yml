@@ -36,8 +36,6 @@ jobs:
           SYNC_FILES=(
             # SDK guidance - always sync entire directory
             "sdk-users"
-            # Main CLAUDE.md - always sync (contains latest development patterns)
-            "CLAUDE.md"
             # Essential GitHub workflows for template sync
             ".github/workflows/sync-from-template.yml"
             ".github/workflows/template-sync-check.yml"
@@ -54,6 +52,7 @@ jobs:
           # Files to sync only if missing (preserve existing)
           SYNC_IF_MISSING=(
             # Root files - create if missing but don't overwrite client customizations
+            "CLAUDE.md"
             "README.md"
             "pyproject.toml"
             "CHANGELOG.md"
@@ -66,7 +65,6 @@ jobs:
             "infrastructure"
             "data"
             "docs"
-            "scripts"
             # src/ directory is NEVER synced - this is where client projects live
           )
 
@@ -162,7 +160,7 @@ jobs:
             # Create PR with a simple one-line body to avoid YAML issues
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, CLAUDE.md, GitHub workflows, example apps, and src/new_project/. Your code in other src/ directories is preserved." \
+              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, example apps, and src/new_project/. Your code in other src/ directories is preserved." \
               --base main
           else
             echo "No changes to sync"
