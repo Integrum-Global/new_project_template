@@ -44,8 +44,6 @@ jobs:
             # Example apps - always sync/replace from template
             "apps/qa_agentic_testing"
             "apps/user_management"
-            # Template project structure - always sync/replace
-            "src/new_project"
           )
 
           # Files to sync only if missing (preserve existing)
@@ -63,7 +61,8 @@ jobs:
             "deployment"
             "data"
             "docs"
-            # src/ directory is NEVER synced - this is where client projects live
+            "src"
+            # src/ directory is NEVER overwritten - this is where client projects live
           )
 
           # Files that need special merge handling
@@ -158,7 +157,7 @@ jobs:
             # Create PR with a simple one-line body to avoid YAML issues
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, qa_agentic_testing and user_management apps, and src/new_project/. Your code in other src/ directories is preserved." \
+              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, and example apps (qa_agentic_testing, user_management). Your client code in src/ is never touched." \
               --base main
           else
             echo "No changes to sync"
