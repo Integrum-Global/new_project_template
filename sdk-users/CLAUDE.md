@@ -73,12 +73,12 @@ The decision matrix provides fast answers to:
 
 **Start Here:**
 - [decision-matrix.md](decision-matrix.md) - Architecture decisions
-- [nodes/node-selection-guide.md](nodes/node-selection-guide.md) - Smart node selection  
+- [nodes/node-selection-guide.md](nodes/node-selection-guide.md) - Smart node selection
 - [developer/05-troubleshooting.md](developer/05-troubleshooting.md) - Error fixes
 
 **Quick Access:**
 - [cheatsheet/](cheatsheet/) - 37 copy-paste patterns
-- [workflows/](workflows/) - Industry solutions  
+- [workflows/](workflows/) - Industry solutions
 - [enterprise/](enterprise/) - Advanced patterns
 
 ## ⚠️ Critical Rules Reference

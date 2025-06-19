@@ -1,6 +1,6 @@
 # Node Index - Quick Reference
 
-> **For detailed selection guidance**: See [node-selection-guide.md](node-selection-guide.md) (436 lines)  
+> **For detailed selection guidance**: See [node-selection-guide.md](node-selection-guide.md) (436 lines)
 > **For exhaustive documentation**: See [comprehensive-node-catalog.md](comprehensive-node-catalog.md) (2194 lines)
 
 ## Quick Decision: Which Node to Use?
@@ -31,7 +31,7 @@
 ## Navigation Strategy
 
 1. **Quick task lookup** → Use table above
-2. **Smart selection** → [node-selection-guide.md](node-selection-guide.md) 
+2. **Smart selection** → [node-selection-guide.md](node-selection-guide.md)
 3. **Category browsing** → Click category file links
 4. **Full details** → [comprehensive-node-catalog.md](comprehensive-node-catalog.md) (only when needed)
 
@@ -41,7 +41,7 @@
 # Top 10 most commonly used nodes
 from kailash.nodes.data import CSVReaderNode, SQLDatabaseNode
 from kailash.nodes.ai import LLMAgentNode
-from kailash.nodes.api import HTTPRequestNode, RESTClientNode  
+from kailash.nodes.api import HTTPRequestNode, RESTClientNode
 from kailash.nodes.logic import SwitchNode, MergeNode
 from kailash.nodes.transform import FilterNode, DataTransformer
 from kailash.nodes.code import PythonCodeNode  # Use sparingly!

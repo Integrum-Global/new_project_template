@@ -10,7 +10,7 @@ This reference guide lists all available nodes in the Kailash SDK and their prim
 
 ## 🔗 **See Also**
 - **[Fundamentals](../developer/01-fundamentals.md)** - Core concepts and node usage patterns
-- **[Workflows](../developer/02-workflows.md)** - Connecting nodes in workflows  
+- **[Workflows](../developer/02-workflows.md)** - Connecting nodes in workflows
 - **[Quick Reference](../developer/QUICK_REFERENCE.md)** - Common patterns and anti-patterns
 
 ## 🎯 Quick Node Selection Guide
@@ -38,7 +38,7 @@ This reference guide lists all available nodes in the Kailash SDK and their prim
 📊 Need to process data?
 ├─ 📁 File-based data?
 │  ├─ CSV/TSV files → CSVReaderNode
-│  ├─ JSON files → JSONReaderNode  
+│  ├─ JSON files → JSONReaderNode
 │  ├─ XML files → XMLParserNode
 │  ├─ PDF documents → PDFReaderNode
 │  ├─ Excel files → ExcelReaderNode
@@ -187,7 +187,7 @@ This reference guide lists all available nodes in the Kailash SDK and their prim
 ```
 Data Source → Transform → Load
 ├─ CSVReaderNode → DataValidatorNode → SQLDatabaseNode
-├─ APIRequestNode → JSONTransformerNode → VectorDatabaseNode  
+├─ APIRequestNode → JSONTransformerNode → VectorDatabaseNode
 └─ DirectoryReaderNode → TextChunkerNode → EmbeddingGeneratorNode
 ```
 **See:** [Workflow patterns](../developer/02-workflows.md) for complete ETL examples

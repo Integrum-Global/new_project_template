@@ -4,13 +4,13 @@
 1. Inspect the src/ directory structure and suggest how best we should structure the project directories, so that we can implement all that you have documented.
 
 ## Document first before implementing
-1. Create separate ADRs (in studio/adr) for each of the decisions we make.
-2. Then create a comprehensive list of todos (in studio/todos/) that we need to implement.
+1. Create separate ADRs (in solution's adr/) for each of the decisions we make.
+2. Then create a comprehensive list of todos (in solution's todos/) that we need to implement.
 3. You should consider the existing practice in this repository (kailash_python_sdk) and adjust your implementation accordingly.  
 
 # Implementing the solution
 1. Proceed with the implementation.
-   - Use 100% kailash sdk components (v 0.4.2) and consult sdk-users/ every time.
+   - Use 100% kailash sdk components (v 0.5.0) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the user flow specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.
@@ -22,8 +22,8 @@
    - **Integration tests**: For the entire workflow, we should have integration tests that ensure everything works together as expected.
    - **User flow tests**: For each user flow, we should have user flow tests that ensure the user experience is smooth and intuitive.
      - First, generate all the different user personas and user flows based on the documentation you have created.
-     - Then, document them into /docs/user_flows/ with a separate folder for each user flow.
-     - Next, for each user flow, generate the test codes in tests/user_flows/ with a separate folder for each user flow. 
+     - Then, document them into solution's docs/user_flows/ with a separate folder for each user flow.
+     - Next, for each user flow, generate the test codes in solution's tests/user_flows/ with a separate folder for each user flow. 
      - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
    - Finally, run the tests and ensure that everything is working as expected.
 3. As you correct the codes, ensure the following:
@@ -44,7 +44,7 @@
 4. Document the architecture decisions made during this integration in adr/, that any discrepancies or additional requirements are specified
 5. Populate the details into our todos.
 6. Implement the necessary workflows, nodes, gateways, and other components to ensure the backend supports the frontend requirements.
-   - Use 100% kailash sdk components (v 0.4.0) and consult sdk-users/ every time.
+   - Use 100% kailash sdk components (v 0.5.0) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the frontend specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.

@@ -42,7 +42,7 @@
 - **[02-workflows.md](02-workflows.md)** - ⭐ Workflow creation, connections, and execution
 - **[03-advanced-features.md](03-advanced-features.md)** - Enterprise patterns and async operations
 - **[Node Index](../nodes/node-index.md)** - ⭐ Quick reference (47 lines)
-- **[Node Selection Guide](../nodes/node-selection-guide.md)** - Smart selection (436 lines) 
+- **[Node Selection Guide](../nodes/node-selection-guide.md)** - Smart selection (436 lines)
 - **[Full Catalog](../nodes/comprehensive-node-catalog.md)** - Exhaustive docs (2194 lines)
 - **[examples/](examples/)** - Working code examples
 

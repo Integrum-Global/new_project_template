@@ -5,7 +5,7 @@ This directory contains all migration guides for SDK users. These guides help yo
 ## 📋 Migration Guides by Version
 
 ### v0.6.1 - Parameter Flow Updates
-**File**: [v0.6.1-parameter-flow-updates.md](v0.6.1-parameter-flow-updates.md)
+**File**: [v0.6.1-parameter-flow-updates.md](v0.5.1-parameter-flow-updates.md)
 - Node construction vs runtime validation separation
 - Enhanced parameter flow architecture
 - Clear separation between configuration and runtime parameters
@@ -59,7 +59,7 @@ This directory contains all migration guides for SDK users. These guides help yo
 
 Based on impact and benefits:
 
-1. **High Priority**: 
+1. **High Priority**:
    - v0.5.0 Architecture Refactoring (performance & reliability)
    - Auth Consolidation (security & circular imports)
 
@@ -110,7 +110,7 @@ python -m kailash.tools.benchmark your_workflow
 | `kailash.api` module | v0.4.0 | v1.0.0 | [API to Middleware](api-to-middleware-migration.md) |
 | Auto async detection | v0.5.0 | v1.0.0 | [v0.5.0 Architecture](v0.5.0-architecture-refactoring.md) |
 | `KailashJWTAuthManager` | v0.4.5 | v1.0.0 | [Auth Consolidation](auth-consolidation-migration.md) |
-| Constructor validation | v0.6.1 | v1.1.0 | [v0.6.1 Parameter Flow](v0.6.1-parameter-flow-updates.md) |
+| Constructor validation | v0.6.1 | v1.1.0 | [v0.6.1 Parameter Flow](v0.5.1-parameter-flow-updates.md) |
 
 ## 🎯 Migration Checklist Template
 

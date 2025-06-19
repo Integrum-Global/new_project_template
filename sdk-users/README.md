@@ -15,7 +15,7 @@ Quick reference with critical rules, common patterns, and navigation guide.
 ### **Enterprise & Production**
 - **[enterprise/](enterprise/)** - Enterprise-grade patterns and architecture
   - Advanced middleware patterns
-  - Multi-tenant session management  
+  - Multi-tenant session management
   - Production security and monitoring
   - High-scale deployment patterns
 

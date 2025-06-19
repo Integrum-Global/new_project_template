@@ -72,7 +72,7 @@ All node classes in the Kailash SDK follow a consistent naming convention:
 
 ### **📚 Traditional Browsing**
 1. **Know the category?** → Check the corresponding file number
-2. **Know the use case?** → Use Quick Navigation above  
+2. **Know the use case?** → Use Quick Navigation above
 3. **Searching for a class?** → Check the table for the right category
 4. **Need examples?** → Each node includes usage examples
 

@@ -21,31 +21,31 @@
 1. Look at our target repository at <local repository path>. (--add-dir to this consolde)
 2. I want you to think deeply, as a user, about:
    - all the end to end workflows that the user will take
-   - how our studio middleware should facilitate the storage, retrieval, modification of these custom workflows, custom nodes, custom runtime etc.
+   - how our middleware should facilitate the storage, retrieval, modification of these custom workflows, custom nodes, custom runtime etc.
 3. Some of the use-cases that I can think of:
    - Users use the LLM chat, and the coding llm will:
      - look through our sdk-users and then create and test workflows
      - make sure its working, and then similarly store it for later re-use
    - Users will consult an auto-populated list of built-in nodes, and have access to their custom workflows and runtimes
    - Users can create, manage and run gateways from the UI.
-     - Which means that the studio app should have deployment functions as well.
-     - We also need to be able to present an intuitive way to understanding our extensive api/cli/mcp gateways/hybrid gateways for users to use on studio.
+     - Which means that the solution should have deployment functions as well.
+     - We also need to be able to present an intuitive way to understanding our extensive api/cli/mcp gateways/hybrid gateways for users.
    - Users can connect external frontend apps through our interface:
-     - social media apps (e.g. Whatspp, Telegram, Line) can be created within the studio as a node
-     - jira/discord/sap and other enterprise/productivity apps can be created within the studio as nodes and served through our MCP gateway
+     - social media apps (e.g. Whatspp, Telegram, Line) can be created within the solution as a node
+     - jira/discord/sap and other enterprise/productivity apps can be created within the solution as nodes and served through our MCP gateway
      - Give a list of frontend endpoints and create the gateway with required nodes to serve.
    - Users can track and monitor via a dashboard interface on all running workflows through gateways.
 4. These are some use-cases that I can think of but I'm sure you can come up with an even more extensive list.
 
 ## Infrastructure Needs
 
-1. Suggest the best way to handle the storage and retrieval of custom nodes and workflows and runtimes between the studio and frontend
+1. Suggest the best way to handle the storage and retrieval of custom nodes and workflows and runtimes between the solution and frontend
 2. Currently, custom nodes and workflows are created via coding LLM that writes directly into codebase
 3. If we have a drag and drop and LLM chat interface where users create their own custom implementation:
-   - we may need a translation (json, yaml) mechanism for storage and retrieval between the studio and the frontend
+   - we may need a translation (json, yaml) mechanism for storage and retrieval between the solution and the frontend
    - we will thus need some kind of a loader mechanism to operationalize it within the codebase.
    - Same goes for the runtimes and gateways.
-4. This studio is intended to run at large enterprises (>20000 employees with potentially thousands of concurrent access. 
+4. This solution is intended to run at large enterprises (>20000 employees with potentially thousands of concurrent access. 
    - Suggest how should we design the infrastructure (kubernetes?) to support this scale using the best enterprise standards. 
 
 ## Start Thinking from User Perspective
