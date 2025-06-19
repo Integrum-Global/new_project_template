@@ -32,7 +32,11 @@
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes and run the tests as a live system. If it fails, then you need to fix the code until it passes.
      - Use the existing ollama for your tests.
-
+4. From the user flows, extract, generalize, and optimize them into highly efficient reusable nodes and workflows.
+   - Nodes go into the solution's nodes/ and workflows go into the solution's workflows/.
+   - These nodes and workflows are what is running in production throughout the system (gateways, servers), so they must be optimized for performance and reliability.
+   - Ensure that the other service and infrastructure components are also optimized for performance and reliability.
+   
 # Integrating with frontend
 1. Analyze docs/ in details. We need to ensure that the backend implementation aligns with the frontend specifications.
 2. Create a mapping of the backend APIs to the frontend requirements, ensuring that all endpoints are covered.
