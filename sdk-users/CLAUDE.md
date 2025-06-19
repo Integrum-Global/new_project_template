@@ -127,5 +127,7 @@ Proceed with this approach?
 
 ---
 
-**Building workflows?** Start with [developer/](developer/) or [workflows/](workflows/)**Need help?** Check [developer/05-troubleshooting.md](developer/05-troubleshooting.md)
+**Building workflows?** Start with [developer/](developer/) or [workflows/](workflows/)
+**Need help?** Check [developer/05-troubleshooting.md](developer/05-troubleshooting.md)
+**Upgrading?** See [migration-guides/](migration-guides/) for version migration guides
 **For SDK development**: See [../sdk-contributors/CLAUDE.md](../sdk-contributors/CLAUDE.md)
