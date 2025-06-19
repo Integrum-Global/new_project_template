@@ -41,6 +41,7 @@ The decision matrix provides fast answers to:
 |--------------|-------|---------|
 | **Make architecture decisions** | [decision-matrix.md](decision-matrix.md) | Choose workflow patterns, routing |
 | **Build complete app** | [../apps/ARCHITECTURAL_GUIDE.md](../apps/ARCHITECTURAL_GUIDE.md) | App implementation guide |
+| **Find a node quickly** | [nodes/node-index.md](nodes/node-index.md) | Minimal 47-line reference |
 | **Choose right node** | [nodes/node-selection-guide.md](nodes/node-selection-guide.md) | Smart node finder with decision trees |
 | Build from scratch | [developer/](developer/) | 6 focused technical guides |
 | Quick code snippet | [cheatsheet/](cheatsheet/) | 37 standardized copy-paste patterns |

@@ -1,5 +1,9 @@
 # Comprehensive Node Catalog - Kailash SDK
 
+> **⚠️ Note**: This is the exhaustive 2194-line reference. For most use cases, start with:
+> - **[node-index.md](node-index.md)** - 47-line quick reference
+> - **[node-selection-guide.md](node-selection-guide.md)** - 436-line smart selection guide
+
 This reference guide lists all available nodes in the Kailash SDK and their primary use cases. **Always prefer using these specialized nodes over PythonCodeNode when possible.**
 
 *Total: 110+ specialized nodes across 12 categories*
