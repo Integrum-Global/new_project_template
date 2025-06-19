@@ -41,10 +41,25 @@ class AppConfig:
     sdk_enable_monitoring: bool = os.getenv("SDK_ENABLE_MONITORING", "True").lower() == "true"
     sdk_max_concurrency: int = int(os.getenv("SDK_MAX_CONCURRENCY", "10"))
     
+    # Service Configuration
+    rag_enabled: bool = os.getenv("RAG_ENABLED", "True").lower() == "true"
+    rag_embedding_model: str = os.getenv("RAG_EMBEDDING_MODEL", "ollama")
+    rag_vector_db: str = os.getenv("RAG_VECTOR_DB", "chroma")
+    
+    sharepoint_enabled: bool = os.getenv("SHAREPOINT_ENABLED", "False").lower() == "true"
+    sharepoint_site_url: Optional[str] = os.getenv("SHAREPOINT_SITE_URL")
+    sharepoint_client_id: Optional[str] = os.getenv("SHAREPOINT_CLIENT_ID")
+    sharepoint_client_secret: Optional[str] = os.getenv("SHAREPOINT_CLIENT_SECRET")
+    
+    mcp_enabled: bool = os.getenv("MCP_ENABLED", "True").lower() == "true"
+    mcp_server_name: str = os.getenv("MCP_SERVER_NAME", "project-mcp-server")
+    
+    # Authentication
+    auth_strategy: str = os.getenv("AUTH_STRATEGY", "rbac")  # rbac, abac, or hybrid
+    session_timeout: int = int(os.getenv("SESSION_TIMEOUT", "3600"))  # seconds
+    
     # Application-Specific Settings (ADD YOUR SETTINGS HERE)
-    # feature_enabled: bool = os.getenv("FEATURE_ENABLED", "True").lower() == "true"
-    # external_api_key: Optional[str] = os.getenv("EXTERNAL_API_KEY")
-    # cache_ttl: int = int(os.getenv("CACHE_TTL", "3600"))
+    # custom_feature: bool = os.getenv("CUSTOM_FEATURE", "True").lower() == "true"
     
     def __post_init__(self):
         """Validate configuration after initialization."""

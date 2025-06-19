@@ -1,6 +1,6 @@
-# App Template
+# New Project Template
 
-This is a template for creating new client applications. Copy this entire folder to start a new app.
+This is a template for creating new projects using the Kailash SDK with a clean, scalable architecture.
 
 ## Quick Start
 
@@ -16,84 +16,123 @@ cd src/my_new_app
 # 4. Start development
 ```
 
-## Template Structure
+## Project Structure
 
 ```
 new_project/
-├── README.md          # App overview (edit this!)
-├── __init__.py        # App package initialization
-├── config.py          # App configuration
-├── setup.py           # Package setup (edit app name!)
-├── core/              # Business logic
-│   ├── __init__.py
-│   ├── models.py      # Data models
-│   └── services.py    # Business services
-├── api/               # REST API
-│   ├── __init__.py
-│   └── main.py        # FastAPI application
-├── cli/               # Command line interface
-│   ├── __init__.py
-│   └── main.py        # CLI commands
-├── workflows/         # Kailash SDK workflows
-│   ├── __init__.py
-│   └── example.py     # Example workflow
-├── tests/             # App tests
-│   ├── __init__.py
+├── core/                      # Core business logic
+│   ├── gateway.py            # Main orchestrator
+│   ├── auth.py               # Authentication logic
+│   ├── session.py            # Session management
+│   ├── models.py             # Data models
+│   └── services.py           # Business services
+│
+├── services/                  # Service layer
+│   ├── rag/                  # RAG-related services
+│   │   ├── manager.py        # RAG manager
+│   │   └── filters.py        # Role-based filters
+│   ├── sharepoint/           # SharePoint integration
+│   │   └── reader.py         # Document reader
+│   └── mcp/                  # MCP services
+│       └── servers/          # MCP server implementations
+│           └── rag_tools.py  # RAG MCP tools
+│
+├── api/                      # API endpoints
+│   ├── routers/             # FastAPI routers
+│   └── middleware/          # API middleware
+│
+├── nodes/                    # Custom Kailash nodes
+├── workflows/                # Workflow definitions
+├── utils/                    # Utilities
+├── tests/                    # All tests
 │   ├── unit/
 │   ├── integration/
-│   ├── functional/
 │   └── e2e/
-├── docs/              # App documentation
-│   └── README.md
-├── adr/               # Architecture decisions
-│   ├── README.md
-│   └── 001-template.md
-├── todos/             # Task tracking
-│   ├── README.md
-│   ├── 000-master.md
-│   └── template.md
-└── mistakes/          # Learning from errors
-    ├── README.md
-    ├── 000-master.md
-    └── template.md
+│
+├── docs/                     # Project documentation
+│   ├── architecture/
+│   ├── user_flows/
+│   └── integration/
+│
+├── adr/                      # Architecture Decision Records
+├── todos/                    # Task tracking
+├── mistakes/                 # Lessons learned
+└── instructions/             # Implementation guides
 ```
 
-## Development Workflow
+## Architecture Overview
+
+This template follows a clean architecture pattern with clear separation of concerns:
+
+1. **Core Layer** - Central business logic and orchestration
+   - Gateway: Main orchestrator using kailash_sdk.gateway
+   - Auth: Authentication with AccessControlManager
+   - Session: Session management with security
+
+2. **Services Layer** - Domain-specific services
+   - RAG: Document indexing and retrieval with role-based filtering
+   - SharePoint: Enterprise document integration
+   - MCP: Model Context Protocol tools and servers
+
+3. **API Layer** - External interfaces
+   - FastAPI routers organized by domain
+   - Middleware for cross-cutting concerns
+   - OpenAPI documentation
+
+4. **Infrastructure** - Supporting components
+   - Custom nodes extending Kailash SDK
+   - Workflows using WorkflowBuilder
+   - Comprehensive test coverage
+
+## Getting Started
 
 ### 1. Setup
 ```bash
-# Install your app in development mode
+# Copy template to create new project
+cp -r src/new_project src/my_project
+cd src/my_project
+
+# Install in development mode
 pip install -e .
 
-# Initialize your app's project management
-echo "# Initial Architecture\n\nFirst architecture decisions for my_new_app" > adr/001-initial-setup.md
-echo "- [ ] Define core models" > todos/000-master.md
-echo "- [ ] Set up API structure" >> todos/000-master.md
+# Initialize project structure
+python -m my_project.setup
 ```
 
-### 2. Development
-- Use `core/` for business logic and data models
-- Use `workflows/` for Kailash SDK workflow implementations  
-- Use `api/` for REST API endpoints
-- Use `cli/` for command-line interface
+### 2. Implementation Guidelines
 
-### 3. Testing
+Each module contains instructional comments at the top explaining:
+- Purpose and responsibilities
+- Kailash SDK components to use
+- Implementation patterns to follow
+- Best practices and considerations
+
+**Key Principles:**
+- Use 100% Kailash SDK components
+- Consult sdk-users/ for patterns and solutions
+- No custom orchestration - use provided middleware
+- Test extensively with real components (no mocks)
+
+### 3. Development Workflow
+1. Review instructions in target module
+2. Check sdk-users/ for similar implementations
+3. Implement using Kailash SDK components
+4. Write tests (unit, integration, e2e)
+5. Document decisions in adr/
+
+### 4. Testing Strategy
 ```bash
-# Run your app's tests
+# Run all tests
 pytest tests/
 
-# Different test types
-pytest tests/unit/         # Fast unit tests
-pytest tests/integration/  # Component interaction
-pytest tests/functional/   # Feature tests
-pytest tests/e2e/          # End-to-end scenarios
-```
+# Test categories
+pytest tests/unit/         # Component tests
+pytest tests/integration/  # Service integration
+pytest tests/e2e/          # Full workflow tests
 
-### 4. Documentation
-- Keep app overview in this README.md
-- Document architecture decisions in `adr/`
-- Track tasks and progress in `todos/`
-- Record learnings and fixes in `mistakes/`
+# With coverage
+pytest tests/ --cov=my_project
+```
 
 ## App Metadata
 
