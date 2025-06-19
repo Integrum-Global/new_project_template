@@ -15,7 +15,7 @@ class AppConfig:
     """Configuration settings for the app."""
     
     # App Information (CHANGE THESE)
-    app_name: str = "my_template_app"  # CHANGE THIS
+    app_name: str = "new_project"  # CHANGE THIS
     app_version: str = "0.1.0"
     app_description: str = "Template app description"  # CHANGE THIS
     

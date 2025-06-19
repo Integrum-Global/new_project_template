@@ -88,9 +88,9 @@ This library consolidates content from:
 ### Migration Guide
 | Old Location | New Location | Status |
 |-------------|--------------|--------|
-| `guide/mistakes/` | `quick-start/error-lookup.md` + advanced guides | ✅ Consolidated |
-| `guide/reference/cheatsheet/` | `quick-start/` + `advanced/` | ✅ Streamlined |
-| `guide/reference/pattern-library/` | `patterns/` + `production-ready/` | ✅ Enhanced |
+| `src/new_project/_template/mistakes/` | `quick-start/error-lookup.md` + advanced guides | ✅ Consolidated |
+| `sdk-users/essentials/cheatsheet/` | `quick-start/` + `advanced/` | ✅ Streamlined |
+| `sdk-users/patterns/pattern-library/` | `patterns/` + `production-ready/` | ✅ Enhanced |
 | `examples/` | `by-industry/` workflows | ✅ Business-focused |
 
 ## 🚨 Critical Success Factors

@@ -6,8 +6,8 @@ This is a template for creating new client applications. Copy this entire folder
 
 ```bash
 # Copy template to create new app
-cp -r apps/_template apps/my_new_app
-cd apps/my_new_app
+cp -r src/new_project src/my_new_app
+cd src/my_new_app
 
 # Customize for your app
 # 1. Edit this README.md
@@ -19,7 +19,7 @@ cd apps/my_new_app
 ## Template Structure
 
 ```
-_template/
+new_project/
 ├── README.md          # App overview (edit this!)
 ├── __init__.py        # App package initialization
 ├── config.py          # App configuration
@@ -107,7 +107,7 @@ Update this section for your app:
 
 ## Next Steps
 
-1. **Rename**: Change all references from "_template" to your app name
+1. **Rename**: Change all references from "new_project" to your app name
 2. **Customize**: Update setup.py with your app details
 3. **Develop**: Start building your core models and workflows
 4. **Test**: Write tests as you develop

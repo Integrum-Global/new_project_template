@@ -17,7 +17,7 @@
 
 ### [Date] Error: Template Setup Error
 **Problem:** Copied template but imports failing  
-**Solution:** Update all import paths from "_template" to actual app name  
+**Solution:** Update all import paths from "new_project" to actual app name  
 **Prevention:** Use search/replace for app name after copying template  
 **Tags:** [setup, imports]
 

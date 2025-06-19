@@ -106,11 +106,11 @@ Only use basic types: `str`, `int`, `float`, `bool`, `list`, `dict`, `Any`
 
 ## 📖 Related Documentation
 
-- [API Reference](../reference/api/)
+- [API Reference](../api/)
 - [Workflow Patterns](../patterns/)
-- [Testing Guidelines](../instructions/testing-guidelines.md)
-- [Coding Standards](../instructions/coding-standards.md)
-- [Mistakes Archive](../mistakes/)
+- [Design Instructions](../../src/new_project/instructions/01 - design.md)
+- [Implementation Instructions](../../src/new_project/instructions/02 - implementation.md)
+- [Mistakes Archive](../../src/new_project/mistakes/)
 
 ---
 

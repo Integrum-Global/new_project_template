@@ -16,11 +16,11 @@ new_project_template/
 ├── docs/                      # Documentation
 │   ├── source/               # Sphinx documentation source
 │   └── build/                # Built documentation (gitignored)
-├── guide/                     # Development guides
-│   ├── adr/                  # Architecture Decision Records
-│   ├── instructions/         # Detailed instructions
-│   ├── mistakes/             # Common mistakes and solutions
-│   └── prd/                  # Product Requirements Documents
+├── sdk-users/                 # SDK documentation and guides
+│   ├── developer/            # Development guides
+│   ├── patterns/             # Workflow patterns
+│   ├── workflows/            # Example workflows
+│   └── nodes/                # Node documentation
 ├── migrations/                # Migration system
 │   ├── to_migrate/           # Projects to migrate
 │   ├── in_progress/          # Active migrations
@@ -36,6 +36,14 @@ new_project_template/
 │   ├── deploy.py             # Deployment script
 │   └── sync_template.py      # Template synchronization
 ├── src/                       # Source code
+│   ├── new_project/          # New project template
+│   │   ├── instructions/     # Project instructions
+│   │   │   ├── 01 - design.md   # Design guidelines
+│   │   │   └── 02 - implementation.md  # Implementation guide
+│   │   ├── adr/              # Architecture decision records
+│   │   ├── core/             # Core components
+│   │   ├── mistakes/         # Known issues tracking
+│   │   └── todos/            # Task management
 │   ├── shared/               # Shared components
 │   │   ├── nodes/           # Reusable nodes
 │   │   ├── utils/           # Utility functions
@@ -95,13 +103,12 @@ Critical reference documentation:
 - **`cheatsheet.md`**: Quick lookup for common patterns
 - **`validation-guide.md`**: Code validation rules
 
-### `/guide/`
+### `/src/instructions/`
 
-Development guides and documentation:
+Project-specific instructions and guidelines:
 
-- **`instructions/`**: Step-by-step guides
-- **`adr/`**: Architecture decisions
-- **`mistakes/`**: Common pitfalls and solutions
+- **`01 - design.md`**: Design patterns and architecture guidelines
+- **`02 - implementation.md`**: Implementation best practices and coding standards
 
 ## File Naming Conventions
 

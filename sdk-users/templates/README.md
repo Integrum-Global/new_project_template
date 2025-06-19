@@ -28,7 +28,7 @@ Browse the templates and find one that matches your use case.
 
 ### 2. Copy the Template
 ```bash
-cp guide/reference/templates/workflow/basic_etl.py my_workflow.py
+cp sdk-users/templates/workflow/basic_etl.py my_workflow.py
 ```
 
 ### 3. Customize
