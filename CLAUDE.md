@@ -100,4 +100,3 @@
 - **Project Issues**: [Project Troubleshooting](guides/developer/troubleshooting.md)
 - **SDK Errors**: [SDK Troubleshooting](sdk-users/developer/05-troubleshooting.md)
 - **Common Mistakes**: [sdk-users/validation/common-mistakes.md](sdk-users/validation/common-mistakes.md)
-

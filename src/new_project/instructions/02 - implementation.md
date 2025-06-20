@@ -65,3 +65,10 @@
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes and run the tests against the live system. If it fails, then you need to fix the code until it passes.
      - Use the existing ollama for your tests.
+
+# Updating frontend capabilities
+1. Given all the capabilities that we have created, please create a very detailed guide for frontend development:
+   - What are the new features that can be included in the current frontend?
+   - How do these features affect/improve the user experience/flow?
+   - How should the frontend design and implement these features to display these missing capabilities?
+   - A complete technical guide, including the endpoints for frontend developer to integrate.
