@@ -10,7 +10,7 @@
 
 # Implementing the solution
 1. Proceed with the implementation.
-   - Use 100% kailash sdk components (v 0.5.0) and consult sdk-users/ every time.
+   - Use 100% kailash sdk components (the latest version installed from pypi) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the user flow specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.
@@ -27,7 +27,7 @@
      - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
    - Finally, run the tests and ensure that everything is working as expected.
 3. As you correct the codes, ensure the following:
-   - Use 100% kailash SDK components, and that you have consulted sdk-users/ for any doubts.
+   - Use 100% kailash SDK components (the latest version installed from pypi), and that you have consulted sdk-users/ for any doubts.
    - This is a live production so do not use any mocks.
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes and run the tests as a live system. If it fails, then you need to fix the code until it passes.
@@ -44,7 +44,7 @@
 4. Document the architecture decisions made during this integration in adr/, that any discrepancies or additional requirements are specified
 5. Populate the details into our todos.
 6. Implement the necessary workflows, nodes, gateways, and other components to ensure the backend supports the frontend requirements.
-   - Use 100% kailash sdk components (v 0.5.0) and consult sdk-users/ every time.
+   - Use 100% kailash sdk components (the latest version installed from pypi) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the frontend specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.
