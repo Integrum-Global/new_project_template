@@ -62,11 +62,16 @@ This template is designed for **enterprise client projects** with multiple appli
 
 ```
 Client Project Structure:
-├── apps/                    # Individual applications (isolated)
-│   ├── user_management/     # Enterprise authentication & authorization
-│   ├── analytics/           # Data processing & dashboards  
-│   ├── document_processor/  # AI-powered document workflows
-│   └── _template/           # Template for new apps
+├── src/                     # Client project modules (your custom code)
+│   ├── new_project/         # Template project module
+│   ├── customer_module/     # Client-specific business logic
+│   ├── integration_module/  # Client integrations
+│   └── custom_workflows/    # Client-specific workflows
+├── apps/                    # 3rd party SDK apps (inherited wholesale)
+│   ├── user_management/     # Enterprise authentication (from SDK projects)
+│   ├── analytics/           # Data processing (from SDK projects)
+│   ├── document_processor/  # AI workflows (from SDK projects)
+│   └── qa_agentic_testing/  # QA automation (from SDK projects)
 ├── solutions/               # Cross-app orchestration
 │   ├── tenant_orchestration/ # Multi-app workflows
 │   ├── shared_services/     # Common services (auth, caching)
@@ -74,15 +79,15 @@ Client Project Structure:
 ├── guides/developer/        # Project-specific guidance (this guide)
 ├── sdk-users/              # Kailash SDK reference
 └── deployment/             # Infrastructure & deployment
-├── guides/developer/        # Project-specific guidance (this guide)
 ```
 
 ### Key Design Principles
 
-1. **Isolated Applications**: Each app in `apps/` is self-contained with its own project management
-2. **Cross-App Coordination**: Use `solutions/` for workflows that span multiple apps
-3. **SDK-First Development**: Leverage Kailash SDK nodes instead of custom code
-4. **Enterprise Ready**: Built-in security, monitoring, and deployment patterns
+1. **Client Code in src/**: Your custom business logic and modules live in `src/` directories
+2. **Inherited SDK Apps**: Apps in `apps/` are 3rd party applications inherited from other SDK projects
+3. **Cross-App Coordination**: Use `solutions/` for workflows that span multiple apps and integrate with inherited apps
+4. **SDK-First Development**: Leverage Kailash SDK nodes instead of custom code
+5. **Enterprise Ready**: Built-in security, monitoring, and deployment patterns
 
 ## 🔄 Development Workflow
 
@@ -138,22 +143,27 @@ graph LR
 
 ## 🛠️ Common Development Scenarios
 
-### Scenario 1: Adding a New App
-1. Copy `apps/_template/` to new app name
-2. Follow [App Development Guide](../../apps/APP_DEVELOPMENT_GUIDE.md)
-3. Integrate with existing apps via `solutions/`
+### Scenario 1: Creating Client Business Logic
+1. Create new module in `src/your_client_module/`
+2. Implement business logic using Kailash SDK patterns
+3. Integrate with inherited apps via `solutions/`
 
-### Scenario 2: Cross-App Feature
-1. Design coordination in `solutions/`
-2. Implement shared services
-3. Update individual apps to use coordination layer
+### Scenario 2: Integrating with Inherited Apps
+1. Use inherited apps in `apps/` as-is (don't modify)
+2. Create integration workflows in `solutions/`
+3. Build coordination layer for cross-app features
 
-### Scenario 3: Deployment Changes
-1. Update deployment configurations
-2. Test in staging environment
-3. Follow [Deployment Guide](deployment-guide.md)
+### Scenario 3: Adding New SDK App
+1. Inherit complete app from another SDK project
+2. Place in `apps/` directory wholesale
+3. Update `solutions/` to coordinate with new app
 
-### Scenario 4: Team Onboarding
+### Scenario 4: Custom Workflow Development
+1. Create workflows in `src/your_module/workflows/`
+2. Use `solutions/` for cross-app orchestration
+3. Follow SDK patterns and node selection guide
+
+### Scenario 5: Team Onboarding
 1. Review [Getting Started](getting-started.md)
 2. Set up development environment
 3. Follow [Team Workflows](team-workflows.md)
@@ -162,7 +172,8 @@ graph LR
 
 ### Internal References
 - **SDK Usage**: `sdk-users/developer/` - Complete Kailash SDK guide
-- **App Development**: `apps/APP_DEVELOPMENT_GUIDE.md` - Individual app patterns
+- **Module Development**: `apps/APP_DEVELOPMENT_GUIDE.md` - Development patterns for modules
+- **Inherited Apps**: `apps/` - 3rd party SDK apps (use as-is, don't modify)
 - **Cross-App Patterns**: `solutions/README.md` - Multi-app coordination
 - **API Documentation**: `docs/api/` - API reference
 
