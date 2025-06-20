@@ -36,7 +36,20 @@
    - Nodes go into the solution's nodes/ and workflows go into the solution's workflows/.
    - These nodes and workflows are what is running in production throughout the system (gateways, servers), so they must be optimized for performance and reliability.
    - Ensure that the other service and infrastructure components are also optimized for performance and reliability.
-   
+
+# Checking tests completeness
+1. Lets resolve testing issues or gaps, if any. I need it to be of the best production quality. 
+2. Lets have integration, e2e, and user flows tests that are more demanding and real-world in nature.
+3. For the tests, please use our docker implementation, and real data, processes, responses.
+4. Use our ollama to generate data or create LLMAgents freely. 
+
+# Updating the documentation
+1. Please update all the documentation and references in details. We should indicate what tests were performed, and what were the results.
+   - This includes the architecture decisions, todos, user guides, developer guides, and any other relevant documentation.
+   - Ensure that the documentation is clear, concise, and easy to follow for both developers and users.
+2. Ensure that your codes and usages are correct.   
+3. update the master todo list and the todos/ in details.
+
 # Integrating with frontend
 1. Analyze docs/ in details. We need to ensure that the backend implementation aligns with the frontend specifications.
 2. Create a mapping of the backend APIs to the frontend requirements, ensuring that all endpoints are covered.
