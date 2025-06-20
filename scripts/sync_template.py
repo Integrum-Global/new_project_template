@@ -77,6 +77,9 @@ SYNC_IF_MISSING = [
     "data/**/*",
     "docs/*",
     "docs/**/*",
+    # Project developer guides - sync if missing but preserve customizations
+    "guides/*",
+    "guides/**/*",
     # NOTE: src/new_project/ is in SYNC_PATTERNS (always replaced)
     # Other src/ directories are NEVER synced - that's where client projects live
 ]

@@ -4,19 +4,18 @@
 1. Use 100% kailash sdk components (v 0.4.0) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the frontend specifications.
-   - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already. 
-   - extensive testing on your implementation.
+   - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.
 2. Always test your implementation thoroughly until they pass!
    - Use 100% kailash SDK components, and that you have consulted sdk-users/ for any doubts.
    - This is a live production migration so do not use any mocks.
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into your original design.
 
 ## 📁 Quick Access
-| **SDK Users** | **SDK Contributors** | **Shared** |
-|---------------|---------------------|-----------|
-| [sdk-users/](sdk-users/) | [sdk-contributors/architecture/](sdk-contributors/architecture/) | [shared/mistakes/](shared/mistakes/) |
-| [sdk-users/nodes/node-selection-guide.md](sdk-users/nodes/node-selection-guide.md) | [sdk-contributors/training/](sdk-contributors/training/) | [tests/](tests/) |
-| [sdk-users/cheatsheet/](sdk-users/cheatsheet/) | [sdk-contributors/research/](sdk-contributors/research/) | [examples/](examples/) |
+| **Project Development** | **SDK Users** |
+|-------------------------|---------------|
+| [guides/developer/](guides/developer/) | [sdk-users/](sdk-users/) |
+| [guides/developer/getting-started.md](guides/developer/getting-started.md) | [sdk-users/nodes/node-selection-guide.md](sdk-users/nodes/node-selection-guide.md) |
+| [guides/developer/architecture-overview.md](guides/developer/architecture-overview.md) | [sdk-users/cheatsheet/](sdk-users/cheatsheet/) |
 
 ## ⚠️ MUST FOLLOW
 1. **SDK-First Development**: Use SDK components, NO custom orchestration
@@ -64,32 +63,41 @@
 
 ## 🔗 Quick Links by Need
 
-| **I need to...** | **SDK User** | **SDK Contributor** |
-|-------------------|--------------|---------------------|
-| **Build a workflow** | [sdk-users/workflows/](sdk-users/workflows/) | - |
-| **Make arch decisions** | [sdk-users/decision-matrix.md](sdk-users/decision-matrix.md) | [Architecture ADRs](sdk-contributors/architecture/adr/) |
-| **Fix an error** | [sdk-users/developer/05-troubleshooting.md](sdk-users/developer/05-troubleshooting.md) | [shared/mistakes/](shared/mistakes/) |
-| **Find patterns** | [sdk-users/patterns/](sdk-users/patterns/) | - |
-| **Learn from workflows** | [sdk-users/workflows/](sdk-users/workflows/) - Production workflows | - |
+| **I need to...** | **Project Guide** | **SDK Reference** |
+|-------------------|-------------------|-------------------|
+| **Set up project** | [Getting Started](guides/developer/getting-started.md) | - |
+| **Understand architecture** | [Architecture Overview](guides/developer/architecture-overview.md) | [Decision Matrix](sdk-users/decision-matrix.md) |
+| **Build a workflow** | [Multi-App Coordination](guides/developer/multi-app-coordination.md) | [SDK Workflows](sdk-users/workflows/) |
+| **Fix an error** | [Project Troubleshooting](guides/developer/troubleshooting.md) | [SDK Troubleshooting](sdk-users/developer/05-troubleshooting.md) |
+| **Find patterns** | [Team Workflows](guides/developer/team-workflows.md) | [SDK Patterns](sdk-users/patterns/) |
+| **Deploy application** | [Deployment Guide](guides/developer/deployment-guide.md) | [Production Workflows](sdk-users/workflows/) |
 
 ## 🏗️ Architecture Decisions
 
-**For app building guidance:** → [sdk-users/decision-matrix.md](sdk-users/decision-matrix.md)
+**For project-specific guidance:** → [guides/developer/architecture-overview.md](guides/developer/architecture-overview.md)
+**For SDK patterns and decisions:** → [sdk-users/decision-matrix.md](sdk-users/decision-matrix.md)
 
-**Before any app implementation:**
-1. Enter `sdk-users/` directory to load full architectural guidance
-2. Check decision matrix for patterns and trade-offs
-3. Reference complete app guide as needed
+**Before any implementation:**
+1. Check [Project Architecture Guide](guides/developer/architecture-overview.md) for project-specific patterns
+2. Enter `sdk-users/` directory for SDK architectural guidance  
+3. Check SDK decision matrix for patterns and trade-offs
+4. Reference complete app guide as needed
 
 ## 🎯 Quick Start Guide
 
+**New to This Project:**
+- **Start Here**: [Project Getting Started](guides/developer/getting-started.md) - Complete project setup
+- **Architecture**: [Project Architecture](guides/developer/architecture-overview.md) - Project design overview
+- **Team Setup**: [Team Workflows](guides/developer/team-workflows.md) - Collaboration patterns
+
 **Building Apps/Workflows:**
-- **Start**: [sdk-users/](sdk-users/) - Complete solution guide with decision matrix
+- **SDK Guide**: [sdk-users/](sdk-users/) - Complete SDK solution guide
 - **Node Selection**: [Node Selection Guide](sdk-users/nodes/node-selection-guide.md) - Smart finder
 - **Quick Patterns**: [Cheatsheet](sdk-users/cheatsheet/) - 37 copy-paste patterns
 - **Enterprise**: [Enterprise Patterns](sdk-users/enterprise/) - Advanced features
 
 **Need Help:**
-- **Errors**: [Troubleshooting](sdk-users/developer/05-troubleshooting.md)
+- **Project Issues**: [Project Troubleshooting](guides/developer/troubleshooting.md)
+- **SDK Errors**: [SDK Troubleshooting](sdk-users/developer/05-troubleshooting.md)
 - **Common Mistakes**: [sdk-users/validation/common-mistakes.md](sdk-users/validation/common-mistakes.md)
 

@@ -209,8 +209,17 @@ cd solutions
 echo "- [ ] Integrate user events with analytics" >> todos/000-master.md
 ```
 
-## 📚 SDK Guidance
+## 📚 Documentation & Guides
 
+### Project Developer Guide
+The `guides/developer/` folder contains project-specific guidance for client delivery teams:
+
+- **Getting Started**: `guides/developer/getting-started.md` - Project setup and onboarding
+- **Architecture Overview**: `guides/developer/architecture-overview.md` - Project design decisions
+- **Multi-App Coordination**: `guides/developer/multi-app-coordination.md` - Cross-app patterns
+- **Team Workflows**: `guides/developer/team-workflows.md` - Collaboration strategies
+
+### SDK Reference (Kailash Team)
 The `sdk-users/` folder contains curated guidance from the Kailash team:
 
 - **Getting Started**: `sdk-users/developer/01-node-basics.md`
@@ -290,16 +299,18 @@ See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for complete details.
 4. **Contact Kailash Team**: support@kailash.dev
 
 ### Documentation
-- **App Development**: `apps/APP_DEVELOPMENT_GUIDE.md`
-- **Cross-App Patterns**: `solutions/README.md`
-- **SDK Reference**: `sdk-users/developer/QUICK_REFERENCE.md`
+- **Project Guide**: `guides/developer/README.md` - Complete project development guide
+- **App Development**: `apps/APP_DEVELOPMENT_GUIDE.md` - Individual app development
+- **Cross-App Patterns**: `solutions/README.md` - Multi-app coordination
+- **SDK Reference**: `sdk-users/developer/QUICK_REFERENCE.md` - Kailash SDK usage
 
 ## 🎯 Next Steps
 
 1. **Read the Guides**:
-   - `apps/APP_DEVELOPMENT_GUIDE.md` - How to build apps
-   - `solutions/README.md` - Cross-app coordination
-   - `sdk-users/developer/README.md` - SDK usage patterns
+   - `guides/developer/getting-started.md` - Start here for project setup
+   - `apps/APP_DEVELOPMENT_GUIDE.md` - How to build individual apps
+   - `solutions/README.md` - Cross-app coordination patterns
+   - `sdk-users/developer/README.md` - Kailash SDK usage patterns
 
 2. **Study the Examples**: 
    - Explore `apps/user_management/` for enterprise patterns
