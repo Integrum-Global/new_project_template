@@ -1,599 +1,477 @@
-# App Development Guide
+# Kailash SDK - Application Development Guide
 
-Complete guide for building enterprise applications using the Kailash SDK within this client project template.
+## 🎯 Overview
 
-## 📋 Table of Contents
+Complete guide for building enterprise applications with Kailash SDK. Based on proven patterns from User Management System (15.9x faster than Django) and QA Agentic Testing Framework.
 
-1. [Getting Started](#getting-started)
-2. [App Architecture](#app-architecture)
-3. [Development Workflow](#development-workflow)
-4. [SDK Integration](#sdk-integration)
-5. [Testing Strategy](#testing-strategy)
-6. [Deployment](#deployment)
-7. [Best Practices](#best-practices)
+## 🏗️ Quick Start
 
-## 🚀 Getting Started
+### 1. Choose Your Architecture Pattern
 
-### Creating a New App
+**Decision Matrix:**
+- **Simple App** (<5 workflows): Use inline construction
+- **Complex App** (>10 workflows): Use class-based patterns
+- **High Performance** (<25ms response): Use hybrid routing
+- **LLM Integration**: Use MCP routing (default)
 
-```bash
-# 1. Copy the template
-cp -r apps/_template apps/my_new_app
-cd apps/my_new_app
-
-# 2. Essential customizations
-# Edit setup.py - Change app name, description, dependencies
-# Edit config.py - Update app_name and configuration
-# Edit README.md - Replace template content
-
-# 3. Install your app
-pip install -e .
-
-# 4. Initialize project management
-echo "# App Architecture Setup" > adr/001-initial-setup.md
-echo "- [ ] Define core models" > todos/000-master.md
-echo "- [ ] Set up API structure" >> todos/000-master.md
-```
-
-### App Template Structure
+### 2. Standard Directory Structure
 
 ```
-my_new_app/
-├── core/              # Business logic and data models
-│   ├── models.py      # SQLAlchemy/Pydantic models
-│   └── services.py    # Business logic services
-├── api/               # FastAPI REST API
-│   └── main.py        # API application and routes
-├── cli/               # Command-line interface
-│   └── main.py        # Click-based CLI commands
-├── workflows/         # Kailash SDK workflows
-│   └── __init__.py    # Workflow implementations
-├── tests/             # Comprehensive testing
-│   ├── unit/          # Fast, isolated tests
-│   ├── integration/   # Component interaction tests
-│   ├── functional/    # Feature and workflow tests
-│   └── e2e/           # End-to-end scenarios
-├── docs/              # App-specific documentation
-├── adr/               # Architecture decisions (isolated)
-├── todos/             # Task tracking (isolated)
-├── mistakes/          # Learning from errors (isolated)
-├── config.py          # App configuration
-└── setup.py           # Package configuration
+your_application/
+├── core/                    # Business Logic Layer
+│   ├── __init__.py
+│   ├── models.py           # Domain entities and data models
+│   ├── services.py         # Business logic and orchestration
+│   ├── database.py         # Database operations and migrations
+│   ├── validators.py       # Business rules and validation
+│   └── config.py           # Application configuration
+├── api/                     # REST API Layer
+│   ├── __init__.py
+│   ├── main.py            # FastAPI application setup
+│   └── routes/            # API endpoints by domain
+│       ├── __init__.py
+│       ├── auth.py        # Authentication endpoints
+│       ├── core.py        # Core business endpoints
+│       └── admin.py       # Administrative endpoints
+├── cli/                     # Command Line Interface
+│   ├── __init__.py
+│   └── main.py            # Click CLI implementation
+├── workflows/               # Kailash SDK Workflows
+│   ├── __init__.py
+│   ├── business_workflows.py
+│   └── integration_workflows.py
+├── tests/                   # Test Suite
+│   ├── __init__.py        # Common test utilities
+│   ├── unit/              # Unit tests
+│   ├── integration/       # Integration tests
+│   ├── functional/        # Functional/E2E tests
+│   └── performance/       # Performance tests
+├── scripts/                 # Utility Scripts
+│   ├── __init__.py
+│   ├── run_tests.py       # Test runner
+│   ├── setup_dev.py       # Development setup
+│   └── deploy.py          # Deployment scripts
+├── docs/                    # Documentation
+│   ├── API_REFERENCE.md   # API documentation
+│   ├── DEPLOYMENT.md      # Deployment guide
+│   └── DEVELOPMENT.md     # Development guide
+├── qa_results/              # Test Results (gitignored)
+│   └── .gitkeep
+├── data/                    # Application Data
+│   ├── inputs/            # Input data files
+│   └── outputs/           # Output data files
+├── frontend/                # Frontend (Optional)
+│   ├── public/
+│   ├── src/
+│   └── package.json
+├── migrations/              # Database Migrations
+│   └── versions/
+├── __init__.py             # Package initialization
+├── setup.py                # Package configuration
+├── requirements.txt        # Python dependencies
+├── README.md              # User documentation
+├── CLAUDE.md              # Claude Code navigation
+├── .env.example           # Environment variables
+└── .gitignore             # Git ignore rules
 ```
 
-## 🏗️ App Architecture
+## 📋 Implementation Steps
 
-### Core Components
+### Phase 1: Core Setup (30 minutes)
 
-#### 1. Business Logic Layer (`core/`)
+#### 1.1 Domain Models with Middleware
 
-**models.py** - Define your data models:
 ```python
-from sqlalchemy import Column, Integer, String, DateTime
-from .base import BaseModel
+# core/models.py
+from dataclasses import dataclass, field
+from typing import Dict, Any, List, Optional
+from datetime import datetime
+from enum import Enum
 
-class Customer(BaseModel):
-    __tablename__ = "customers"
-    
-    name = Column(String(255), nullable=False)
-    email = Column(String(255), unique=True, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+class EntityStatus(Enum):
+    ACTIVE = "active"
+    INACTIVE = "inactive"
+    PENDING = "pending"
+
+@dataclass
+class YourEntity:
+    """Core business entity."""
+    entity_id: str
+    name: str
+    description: str = ""
+    status: EntityStatus = EntityStatus.ACTIVE
+    created_at: datetime = field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+    attributes: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary for serialization."""
+        return {
+            "entity_id": self.entity_id,
+            "name": self.name,
+            "description": self.description,
+            "status": self.status.value,
+            "created_at": self.created_at.isoformat(),
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "attributes": self.attributes
+        }
 ```
 
-**services.py** - Implement business logic:
+#### 1.2 Database with Middleware
+
+**Never manually implement SQLAlchemy models. Use middleware:**
+
 ```python
-class CustomerService(BaseService):
-    def create_customer(self, customer_data: CustomerCreate) -> Customer:
-        # Business logic for customer creation
-        customer = Customer(**customer_data.dict())
-        self.db.add(customer)
-        self.db.commit()
-        return customer
+# core/models.py - Extend middleware base models
+from kailash.middleware.database import (
+    BaseWorkflowModel, BaseExecutionModel,
+    TenantMixin, AuditMixin
+)
+
+class YourWorkflow(BaseWorkflowModel):
+    __tablename__ = "your_workflows"
+    # Only add app-specific fields
+    custom_field = Column(String(100))
+
+# core/database.py - Use middleware manager
+from kailash.middleware.database import DatabaseManager
+
+class YourDatabase:
+    def __init__(self, database_url: str = None):
+        self.manager = DatabaseManager(database_url)
+        self.workflow_repo = self.manager.get_repository(YourWorkflow)
 ```
 
-#### 2. API Layer (`api/`)
+### Phase 2: Workflow Implementation (1 hour)
 
-**main.py** - FastAPI application:
+#### 2.1 Service Layer with SDK Workflows
+
 ```python
-from fastapi import FastAPI
-from .core.services import CustomerService
+# core/services.py
+from typing import List, Optional, Dict, Any
+from .models import YourEntity, EntityStatus
+from .database import YourAppDatabase
 
-app = FastAPI(title="My App API")
+class YourEntityService:
+    """Service for managing your entities."""
 
-@app.post("/customers/")
-def create_customer(customer: CustomerCreate):
-    service = CustomerService(db)
-    return service.create_customer(customer)
+    def __init__(self, db: Optional[YourAppDatabase] = None):
+        self.db = db or YourAppDatabase()
+
+    async def create_entity(self, name: str, description: str = "", **kwargs) -> YourEntity:
+        """Create a new entity."""
+        entity = YourEntity(
+            entity_id=str(uuid.uuid4()),
+            name=name,
+            description=description,
+            **kwargs
+        )
+
+        # Save to database
+        async with self.db.get_connection() as conn:
+            await conn.execute("""
+                INSERT INTO your_entities
+                (entity_id, name, description, status, created_at, attributes)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                entity.entity_id, entity.name, entity.description,
+                entity.status.value, entity.created_at.isoformat(),
+                json.dumps(entity.attributes)
+            ))
+            await conn.commit()
+
+        return entity
+
+    async def get_entity(self, entity_id: str) -> Optional[YourEntity]:
+        """Get entity by ID."""
+        async with self.db.get_connection() as conn:
+            cursor = await conn.execute(
+                "SELECT * FROM your_entities WHERE entity_id = ?", (entity_id,)
+            )
+            row = await cursor.fetchone()
+            if row:
+                return self._row_to_entity(row)
+            return None
 ```
 
-#### 3. Workflow Layer (`workflows/`)
+#### 2.2 Workflow Patterns
 
-**customer_workflows.py** - Kailash SDK workflows:
+**Choose based on complexity:**
+
 ```python
-from kailash import Workflow
-from kailash.nodes.data import CSVReaderNode
-from kailash.nodes.ai import LLMAgentNode
+# workflows/workflows.py - Pattern 1: Simple inline
+def create_simple_workflow():
+    builder = WorkflowBuilder("simple_operation")
+    builder.add_node("CSVReaderNode", "reader", {
+        "file_path": get_input_data_path("data.csv")
+    })
+    builder.add_node("DataTransformer", "transform", {
+        "transformations": [{"operation": "filter"}]
+    })
+    builder.add_connection("reader", "result", "transform", "data")
+    return builder.build()
 
-class CustomerOnboardingWorkflow(Workflow):
-    def __init__(self):
-        super().__init__("customer_onboarding")
-        
-        # Add Kailash nodes
-        self.csv_reader = CSVReaderNode(name="customer_data")
-        self.validator = LLMAgentNode(name="data_validator")
-        
-        # Connect the workflow
-        self.add_edge(self.csv_reader, self.validator)
+# Pattern 2: Complex class-based with templates
+class EnterpriseWorkflows(WorkflowTemplates):
+    def __init__(self, config):
+        self.config = config
+        self.workflows = {
+            "user_onboarding": self.create_crud_template("user"),
+            "data_pipeline": self._create_data_pipeline()
+        }
+
+    def _create_data_pipeline(self) -> Workflow:
+        workflow = self.create_etl_template("customer_data")
+        # Add custom steps
+        workflow.add_node("ai_enrichment", LLMAgentNode(
+            model=self.config.llm_model
+        ))
+        return workflow
 ```
 
-#### 4. CLI Layer (`cli/`)
+### Phase 3: Interface Layer (30 minutes)
 
-**main.py** - Command-line interface:
+#### 3.1 API with Enterprise Middleware
+
 ```python
+# api/main.py - Never create FastAPI manually!
+from kailash.middleware import create_gateway
+from .workflows import app_workflows
+
+# Enterprise API with all features
+app = create_gateway(
+    title="Your Application API",
+    workflows=app_workflows,
+    enable_auth=True,
+    enable_monitoring=True,
+    enable_realtime=True,
+    rate_limits={
+        "/api/auth/*": "5 per minute",
+        "/api/*": "100 per minute"
+    }
+)
+
+# That's it! You get:
+# - OpenAPI docs at /docs
+# - Authentication & SSO
+# - WebSocket support
+# - Metrics & monitoring
+# - Rate limiting
+# - CORS handling
+# - Security headers
+```
+
+#### 3.2 CLI with SDK Integration
+
+```python
+# cli/main.py
+import asyncio
 import click
-from .core.services import CustomerService
+from ..core.services import YourEntityService
+from ..core.database import YourAppDatabase
 
 @click.group()
+@click.version_option(version="1.0.0")
 def cli():
-    """My App CLI"""
+    """Your Application - Built with Kailash SDK."""
     pass
 
 @cli.command()
-def setup():
-    """Initialize the app"""
-    # Setup logic here
-    click.echo("App initialized successfully!")
+@click.argument('name')
+@click.option('--description', '-d', default='', help='Entity description')
+def create(name: str, description: str):
+    """Create a new entity."""
+
+    async def run_create():
+        service = YourEntityService()
+        entity = await service.create_entity(name, description)
+        click.echo(f"✅ Entity created: {entity.entity_id}")
+        click.echo(f"Name: {entity.name}")
+
+    asyncio.run(run_create())
+
+@cli.command()
+def server():
+    """Start the web server."""
+    import uvicorn
+    from ..api.main import app
+
+    click.echo("🚀 Starting Your Application server...")
+    uvicorn.run(app, host="localhost", port=8000)
+
+if __name__ == '__main__':
+    cli()
 ```
 
-### Configuration Management
+### Phase 4: Testing & Deployment (1 hour)
 
-**config.py** - Centralized configuration:
-```python
-@dataclass
-class AppConfig:
-    app_name: str = "my_custom_app"  # CHANGE THIS
-    database_url: str = os.getenv("DATABASE_URL", "sqlite:///app.db")
-    api_host: str = os.getenv("API_HOST", "0.0.0.0")
-    api_port: int = int(os.getenv("API_PORT", "8000"))
-    
-    # Add your app-specific settings
-    external_api_key: str = os.getenv("EXTERNAL_API_KEY")
-    cache_ttl: int = int(os.getenv("CACHE_TTL", "3600"))
-```
-
-## 🔄 Development Workflow
-
-### 1. Planning Phase
-
-```bash
-# Document your architecture decisions
-cp adr/001-template.md adr/002-database-choice.md
-# Fill in: Context, Decision, Consequences
-
-# Plan your tasks
-echo "- [ ] 🔥 Set up database models" >> todos/000-master.md
-echo "- [ ] ⚡ Implement customer service" >> todos/000-master.md
-echo "- [ ] 📋 Add API endpoints" >> todos/000-master.md
-```
-
-### 2. Implementation Phase
-
-```bash
-# Mark task as in progress
-sed -i 's/- \[ \] Set up database models/- \[~\] Set up database models/' todos/000-master.md
-
-# Implement your feature
-# Edit core/models.py, core/services.py, etc.
-
-# Mark task as completed
-sed -i 's/- \[~\] Set up database models/- \[x\] Set up database models/' todos/000-master.md
-```
-
-### 3. Testing Phase
-
-```bash
-# Write tests as you develop
-# Unit tests in tests/unit/
-# Integration tests in tests/integration/
-# Functional tests in tests/functional/
-
-# Run tests
-pytest tests/
-```
-
-### 4. Documentation Phase
-
-```bash
-# Update your app's README.md
-# Document any mistakes in mistakes/000-master.md
-# Update architecture decisions in adr/
-```
-
-## 🔧 SDK Integration
-
-### Using Kailash Nodes
+#### 4.1 Testing with QA Framework
 
 ```python
-# Import from Kailash SDK (installed via PyPI)
-from kailash.nodes.data import CSVReaderNode, SQLDatabaseNode
-from kailash.nodes.ai import LLMAgentNode, EmbeddingGeneratorNode
-from kailash.nodes.api import HTTPRequestNode
-from kailash.workflow import Workflow
-from kailash.runtime import LocalRuntime
+# Run comprehensive QA testing
+from qa_agentic_testing import AutonomousQATester
 
-# Create workflow with SDK nodes
-class DataProcessingWorkflow(Workflow):
-    def __init__(self):
-        super().__init__("data_processing")
-        
-        # Data input
-        self.csv_reader = CSVReaderNode(
-            name="data_reader",
-            file_path="data/inputs/customers.csv"
-        )
-        
-        # AI processing
-        self.llm_processor = LLMAgentNode(
-            name="data_processor",
-            model="gpt-4",
-            prompt="Analyze customer data and extract insights"
-        )
-        
-        # Data output
-        self.db_writer = SQLDatabaseNode(
-            name="data_writer",
-            connection_string=self.config.database_url,
-            operation="insert"
-        )
-        
-        # Connect nodes
-        self.add_edge(self.csv_reader, self.llm_processor)
-        self.add_edge(self.llm_processor, self.db_writer)
-    
-    def execute(self, inputs=None):
-        runtime = LocalRuntime(enable_async=True)
-        return runtime.execute(self, inputs or {})
+async def validate_app():
+    tester = AutonomousQATester()
+    await tester.discover_app(".")
+    results = await tester.execute_tests()
+    tester.generate_report("qa_report.html")
+
+    # Also run performance tests
+    from kailash.testing import PerformanceTester
+    perf_tester = PerformanceTester(app)
+    perf_results = await perf_tester.run_benchmarks()
+
+    print(f"✅ Success rate: {results.success_rate}%")
+    print(f"⚡ Avg response: {perf_results.avg_response_ms}ms")
 ```
 
-### Workflow Integration with Business Logic
+#### 4.2 Deployment
 
-```python
-# In core/services.py
-from .workflows.customer_workflows import CustomerOnboardingWorkflow
-
-class CustomerService(BaseService):
-    def onboard_customer_with_ai(self, customer_data):
-        # Use business logic
-        customer = self.create_customer(customer_data)
-        
-        # Integrate with Kailash workflow
-        workflow = CustomerOnboardingWorkflow()
-        results = workflow.execute({
-            "customer_id": customer.id,
-            "customer_data": customer_data.dict()
-        })
-        
-        # Process workflow results
-        self.update_customer_insights(customer.id, results)
-        return customer
-```
-
-### SDK Reference Guide
-
-For complete SDK usage, see:
-- `sdk-users/developer/01-node-basics.md` - Node fundamentals
-- `sdk-users/essentials/cheatsheet/` - Quick patterns
-- `sdk-users/workflows/by-pattern/` - Production examples
-- `sdk-users/nodes/comprehensive-node-catalog.md` - All available nodes
-
-## 🧪 Testing Strategy
-
-### Test Organization
-
-```
-tests/
-├── unit/              # Fast, isolated component tests
-│   ├── test_models.py
-│   ├── test_services.py
-│   └── test_workflows.py
-├── integration/       # Component interaction tests
-│   ├── test_api_integration.py
-│   └── test_database_integration.py
-├── functional/        # Feature and workflow tests
-│   ├── test_customer_onboarding.py
-│   └── test_data_processing.py
-└── e2e/              # End-to-end user scenarios
-    └── test_complete_user_journey.py
-```
-
-### Test Examples
-
-**Unit Test** (`tests/unit/test_services.py`):
-```python
-import pytest
-from core.services import CustomerService
-from core.models import Customer
-
-def test_create_customer():
-    service = CustomerService(mock_db)
-    customer_data = CustomerCreate(name="John", email="john@example.com")
-    
-    customer = service.create_customer(customer_data)
-    
-    assert customer.name == "John"
-    assert customer.email == "john@example.com"
-```
-
-**Integration Test** (`tests/integration/test_api_integration.py`):
-```python
-from fastapi.testclient import TestClient
-from api.main import app
-
-client = TestClient(app)
-
-def test_create_customer_api():
-    response = client.post("/customers/", json={
-        "name": "John Doe",
-        "email": "john@example.com"
-    })
-    
-    assert response.status_code == 201
-    assert response.json()["name"] == "John Doe"
-```
-
-**Workflow Test** (`tests/functional/test_workflows.py`):
-```python
-from workflows.customer_workflows import CustomerOnboardingWorkflow
-
-def test_customer_onboarding_workflow():
-    workflow = CustomerOnboardingWorkflow()
-    
-    results = workflow.execute({
-        "customer_data": {"name": "John", "email": "john@example.com"}
-    })
-    
-    assert results["status"] == "success"
-    assert "customer_id" in results
-```
-
-### Running Tests
-
-```bash
-# Run all tests
-pytest tests/
-
-# Run specific test types
-pytest tests/unit/         # Fast unit tests
-pytest tests/integration/  # Integration tests
-pytest tests/functional/   # Workflow tests
-pytest tests/e2e/          # End-to-end tests
-
-# Run with coverage
-pytest tests/ --cov=core --cov=api --cov=workflows
-
-# Run specific test
-pytest tests/unit/test_services.py::test_create_customer -v
-```
-
-## 🚢 Deployment
-
-### Development Deployment
-
-```bash
-# Run API server
-cd apps/my_app
-python -m api.main
-
-# Run CLI commands
-python -m cli.main setup
-python -m cli.main --help
-
-# Run workflows
-python -c "
-from workflows.my_workflow import MyWorkflow
-workflow = MyWorkflow()
-results = workflow.execute()
-print(results)
-"
-```
-
-### Production Deployment
-
-**Docker** (`Dockerfile`):
 ```dockerfile
+# Dockerfile - Production ready
 FROM python:3.11-slim
-
 WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
 COPY . .
-
 RUN pip install -e .
 EXPOSE 8000
-
-CMD ["python", "-m", "api.main"]
+CMD ["your-app", "server"]
 ```
 
-**Docker Compose** (`docker-compose.yml`):
 ```yaml
+# docker-compose.yml
 version: '3.8'
 services:
-  my-app:
+  app:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql://user:pass@db:5432/myapp
-    depends_on:
-      - db
-  
+      - DATABASE_URL=postgresql://user:pass@db:5432/app
+      - REDIS_URL=redis://redis:6379
   db:
     image: postgres:15
-    environment:
-      POSTGRES_DB: myapp
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+  redis:
+    image: redis:7-alpine
 ```
 
-**Kubernetes** (`k8s/deployment.yaml`):
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: my-app
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: my-app
-  template:
-    metadata:
-      labels:
-        app: my-app
-    spec:
-      containers:
-      - name: my-app
-        image: my-app:latest
-        ports:
-        - containerPort: 8000
-        env:
-        - name: DATABASE_URL
-          valueFrom:
-            secretKeyRef:
-              name: app-secrets
-              key: database-url
-```
+## 📦 Configuration Templates
 
-## 💡 Best Practices
-
-### Code Organization
-
-1. **Separation of Concerns**:
-   - Business logic in `core/services.py`
-   - Data models in `core/models.py`
-   - API endpoints in `api/main.py`
-   - Workflows in `workflows/`
-
-2. **Configuration Management**:
-   - Use environment variables for configuration
-   - Centralize config in `config.py`
-   - Validate configuration on startup
-
-3. **Error Handling**:
-   - Use structured exception handling
-   - Log errors with structured logging
-   - Document common errors in `mistakes/`
-
-### SDK Best Practices
-
-1. **Node Usage**:
-   - Use specialized nodes instead of PythonCodeNode when possible
-   - Follow SDK naming conventions (all nodes end with "Node")
-   - Check `sdk-users/nodes/` for available nodes
-
-2. **Workflow Design**:
-   - Keep workflows focused on single business processes
-   - Use clear, descriptive node names
-   - Document workflow purpose and data flow
-
-3. **Runtime Configuration**:
-   - Use `LocalRuntime` with appropriate settings
-   - Enable async for better performance
-   - Configure monitoring and security as needed
-
-### Documentation Standards
-
-1. **Architecture Decisions**:
-   - Document all significant choices in `adr/`
-   - Include context, decision, and consequences
-   - Reference related decisions
-
-2. **Task Tracking**:
-   - Use `todos/` for current work
-   - Update status regularly
-   - Archive completed work
-
-3. **Learning Documentation**:
-   - Record mistakes and solutions in `mistakes/`
-   - Include prevention strategies
-   - Share learnings with team
-
-### Security Guidelines
-
-1. **Environment Variables**:
-   - Never commit secrets to version control
-   - Use `.env` files for local development
-   - Use proper secret management in production
-
-2. **Database Security**:
-   - Use connection pooling
-   - Implement proper access controls
-   - Enable audit logging
-
-3. **API Security**:
-   - Implement authentication and authorization
-   - Validate all inputs
-   - Use HTTPS in production
-
-### Performance Optimization
-
-1. **Database**:
-   - Use proper indexing
-   - Implement connection pooling
-   - Monitor query performance
-
-2. **Workflows**:
-   - Use async runtime for I/O bound operations
-   - Configure appropriate concurrency limits
-   - Monitor workflow execution times
-
-3. **API**:
-   - Implement caching where appropriate
-   - Use proper HTTP status codes
-   - Monitor response times
-
-## 🔗 Integration with Solutions
-
-### Cross-App Coordination
-
-When your app needs to coordinate with other apps, use the `solutions/` layer:
-
+### **setup.py**
 ```python
-# In your app's workflows
-from solutions.shared_services.authentication import TenantAuthService
+from setuptools import setup, find_packages
 
-class MyAppWorkflow(Workflow):
-    def execute(self, inputs):
-        # Use shared authentication
-        auth_service = TenantAuthService()
-        user = auth_service.authenticate(inputs["token"])
-        
-        # Your app-specific logic here
-        return self.process_for_user(user)
+setup(
+    name="your-application",
+    version="1.0.0",
+    description="Enterprise application built with Kailash SDK",
+    packages=find_packages(),
+    python_requires=">=3.8",
+    install_requires=[
+        "fastapi>=0.104.0",
+        "uvicorn[standard]>=0.24.0",
+        "click>=8.0.0",
+        "aiosqlite>=0.19.0",
+        "kailash-sdk",
+    ],
+    entry_points={
+        "console_scripts": [
+            "your-app=your_app.cli.main:cli",
+        ],
+    },
+    classifiers=[
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+    ],
+)
 ```
 
-### Shared Services
+## 📚 Common Patterns
 
-If your app provides services that other apps need, expose them via the solutions layer:
-
+### High-Performance Data Processing
 ```python
-# solutions/shared_services/my_app_client.py
-from apps.my_app.api.client import MyAppAPIClient
+# Hybrid routing for <25ms operations
+class DataProcessor:
+    FAST_OPS = {"validate", "transform", "filter"}
 
-class MyAppService:
-    def __init__(self):
-        self.client = MyAppAPIClient()
-    
-    def get_data_for_other_apps(self, criteria):
-        return self.client.query_data(criteria)
+    async def process(self, operation: str, data: dict):
+        if operation in self.FAST_OPS:
+            return await self._direct_process(data)
+        else:
+            return await self.mcp_server.call_tool(operation, data)
 ```
 
-## 📚 Additional Resources
+### LLM-Enhanced Operations
+```python
+# Always use MonitoredLLMAgentNode for production
+workflow.add_node("analyzer", MonitoredLLMAgentNode(
+    model="gpt-4",
+    monitoring_config={"track_costs": True}
+))
+```
 
-- **SDK Documentation**: `sdk-users/developer/README.md`
-- **Workflow Examples**: `sdk-users/workflows/by-pattern/`
-- **Node Reference**: `sdk-users/nodes/comprehensive-node-catalog.md`
-- **Troubleshooting**: `sdk-users/developer/07-troubleshooting.md`
-- **Cross-App Patterns**: `solutions/README.md`
+### Enterprise Security
+```python
+# Automatic ABAC with AI reasoning
+workflow.add_node("auth", ABACPermissionEvaluatorNode(
+    ai_reasoning=True,
+    cache_results=True
+))
+```
 
----
+## 🎯 Performance Optimization
 
-**This guide provides the foundation for building enterprise applications with the Kailash SDK. Each app is self-contained with isolated project management, ensuring teams can work simultaneously without conflicts while following proven patterns for scalable, maintainable applications.**
+### Response Time Categories
+- **Ultra-low (<5ms)**: Direct calls, no abstraction
+- **Low (5-25ms)**: Hybrid routing, selective optimization
+- **Medium (25-100ms)**: Standard patterns, MCP acceptable
+- **High (>100ms)**: Full middleware stack
+
+### Optimization Checklist
+- [ ] Profile critical paths with `cProfile`
+- [ ] Use `AsyncLocalRuntime` for I/O operations
+- [ ] Enable connection pooling in database
+- [ ] Implement caching for repeated operations
+- [ ] Use batch operations for bulk data
+
+## ⚠️ Common Pitfalls
+
+1. **Creating manual FastAPI/SQLAlchemy** → Use middleware
+2. **PythonCodeNode for everything** → Check node catalog first
+3. **Hardcoded paths** → Use `get_output_data_path()`
+4. **Missing "result" wrapper** → PythonCodeNode always needs it
+5. **Direct node instantiation** → Use string-based `WorkflowBuilder`
+
+## 📋 Quick Development Checklist
+
+### Start (Day 1)
+- [ ] Run `create-kailash-app` template generator
+- [ ] Choose architecture pattern from decision matrix
+- [ ] Define models extending middleware bases
+- [ ] Create workflows (inline or class-based)
+- [ ] Use `create_gateway()` for API
+
+### Test (Day 2)
+- [ ] Run QA framework: `qa-test .`
+- [ ] Check performance: < 100ms target
+- [ ] Validate security with ABAC tester
+
+### Deploy (Day 3)
+- [ ] Docker build and compose
+- [ ] Configure monitoring
+- [ ] Production checklist
+
+## 📚 Reference Examples
+
+- **User Management**: 15.9x faster than Django Admin
+- **QA Testing**: 100% autonomous with AI agents
+- **Studio**: Workflow builder with real-time collaboration
+
+All examples in `/apps/` follow these patterns.

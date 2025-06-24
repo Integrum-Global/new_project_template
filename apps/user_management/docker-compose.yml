@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: user_mgmt_postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: user_management
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d user_management"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: user_mgmt_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: user_mgmt_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_KEEP_ALIVE=24h
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # User Management API Service
+  user_management:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user_mgmt_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    environment:
+      - USER_MANAGEMENT_DB_URL=postgresql://admin:password@postgres:5432/user_management
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - JWT_SECRET_KEY=your-secret-key-change-in-production
+      - PYTHONPATH=/app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    command: python -m apps.user_management.main
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test Runner Service
+  test_runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: user_mgmt_tests
+    depends_on:
+      user_management:
+        condition: service_healthy
+    environment:
+      - USER_MANAGEMENT_DB_URL=postgresql://admin:password@postgres:5432/user_management
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - API_BASE_URL=http://user_management:8000
+      - PYTHONPATH=/app
+    volumes:
+      - ./:/app
+      - test_results:/test_results
+    command: >
+      bash -c "
+        echo 'Waiting for services to be ready...' &&
+        sleep 10 &&
+        echo 'Running tests...' &&
+        pytest -v --junit-xml=/test_results/junit.xml --html=/test_results/report.html --self-contained-html
+      "
+
+volumes:
+  postgres_data:
+  redis_data:
+  ollama_data:
+  test_results:
+
+networks:
+  default:
+    name: user_mgmt_network
