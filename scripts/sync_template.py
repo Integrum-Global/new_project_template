@@ -56,7 +56,8 @@ SYNC_PATTERNS = [
 
 # Files that require special merge handling
 MERGE_FILES = {
-    # Currently no files require special merge handling
+    # pyproject.toml - update Kailash version while preserving user dependencies
+    "pyproject.toml": "update_kailash_version",
     # CLAUDE.md is user-specific and should be manually updated if needed
 }
 
@@ -203,8 +204,26 @@ class TemplateSyncer:
                     check=True,
                 )
 
-                # Create sync branch
+                # Ensure template-sync branch exists or create it
                 os.chdir(downstream_path)
+                
+                # Check if template-sync branch exists
+                result = subprocess.run(
+                    ["git", "rev-parse", "--verify", "origin/template-sync"],
+                    capture_output=True,
+                    text=True
+                )
+                
+                if result.returncode == 0:
+                    # template-sync branch exists, check it out
+                    subprocess.run(["git", "checkout", "template-sync"], check=True)
+                    subprocess.run(["git", "pull", "origin", "template-sync"], check=True)
+                else:
+                    # template-sync branch doesn't exist, create it from main
+                    subprocess.run(["git", "checkout", "-b", "template-sync"], check=True)
+                    subprocess.run(["git", "push", "-u", "origin", "template-sync"], check=True)
+                
+                # Create timestamped feature branch from template-sync
                 branch_name = (
                     f"template-sync-{datetime.now().strftime('%Y%m%d-%H%M%S')}"
                 )
@@ -363,6 +382,15 @@ class TemplateSyncer:
                             changes_made = True
                             logger.info(f"Added new shared component: {relative_path}")
 
+        # Process files that need special merge handling (regardless of other patterns)
+        for file_path_str, merge_method in MERGE_FILES.items():
+            template_file = template_path / file_path_str
+            downstream_file = downstream_path / file_path_str
+            
+            if template_file.exists():
+                if self.merge_file(template_file, downstream_file, merge_method):
+                    changes_made = True
+
         return changes_made
 
     def cleanup_unwanted_files(self, downstream_path: Path) -> bool:
@@ -454,8 +482,51 @@ class TemplateSyncer:
 
     def merge_file(self, src: Path, dst: Path, merge_method: str) -> bool:
         """Merge file with special handling."""
-        # No special merge methods currently implemented
+        if merge_method == "update_kailash_version":
+            return self.update_kailash_version_in_pyproject(src, dst)
         return False
+
+    def update_kailash_version_in_pyproject(self, src: Path, dst: Path) -> bool:
+        """Update Kailash version in pyproject.toml while preserving other dependencies."""
+        import re
+        
+        # Read the template pyproject.toml to get the new Kailash version
+        with open(src, 'r') as f:
+            template_content = f.read()
+        
+        # Extract Kailash version from template
+        kailash_match = re.search(r'"kailash([><=]+[\d.]+)"', template_content)
+        if not kailash_match:
+            logger.warning("Could not find Kailash version in template pyproject.toml")
+            return False
+        
+        new_kailash_spec = kailash_match.group(1)
+        logger.info(f"Found Kailash version spec in template: kailash{new_kailash_spec}")
+        
+        # Read the downstream pyproject.toml
+        if not dst.exists():
+            # If file doesn't exist, just copy the template
+            return self.copy_file(src, dst)
+        
+        with open(dst, 'r') as f:
+            downstream_content = f.read()
+        
+        # Update Kailash version in downstream content
+        updated_content = re.sub(
+            r'"kailash[^"]*"',
+            f'"kailash{new_kailash_spec}"',
+            downstream_content
+        )
+        
+        # Check if we made any changes
+        if updated_content != downstream_content:
+            with open(dst, 'w') as f:
+                f.write(updated_content)
+            logger.info(f"Updated Kailash version to kailash{new_kailash_spec} in {dst.name}")
+            return True
+        else:
+            logger.info(f"Kailash version already up to date in {dst.name}")
+            return False
 
     # CLAUDE.md merge function removed - now handled as regular file replacement
 
@@ -472,31 +543,39 @@ class TemplateSyncer:
                     "--head",
                     branch,
                     "--base",
-                    "main",
+                    "template-sync",
                     "--title",
                     f"Sync template updates from {self.template_repo}",
                     "--body",
-                    f"""## Template Sync
+                    f"""## Template Sync to template-sync branch
 
 This PR automatically syncs updates from the template repository: {self.template_repo}
 
-🤖 **Automated Template Sync PR** - Full CI pipeline is skipped for template sync PRs
+🤖 **Automated Template Sync PR** - Targets `template-sync` branch for safer integration
+
+### Strategy:
+- **Target**: `template-sync` branch (not main)
+- **Purpose**: Review and test template changes before merging to main
+- **Next Step**: After approval, merge `template-sync` → `main` in your repository
 
 ### Changes included:
 - Updated reference documentation
 - Updated guides and instructions
 - Updated shared components
 - Updated scripts and tools
-- **NEW**: GitHub metrics tracking system in scripts/metrics/
+- Updated SDK patterns and examples
 
-### CI/CD Note:
-✅ This PR will only run minimal validation checks (template-sync-check.yml)
-❌ Full CI pipeline is skipped for template sync PRs
+### Integration Workflow:
+1. ✅ **Review this PR** - Check for conflicts with your project code
+2. ✅ **Merge to template-sync** - Safe integration point
+3. ✅ **Test in template-sync branch** - Validate everything works
+4. ✅ **Create PR: template-sync → main** - Final integration when ready
 
 ### Review checklist:
 - [ ] Review changes for conflicts with project-specific code
 - [ ] Test that existing functionality still works
 - [ ] Update project-specific documentation if needed
+- [ ] Ready to merge template-sync → main
 
 This is an automated sync triggered at {datetime.now().isoformat()}
 """,
