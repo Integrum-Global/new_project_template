@@ -17,7 +17,7 @@
 
 # Testing the kailash implementation
 1. I want to perform extensive testing on your implementation.
-2. We should have 3 kinds of tests:
+2. 2. We should have 3 kinds of tests which MUST follow the strategy in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`:
    - **Unit tests**: For each component, we should have unit tests that cover the functionality.
    - **Integration tests**: For the entire workflow, we should have integration tests that ensure everything works together as expected.
    - **User flow tests**: For each user flow, we should have user flow tests that ensure the user experience is smooth and intuitive.
@@ -25,6 +25,7 @@
      - Then, document them into solution's docs/user_flows/ with a separate folder for each user flow.
      - Next, for each user flow, generate the test codes in solution's tests/user_flows/ with a separate folder for each user flow. 
      - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
+     - Do not write new tests without checking that existing ones can be modified to include them.
    - Finally, run the tests and ensure that everything is working as expected.
 3. As you correct the codes, ensure the following:
    - Use 100% kailash SDK components (the latest version installed from pypi), and that you have consulted sdk-users/ for any doubts.
@@ -38,10 +39,14 @@
    - Ensure that the other service and infrastructure components are also optimized for performance and reliability.
 
 # Checking tests completeness
-1. Lets resolve testing issues or gaps, if any. I need it to be of the best production quality. 
-2. Lets have integration, e2e, and user flows tests that are more demanding and real-world in nature.
-3. For the tests, please use our docker implementation, and real data, processes, responses.
-4. Use our ollama to generate data or create LLMAgents freely. 
+1. Let's resolve testing issues or gaps, if any. I need it to be of the best production quality.
+2. The regression testing strategy is in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`.
+3. Additional tests written MUST follow the policy in `sdk-users/testing/test-organization-policy.md`.
+4. Do not write new tests without checking that existing ones can be modified to include them.
+5. Ensure that the integration, e2e, and user flows tests that are demanding and real-world in nature.
+6. For the tests, please use our docker implementation, and real data, processes, responses.
+7. Use our ollama to generate data or create LLMAgents freely. 
+8. Run the tests and ensure that everything is working as expected.
 
 # Updating the documentation
 1. Please update all the documentation and references in details. We should indicate what tests were performed, and what were the results.
@@ -65,10 +70,3 @@
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes and run the tests against the live system. If it fails, then you need to fix the code until it passes.
      - Use the existing ollama for your tests.
-
-# Updating frontend capabilities
-1. Given all the capabilities that we have created, please create a very detailed guide for frontend development:
-   - What are the new features that can be included in the current frontend?
-   - How do these features affect/improve the user experience/flow?
-   - How should the frontend design and implement these features to display these missing capabilities?
-   - A complete technical guide, including the endpoints for frontend developer to integrate.

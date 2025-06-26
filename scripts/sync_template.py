@@ -56,8 +56,7 @@ SYNC_PATTERNS = [
 
 # Files that require special merge handling
 MERGE_FILES = {
-    # pyproject.toml - update Kailash version while preserving user dependencies
-    "pyproject.toml": "update_kailash_version",
+    # Currently no files require special merge handling
     # CLAUDE.md is user-specific and should be manually updated if needed
 }
 
@@ -381,15 +380,6 @@ class TemplateSyncer:
                         if self.copy_file(file_path, dest_path):
                             changes_made = True
                             logger.info(f"Added new shared component: {relative_path}")
-
-        # Process files that need special merge handling (regardless of other patterns)
-        for file_path_str, merge_method in MERGE_FILES.items():
-            template_file = template_path / file_path_str
-            downstream_file = downstream_path / file_path_str
-            
-            if template_file.exists():
-                if self.merge_file(template_file, downstream_file, merge_method):
-                    changes_made = True
 
         return changes_made
 
