@@ -37,7 +37,7 @@ class ExampleService(BaseService):
         """Get entity by ID."""
         return (
             self.db.query(ExampleEntity)
-            .filter(ExampleEntity.id == entity_id, ExampleEntity.is_active == True)
+            .filter(ExampleEntity.id == entity_id, ExampleEntity.is_active)
             .first()
         )
 
@@ -45,7 +45,7 @@ class ExampleService(BaseService):
         """Get list of entities."""
         return (
             self.db.query(ExampleEntity)
-            .filter(ExampleEntity.is_active == True)
+            .filter(ExampleEntity.is_active)
             .offset(skip)
             .limit(limit)
             .all()
@@ -81,9 +81,7 @@ class ExampleService(BaseService):
         """Search entities by name."""
         return (
             self.db.query(ExampleEntity)
-            .filter(
-                ExampleEntity.name.ilike(f"%{query}%"), ExampleEntity.is_active == True
-            )
+            .filter(ExampleEntity.name.ilike(f"%{query}%"), ExampleEntity.is_active)
             .all()
         )
 

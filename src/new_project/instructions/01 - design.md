@@ -8,10 +8,15 @@
    - Present the challenges from a solutions, users, or system perspective.
    - Ask it for solution
 5. Iterate and iterate until you are satisfied with the frame.
-6. Ask Claude Code to log it into adr, as much details as it can, and present the implementation plan.
-7. Do the same with implementation plan and keep iterating.
-8. Ask Claude Code to produce an extremely detailed todo list and log it into todos/.
-9. Implement and always ask 
+6. Ask Claude Code to think deeply and generate all the different user personas and user flows.
+7. Inspect the personas and user flows, and debate with Claude Code to refine them.
+8. Instruct Claude Code to log it into adr, as much details as it can, and present the implementation plan.
+9. Do the same with implementation plan and keep iterating.
+10. Ask Claude Code to produce an extremely detailed todo list and log it into todos/.
+11. NEVER EDIT ANY FILES MANUALLY, let Claude Code do it all. 
+    - Human users will miss details and connections.
+    - Human users speak differently.
+    - But Claude Code will always rewrite it in a manner, often with missed details, that everyone (including itself) can understand.
 
 # Example instructions:
 ## What this project is about?
