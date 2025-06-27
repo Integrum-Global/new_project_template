@@ -2,6 +2,10 @@
 
 This document defines the test organization standards for the Kailash SDK. It should be read together with [regression-testing-strategy.md](regression-testing-strategy.md).
 
+## ⚠️ Ensure No Hidden Tests
+
+Strict tier enforcement - if a test needs sleep/delays or takes >1s, it MUST be moved to the appropriate tier where it will actually run.
+
 ## Directory Structure
 
 All tests MUST be organized into the following three-tier structure:
@@ -25,6 +29,10 @@ tests/
 - **Markers**: `@pytest.mark.unit` or no markers
 - **Purpose**: Test individual components in isolation
 - **CI/CD**: Run on every commit
+- **STRICT RULES**: 
+  - ❌ NO `@pytest.mark.slow` allowed - will fail in CI
+  - ❌ NO sleep/delays allowed - will fail in CI
+  - ✅ If test needs delays, move to integration/ or e2e/
 
 ### Tier 2: Integration Tests (`tests/integration/`)
 - **Execution time**: < 30 seconds per test
@@ -132,27 +140,46 @@ Keep test support files organized:
 
 ## Test Markers
 
-Required markers for proper classification:
+### New Marker Strategy
 
 ```python
-# Unit test (Tier 1) - no marker needed
-def test_simple_function():
-    pass
+# Speed markers (for scheduling, not exclusion)
+@pytest.mark.fast     # <1s - quick feedback
+@pytest.mark.medium   # 1-30s - pre-commit  
+@pytest.mark.slow     # >30s - nightly runs
 
-# Integration test (Tier 2)
-@pytest.mark.integration
-def test_component_interaction():
-    pass
+# Priority markers
+@pytest.mark.critical    # Must always pass
+@pytest.mark.regression  # Previously broken areas
 
-# E2E test (Tier 3)
-@pytest.mark.e2e
+# Dependency markers
 @pytest.mark.requires_docker
-def test_full_scenario():
+@pytest.mark.requires_postgres
+@pytest.mark.requires_redis
+@pytest.mark.requires_ollama
+```
+
+### Examples by Tier
+
+```python
+# Unit test (Tier 1) - MUST be fast, no slow marker
+def test_simple_function():
+    assert calculate(2, 2) == 4
+
+# Integration test (Tier 2) - can be marked medium/slow
+@pytest.mark.integration
+@pytest.mark.medium
+@pytest.mark.requires_postgres
+def test_database_integration():
+    # Uses real PostgreSQL
     pass
 
-# Slow test (automatically Tier 3)
+# E2E test (Tier 3) - typically slow
+@pytest.mark.e2e
 @pytest.mark.slow
-def test_performance_benchmark():
+@pytest.mark.requires_docker
+def test_full_workflow():
+    # Complete scenario with real services
     pass
 ```
 
@@ -183,7 +210,39 @@ All other files should be removed or properly organized.
 ## Enforcement
 
 This policy is enforced through:
-1. CI/CD checks that fail on misplaced tests
-2. Regular test organization audits
-3. Code review requirements
-4. Automated test discovery based on directory structure
+
+### 1. Automated Enforcement (conftest.py)
+- Unit tests with `@pytest.mark.slow` → Test fails with error
+- Unit tests with sleep/delays → Test fails with error  
+- Integration/E2E tests with mocking → Test fails with error
+- Run with `--strict-test-organization` to enforce in CI
+
+### 2. Test Audit Script
+```bash
+# Run audit to find violations
+python scripts/audit_test_organization.py
+
+# Output includes:
+# - Unit tests with sleep/delays
+# - Unit tests marked as slow
+# - Integration tests using mocks
+# - Tests in wrong directories
+```
+
+### 3. CI Pipeline Stages
+```bash
+# Stage 1: Fast feedback (every commit)
+pytest tests/unit/ -m "not (requires_docker or requires_*)"
+
+# Stage 2: Pre-merge (every PR)  
+pytest tests/unit/ tests/integration/ -m "not (slow and not critical)"
+
+# Stage 3: Nightly (all tests)
+pytest  # Runs EVERYTHING, no exclusions
+```
+
+### 4. Migration Process
+For tests identified as violations:
+1. **Refactor to be fast** - Remove sleeps, reduce data
+2. **Move to correct tier** - Integration or E2E if needs delays
+3. **Split into versions** - Fast unit + slow integration

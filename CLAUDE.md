@@ -1,7 +1,7 @@
 # Kailash Studio - Development Guide
 
 ## When asked to implement a solution
-1. Use 100% kailash sdk components (v 0.4.0) and consult sdk-users/ every time.
+1. Use 100% kailash sdk components (latest on pypi) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the frontend specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.

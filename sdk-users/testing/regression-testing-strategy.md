@@ -1,12 +1,8 @@
 # Regression Testing Strategy
 
-## Current Test Suite Status
+## ⚠️ Critical Update: All Tests Must Run
 
-### Test Inventory (December 2024)
-- **Total Tests**: 1,844 tests
-- **Test Files**: 177 files
-- **Fast Tests**: 1,764 (not marked @pytest.mark.slow)
-- **Slow Tests**: 80 (marked @pytest.mark.slow)
+Strict tier enforcement ensures every test runs in the appropriate pipeline stage.
 
 ### Test Categories
 ```
@@ -25,45 +21,42 @@ Tests are organized by directory structure:
 - **Tier 2**: `tests/integration/` - Component interaction tests
 - **Tier 3**: `tests/e2e/` - End-to-end scenarios with Docker
 
-### 2. Priority-Based Test Selection
+### 2. New Pipeline Strategy - Every Test Runs
 
-Within each tier, tests can be marked by priority:
-
-#### Priority 1: Critical Path (5 minutes)
+#### Stage 1: Fast Feedback (2-5 minutes)
 ```bash
-# Run only critical tests on every commit
-pytest -m "critical" --maxfail=1
+# Run on every commit - unit tests without dependencies
+pytest tests/unit/ -m "not (requires_docker or requires_postgres or requires_mysql or requires_redis or requires_ollama)"
 ```
 
-**Mark critical tests:**
-- Core workflow execution
-- Gateway functionality
-- Connection management
-- Admin nodes (RBAC/ABAC)
-- Error handling
+**Includes:**
+- All unit tests (NO slow markers allowed in unit/)
+- No external dependencies
+- Catches logic errors immediately
 
-#### Priority 2: Fast Regression (10 minutes)
+#### Stage 2: Pre-Merge Validation (10-15 minutes)
 ```bash
-# Run all fast tests on PR
-pytest tests/unit/ -m "not (slow or integration or e2e or requires_docker)" --maxfail=10
+# Run on every PR - unit + integration, excluding only very slow tests
+pytest tests/unit/ tests/integration/ -m "not (slow and not critical)"
 ```
 
 **Includes:**
 - All unit tests
-- Fast integration tests
-- No Docker/external dependencies
+- All integration tests 
+- Critical slow tests still run
+- Uses real Docker services
 
-#### Priority 3: Full Regression (45-60 minutes)
+#### Stage 3: Full Regression (45-60 minutes)
 ```bash
-# Run nightly or on release
+# Run nightly or on release - EVERYTHING
 pytest
 ```
 
 **Includes:**
-- All tests including slow
-- Docker-based tests
-- Performance tests
-- E2E scenarios
+- ALL tests - no exclusions
+- Slow tests, performance tests
+- Complete E2E scenarios
+- Full Docker environment
 
 ### 3. Test Organization Improvements
 
@@ -82,28 +75,30 @@ def test_edge_case_handling():
     pass
 ```
 
-#### B. Create Test Suites
+#### B. New Marker Philosophy
 ```ini
-# pytest.ini additions
-[pytest]
+# Speed markers are for SCHEDULING, not EXCLUSION
 markers =
-    # Tier markers (based on location)
-    unit: Unit test (automatically applied to tests/unit/)
-    integration: Integration test (automatically applied to tests/integration/)
-    e2e: End-to-end test (automatically applied to tests/e2e/)
-
-    # Priority markers (optional)
-    critical: Core functionality that must never break
-    smoke: Basic functionality check (2 min)
-
-    # Dependency markers
-    slow: Long-running tests (30+ min)
-    requires_docker: Requires Docker services
-    requires_postgres: Requires PostgreSQL
-    requires_mysql: Requires MySQL
-    requires_redis: Requires Redis
-    requires_ollama: Requires Ollama LLM service
+    # Speed markers (scheduling hints)
+    fast: <1s tests for quick feedback
+    medium: 1-30s tests for pre-commit
+    slow: >30s tests for nightly runs
+    
+    # Priority markers (importance)
+    critical: Must pass for any release
+    regression: Previously broken areas
+    
+    # Dependency markers (environment)
+    requires_docker: Needs Docker
+    requires_postgres: Needs PostgreSQL
+    requires_redis: Needs Redis
+    requires_ollama: Needs Ollama
 ```
+
+**Key Changes:**
+- `slow` marker no longer excludes tests from CI
+- Speed markers help schedule when tests run
+- All tests run somewhere in the pipeline
 
 ### 4. Parallel Execution Strategy
 
@@ -200,26 +195,38 @@ def pytest_collection_modifyitems(items, config):
 
 ### For Developers
 ```bash
-# Tier 1: Quick check before commit (2 min)
-pytest tests/unit/ -m "not (slow or integration or e2e or requires_docker)" --maxfail=1
+# Quick check before commit (2 min) - unit tests only
+pytest tests/unit/ -m "not (requires_docker or requires_postgres or requires_mysql or requires_redis or requires_ollama)" --maxfail=1
 
-# Tier 2: Standard check before PR (10 min)
-pytest tests/unit/ tests/integration/ -m "not (slow or e2e or requires_docker)" -n auto
+# Standard check before PR (10 min) - unit + integration
+pytest tests/unit/ tests/integration/ -m "not (slow and not critical)" -n auto
 
-# Tier 3: Full check for major changes (45 min)
+# Full check for major changes (45 min) - everything
 pytest --cov=kailash
 ```
 
-### For CI
+### For CI Pipeline
 ```bash
-# Push/PR validation - Tier 1 only (5-10 min)
-pytest tests/unit/ -m "not (slow or integration or e2e or requires_docker)" --junit-xml=results.xml
+# Stage 1: Every commit (2-5 min)
+pytest tests/unit/ -m "not (requires_docker or requires_*)" --junit-xml=results.xml
 
-# Nightly regression - All tiers (60 min)
-pytest --json-report --html=report.html
+# Stage 2: Every PR (10-15 min)  
+pytest tests/unit/ tests/integration/ -m "not (slow and not critical)" --json-report
 
-# Release validation - Full suite with coverage (90 min)
-pytest --cov=kailash --benchmark-only
+# Stage 3: Nightly/Release (60+ min)
+pytest --cov=kailash --benchmark-only --html=report.html
+```
+
+### Test Migration Commands
+```bash
+# Find tests that need migration
+python scripts/audit_test_organization.py
+
+# Run with strict enforcement
+pytest --strict-test-organization
+
+# Check specific tier
+pytest tests/unit/ --strict-test-organization
 ```
 
 ## Test Reduction Strategies
@@ -252,3 +259,39 @@ python scripts/find_duplicate_tests.py
 - Performance regression >10%
 - Coverage drop >5%
 - Test suite duration >2x baseline
+
+## Migration Strategy for Test Violations
+
+### Current Violations (as of December 2024)
+- **25 unit tests with sleep/delays** → Move to integration/ or refactor
+- **25 integration tests with mocks** → Rewrite with real Docker services
+- **2 e2e tests with mocks** → Rewrite with real Docker services
+- **2 misplaced test files** → Move to proper directories
+
+### Migration Priority
+1. **High**: Integration/E2E tests with mocks (breaks test integrity)
+2. **Medium**: Unit tests with sleep (hidden from CI)
+3. **Low**: Misplaced files (organizational cleanup)
+
+### Migration Process
+```bash
+# Step 1: Run audit
+python scripts/audit_test_organization.py
+
+# Step 2: For each violation, choose approach:
+# A) Refactor test to remove sleep/mock
+# B) Move test to appropriate tier
+# C) Split into fast unit + slow integration
+
+# Step 3: Validate migration
+pytest tests/unit/ --strict-test-organization
+
+# Step 4: Update CI once clean
+# Enable --strict-test-organization in CI
+```
+
+### Expected Outcomes
+- **No hidden tests** - All tests run in appropriate pipeline stage
+- **Better performance** - Fast unit tests give quick feedback
+- **Accurate testing** - Integration/E2E use real services
+- **Clear organization** - Easy to find and understand tests
