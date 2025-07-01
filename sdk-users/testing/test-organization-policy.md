@@ -2,10 +2,6 @@
 
 This document defines the test organization standards for the Kailash SDK. It should be read together with [regression-testing-strategy.md](regression-testing-strategy.md).
 
-## ⚠️ Ensure No Hidden Tests
-
-Strict tier enforcement - if a test needs sleep/delays or takes >1s, it MUST be moved to the appropriate tier where it will actually run.
-
 ## Directory Structure
 
 All tests MUST be organized into the following three-tier structure:
@@ -29,10 +25,6 @@ tests/
 - **Markers**: `@pytest.mark.unit` or no markers
 - **Purpose**: Test individual components in isolation
 - **CI/CD**: Run on every commit
-- **STRICT RULES**: 
-  - ❌ NO `@pytest.mark.slow` allowed - will fail in CI
-  - ❌ NO sleep/delays allowed - will fail in CI
-  - ✅ If test needs delays, move to integration/ or e2e/
 
 ### Tier 2: Integration Tests (`tests/integration/`)
 - **Execution time**: < 30 seconds per test
@@ -121,18 +113,62 @@ class TestAdminIntegration:
 
 ## Prohibited Patterns
 
-### 1. Duplicate Test Directories
+### 1. NO SKIPPED TESTS - ZERO TOLERANCE POLICY
+**Skipped tests are zombie tests that will never run again. They are strictly forbidden.**
+
+- ❌ NEVER use `pytest.skip()` or `@pytest.mark.skip`
+- ❌ NEVER use `@pytest.mark.skipif` conditionally
+- ❌ NEVER create tests that check for availability and skip
+
+**Instead:**
+- ✅ If a test requires external dependencies (DB, API), put it in `integration/` or `e2e/`
+- ✅ If a test is not ready, don't commit it
+- ✅ If a feature is removed, remove its tests
+- ✅ If a test fails intermittently, fix it or remove it
+
+**Examples of FORBIDDEN patterns:**
+```python
+# ❌ NEVER DO THIS
+def test_mysql_feature(self):
+    if not mysql_available:
+        pytest.skip("MySQL not available")  # FORBIDDEN!
+
+# ❌ NEVER DO THIS
+@pytest.mark.skipif(not has_gpu, reason="GPU not available")  # FORBIDDEN!
+def test_gpu_processing():
+    pass
+
+# ❌ NEVER DO THIS
+@pytest.mark.skip(reason="Not implemented yet")  # FORBIDDEN!
+def test_future_feature():
+    pass
+```
+
+**Correct approach:**
+```python
+# ✅ Put in integration/ with proper Docker setup
+@pytest.mark.integration
+@pytest.mark.requires_mysql
+def test_mysql_feature(self):
+    # Test will only run when MySQL Docker is available
+    pass
+
+# ✅ Remove or don't commit unfinished tests
+# Don't create placeholder tests
+```
+
+### 2. Duplicate Test Directories
 Never create these directories:
 - `tests/test_*` (e.g., `tests/test_workflow/`)
 - `tests/middleware/`, `tests/nodes/`, etc. (use `tests/unit/middleware/`)
 - Any test directory outside the three-tier structure
 
-### 2. Misclassified Tests
+### 3. Misclassified Tests
 - Never put slow tests in `unit/`
 - Never put Docker-dependent tests in `unit/` or unmarked `integration/`
 - Always use appropriate pytest markers
 
-### 3. Scattered Test Support Files
+### 4. Scattered Test Support Files
 Keep test support files organized:
 - Test utilities & configs → `tests/utils/`
 - Shared fixtures → `tests/fixtures/`
@@ -140,46 +176,27 @@ Keep test support files organized:
 
 ## Test Markers
 
-### New Marker Strategy
+Required markers for proper classification:
 
 ```python
-# Speed markers (for scheduling, not exclusion)
-@pytest.mark.fast     # <1s - quick feedback
-@pytest.mark.medium   # 1-30s - pre-commit  
-@pytest.mark.slow     # >30s - nightly runs
-
-# Priority markers
-@pytest.mark.critical    # Must always pass
-@pytest.mark.regression  # Previously broken areas
-
-# Dependency markers
-@pytest.mark.requires_docker
-@pytest.mark.requires_postgres
-@pytest.mark.requires_redis
-@pytest.mark.requires_ollama
-```
-
-### Examples by Tier
-
-```python
-# Unit test (Tier 1) - MUST be fast, no slow marker
+# Unit test (Tier 1) - no marker needed
 def test_simple_function():
-    assert calculate(2, 2) == 4
-
-# Integration test (Tier 2) - can be marked medium/slow
-@pytest.mark.integration
-@pytest.mark.medium
-@pytest.mark.requires_postgres
-def test_database_integration():
-    # Uses real PostgreSQL
     pass
 
-# E2E test (Tier 3) - typically slow
+# Integration test (Tier 2)
+@pytest.mark.integration
+def test_component_interaction():
+    pass
+
+# E2E test (Tier 3)
 @pytest.mark.e2e
-@pytest.mark.slow
 @pytest.mark.requires_docker
-def test_full_workflow():
-    # Complete scenario with real services
+def test_full_scenario():
+    pass
+
+# Slow test (automatically Tier 3)
+@pytest.mark.slow
+def test_performance_benchmark():
     pass
 ```
 
@@ -210,39 +227,7 @@ All other files should be removed or properly organized.
 ## Enforcement
 
 This policy is enforced through:
-
-### 1. Automated Enforcement (conftest.py)
-- Unit tests with `@pytest.mark.slow` → Test fails with error
-- Unit tests with sleep/delays → Test fails with error  
-- Integration/E2E tests with mocking → Test fails with error
-- Run with `--strict-test-organization` to enforce in CI
-
-### 2. Test Audit Script
-```bash
-# Run audit to find violations
-python scripts/audit_test_organization.py
-
-# Output includes:
-# - Unit tests with sleep/delays
-# - Unit tests marked as slow
-# - Integration tests using mocks
-# - Tests in wrong directories
-```
-
-### 3. CI Pipeline Stages
-```bash
-# Stage 1: Fast feedback (every commit)
-pytest tests/unit/ -m "not (requires_docker or requires_*)"
-
-# Stage 2: Pre-merge (every PR)  
-pytest tests/unit/ tests/integration/ -m "not (slow and not critical)"
-
-# Stage 3: Nightly (all tests)
-pytest  # Runs EVERYTHING, no exclusions
-```
-
-### 4. Migration Process
-For tests identified as violations:
-1. **Refactor to be fast** - Remove sleeps, reduce data
-2. **Move to correct tier** - Integration or E2E if needs delays
-3. **Split into versions** - Fast unit + slow integration
+1. CI/CD checks that fail on misplaced tests
+2. Regular test organization audits
+3. Code review requirements
+4. Automated test discovery based on directory structure

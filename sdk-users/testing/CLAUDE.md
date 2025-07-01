@@ -1,14 +1,8 @@
 # Testing Guidelines for Claude Code
 
-## ⚠️ Critical Update: All Tests Must Run
-
-**Previous Issue**: Tests marked `@pytest.mark.slow` in unit/ were excluded from CI, becoming hidden "zombie tests".
-
-**New Approach**: Strict tier enforcement - every test runs in the appropriate pipeline stage.
-
 ## Essential Reading
-1. **[regression-testing-strategy.md](regression-testing-strategy.md)** - Three-tier testing approach with new pipeline stages
-2. **[test-organization-policy.md](test-organization-policy.md)** - Strict test organization rules with enforcement
+1. **[regression-testing-strategy.md](regression-testing-strategy.md)** - Three-tier testing approach
+2. **[test-organization-policy.md](test-organization-policy.md)** - Test file organization rules
 
 ## Quick Reference
 
@@ -21,28 +15,16 @@ tests/
 └── conftest.py    # Global configuration
 ```
 
-### Running Tests by Pipeline Stage
+### Running Tests by Tier
 ```bash
-# Stage 1: Fast Feedback (every commit)
-pytest tests/unit/ -m "not (requires_docker or requires_postgres or requires_mysql or requires_redis or requires_ollama)"
+# Tier 1 (Unit) - Run frequently
+pytest tests/unit/ -m "not (slow or integration or e2e or requires_docker or requires_redis or requires_ollama)"
 
-# Stage 2: Pre-merge (every PR)
-pytest tests/unit/ tests/integration/ -m "not (slow and not critical)"
+# Tier 2 (Integration) - Run before commits
+pytest tests/integration/ -m "not (slow or e2e or requires_docker or requires_redis or requires_ollama)"
 
-# Stage 3: Full Regression (nightly/release)
-pytest  # ALL tests, no exclusions
-```
-
-### Audit and Enforcement
-```bash
-# Find test violations
-python scripts/audit_test_organization.py
-
-# Track which tests run where
-python scripts/test_inventory_tracker.py
-
-# Enforce strict organization
-pytest --strict-test-organization
+# Tier 3 (E2E) - Run when needed
+pytest tests/e2e/ -m "requires_docker"
 ```
 
 ### Key Rules
