@@ -7,7 +7,7 @@
 **Building an app?** Start with these in order:
 1. **[01-fundamentals.md](01-fundamentals.md)** - Core concepts and basics
 2. **[02-workflows.md](02-workflows.md)** - Building and connecting workflows
-3. **[10-parameter-passing-guide.md](10-parameter-passing-guide.md)** - **NEW!** Master parameter flow (fixes #1 issue)
+3. **[12-parameter-passing-guide.md](12-parameter-passing-guide.md)** - **NEW!** Master parameter flow (fixes #1 issue)
 
 **Having issues?** Jump to:
 - **[05-troubleshooting.md](05-troubleshooting.md)** - Common errors and solutions
@@ -27,13 +27,20 @@
 7. **[07-comprehensive-rag-guide.md](07-comprehensive-rag-guide.md)** - RAG implementation patterns
 8. **[08-async-workflow-builder.md](08-async-workflow-builder.md)** - Async-first workflow patterns
 9. **[09-resource-registry-guide.md](09-resource-registry-guide.md)** - Resource management
-10. **[10-parameter-passing-guide.md](10-parameter-passing-guide.md)** ⭐ - **Complete parameter flow reference**
+10. **[10-admin-nodes-guide.md](10-admin-nodes-guide.md)** - Administrative node framework
 11. **[11-unified-async-runtime-guide.md](11-unified-async-runtime-guide.md)** - AsyncLocalRuntime (2-10x performance)
-12. **[13-testing-production-quality.md](13-testing-production-quality.md)** - Testing strategies
-13. **[14-async-testing-framework-guide.md](14-async-testing-framework-guide.md)** - Production-certified async testing
-14. **[15-connection-pool-guide.md](15-connection-pool-guide.md)** - Database connection management
-15. **[16-enhanced-gateway-guide.md](16-enhanced-gateway-guide.md)** - Enterprise gateway architecture
-16. **[17-enhanced-gateway-user-guide.md](17-enhanced-gateway-user-guide.md)** - Using the gateway
+12. **[12-parameter-passing-guide.md](12-parameter-passing-guide.md)** ⭐ - **Complete parameter flow reference**
+13. **[13-testing-production-quality.md](13-testing-production-quality.md)** - Testing strategies
+14. **[14-async-testing-framework-guide.md](14-async-testing-framework-guide.md)** - Production-certified async testing
+15. **[15-connection-pool-guide.md](15-connection-pool-guide.md)** - Database connection management
+16. **[16-enhanced-gateway-guide.md](16-enhanced-gateway-guide.md)** - Enterprise gateway architecture
+17. **[17-enhanced-gateway-user-guide.md](17-enhanced-gateway-user-guide.md)** - Using the gateway
+18. **[18-production-hardening-features.md](18-production-hardening-features.md)** - Production security and hardening
+
+### Specialized Topics
+- **[10-cycle-parameter-passing-guide.md](10-cycle-parameter-passing-guide.md)** - Cycle-specific parameter patterns
+- **[17-intelligent-query-routing.md](17-intelligent-query-routing.md)** - Advanced query routing
+- **[18-testing-async-workflows.md](18-testing-async-workflows.md)** - Async workflow testing patterns
 
 ### Quick References
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Critical rules and common patterns
@@ -52,7 +59,7 @@ runtime.execute(workflow, parameters={
     }
 })
 ```
-See [10-parameter-passing-guide.md](10-parameter-passing-guide.md) for complete details.
+See [12-parameter-passing-guide.md](12-parameter-passing-guide.md) for complete details.
 
 ### Unified Runtime
 ```python
@@ -137,8 +144,8 @@ workflow.connect("api", "processor", mapping={"response": "response"})
 
 ### Building a Custom Node
 1. Read [06-custom-development.md](06-custom-development.md)
-2. Check parameter declaration in [10-parameter-passing-guide.md](10-parameter-passing-guide.md)
-3. See examples in [examples/basic_node.py](examples/basic_node.py)
+2. Check parameter declaration in [12-parameter-passing-guide.md](12-parameter-passing-guide.md)
+3. See examples in [../workflows/](../workflows/) for patterns
 
 ### Testing Your Workflow
 1. Start with [14-async-testing-framework-guide.md](14-async-testing-framework-guide.md)
@@ -147,7 +154,7 @@ workflow.connect("api", "processor", mapping={"response": "response"})
 
 ### Debugging Issues
 1. Check [05-troubleshooting.md](05-troubleshooting.md) first
-2. Review parameter flow in [10-parameter-passing-guide.md](10-parameter-passing-guide.md)
+2. Review parameter flow in [12-parameter-passing-guide.md](12-parameter-passing-guide.md)
 3. Use debug nodes from [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
 
 ### Production Deployment
