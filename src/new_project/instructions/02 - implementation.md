@@ -6,7 +6,6 @@
 ## Document first before implementing
 1. Create separate ADRs (in solution's adr/) for each of the decisions we make.
 2. Then create a comprehensive list of todos (in solution's todos/) that we need to implement.
-3. You should consider the existing practice in this repository (kailash_python_sdk) and adjust your implementation accordingly.  
 
 # Implementing the solution
 1. Proceed with the implementation.
@@ -54,16 +53,16 @@
 7. Use our ollama to generate data or create LLMAgents freely. 
 8. Run the tests and ensure that everything is working as expected.
 9. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
-10. DO NOT create new docker containers or images before checking that the docker for this repository exists.
-   - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
-   - Deconflict by locking in a set of docker services and ports for this project.
-   - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
-   - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required.
-9. Please update the developer and user guides (inside `sdk-users/`).
-   - Every time a feature is done and fully tested. 
-   - Ensure that wrong usages are corrected
-   - Ensure that guides are clear and concise.
-10. Commit after each tier of tests is cleared.
+10. DO NOT create new docker containers or images before checking that the docker for this repository exists. 
+    - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
+    - Deconflict by locking in a set of docker services and ports for this project.
+    - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
+    - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required. 
+11. Please update the developer and user guides (inside `sdk-users/`).
+    - Every time a feature is done and fully tested. 
+    - Ensure that wrong usages are corrected
+    - Ensure that guides are clear and concise.
+12. Commit after each tier of tests is cleared.
 
 # Updating the documentation
 1. Please update all the documentation and references in details. We should indicate what tests were performed, and what were the results.
@@ -106,3 +105,8 @@
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes and run the tests against the live system. If it fails, then you need to fix the code until it passes.
      - Use the existing ollama for your tests.
+
+# Commit to github
+1. Run black, isort with profile=black, and ruff.
+2. Commit and push to github.
+3. Issue PR
