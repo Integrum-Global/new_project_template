@@ -35,7 +35,7 @@ results, run_id = runtime.execute(workflow, parameters={
 
 ## MCP Server Creation
 ```python
-from kailash.mcp import MCPServer
+from kailash.mcp_server import MCPServer
 
 # Production server with caching
 server = MCPServer("my-server")
