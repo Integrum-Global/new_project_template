@@ -453,6 +453,88 @@ class TemplateSyncer:
                 old_claude_file.unlink()
                 changes_made = True
 
+        # Remove obsolete SDK documentation directories (refactored 2025-07-01)
+        obsolete_sdk_dirs = [
+            "sdk-users/essentials",
+            "sdk-users/patterns/pattern-library", 
+            "sdk-users/templates",
+            "sdk-users/validation",
+            "sdk-users/middleware",
+            "sdk-users/instructions",
+            "sdk-users/migration-guides"
+        ]
+        
+        for dir_path in obsolete_sdk_dirs:
+            target_dir = downstream_path / dir_path
+            if target_dir.exists():
+                logger.info(f"Removing obsolete directory: {dir_path}")
+                import shutil
+                shutil.rmtree(target_dir)
+                changes_made = True
+
+        # Remove specific obsolete SDK files (refactored 2025-07-01)
+        obsolete_sdk_files = [
+            # Developer guide files that were consolidated
+            "sdk-users/developer/01-node-basics.md",
+            "sdk-users/developer/02-parameter-types.md", 
+            "sdk-users/developer/03-common-patterns.md",
+            "sdk-users/developer/04-pythoncode-node.md",
+            "sdk-users/developer/05-directory-reader.md",
+            "sdk-users/developer/06-document-processing.md",
+            "sdk-users/developer/06-enhanced-mcp-server.md",
+            "sdk-users/developer/07-troubleshooting.md",
+            "sdk-users/developer/08-async-database-patterns.md",
+            "sdk-users/developer/08-security-guide.md",
+            "sdk-users/developer/08-why-enhanced-mcp-server.md",
+            "sdk-users/developer/08-workflow-design-patterns.md",
+            "sdk-users/developer/09-cyclic-workflows-guide.md",
+            "sdk-users/developer/09-production-checklist.md",
+            "sdk-users/developer/09-workflow-resilience.md",
+            "sdk-users/developer/10-credential-management.md",
+            "sdk-users/developer/11-sharepoint-multi-auth.md",
+            "sdk-users/developer/12-session-067-enhancements.md",
+            "sdk-users/developer/13-advanced-rag-guide.md",
+            "sdk-users/developer/13-workflow-builder-improvements.md",
+            "sdk-users/developer/14-advanced-document-processing.md",
+            "sdk-users/developer/14-rag-best-practices.md",
+            "sdk-users/developer/15-middleware-integration.md",
+            "sdk-users/developer/16-middleware-integration-guide.md",
+            "sdk-users/developer/17-middleware-database-guide.md",
+            "sdk-users/developer/18-unified-runtime-guide.md",
+            "sdk-users/developer/19-mcp-gateway-integration.md",
+            "sdk-users/developer/20-comprehensive-rag-guide.md",
+            "sdk-users/developer/CLAUDE.md",
+            "sdk-users/developer/NEW_STRUCTURE_PLAN.md",
+            "sdk-users/developer/custom-node-development-guide.md",
+            "sdk-users/developer/pre-commit-hooks.md",
+            # Developer examples directory
+            "sdk-users/developer/examples/basic_node.py",
+            "sdk-users/developer/examples/data_processor.py",
+            "sdk-users/developer/examples/directory_reader.py",
+            "sdk-users/developer/examples/pythoncode_patterns.py",
+            # Validation file at root level
+            "sdk-users/validation-guide.md"
+        ]
+        
+        for file_path in obsolete_sdk_files:
+            target_file = downstream_path / file_path
+            if target_file.exists():
+                logger.info(f"Removing obsolete file: {file_path}")
+                target_file.unlink()
+                changes_made = True
+        
+        # Remove empty directories after file cleanup
+        empty_dirs_to_check = [
+            "sdk-users/developer/examples"
+        ]
+        
+        for dir_path in empty_dirs_to_check:
+            target_dir = downstream_path / dir_path
+            if target_dir.exists() and not any(target_dir.iterdir()):
+                logger.info(f"Removing empty directory: {dir_path}")
+                target_dir.rmdir()
+                changes_made = True
+
         return changes_made
 
     def copy_file(self, src: Path, dst: Path) -> bool:
