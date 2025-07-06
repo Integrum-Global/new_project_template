@@ -96,7 +96,7 @@ def generate_test_data():
 
 def create_interactive_qa_workflow():
     """Create an interactive QA testing workflow"""
-    wb = WorkflowBuilder(name="interactive_qa_testing")
+    wb = WorkflowBuilder()
 
     # Test data generator
     test_data_gen = PythonCodeNode.from_function(
@@ -490,7 +490,7 @@ result = {"failed_tests": failed_tests}
     # Create regression tests from results
     wb.connect(test_executor.name, regression_creator.name, {"result": "input_data"})
 
-    return wb.build()
+    return wb.build(workflow_id="interactive_qa_testing", name="interactive_qa_testing")
 
 
 def main():

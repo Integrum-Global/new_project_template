@@ -1,0 +1,149 @@
+version: '3.8'
+
+services:
+  # Single MCP server instance
+  mcp-server:
+    build: .
+    container_name: mcp-tools-server
+    environment:
+      - MCP_SERVER_NAME=mcp-tools-server
+      - MCP_PORT=8080
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-production-secret-token}
+      - LOG_LEVEL=INFO
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
+    networks:
+      - mcp-network
+
+  # Load balanced setup with 3 instances
+  mcp-server-1:
+    build: .
+    container_name: mcp-server-1
+    environment:
+      - MCP_SERVER_NAME=mcp-server-1
+      - MCP_PORT=8080
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-production-secret-token}
+    networks:
+      - mcp-network
+    profiles:
+      - ha
+
+  mcp-server-2:
+    build: .
+    container_name: mcp-server-2
+    environment:
+      - MCP_SERVER_NAME=mcp-server-2
+      - MCP_PORT=8080
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-production-secret-token}
+    networks:
+      - mcp-network
+    profiles:
+      - ha
+
+  mcp-server-3:
+    build: .
+    container_name: mcp-server-3
+    environment:
+      - MCP_SERVER_NAME=mcp-server-3
+      - MCP_PORT=8080
+      - MCP_AUTH_TOKEN=${MCP_AUTH_TOKEN:-production-secret-token}
+    networks:
+      - mcp-network
+    profiles:
+      - ha
+
+  # Nginx load balancer
+  nginx:
+    image: nginx:alpine
+    container_name: mcp-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./deployment/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - mcp-server-1
+      - mcp-server-2
+      - mcp-server-3
+    networks:
+      - mcp-network
+    profiles:
+      - ha
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: mcp-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - mcp-network
+    profiles:
+      - full
+
+  # PostgreSQL for persistence (optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: mcp-postgres
+    environment:
+      - POSTGRES_DB=mcp
+      - POSTGRES_USER=mcp
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-mcp-secret}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./deployment/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - mcp-network
+    profiles:
+      - full
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: mcp-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    volumes:
+      - ./deployment/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - mcp-network
+    profiles:
+      - monitoring
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: mcp-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./deployment/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./deployment/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - mcp-network
+    profiles:
+      - monitoring
+
+networks:
+  mcp-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:
+  prometheus-data:
+  grafana-data:

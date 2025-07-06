@@ -4,9 +4,12 @@
 
 This guide documents the implementation of a comprehensive user management system using Kailash SDK admin nodes. The system provides Django admin-like capabilities with 10-100x better performance through async/await architecture.
 
-## ⚠️ Important Notice
+## ⚠️ Important Updates from E2E Testing
 
-The admin nodes (`UserManagementNode`, `RoleManagementNode`) currently have datetime serialization bugs that need to be fixed. See the [Known Issues](#known-issues) section for workarounds.
+Based on extensive E2E testing, several important patterns and fixes have been identified:
+1. **Permission Check Structure**: Use `result.check.allowed` not `result.allowed`
+2. **Direct Node Execution**: Preferred over workflows for database operations to avoid transaction isolation issues
+3. **Role ID Generation**: RoleManagementNode generates IDs from role names using lowercase and underscore replacement
 
 ## Architecture
 
@@ -32,19 +35,20 @@ The admin nodes (`UserManagementNode`, `RoleManagementNode`) currently have date
 ### Basic User Creation
 
 ```python
-from kailash.nodes.admin.user_management import UserManagementNode
+from kailash.nodes.admin import UserManagementNode
 
-# Initialize the node
-user_node = UserManagementNode()
-
-# Create a user
-result = user_node.execute(
+# Initialize the node with tenant and database config
+user_node = UserManagementNode(
     operation="create_user",
     tenant_id="your_tenant",
     database_config={
         "connection_string": "postgresql://user:pass@localhost:5432/db",
         "database_type": "postgresql"
-    },
+    }
+)
+
+# Create a user
+result = user_node.execute(
     user_data={
         "email": "user@example.com",
         "username": "johndoe",
@@ -54,38 +58,84 @@ result = user_node.execute(
         "attributes": {
             "department": "Engineering",
             "employee_id": "EMP001"
-        }
-    }
+        },
+        "status": "active"  # Important: Set status explicitly
+    },
+    tenant_id="your_tenant"
 )
+
+# Check result structure
+if result.get("result", {}).get("success", False):
+    user_id = result["result"]["user"]["user_id"]
+    print(f"User created with ID: {user_id}")
 ```
 
 ### Role Management
 
 ```python
-from kailash.nodes.admin.role_management import RoleManagementNode
-
-role_node = RoleManagementNode()
+from kailash.nodes.admin import RoleManagementNode
 
 # Create a role
-role_result = role_node.execute(
+role_node = RoleManagementNode(
     operation="create_role",
     tenant_id="your_tenant",
-    database_config=db_config,
-    role_data={
-        "name": "developer",
-        "description": "Developer role with code access",
-        "permissions": ["code.read", "code.write", "pr.create"]
-    }
+    database_config=db_config
 )
 
-# Assign role to user
-user_node.execute(
-    operation="assign_roles",
-    tenant_id="your_tenant",
-    database_config=db_config,
-    user_id=user_id,
-    role_ids=[role_id]
+role_result = role_node.execute(
+    role_data={
+        "name": "Developer Role",  # Note: ID will be "developer_role"
+        "description": "Developer role with code access",
+        "permissions": ["code:read", "code:write", "pr:create"],
+        "role_type": "custom"  # "system" or "custom"
+    },
+    tenant_id="your_tenant"
 )
+
+# Role ID is generated from name (lowercase, underscores)
+# "Developer Role" -> "developer_role"
+role_id = role_result["result"]["role"]["role_id"]
+
+# Assign role to user - use separate node instance
+assign_node = RoleManagementNode(
+    operation="assign_user",  # Note: "assign_user" not "assign_roles"
+    tenant_id="your_tenant",
+    database_config=db_config
+)
+
+assign_result = assign_node.execute(
+    user_id=user_id,
+    role_id=role_id,  # Use the generated role_id
+    tenant_id="your_tenant"
+)
+```
+
+### Permission Checking
+
+```python
+from kailash.nodes.admin import PermissionCheckNode
+
+# Check permissions
+perm_node = PermissionCheckNode(
+    operation="check_permission",
+    tenant_id="your_tenant",
+    database_config=db_config
+)
+
+# Check if user has permission
+perm_result = perm_node.execute(
+    user_id=user_id,
+    resource_id="system",
+    permission="admin",  # Can be "admin" or "system:admin" format
+    tenant_id="your_tenant"
+)
+
+# IMPORTANT: Permission result structure is nested
+if perm_result.get("result", {}).get("check", {}).get("allowed", False):
+    print("Permission granted!")
+else:
+    reason = perm_result["result"]["check"].get("reason", "Unknown")
+    print(f"Permission denied: {reason}")
 ```
 
 ## Supported Operations
@@ -100,7 +150,6 @@ user_node.execute(
 | `get_user` | Retrieve user details | `user_id` |
 | `list_users` | List users with filters | `filters`, `limit`, `offset` |
 | `search_users` | Search users | `query`, `limit` |
-| `assign_roles` | Assign roles to user | `user_id`, `role_ids` |
 | `get_user_roles` | Get user's roles | `user_id` |
 | `get_user_permissions` | Get effective permissions | `user_id` |
 
@@ -115,6 +164,9 @@ user_node.execute(
 | `list_roles` | List all roles | `filters` |
 | `add_permission` | Add permission to role | `role_id`, `permission` |
 | `remove_permission` | Remove permission | `role_id`, `permission` |
+| `assign_user` | Assign role to user | `user_id`, `role_id` |
+| `unassign_user` | Remove role from user | `user_id`, `role_id` |
+| `get_user_roles` | Get roles for a user | `user_id` |
 
 ## Parameter Structure
 
@@ -150,6 +202,72 @@ The admin nodes expect parameters in specific structures:
    )
    ```
 
+## Important E2E Testing Findings
+
+### Direct Node Execution vs Workflows
+
+For database operations, especially role creation and assignment, use direct node execution instead of workflows:
+
+```python
+# ✅ GOOD: Direct node execution
+role_node = RoleManagementNode(
+    operation="create_role",
+    tenant_id=tenant_id,
+    database_config=db_config
+)
+result = role_node.execute(role_data=data, tenant_id=tenant_id)
+
+# ❌ AVOID: Workflow-based execution for simple operations
+# Can cause transaction isolation issues
+```
+
+### Role ID Generation Pattern
+
+RoleManagementNode automatically generates role IDs from role names:
+
+```python
+import re
+
+def generate_role_id(name: str) -> str:
+    """Mimics RoleManagementNode ID generation"""
+    role_id = re.sub(r"[^a-zA-Z0-9_]", "_", name.lower())
+    role_id = re.sub(r"_+", "_", role_id)
+    role_id = role_id.strip("_")
+    return role_id
+
+# Examples:
+# "Senior Engineer" -> "senior_engineer"
+# "VP of Sales" -> "vp_of_sales"
+# "C++ Developer" -> "c_developer"
+```
+
+### Permission Format Flexibility
+
+The permission check supports multiple formats:
+
+```python
+# Both work:
+permission="admin"          # Simple format
+permission="system:admin"   # Resource:action format
+
+# The system will match:
+# - Exact: "system:admin"
+# - Wildcard: "system:*" or "*:admin"
+```
+
+### User Status Requirement
+
+Always set user status explicitly when creating users:
+
+```python
+user_data = {
+    "email": "user@example.com",
+    "username": "user123",
+    "password": "SecurePass123!",
+    "status": "active"  # Required for permission checks!
+}
+```
+
 ## Database Schema
 
 The admin nodes automatically create required tables on first use:
@@ -183,25 +301,44 @@ app = create_gateway(
 # DELETE /api/users/{id} - Delete user
 ```
 
-## Known Issues
+## Known Issues and Solutions
 
-### DateTime Serialization Bug
+### Permission Check Result Structure
 
-The admin nodes have a bug where `to_dict()` methods try to call `isoformat()` on string timestamps. This causes errors like:
+The permission check result has a nested structure that differs from other operations:
 
+```python
+# ❌ WRONG:
+if perm_result.get("result", {}).get("allowed", False):
+
+# ✅ CORRECT:
+if perm_result.get("result", {}).get("check", {}).get("allowed", False):
 ```
-AttributeError: 'str' object has no attribute 'isoformat'
+
+### Transaction Isolation in Workflows
+
+When creating roles and immediately using them in workflows, transaction isolation can cause "role not found" errors:
+
+```python
+# ❌ PROBLEM: Role created in workflow, used in another workflow
+# Solution: Use direct node execution or add delays between operations
 ```
 
-**Workaround**: The nodes have been patched with `parse_datetime` and `format_datetime` helper functions that handle both datetime objects and strings.
+### Role Assignment Operation Name
 
-### SQL Parameter Indexing
+The operation for assigning roles is `assign_user`, not `assign_roles`:
 
-The `RoleManagementNode` had an incorrect parameter index in the UPDATE query. This has been fixed in the latest version.
+```python
+# ❌ WRONG:
+operation="assign_roles"
 
-### Missing user_roles Table
+# ✅ CORRECT:
+operation="assign_user"
+```
 
-Some operations may fail if the `user_roles` table doesn't exist. The schema manager should create it automatically, but you may need to run the schema initialization manually.
+### DateTime Serialization (Fixed)
+
+Previous versions had datetime serialization issues. These have been resolved with helper functions that handle both datetime objects and strings.
 
 ## Performance Characteristics
 

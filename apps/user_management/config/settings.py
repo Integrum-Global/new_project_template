@@ -10,10 +10,10 @@ from typing import Any, Dict
 class UserManagementConfig:
     """Configuration for the user management system"""
 
-    # Database settings
+    # Database settings - Use test database for E2E tests
     DATABASE_URL = os.getenv(
         "USER_MANAGEMENT_DB_URL",
-        "postgresql://admin:password@localhost:5432/user_management",
+        "postgresql://test_user:test_password@localhost:5434/kailash_test",
     )
 
     # JWT settings

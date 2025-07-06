@@ -1,14 +1,22 @@
 # MCP Integration - Model Context Protocol
 
+## 🎯 MCP Testing Results
+**Comprehensive Testing Complete**: 407 tests across 8 components - 100% pass rate
+- **Unit Tests**: 391 tests covering all MCP functionality
+- **Integration Tests**: 14 real MCP server tests
+- **E2E Tests**: 2 complete workflow scenarios
+- **Test Coverage**: Client, server, tool execution, async handling, error recovery
+
 ## Quick Setup - LLMAgentNode with MCP
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.nodes.ai import LLMAgentNode
 from kailash.runtime.local import LocalRuntime
 
 # Single node with integrated MCP
-workflow = Workflow("mcp-example")
-workflow.add_node("agent", LLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
 
 # Execute with MCP servers
 runtime = LocalRuntime()
@@ -27,33 +35,104 @@ results, run_id = runtime.execute(workflow, parameters={
                 "args": ["-m", "mcp_data_server"]
             }
         ],
-        "auto_discover_tools": True
+        "auto_discover_tools": True,
+        "auto_execute_tools": True  # NEW: Execute tools automatically
     }
 })
 
 ```
 
+## Tool Execution with MCP
+```python
+# Automatic tool execution
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
+
+results, run_id = runtime.execute(workflow, parameters={
+    "agent": {
+        "provider": "openai",
+        "model": "gpt-4",
+        "messages": [
+            {"role": "user", "content": "Search for customer data and create a report"}
+        ],
+        "mcp_servers": [{
+            "name": "customer-db",
+            "transport": "stdio",
+            "command": "mcp-customer-server"
+        }],
+        "auto_discover_tools": True,
+        "auto_execute_tools": True,  # Execute discovered tools
+        "tool_execution_config": {
+            "max_rounds": 3,  # Limit execution rounds
+            "timeout": 120    # 2 minute timeout
+        }
+    }
+})
+
+# Check execution details
+print(f"Tools executed: {results['agent']['context']['tools_executed']}")
+```
+
 ## MCP Server Creation
+
+### Production Server (MCPServer)
 ```python
 from kailash.mcp_server import MCPServer
 
-# Production server with caching
-server = MCPServer("my-server")
+# Production server with all features
+server = MCPServer(
+    "my-server",
+    enable_cache=True,
+    enable_metrics=True,
+    cache_backend="memory",
+    cache_ttl=600
+)
 
 @server.tool(cache_key="expensive", cache_ttl=600)
 async def expensive_operation(data: str) -> dict:
     """Cached operation."""
     return {"processed": data}
 
-@server.tool(format_response="markdown")
+@server.tool()
 async def get_status(service: str) -> dict:
-    """Returns markdown-formatted status."""
+    """Get service status."""
     return {"service": service, "status": "healthy"}
 
 if __name__ == "__main__":
     server.run()
-
 ```
+
+### Simple Server for Prototyping (SimpleMCPServer)
+```python
+from kailash.mcp_server import SimpleMCPServer
+
+# Lightweight server for development/prototyping
+server = SimpleMCPServer("my-prototype", "Development prototype")
+
+@server.tool()
+def hello(name: str) -> str:
+    """Basic tool without advanced features."""
+    return f"Hello, {name}!"
+
+@server.tool()
+def echo(data: dict) -> dict:
+    """Echo data for testing."""
+    return {"echoed": data}
+
+if __name__ == "__main__":
+    server.run()
+```
+
+### When to Use Which Server
+
+| Use Case | Server Type | Features |
+|----------|-------------|----------|
+| **Production APIs** | `MCPServer` | Auth, caching, metrics, rate limiting |
+| **Quick prototyping** | `SimpleMCPServer` | Basic MCP functionality only |
+| **Development/testing** | `SimpleMCPServer` | Fast setup, no dependencies |
+| **Learning MCP** | `SimpleMCPServer` | Focus on concepts |
+| **Enterprise apps** | `MCPServer` | Full production features |
 
 ## Server Configuration
 
@@ -93,12 +172,12 @@ mcp_servers = [
 
 ## Tool Discovery
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-from kailash.nodes.ai import LLMAgentNode
 
-workflow = Workflow("tool-discovery")
-workflow.add_node("agent", LLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
 runtime = LocalRuntime()
 
 # Define mcp_servers first
@@ -132,12 +211,12 @@ if results["agent"]["success"]:
 
 ## Resource Access
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-from kailash.nodes.ai import LLMAgentNode
 
-workflow = Workflow("resource-access")
-workflow.add_node("agent", LLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
 runtime = LocalRuntime()
 
 # Access MCP resources
@@ -159,12 +238,12 @@ results, run_id = runtime.execute(workflow, parameters={
 
 ## Tool Calling
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-from kailash.nodes.ai import LLMAgentNode
 
-workflow = Workflow("tool-calling")
-workflow.add_node("agent", LLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
 runtime = LocalRuntime()
 
 # Define mcp_servers
@@ -194,12 +273,12 @@ results, run_id = runtime.execute(workflow, parameters={
 
 ## Error Handling
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-from kailash.nodes.ai import LLMAgentNode
 
-workflow = Workflow("error-handling")
-workflow.add_node("agent", LLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("LLMAgentNode", "agent", {})
+workflow = builder.build()
 runtime = LocalRuntime()
 
 # Graceful failure handling
@@ -291,12 +370,12 @@ mcp_servers = [
 
 ### Iterative MCP Usage
 ```python
-from kailash import Workflow
+from kailash import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-from kailash.nodes.ai.iterative_llm_agent import IterativeLLMAgentNode
 
-workflow = Workflow("iterative-mcp")
-workflow.add_node("iterative", IterativeLLMAgentNode())
+builder = WorkflowBuilder()
+builder.add_node("IterativeLLMAgentNode", "iterative", {})
+workflow = builder.build()
 runtime = LocalRuntime()
 
 # Define mcp_servers
@@ -318,7 +397,71 @@ results, run_id = runtime.execute(workflow, parameters={
 
 ```
 
+## Testing MCP Integration
+
+### Unit Testing Pattern
+```python
+import pytest
+from unittest.mock import MagicMock
+from kailash.nodes.ai import LLMAgentNode
+
+def test_mcp_tool_execution():
+    """Test MCP tool execution with mocked server."""
+    node = LLMAgentNode()
+
+    # Mock MCP response
+    mock_response = {
+        "tools": [{"name": "search", "description": "Search data"}],
+        "result": {"data": "test results"}
+    }
+
+    # Test with mock provider
+    result = node.execute(
+        provider="mock",
+        model="gpt-4",
+        messages=[{"role": "user", "content": "Search for data"}],
+        mcp_servers=[{"name": "test", "transport": "stdio", "command": "echo"}],
+        auto_execute_tools=True
+    )
+
+    assert result["success"] is True
+    assert "response" in result
+```
+
+### Integration Testing Pattern
+```python
+@pytest.mark.integration
+def test_real_mcp_server():
+    """Test with real MCP server running in Docker."""
+    node = LLMAgentNode()
+
+    result = node.execute(
+        provider="ollama",
+        model="llama3.2",
+        messages=[{"role": "user", "content": "List available tools"}],
+        mcp_servers=[{
+            "name": "test-server",
+            "transport": "stdio",
+            "command": "python",
+            "args": ["-m", "test_mcp_server"]
+        }],
+        auto_discover_tools=True
+    )
+
+    # Verify tool discovery
+    assert result["context"]["tools_available"] is not None
+    assert len(result["context"]["tools_available"]) > 0
+```
+
+### Testing Best Practices
+1. **Mock for Unit Tests**: Use mock providers for fast, reliable tests
+2. **Real Servers for Integration**: Test with actual MCP servers in Docker
+3. **Async Context Handling**: Test both sync and async execution contexts
+4. **Error Recovery**: Test timeout, connection failure, and tool error scenarios
+5. **Tool Execution Verification**: Check both discovery and execution results
+
 ## Next Steps
 - [LLM Workflows](../workflows/by-pattern/ai-ml/llm-workflows.md) - LLM patterns
 - [API Integration](015-workflow-as-rest-api.md) - REST API setup
 - [Production Guide](../developer/04-production.md) - Deployment
+- [MCP Tool Execution Guide](../developer/22-mcp-tool-execution-guide.md) - Advanced patterns

@@ -1,0 +1,182 @@
+# API Aggregator Server Configuration
+
+server:
+  name: "api-aggregator"
+  transport: "http"
+  port: 8002
+  host: "0.0.0.0"
+
+# Credential vault settings
+credentials:
+  vault_path: ".credentials/api-keys"
+  encryption_key: "${API_VAULT_KEY}"
+
+# API source configurations
+api_sources:
+  github:
+    base_url: "https://api.github.com"
+    auth_type: "bearer"
+    auth_credential_key: "github_token"
+    health_endpoint: "/user"
+    rate_limit: 5000  # requests per hour
+    headers:
+      Accept: "application/vnd.github.v3+json"
+
+  gitlab:
+    base_url: "https://gitlab.com/api/v4"
+    auth_type: "token"
+    auth_credential_key: "gitlab_token"
+    health_endpoint: "/user"
+    rate_limit: 600  # requests per minute
+    headers:
+      Content-Type: "application/json"
+
+  jira:
+    base_url: "https://company.atlassian.net/rest/api/3"
+    auth_type: "basic"
+    auth_credential_key: "jira_credentials"
+    health_endpoint: "/myself"
+    rate_limit: 1000  # requests per hour
+
+  confluence:
+    base_url: "https://company.atlassian.net/wiki/rest/api"
+    auth_type: "basic"
+    auth_credential_key: "confluence_credentials"
+    health_endpoint: "/user/current"
+    rate_limit: 1000  # requests per hour
+
+  slack:
+    base_url: "https://slack.com/api"
+    auth_type: "bearer"
+    auth_credential_key: "slack_token"
+    health_endpoint: "/auth.test"
+    rate_limit: 600  # requests per minute
+
+# Search source configurations
+search_sources:
+  github:
+    base_url: "https://api.github.com"
+    search_endpoint: "/search/repositories"
+    query_param: "q"
+    limit_param: "per_page"
+    results_key: "items"
+    default_params:
+      sort: "stars"
+      order: "desc"
+    headers:
+      Authorization: "Bearer {{github_token}}"
+
+  stackoverflow:
+    base_url: "https://api.stackexchange.com/2.3"
+    search_endpoint: "/search/advanced"
+    query_param: "q"
+    limit_param: "pagesize"
+    results_key: "items"
+    default_params:
+      site: "stackoverflow"
+      order: "desc"
+      sort: "relevance"
+
+  arxiv:
+    base_url: "http://export.arxiv.org/api"
+    search_endpoint: "/query"
+    query_param: "search_query"
+    limit_param: "max_results"
+    results_key: "entry"
+    default_params:
+      sortBy: "relevance"
+
+# GraphQL service configurations
+graphql_sources:
+  github:
+    url: "https://api.github.com/graphql"
+    auth_credential_key: "github_token"
+    headers:
+      Authorization: "Bearer {{github_token}}"
+
+  shopify:
+    url: "https://company.myshopify.com/admin/api/2023-10/graphql.json"
+    auth_credential_key: "shopify_token"
+    headers:
+      X-Shopify-Access-Token: "{{shopify_token}}"
+
+# Aggregation settings
+aggregation:
+  parallel_requests: 10
+  timeout_seconds: 30
+  retry_attempts: 3
+  retry_delay_ms: 1000
+
+  # Result merging strategies
+  merge_strategies:
+    combine: "Combine results into single object"
+    merge: "Deep merge dictionaries"
+    concat: "Concatenate arrays"
+    first: "Use first non-null result"
+    priority: "Use result from highest priority source"
+
+# Cache configuration
+cache:
+  enabled: true
+  default_ttl: 60  # 1 minute for API data
+  search_ttl: 120  # 2 minutes for search results
+  health_check_ttl: 60  # 1 minute for health checks
+
+  # Per-source cache overrides
+  source_overrides:
+    github:
+      ttl: 300  # 5 minutes
+    arxiv:
+      ttl: 3600  # 1 hour
+
+# Rate limiting
+rate_limiting:
+  enabled: true
+  global_limit: 1000  # requests per minute across all sources
+
+  # Per-source limits
+  source_limits:
+    github: 83  # ~5000/hour
+    gitlab: 10  # 600/minute
+    jira: 17   # ~1000/hour
+    slack: 10  # 600/minute
+
+# Circuit breaker settings
+circuit_breaker:
+  enabled: true
+  failure_threshold: 5
+  recovery_timeout_seconds: 60
+  half_open_requests: 3
+
+# Monitoring and metrics
+metrics:
+  enabled: true
+  export_interval: 60
+  track_latency: true
+  track_errors: true
+  track_cache_hits: true
+
+# Security settings
+security:
+  validate_ssl: true
+  allowed_domains:
+    - "api.github.com"
+    - "gitlab.com"
+    - "*.atlassian.net"
+    - "slack.com"
+    - "export.arxiv.org"
+
+  # Request sanitization
+  sanitize_headers:
+    - "Authorization"
+    - "X-API-Key"
+    - "X-Auth-Token"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/api-aggregator.log"
+  log_requests: true
+  log_responses: false  # Only log on errors
+  max_size_mb: 100
+  retention_days: 30

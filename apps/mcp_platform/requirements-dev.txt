@@ -1,0 +1,45 @@
+# MCP Platform - Development Requirements
+# Install with: pip install -r requirements-dev.txt
+
+# Include base requirements
+-r requirements.txt
+
+# Additional testing tools
+pytest-benchmark>=4.0.0
+pytest-timeout>=2.1.0
+pytest-xdist>=3.3.0
+pytest-env>=0.8.0
+hypothesis>=6.80.0
+faker>=19.0.0
+
+# Code quality tools
+pylint>=2.17.0
+flake8>=6.0.0
+bandit>=1.7.0
+safety>=2.3.0
+coverage[toml]>=7.2.0
+
+# Type checking extensions
+types-redis>=4.6.0
+types-pyyaml>=6.0.0
+types-click>=8.1.0
+types-aiofiles>=23.0.0
+
+# Debugging tools
+ipdb>=0.13.0
+pdbpp>=0.10.0
+
+# Performance profiling
+py-spy>=0.3.0
+memory-profiler>=0.60.0
+line-profiler>=4.0.0
+
+# Documentation tools
+sphinx>=7.0.0
+sphinx-autodoc-typehints>=1.23.0
+sphinx-rtd-theme>=1.3.0
+mermaid-cli>=0.2.0
+
+# Local development
+watchdog>=3.0.0
+python-livereload>=2.6.0

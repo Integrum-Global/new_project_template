@@ -1,0 +1,35 @@
+# Kailash SDK (install from local path in production)
+kailash
+
+# Core dependencies
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+httpx>=0.25.0
+
+# Async support
+asyncio
+aiofiles
+
+# Authentication
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+
+# Database (optional)
+asyncpg
+redis
+
+# Monitoring
+prometheus-client
+
+# Utilities
+python-dotenv
+pyyaml
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+black
+isort
+mypy

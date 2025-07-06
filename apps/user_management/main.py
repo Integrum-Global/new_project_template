@@ -60,21 +60,40 @@ class UserManagementApp:
     async def setup_database(self):
         """Initialize database schema"""
         print("Setting up database schema...")
-        await self.schema_manager.create_all_tables()
+        # Note: AdminSchemaManager is synchronous, not async
+        self.schema_manager.create_full_schema()
         print("Database schema created successfully")
 
         # Create default roles
         print("Creating default roles...")
-        role_node = self.runtime.create_node(
-            "RoleManagementNode", self.config.NODE_CONFIGS["RoleManagementNode"]
+        from kailash.nodes.admin.role_management import RoleManagementNode
+
+        role_node = RoleManagementNode(
+            operation="create_role",
+            tenant_id="default",
+            database_config={
+                "connection_string": self.config.DATABASE_URL,
+                "database_type": "postgresql",
+            },
         )
 
         for role_data in self.config.DEFAULT_ROLES:
-            result = await self.runtime.execute_node_async(
-                role_node, {"operation": "create_role", "role_data": role_data}
-            )
-            if result.get("success"):
-                print(f"Created role: {role_data['name']}")
+            try:
+                result = role_node.execute(
+                    operation="create_role",
+                    tenant_id="default",
+                    database_config={
+                        "connection_string": self.config.DATABASE_URL,
+                        "database_type": "postgresql",
+                    },
+                    role_data=role_data,
+                )
+                if result.get("result", {}).get("success"):
+                    print(f"Created role: {role_data['name']}")
+            except Exception as e:
+                print(
+                    f"Failed to create role {role_data.get('name', 'unknown')}: {str(e)}"
+                )
 
     def create_app(self) -> FastAPI:
         """Create and configure the FastAPI application"""

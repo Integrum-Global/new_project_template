@@ -16,76 +16,131 @@ class RoleAPI:
         self.config = UserManagementConfig()
         self.runtime = LocalRuntime()
 
-    def create_role_management_workflow(self) -> WorkflowBuilder:
+    def create_role_management_workflow(self):
         """Create workflow for role management operations"""
-        workflow = WorkflowBuilder("role_management")
+        workflow = WorkflowBuilder()
 
         # Add nodes
         workflow.add_node(
-            "permission_checker",
             "PermissionCheckNode",
+            "permission_checker",
             self.config.NODE_CONFIGS["PermissionCheckNode"],
         )
         workflow.add_node(
-            "role_manager",
             "RoleManagementNode",
+            "role_manager",
             self.config.NODE_CONFIGS["RoleManagementNode"],
         )
         workflow.add_node(
-            "audit_logger",
             "EnterpriseAuditLogNode",
+            "audit_logger",
             self.config.NODE_CONFIGS["EnterpriseAuditLogNode"],
         )
 
         # Connect nodes
-        workflow.add_connection("input", "permission_checker", "data", "input")
-        workflow.add_connection("permission_checker", "role_manager", "result", "input")
-        workflow.add_connection("role_manager", "audit_logger", "result", "input")
-        workflow.add_connection("audit_logger", "output", "result", "result")
+        workflow.add_connection("permission_checker", "result", "role_manager", "input")
+        workflow.add_connection("role_manager", "result", "audit_logger", "input")
 
         # Configure permission checker
         workflow.update_node(
             "permission_checker",
-            {"user_id": "$.user_id", "resource": "roles", "action": "$.action"},
+            {
+                "operation": "check_permission",  # Use a valid permission operation
+                "resource": "roles",
+                "action": "manage",
+                "user_id": "a3645f07-7f3b-4d7d-afab-4d6a17068aec",  # System user UUID for admin operations
+                "resource_id": "roles",  # Resource ID for role management
+                "permission": "roles:manage",  # Specific permission to check
+                "database_config": {
+                    "connection_string": self.config.DATABASE_URL,
+                    "database_type": "postgresql",
+                },
+            },
         )
 
-        return workflow
+        # Configure role manager
+        workflow.update_node(
+            "role_manager",
+            {
+                "operation": "assign_user",  # Correct operation for role assignment
+                "tenant_id": "default",  # Use default tenant
+                "database_config": {
+                    "connection_string": self.config.DATABASE_URL,
+                    "database_type": "postgresql",
+                },
+            },
+        )
 
-    def create_permission_assignment_workflow(self) -> WorkflowBuilder:
+        # Configure audit logger
+        workflow.update_node(
+            "audit_logger",
+            {
+                "operation": "log_event",  # Use valid AuditOperation for role management
+                "tenant_id": "default",  # Use default tenant
+                "database_config": {
+                    "connection_string": self.config.DATABASE_URL,
+                    "database_type": "postgresql",
+                },
+            },
+        )
+
+        # Add workflow input mappings for runtime parameters
+        # Map specific parameters to prevent unintended parameter injection
+
+        # Permission checker should only get user_id for authorization
+        workflow.add_workflow_inputs(
+            "permission_checker",
+            {"user_id": "user_id"},  # Only pass user_id for permission checking
+        )
+
+        # Role manager gets the specific data we need for role assignment
+        workflow.add_workflow_inputs(
+            "role_manager",
+            {
+                "data.user_id": "user_id",
+                "data.role_name": "role_id",  # Map role_name to role_id (for "admin" role)
+            },
+        )
+
+        # Audit logger should not receive conflicting parameters
+        # Provide empty mapping to prevent workflow parameter injection
+        workflow.add_workflow_inputs("audit_logger", {})
+
+        return workflow.build("role_management")
+
+    def create_permission_assignment_workflow(self):
         """Create workflow for permission assignment"""
-        workflow = WorkflowBuilder("permission_assignment")
+        workflow = WorkflowBuilder()
 
         # Add nodes
         workflow.add_node(
-            "admin_checker",
             "PermissionCheckNode",
+            "admin_checker",
             self.config.NODE_CONFIGS["PermissionCheckNode"],
         )
-        workflow.add_node("validator", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "validator")
         workflow.add_node(
-            "role_updater",
             "RoleManagementNode",
+            "role_updater",
             self.config.NODE_CONFIGS["RoleManagementNode"],
         )
-        workflow.add_node("cache_invalidator", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "cache_invalidator")
         workflow.add_node(
-            "audit_logger",
             "EnterpriseAuditLogNode",
+            "audit_logger",
             self.config.NODE_CONFIGS["EnterpriseAuditLogNode"],
         )
 
         # Connect nodes
-        workflow.add_connection("input", "admin_checker", "data", "input")
-        workflow.add_connection("admin_checker", "validator", "result", "input")
-        workflow.add_connection("validator", "role_updater", "result", "input")
-        workflow.add_connection("role_updater", "cache_invalidator", "result", "input")
-        workflow.add_connection("cache_invalidator", "audit_logger", "result", "input")
-        workflow.add_connection("audit_logger", "output", "result", "result")
+        workflow.add_connection("admin_checker", "result", "validator", "input")
+        workflow.add_connection("validator", "result", "role_updater", "input")
+        workflow.add_connection("role_updater", "result", "cache_invalidator", "input")
+        workflow.add_connection("cache_invalidator", "result", "audit_logger", "input")
 
         # Configure admin checker
         workflow.update_node(
             "admin_checker",
-            {"user_id": "$.admin_id", "resource": "permissions", "action": "manage"},
+            {"user_id": "admin", "resource": "permissions", "action": "manage"},
         )
 
         # Configure validator
@@ -112,6 +167,7 @@ else:
             "permissions": valid_permissions
         }
 """
+        # Configure validator
         workflow.update_node("validator", {"code": validator_code})
 
         # Configure cache invalidator
@@ -125,48 +181,47 @@ result = {
     "cache_invalidated": True
 }
 """
+        # Configure cache invalidator
         workflow.update_node("cache_invalidator", {"code": cache_code})
 
-        return workflow
+        return workflow.build("permission_assignment")
 
-    def create_hierarchy_workflow(self) -> WorkflowBuilder:
+    def create_hierarchy_workflow(self):
         """Create workflow for role hierarchy management"""
-        workflow = WorkflowBuilder("role_hierarchy")
+        workflow = WorkflowBuilder()
 
         # Add nodes
         workflow.add_node(
-            "permission_checker",
             "PermissionCheckNode",
+            "permission_checker",
             self.config.NODE_CONFIGS["PermissionCheckNode"],
         )
-        workflow.add_node("hierarchy_validator", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "hierarchy_validator")
         workflow.add_node(
-            "role_manager",
             "RoleManagementNode",
+            "role_manager",
             self.config.NODE_CONFIGS["RoleManagementNode"],
         )
-        workflow.add_node("inheritance_processor", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "inheritance_processor")
         workflow.add_node(
-            "audit_logger",
             "EnterpriseAuditLogNode",
+            "audit_logger",
             self.config.NODE_CONFIGS["EnterpriseAuditLogNode"],
         )
 
         # Connect nodes
-        workflow.add_connection("input", "permission_checker", "data", "input")
         workflow.add_connection(
-            "permission_checker", "hierarchy_validator", "result", "input"
+            "permission_checker", "result", "hierarchy_validator", "input"
         )
         workflow.add_connection(
-            "hierarchy_validator", "role_manager", "result", "input"
+            "hierarchy_validator", "result", "role_manager", "input"
         )
         workflow.add_connection(
-            "role_manager", "inheritance_processor", "result", "input"
+            "role_manager", "result", "inheritance_processor", "input"
         )
         workflow.add_connection(
-            "inheritance_processor", "audit_logger", "result", "input"
+            "inheritance_processor", "result", "audit_logger", "input"
         )
-        workflow.add_connection("audit_logger", "output", "result", "result")
 
         # Configure hierarchy validator
         validator_code = """
@@ -186,6 +241,7 @@ else:
             "parent_name": parent_role
         }
 """
+        # Configure hierarchy validator
         workflow.update_node("hierarchy_validator", {"code": validator_code})
 
         # Configure inheritance processor
@@ -207,42 +263,41 @@ result = {
     "total_permissions": all_permissions
 }
 """
+        # Configure inheritance processor
         workflow.update_node("inheritance_processor", {"code": inheritance_code})
 
-        return workflow
+        return workflow.build("role_hierarchy")
 
-    def create_bulk_role_assignment_workflow(self) -> WorkflowBuilder:
+    def create_bulk_role_assignment_workflow(self):
         """Create workflow for bulk role assignments"""
-        workflow = WorkflowBuilder("bulk_role_assignment")
+        workflow = WorkflowBuilder()
 
         # Add nodes
         workflow.add_node(
-            "permission_checker",
             "PermissionCheckNode",
+            "permission_checker",
             self.config.NODE_CONFIGS["PermissionCheckNode"],
         )
-        workflow.add_node("batch_processor", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "batch_processor")
         workflow.add_node(
-            "role_assigner",
             "RoleManagementNode",
+            "role_assigner",
             self.config.NODE_CONFIGS["RoleManagementNode"],
         )
-        workflow.add_node("result_aggregator", "PythonCodeNode")
+        workflow.add_node("PythonCodeNode", "result_aggregator")
         workflow.add_node(
-            "audit_logger",
             "EnterpriseAuditLogNode",
+            "audit_logger",
             self.config.NODE_CONFIGS["EnterpriseAuditLogNode"],
         )
 
         # Connect nodes
-        workflow.add_connection("input", "permission_checker", "data", "input")
         workflow.add_connection(
-            "permission_checker", "batch_processor", "result", "input"
+            "permission_checker", "result", "batch_processor", "input"
         )
-        workflow.add_connection("batch_processor", "role_assigner", "result", "input")
-        workflow.add_connection("role_assigner", "result_aggregator", "result", "input")
-        workflow.add_connection("result_aggregator", "audit_logger", "result", "input")
-        workflow.add_connection("audit_logger", "output", "result", "result")
+        workflow.add_connection("batch_processor", "result", "role_assigner", "input")
+        workflow.add_connection("role_assigner", "result", "result_aggregator", "input")
+        workflow.add_connection("result_aggregator", "result", "audit_logger", "input")
 
         # Configure batch processor
         batch_code = """
@@ -264,6 +319,7 @@ else:
         "assignments": bulk_data
     }
 """
+        # Configure batch processor
         workflow.update_node("batch_processor", {"code": batch_code})
 
         # Configure result aggregator
@@ -282,9 +338,10 @@ result = {
     "results": results
 }
 """
+        # Configure result aggregator
         workflow.update_node("result_aggregator", {"code": aggregator_code})
 
-        return workflow
+        return workflow.build("bulk_role_assignment")
 
     def register_endpoints(self, app):
         """Register role management endpoints"""

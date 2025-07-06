@@ -65,6 +65,34 @@ cd studio && pip install -e .
 python -m studio.cli server
 ```
 
+### 4. MCP Platform (`mcp_platform/`)
+**Features**: Unified Model Context Protocol infrastructure
+
+- **Core**: Server management, registry, and orchestration
+- **Gateway**: Enterprise multi-tenant gateway with auth
+- **Tools**: Production-ready tool servers and clients
+- **Examples**: Integration patterns and best practices
+- **Deployment**: Docker Compose for full platform
+
+```bash
+cd mcp_platform && pip install -r requirements.txt
+
+# Run complete platform
+docker-compose -f deployment/docker-compose.yml up
+
+# Or run individual components
+python -m core.main          # Core management server
+python -m gateway.core.server # Enterprise gateway
+python -m tools.servers.production_server # Tool server
+```
+
+Components:
+- **Core Management**: Service discovery, registry, monitoring
+- **Enterprise Gateway**: Multi-tenant routing, auth, rate limiting
+- **Tool Servers**: Basic and production configurations
+- **Security**: OAuth2, SAML, JWT, MFA support
+- **Monitoring**: Prometheus, OpenTelemetry integration
+
 ## 🏗️ Architecture Patterns
 
 ### Standard Structure

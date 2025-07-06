@@ -1,0 +1,249 @@
+# IoT Processor Server Configuration
+
+server:
+  name: "iot-processor"
+  transport: "http"
+  port: 8003
+  host: "0.0.0.0"
+
+  # WebSocket support for real-time telemetry
+  enable_websocket: true
+  websocket_path: "/ws/telemetry"
+
+# Device registry settings
+device_registry:
+  storage: "database"  # or "memory", "redis"
+  auto_register: false
+  require_authentication: true
+
+  # Supported device types
+  device_types:
+    - "temperature_sensor"
+    - "humidity_sensor"
+    - "pressure_sensor"
+    - "motion_detector"
+    - "smart_meter"
+    - "industrial_plc"
+    - "vehicle_tracker"
+    - "environmental_monitor"
+
+# Telemetry processing
+telemetry:
+  # Buffer settings
+  buffer_size_per_device: 1000
+  buffer_type: "circular"  # or "fifo"
+
+  # Data retention
+  retention_minutes: 1440  # 24 hours in memory
+  archive_enabled: true
+  archive_path: "data/telemetry_archive"
+
+  # Batch processing
+  batch_size: 100
+  batch_timeout_ms: 5000
+
+  # Data validation
+  validate_schema: true
+  reject_invalid: false  # Log but don't reject
+
+  # Compression
+  compress_archived: true
+  compression_type: "gzip"
+
+# Alert thresholds (defaults, can be overridden per device)
+alert_thresholds:
+  temperature:
+    min: -20
+    max: 85
+    unit: "celsius"
+
+  humidity:
+    min: 10
+    max: 95
+    unit: "percent"
+
+  pressure:
+    min: 980
+    max: 1050
+    unit: "hPa"
+
+  battery_level:
+    min: 10
+    max: 100
+    unit: "percent"
+    critical_threshold: 5
+
+  signal_strength:
+    min: -120
+    max: -40
+    unit: "dBm"
+
+# Anomaly detection settings
+anomaly_detection:
+  enabled: true
+
+  # Statistical detection
+  statistical:
+    enabled: true
+    method: "zscore"  # or "iqr", "isolation_forest"
+    zscore_threshold: 3
+    min_samples: 10
+
+  # Pattern detection
+  pattern:
+    enabled: true
+    algorithms:
+      - "sliding_window"
+      - "seasonal_decomposition"
+    window_size: 100
+
+  # AI-powered detection
+  ai:
+    enabled: true
+    model: "gpt-4o-mini"
+    confidence_threshold: 0.8
+    max_context_points: 50
+    system_prompt: |
+      You are an IoT anomaly detection expert. Analyze telemetry data for:
+      1. Equipment failures or degradation
+      2. Security anomalies
+      3. Environmental hazards
+      4. Unusual patterns
+      Provide severity (low/medium/high/critical) and confidence (0-100).
+
+# Time series aggregation
+aggregation:
+  enabled: true
+
+  # Aggregation windows
+  windows:
+    - interval: "1m"
+      functions: ["avg", "min", "max", "count"]
+    - interval: "5m"
+      functions: ["avg", "min", "max", "stddev"]
+    - interval: "1h"
+      functions: ["avg", "min", "max", "stddev", "percentile_95"]
+    - interval: "1d"
+      functions: ["avg", "min", "max", "stddev", "sum"]
+
+  # Storage for aggregated data
+  storage: "timescaledb"  # or "influxdb", "prometheus"
+  retention_days: 90
+
+# Real-time processing
+realtime:
+  # Stream processing
+  stream_processor: "local"  # or "kafka", "rabbitmq"
+
+  # WebSocket broadcasting
+  broadcast_enabled: true
+  broadcast_interval_ms: 1000
+  max_subscribers_per_device: 100
+
+  # Event streaming
+  event_streaming:
+    enabled: true
+    format: "json"  # or "msgpack", "protobuf"
+    compression: true
+
+# Integration settings
+integrations:
+  # MQTT broker
+  mqtt:
+    enabled: true
+    broker: "mqtt://localhost:1883"
+    username: "${MQTT_USERNAME}"
+    password: "${MQTT_PASSWORD}"
+    topics:
+      telemetry: "devices/+/telemetry"
+      commands: "devices/+/commands"
+      alerts: "alerts/+"
+
+  # Time series databases
+  influxdb:
+    enabled: false
+    url: "http://localhost:8086"
+    token: "${INFLUXDB_TOKEN}"
+    org: "iot-data"
+    bucket: "telemetry"
+
+  # Message queues
+  kafka:
+    enabled: false
+    brokers: ["localhost:9092"]
+    topic_prefix: "iot"
+
+  # Cloud platforms
+  aws_iot:
+    enabled: false
+    region: "us-east-1"
+    thing_group: "ai-registry-devices"
+
+# Cache configuration
+cache:
+  enabled: true
+  default_ttl: 30  # 30 seconds for IoT data
+  device_status_ttl: 10
+  statistics_ttl: 60
+  fleet_overview_ttl: 30
+
+# Performance settings
+performance:
+  max_concurrent_devices: 10000
+  max_telemetry_rate_per_second: 1000
+  worker_threads: 4
+  async_processing: true
+
+  # Resource limits
+  max_memory_mb: 2048
+  max_cpu_percent: 80
+
+# Security settings
+security:
+  device_authentication: "token"  # or "certificate", "basic"
+  token_header: "X-Device-Token"
+
+  # Rate limiting per device
+  rate_limit_per_minute: 60
+  burst_size: 10
+
+  # Data encryption
+  encrypt_at_rest: true
+  encrypt_in_transit: true
+
+  # Access control
+  rbac_enabled: true
+  default_device_role: "telemetry_publisher"
+
+# Monitoring and metrics
+metrics:
+  enabled: true
+  export_interval: 60
+
+  # Metrics to track
+  track_metrics:
+    - "telemetry_points_received"
+    - "telemetry_points_processed"
+    - "anomalies_detected"
+    - "alerts_generated"
+    - "devices_online"
+    - "processing_latency"
+    - "buffer_utilization"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  file: "logs/iot-processor.log"
+
+  # Separate logs for different components
+  telemetry_log: "logs/telemetry.log"
+  anomaly_log: "logs/anomalies.log"
+  alert_log: "logs/alerts.log"
+
+  max_size_mb: 100
+  retention_days: 30
+
+  # Telemetry logging options
+  log_raw_telemetry: false  # Only errors
+  log_aggregations: true
+  log_anomalies: true
