@@ -27,10 +27,24 @@
      - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
      - Do not write new tests without checking that existing ones can be modified to include them.
 3. DO NOT create new docker containers or images before checking that the docker for this repository exists.
-   - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
-   - Deconflict by locking in a set of docker services and ports for this project.
-   - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
-   - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required.
+   - **IMPORTANT**: Each downstream repository MUST have a `tests/.docker-ports.lock` file that locks in the specific ports for that project.
+   - If Docker infrastructure doesn't exist yet, follow these steps:
+     a. Run `python tests/utils/setup_local_docker.py --check-ports` to check for conflicts
+     b. If conflicts exist, use `--custom-base-port` flag to set a different port range
+     c. The setup script will automatically create a `.docker-ports.lock` file with your allocated ports
+   - The dynamic port allocation formula ensures each project gets unique ports:
+     ```
+     base_port = 5000 + (hash(project_name) % 1000) * 10
+     ```
+   - Port assignments per service:
+     - PostgreSQL: base_port + 0
+     - Redis: base_port + 1
+     - Ollama: base_port + 2
+     - MySQL: base_port + 3
+     - MongoDB: base_port + 4
+   - Use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
+   - The setup script will register ports in `~/.docker_port_registry` for team coordination.
+   - Update this setup and the CLAUDE.md in `tests/utils` if needed.
 4. As you correct the codes, ensure the following:
    - Use 100% kailash SDK components (the latest version installed from pypi), and that you have consulted sdk-users/ for any doubts.
    - This is a live production so do not use any mocks.
@@ -70,6 +84,31 @@
    - Ensure that the documentation is clear, concise, and easy to follow for both developers and users.
 2. Ensure that your codes and usages are correct.   
 3. update the master todo list and the todos/ in details.
+
+# Updating the guidance system
+1. Check the `CLAUDE.md` in root and other directories.
+   - Check if we need to update the guidance system.
+   - Ensure that only the absolute essentials are included.
+   - Adopt a multi-step approach by using the existing `CLAUDE.md` network (root -> sdk-users/ -> specific guides).
+     - Do not try to solve everything in one place, make use of the hierarchical documentation system.
+   - Issue commands instead of explanations.
+   - Ensure that your commands are sharp and precise, covering only critical pattterns that prevent immediate failure.
+   - Run through the guidance flow yourself and ensure the following:
+     - You can trace a complete path from basic patterns to advanced custom development.
+     - Please maintain the concise, authoritative tone that respects context limits!
+
+# Updating the todo management system
+1. The local todo management system is two-tiered: Repo level todos are in root and module level todos are in their respective src/ sub-directories.
+2. Start with updating the master list (`000-master.md`)
+   - Look through the entire file thoroughly.
+   - Add outstanding todos that are not yet implemented.
+   - Update the status of existing todos.
+   - Remove old completed entries that don't add context to outstanding todos.
+   - Keep this file concise, lean, and easy to navigate.
+3. Ensure that each todo's details are captured in
+   - `todos/active` for outstanding todos.
+   - `todos/completed` for completed todos.
+   - move completed todos from `todos/active` to `todos/completed` with the date of completion.
 
 # Full tests
 1. Running all tests will take very long, let's clear Tier 1, then Tier 2, before clearing Tier 3 one at a time.
