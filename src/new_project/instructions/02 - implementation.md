@@ -6,6 +6,10 @@
 ## Document first before implementing
 1. Create separate ADRs (in solution's adr/) for each of the decisions we make.
 2. Then create a comprehensive list of todos (in solution's todos/) that we need to implement.
+3. The local todo management system is two-tiered: Repo level todos are in root and module level todos are in their respective src/ sub-directories.
+   - Start with updating the master list (`000-master.md`)
+   - Look through the entire file thoroughly and add the new todos.
+   - Ensure that each todo's details are captured in `todos/active`.
 
 # Implementing the solution
 1. Proceed with the implementation.
@@ -13,21 +17,24 @@
    - Do not create new code without checking it against the existing SDK components.
    - Do not assume any new functionality without verifying it against the user flow specifications.
    - If you meet any errors in the SDK, check sdk-users/ because we would have resolved it already.
-2. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
-
-# Testing the kailash implementation
-1. I want to perform extensive testing on your implementation.
-2. We should have 3 kinds of tests which MUST follow the strategy in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`:
-   - **Unit tests**: For each component, we should have unit tests that cover the functionality.
-   - **Integration tests**: For the entire workflow, we should have integration tests that ensure everything works together as expected.
-   - **User flow tests**: For each user flow, we should have user flow tests that ensure the user experience is smooth and intuitive.
-     - First, generate all the different user personas and user flows based on the documentation you have created.
-     - Then, document them into solution's docs/user_flows/ with a separate folder for each user flow.
-     - Next, for each user flow, generate the test codes in solution's tests/user_flows/ with a separate folder for each user flow. 
-     - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
-     - Do not write new tests without checking that existing ones can be modified to include them.
+2. After each todo item (feature/fix), please test your implementation thoroughly.
+   - Do not write new tests without checking that existing ones can be modified to include them.
+   - We should have 3 kinds of tests which MUST follow the strategy in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`:
+      - **Unit tests (Tier 1)**
+        - For each component, we should have unit tests that cover the functionality. 
+        - Can use mocks, must be fast (<1s per test), no external dependencies, no sleep.
+      - **Integration tests (Tier 2)**
+        - For each component, we should have integration tests to ensure that it works together with the system.
+        - NO MOCKING, must use real Docker services
+      - **User flow/e2e tests (Tier 3)**
+        - First, generate all the different user personas and user flows based on the documentation you have created.
+        - Then, document them into solution's docs/user_flows/ with a separate folder for each user flow.
+        - Next, for each user flow, generate the test codes in solution's tests/user_flows/ with a separate folder for each user flow. 
+        - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
+        - NO MOCKING, complete scenarios with real infrastructure
+     - If you find any existing tests with policy violations, please fix them immediately.
 3. DO NOT create new docker containers or images before checking that the docker for this repository exists.
-   - **IMPORTANT**: Each downstream repository MUST have a `tests/.docker-ports.lock` file that locks in the specific ports for that project.
+   - **IMPORTANT**: You MUST have a `tests/.docker-ports.lock` file that locks in the specific ports for that project.
    - If Docker infrastructure doesn't exist yet, follow these steps:
      a. Run `python tests/utils/setup_local_docker.py --check-ports` to check for conflicts
      b. If conflicts exist, use `--custom-base-port` flag to set a different port range
@@ -45,38 +52,51 @@
    - Use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
    - The setup script will register ports in `~/.docker_port_registry` for team coordination.
    - Update this setup and the CLAUDE.md in `tests/utils` if needed.
-4. As you correct the codes, ensure the following:
+4. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
+5. Do not stop until you are done with the implementation.
+
+# Testing the kailash implementation
+1. I want to perform extensive testing on your implementation.
+   - Do not write new tests without checking that existing ones can be modified to include them.
+   - We should have 3 kinds of tests which MUST follow the strategy in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`:
+      - **Unit tests (Tier 1)**
+        - For each component, we should have unit tests that cover the functionality. 
+        - Can use mocks, must be fast (<1s per test), no external dependencies, no sleep.
+      - **Integration tests (Tier 2)**
+        - For each component, we should have integration tests to ensure that it works together with the system.
+        - NO MOCKING, must use real Docker services
+      - **User flow/e2e tests (Tier 3)**
+        - First, generate all the different user personas and user flows based on the documentation you have created.
+        - Then, document them into solution's docs/user_flows/ with a separate folder for each user flow.
+        - Next, for each user flow, generate the test codes in solution's tests/user_flows/ with a separate folder for each user flow. 
+        - Have a md in each user flow folder that explains the user flow (referencing docs/user_flows/*) and the test cases.
+        - NO MOCKING, complete scenarios with real infrastructure
+     - If you find any existing tests with policy violations, please fix them immediately.
+2. Always use the docker implementation in `tests/utils`, and real data, processes, responses.
+   - Use our ollama to generate data or create LLMAgents freely.
+   - DO NOT create new docker containers or images before checking that the docker for this repository exists.
+3. As you correct the codes, ensure the following:
    - Use 100% kailash SDK components (the latest version installed from pypi), and that you have consulted sdk-users/ for any doubts.
    - This is a live production so do not use any mocks.
      - The use of simplified examples or tests is allowed for your learning, and must be re-implemented into the original production examples and tests.
      - Launch the dockers/kubernetes in `tests/utils` and run the tests as a live system. If it fails, then you need to fix the code until it passes.
      - Use the existing ollama for your tests.
-5. From the user flows, extract, generalize, and optimize them into highly efficient reusable nodes and workflows.
+4. From the user flows, extract, generalize, and optimize them into highly efficient reusable nodes and workflows.
    - Nodes go into the solution's nodes/ and workflows go into the solution's workflows/.
    - These nodes and workflows are what is running in production throughout the system (gateways, servers), so they must be optimized for performance and reliability.
    - Ensure that the other service and infrastructure components are also optimized for performance and reliability.
-6. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
+5. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
 
 # Checking tests completeness
 1. Let's resolve testing issues or gaps, if any. I need it to be of the best production quality.
 2. The regression testing strategy is in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`.
 3. Additional tests written MUST follow the policy in `sdk-users/testing/test-organization-policy.md`.
-4. Do not write new tests without checking that existing ones can be modified to include them.
-5. Ensure that the integration, e2e, and user flows tests that are demanding and real-world in nature.
-6. For the tests, please use the docker implementation in `tests/utils`, and real data, processes, responses.
-7. Use our ollama to generate data or create LLMAgents freely. 
-8. Run the tests and ensure that everything is working as expected.
-9. Please update the docs every time a feature is done and fully tested. Ensure that wrong usages are corrected, and that the guides are clear and concise.
-10. DO NOT create new docker containers or images before checking that the docker for this repository exists. 
-    - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
-    - Deconflict by locking in a set of docker services and ports for this project.
-    - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
-    - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required. 
-11. Please update the developer and user guides (inside `sdk-users/`).
-    - Every time a feature is done and fully tested. 
-    - Ensure that wrong usages are corrected
-    - Ensure that guides are clear and concise.
-12. Commit after each tier of tests is cleared.
+   - Do not write new tests without checking that existing ones can be modified to include them.
+   - Ensure that the integration and e2e tests that are demanding and real-world in nature.
+4. Always use the docker implementation in `tests/utils`, and real data, processes, responses.
+   - Use our ollama to generate data or create LLMAgents freely.
+   - DO NOT create new docker containers or images before checking that the docker for this repository exists.
+5. Commit after each tier of tests is cleared.
 
 # Updating the documentation
 1. Please update all the documentation and references in details. We should indicate what tests were performed, and what were the results.
@@ -114,11 +134,9 @@
 1. Running all tests will take very long, let's clear Tier 1, then Tier 2, before clearing Tier 3 one at a time.
 2. The regression testing strategy is in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`.
 3. Please use the docker implementation in `tests/utils`, and real data, processes, responses.
-4. DO NOT create new docker containers or images before checking that the docker for this repository exists.
-   - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
-   - Deconflict by locking in a set of docker services and ports for this project.
-   - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
-   - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required.
+4. Always use the docker implementation in `tests/utils`, and real data, processes, responses.
+   - Use our ollama to generate data or create LLMAgents freely.
+   - DO NOT create new docker containers or images before checking that the docker for this repository exists.
 5. Use our ollama to generate data or create LLMAgents freely.
 6. For the tests, please use the docker implementation in `tests/utils`, and real data, processes, responses.
 7. Additional tests written MUST follow the policy in 'sdk-users/testing/test-organization-policy.md'.
