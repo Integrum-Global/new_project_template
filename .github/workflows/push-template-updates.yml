@@ -13,6 +13,10 @@ on:
       - 'deployment/**'
       - 'solutions/**'
       - 'scripts/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'guides/**'
+      - 'docs/**'
 
 jobs:
   trigger-downstream-syncs:
@@ -28,13 +32,17 @@ jobs:
           # Get all repositories in the organization
           echo "🔍 Finding downstream repositories..."
           
-          # Get repos with kailash-template topic (indicates they use the template)
-          echo "🔍 Searching for repos with topic kailash-template..."
-          REPOS=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name' | grep -v -E "^(new_project_template|kailash_python_sdk)$" || true)
+          # Get repos with kailash-template or kailash-sdk topic (indicates they use the template)
+          echo "🔍 Searching for repos with topic kailash-template or kailash-sdk..."
+          REPOS_TEMPLATE=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-template&per_page=100" --jq '.items[].name' | grep -v -E "^(new_project_template|kailash_python_sdk)$" || true)
+          REPOS_SDK=$(gh api "search/repositories?q=org:Integrum-Global+topic:kailash-sdk&per_page=100" --jq '.items[].name' | grep -v -E "^(new_project_template|kailash_python_sdk)$" || true)
           
-          # If no repos found with topic, try getting repos created from template
+          # Combine and deduplicate repos
+          REPOS=$(echo -e "$REPOS_TEMPLATE\n$REPOS_SDK" | sort -u | grep -v '^$')
+          
+          # If no repos found with topics, try getting repos created from template
           if [ -z "$REPOS" ]; then
-            echo "⚠️  No repos found with topic, checking template repository relationships..."
+            echo "⚠️  No repos found with topics, checking template repository relationships..."
             REPOS=$(gh repo list Integrum-Global --limit 200 --json name,templateRepository --jq '.[] | select(.templateRepository.name == "new_project_template" and .name != "kailash_python_sdk") | .name')
           fi
           
