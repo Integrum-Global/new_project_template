@@ -32,10 +32,12 @@ jobs:
           BRANCH_NAME="template-sync-$(date +%Y%m%d-%H%M%S)"
           git checkout -b $BRANCH_NAME
 
-          # Get list of files to sync from template (ALWAYS REPLACE)
+          # Get list of files to sync from template (ALWAYS REPLACE - removes old contents)
           SYNC_FILES=(
-            # SDK guidance - always sync entire directory
+            # SDK guidance - always sync entire directory, remove old contents
             "sdk-users"
+            # Template project structure - always replace with latest
+            "src/new_project"
             # Essential GitHub workflows for template sync
             ".github/workflows/sync-from-template.yml"
             ".github/workflows/template-sync-check.yml"
@@ -55,6 +57,12 @@ jobs:
             "CHANGELOG.md"
             ".gitignore"
             ".env.example"
+
+            # Test infrastructure - sync if missing for consistent test setup
+            "tests/test-environment"
+            "tests/utils"
+            "tests/.docker-ports.lock"
+            "tests/README.md"
 
             # Template structure - sync if missing but preserve client implementations
             "solutions"
@@ -79,21 +87,42 @@ jobs:
           # Client projects in src/your_project_name/ are NEVER synced
           # Create your projects with different names than "new_project"
           
-          # Sync each file/directory (always overwrite)
+          # Sync each file/directory (always overwrite - removes old contents completely)
           for item in "${SYNC_FILES[@]}"; do
             if git ls-tree template/main --name-only | grep -q "^$item"; then
+              echo "Syncing (with replacement): $item"
+              # Remove existing directory/file completely to ensure clean replacement
+              if [ -e "$item" ]; then
+                rm -rf "$item"
+              fi
+              # Sync from template
               git checkout template/main -- "$item" 2>/dev/null || true
             fi
           done
 
           # Sync files/directories only if they don't exist (preserve existing)
           for item in "${SYNC_IF_MISSING[@]}"; do
-            if git ls-tree template/main --name-only | grep -q "^$item" && [ ! -e "$item" ]; then
-              echo "Syncing missing item: $item"
-              git checkout template/main -- "$item" 2>/dev/null || true
-              # If it's a directory, sync all its contents recursively
-              if [ -d "$item" ]; then
-                git checkout template/main -- "$item/**" 2>/dev/null || true
+            # Check if item exists in template
+            if git ls-tree template/main --name-only | grep -q "^$item"; then
+              # For specific files, only sync if missing
+              if [[ "$item" == *"/"* ]] && [[ "$item" != *"/" ]]; then
+                # This is a specific file path
+                if [ ! -e "$item" ]; then
+                  echo "Syncing missing file: $item"
+                  # Create parent directory if needed
+                  mkdir -p "$(dirname "$item")"
+                  git checkout template/main -- "$item" 2>/dev/null || true
+                fi
+              else
+                # This is a directory - sync if directory doesn't exist
+                if [ ! -e "$item" ]; then
+                  echo "Syncing missing directory: $item"
+                  git checkout template/main -- "$item" 2>/dev/null || true
+                  # If it's a directory, sync all its contents recursively
+                  if [ -d "$item" ]; then
+                    git checkout template/main -- "$item/**" 2>/dev/null || true
+                  fi
+                fi
               fi
             fi
           done
@@ -157,7 +186,7 @@ jobs:
             # Create PR with a simple one-line body to avoid YAML issues
             gh pr create \
               --title "Sync template updates" \
-              --body "Automated template sync from ${TEMPLATE_REPO}. This updates sdk-users/, GitHub workflows, and example apps (qa_agentic_testing, user_management). Your client code in src/ is never touched." \
+              --body "Automated template sync from ${TEMPLATE_REPO}. REPLACES: sdk-users/, src/new_project/, GitHub workflows, example apps. SYNCS IF MISSING: tests/test-environment, tests/utils, tests/.docker-ports.lock, tests/README.md. Your client code in src/your_project/ is never touched." \
               --base main
           else
             echo "No changes to sync"

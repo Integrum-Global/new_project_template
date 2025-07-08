@@ -10,12 +10,38 @@ This document explains how template synchronization works with the new `template
 
 When changes are pushed to the template repository (`new_project_template`), the system:
 
-1. **Creates/Updates `template-sync` branch** in each downstream repository
-2. **Creates a timestamped feature branch** from `template-sync`
-3. **Syncs template updates** to the feature branch
-4. **Creates a PR** targeting the `template-sync` branch (not `main`)
+1. **Creates a timestamped sync branch** in each downstream repository
+2. **Syncs template updates** with different strategies:
+   - **COMPLETE REPLACEMENT** (removes old contents): `sdk-users/`, `src/new_project/`, GitHub workflows, example apps
+   - **SYNC IF MISSING** (preserves existing): `tests/test-environment`, `tests/utils`, `tests/.docker-ports.lock`, `tests/README.md`
+3. **Creates a PR** targeting `main` branch
+4. **Preserves your client code** in `src/your_project_name/` (never touched)
 
-### 2. Integration Workflow for Downstream Repos
+### 2. Sync Strategies Explained
+
+#### COMPLETE REPLACEMENT (removes old contents)
+These directories/files are completely replaced with template versions:
+- `sdk-users/` - Latest SDK guidance and documentation 
+- `src/new_project/` - Template project structure (your projects should use different names)
+- `.github/workflows/` - Essential workflows for template sync
+- `apps/qa_agentic_testing/` - Example QA testing app
+- `apps/user_management/` - Example user management app
+
+#### SYNC IF MISSING (preserves existing) 
+These are only added if they don't exist in your repository:
+- `tests/test-environment/` - Docker test infrastructure setup
+- `tests/utils/` - Test utilities and configuration
+- `tests/.docker-ports.lock` - Port allocation for Docker services
+- `tests/README.md` - Test documentation
+- Root files: `CLAUDE.md`, `README.md`, `pyproject.toml`, etc.
+
+#### NEVER TOUCHED
+Your client code is completely safe:
+- `src/your_project_name/` - Any directory in src/ that isn't "new_project"
+- Existing files in `tests/` that already exist
+- Your customized root configuration files
+
+### 3. Integration Workflow for Downstream Repos
 
 #### Phase 1: Template Update Review
 ```bash
