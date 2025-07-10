@@ -1,0 +1,45 @@
+{
+  "scan_summary": {
+    "timestamp": 410246.505261291,
+    "overall_status": "CLEAN",
+    "total_vulnerabilities": 0,
+    "critical_issues": 0,
+    "high_issues": 0,
+    "tools_successful": 1,
+    "tools_failed": 4,
+    "scan_coverage": "1/5 tools"
+  },
+  "tool_results": {
+    "bandit": {
+      "status": "tool_not_found",
+      "error": "Bandit not installed"
+    },
+    "safety": {
+      "status": "no_requirements",
+      "error": "No requirements.txt found"
+    },
+    "semgrep": {
+      "status": "tool_not_found",
+      "error": "Semgrep not installed"
+    },
+    "trivy": {
+      "status": "success",
+      "vulnerabilities": [],
+      "summary": {
+        "total_issues": 0,
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0
+      },
+      "raw_output": ""
+    },
+    "hadolint": {
+      "status": "no_dockerfile",
+      "error": "No Dockerfile found"
+    }
+  },
+  "recommendations": [
+    "No critical security issues found - maintain current security practices"
+  ]
+}

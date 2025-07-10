@@ -1,0 +1,81 @@
+---
+apiVersion: redis.redis.opstreelabs.in/v1beta1
+kind: RedisCluster
+metadata:
+  name: nexus-redis
+  namespace: nexus-production
+  labels:
+    app: redis
+    component: cache
+spec:
+  clusterSize: 6
+  clusterVersion: v7
+
+  # Persistence configuration
+  persistenceEnabled: true
+  storage:
+    volumeClaimTemplate:
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: fast-ssd
+        resources:
+          requests:
+            storage: 10Gi
+
+  # Redis configuration
+  redisConfig:
+    maxmemory: "1gb"
+    maxmemory-policy: "allkeys-lru"
+    save: "900 1 300 10 60 10000"
+    appendonly: "yes"
+    appendfsync: "everysec"
+    tcp-keepalive: "60"
+    timeout: "300"
+
+  # Resources
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
+  # Security
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+
+  # Monitoring
+  monitor:
+    enabled: true
+
+  # Affinity rules
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: redis
+          topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  namespace: nexus-production
+  labels:
+    app: redis
+    component: cache
+spec:
+  selector:
+    app.kubernetes.io/name: nexus-redis
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+    protocol: TCP
+  type: ClusterIP

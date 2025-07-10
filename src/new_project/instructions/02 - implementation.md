@@ -99,23 +99,18 @@
 5. Commit after each tier of tests is cleared.
 
 # Updating the documentation
-1. Please update all the documentation and references in details. We should indicate what tests were performed, and what were the results.
-   - This includes the architecture decisions, todos, user guides, developer guides, and any other relevant documentation.
-   - Ensure that the documentation is clear, concise, and easy to follow for both developers and users.
-2. Ensure that your codes and usages are correct.   
-3. update the master todo list and the todos/ in details.
-
-# Updating the guidance system
-1. Check the `CLAUDE.md` in root and other directories.
-   - Check if we need to update the guidance system.
-   - Ensure that only the absolute essentials are included.
-   - Adopt a multi-step approach by using the existing `CLAUDE.md` network (root -> sdk-users/ -> specific guides).
-     - Do not try to solve everything in one place, make use of the hierarchical documentation system.
-   - Issue commands instead of explanations.
-   - Ensure that your commands are sharp and precise, covering only critical pattterns that prevent immediate failure.
-   - Run through the guidance flow yourself and ensure the following:
-     - You can trace a complete path from basic patterns to advanced custom development.
-     - Please maintain the concise, authoritative tone that respects context limits!
+1. Please update all documentations and references in details.
+2. Look through the all the docs in `docs/`, using the `CLAUDE.md` as the entrypoint.
+   - Check existing docs (file by file) for patterns, and ensure that they are up-to-date.
+     - Cross-reference the actual SDK implementation and the corresponding tests in `tests/` to understand the expected behavior, and the correct usage patterns.
+       - Tests in `tests/` are written in accordance with the policies in `sdk-users/testing/regression-testing-strategy.md`, and `sdk-users/testing/test-organization-policy.md`.
+       - You are not required to write new tests into the `tests/` directory.
+     - Your focus is to ensure that the code and guide in the documentation are correct and up-to-date.
+       - Please write temporary tests to validate the codebases, before and after your changes.
+       - Do this for every file without fail.
+       - Always run `./test-env up && ./test-env status` before integration/E2E tests - NEVER use pytest directly!
+     - Check through the other directories to ensure that we don't have any underused or redundant information.
+   - If there are redundant docs that should be removed or consolidated, please do so.
 
 # Updating the todo management system
 1. The local todo management system is two-tiered: Repo level todos are in root and module level todos are in their respective src/ sub-directories.
@@ -130,19 +125,41 @@
    - `todos/completed` for completed todos.
    - move completed todos from `todos/active` to `todos/completed` with the date of completion.
 
+# Updating the guidance system
+1. Check the `CLAUDE.md` in root and other directories.
+   - Check if we need to update the guidance system.
+   - Ensure that only the absolute essentials are included.
+   - Adopt a multi-step approach by using the existing `CLAUDE.md` network.
+     - Do not try to solve everything in one place, make use of the hierarchical documentation system.
+   - Issue commands instead of explanations.
+   - Ensure that your commands are sharp and precise, covering only critical patterns that prevent immediate failure.
+   - Run through the guidance flow yourself and ensure the following:
+     - You can trace a complete path from basic patterns to advanced custom development.
+     - Please maintain the concise, authoritative tone that respects context limits!
+
+# Full check on the todo entries
+1. Check the `todos/` directory on all the outstanding todos.
+   - Ensure that you read the detailed todos in `todos/active`.
+2. Inspect the codebase for:
+   - Implementation, tests, documentation (`sdk-users/`, `sdk-contributors`, `apps/`).
+3. Update the todos if they are found to have been completed.
+
 # Full tests
 1. Running all tests will take very long, let's clear Tier 1, then Tier 2, before clearing Tier 3 one at a time.
+   - Always run `./test-env up && ./test-env status` before integration/E2E tests - NEVER use pytest directly!
 2. The regression testing strategy is in `sdk-users/testing/regression-testing-strategy.md`, and policy in `sdk-users/testing/test-organization-policy.md`.
 3. Please use the docker implementation in `tests/utils`, and real data, processes, responses.
-4. Always use the docker implementation in `tests/utils`, and real data, processes, responses.
-   - Use our ollama to generate data or create LLMAgents freely.
-   - DO NOT create new docker containers or images before checking that the docker for this repository exists.
+4. DO NOT create new docker containers or images before checking that the docker for this repository exists.
+   - If there isn't any and you need to create one, please inspect the current docker containers in this system to understand what ports and services are currently in use by other containers/images.
+   - Deconflict by locking in a set of docker services and ports for this project.
+   - Do not create docker containers or images manually, please use the docker-compose approach outlined in `tests/utils/CLAUDE.md`.
+   - Update this setup and the CLAUDE.md in `tests/utils`. Update other references if required.
 5. Use our ollama to generate data or create LLMAgents freely.
 6. For the tests, please use the docker implementation in `tests/utils`, and real data, processes, responses.
 7. Additional tests written MUST follow the policy in 'sdk-users/testing/test-organization-policy.md'.
 8. Do not write new tests without checking that existing ones can be modified to include them.
 9. Please update the developer and user guides (inside `sdk-users/`).
-   - Every time a feature is done and fully tested. 
+   - Every time a feature is done and fully tested.
    - Ensure that wrong usages are corrected
    - Ensure that guides are clear and concise.
 10. Commit after each tier of tests is cleared.
@@ -164,6 +181,6 @@
      - Use the existing ollama for your tests.
 
 # Commit to github
-1. Run black, isort with profile=black, and ruff.
+1. Run locally to ensure that the github actions will pass.
 2. Commit and push to github.
-3. Issue PR
+3. Issue PR, wait for the CI to pass. Correct errors if any, else merge the PR.

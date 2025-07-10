@@ -1,0 +1,173 @@
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: nexus-psp
+  namespace: nexus-production
+  labels:
+    app: nexus
+    environment: production
+spec:
+  privileged: false
+  allowPrivilegeEscalation: false
+  requiredDropCapabilities:
+    - ALL
+  volumes:
+    - 'configMap'
+    - 'emptyDir'
+    - 'projected'
+    - 'secret'
+    - 'downwardAPI'
+    - 'persistentVolumeClaim'
+  hostNetwork: false
+  hostIPC: false
+  hostPID: false
+  runAsUser:
+    rule: 'MustRunAsNonRoot'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  fsGroup:
+    rule: 'MustRunAs'
+    ranges:
+      - min: 1
+        max: 65535
+  readOnlyRootFilesystem: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nexus-psp-role
+  namespace: nexus-production
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs: ['use']
+  resourceNames:
+  - nexus-psp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nexus-psp-rolebinding
+  namespace: nexus-production
+roleRef:
+  kind: Role
+  name: nexus-psp-role
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: nexus-service-account
+  namespace: nexus-production
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-security-config
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: security
+    environment: production
+data:
+  security.yaml: |
+    security:
+      authentication:
+        enabled: true
+        providers:
+          - type: local
+            enabled: true
+          - type: ldap
+            enabled: true
+            config:
+              server: ldap://ldap.example.com:389
+              bind_dn: cn=admin,dc=example,dc=com
+              search_base: ou=users,dc=example,dc=com
+          - type: oauth2
+            enabled: true
+            config:
+              client_id: ${OAUTH2_CLIENT_ID}
+              client_secret: ${OAUTH2_CLIENT_SECRET}
+              authorization_url: https://auth.example.com/oauth2/authorize
+              token_url: https://auth.example.com/oauth2/token
+      authorization:
+        enabled: true
+        default_policy: deny
+        policies:
+          - name: admin_access
+            effect: allow
+            principals:
+              - group:admins
+            actions:
+              - "*"
+            resources:
+              - "*"
+          - name: user_access
+            effect: allow
+            principals:
+              - group:users
+            actions:
+              - read
+              - execute
+            resources:
+              - workflows:*
+              - sessions:own
+      audit:
+        enabled: true
+        log_level: info
+        destinations:
+          - type: file
+            path: /var/log/nexus/audit.log
+          - type: elasticsearch
+            url: ${ELASTICSEARCH_URL}
+            index: nexus-audit
+      encryption:
+        at_rest:
+          enabled: true
+          algorithm: AES-256-GCM
+        in_transit:
+          enabled: true
+          min_tls_version: "1.2"
+        secrets:
+          encryption_key: ${ENCRYPTION_KEY}
+      rate_limiting:
+        enabled: true
+        global_limit: 1000
+        per_user_limit: 100
+        window: 60  # seconds
+      cors:
+        enabled: true
+        allowed_origins:
+          - https://nexus.example.com
+          - https://admin.example.com
+        allowed_methods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        allowed_headers:
+          - Authorization
+          - Content-Type
+          - X-Requested-With
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: nexus-security-secrets
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: security
+    environment: production
+type: Opaque
+stringData:
+  oauth2-client-id: "your-oauth2-client-id"
+  oauth2-client-secret: "your-oauth2-client-secret"
+  encryption-key: "your-32-byte-encryption-key-here"
+  ldap-bind-password: "your-ldap-bind-password"
+  elasticsearch-url: "https://elasticsearch.example.com:9200"

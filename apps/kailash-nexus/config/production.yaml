@@ -1,0 +1,108 @@
+# Nexus Production Configuration
+
+name: "Nexus Enterprise Platform"
+description: "Production-ready multi-channel workflow orchestration"
+version: "1.0.0"
+
+channels:
+  api:
+    enabled: true
+    host: "0.0.0.0"
+    port: 8000
+    cors_origins:
+      - "https://app.example.com"
+      - "https://admin.example.com"
+    rate_limits:
+      requests_per_minute: 100
+      burst: 20
+
+  cli:
+    enabled: true
+    prompt: "nexus> "
+    history_size: 1000
+
+  mcp:
+    enabled: true
+    host: "0.0.0.0"
+    port: 8765
+
+features:
+  authentication:
+    enabled: true
+    providers:
+      - type: "ldap"
+        name: "Corporate LDAP"
+        host: "${LDAP_HOST}"
+        port: 636
+        use_ssl: true
+        base_dn: "${LDAP_BASE_DN}"
+      - type: "oauth2"
+        name: "Google OAuth"
+        client_id: "${OAUTH_CLIENT_ID}"
+        client_secret: "${OAUTH_CLIENT_SECRET}"
+        authorize_url: "https://accounts.google.com/o/oauth2/v2/auth"
+        token_url: "https://oauth2.googleapis.com/token"
+    mfa:
+      required: true
+      methods: ["totp", "sms"]
+    session:
+      timeout: 3600
+      refresh_enabled: true
+
+  multi_tenant:
+    enabled: true
+    isolation: "strict"
+    default_quotas:
+      workflows: 500
+      executions_per_day: 10000
+      storage_mb: 5120
+      api_calls_per_hour: 5000
+      concurrent_sessions: 50
+
+  marketplace:
+    enabled: true
+    moderation_enabled: true
+    allow_paid_items: true
+    commission_rate: 0.15
+
+  audit:
+    enabled: true
+    retention_days: 90
+    include_request_data: false
+    include_response_data: false
+
+  monitoring:
+    enabled: true
+    health_checks: true
+    metrics_enabled: true
+    metrics_port: 9090
+    traces_enabled: true
+    traces_endpoint: "${TRACES_ENDPOINT}"
+
+database:
+  url: "${NEXUS_DB_URL}"
+  pool_size: 20
+  max_overflow: 10
+  pool_timeout: 30
+
+cache:
+  type: "redis"
+  url: "${NEXUS_REDIS_URL}"
+  ttl: 300
+  max_connections: 50
+
+storage:
+  type: "s3"
+  bucket: "${NEXUS_S3_BUCKET}"
+  region: "${AWS_REGION}"
+  prefix: "nexus/"
+
+logging:
+  level: "INFO"
+  format: "json"
+  outputs:
+    - type: "console"
+    - type: "file"
+      path: "/var/log/nexus/app.log"
+      rotation: "daily"
+      retention: 7

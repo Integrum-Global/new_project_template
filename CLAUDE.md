@@ -31,8 +31,6 @@ results, run_id = runtime.execute(workflow.build())  # runtime executes workflow
 9. **Governance & compliance** → [sdk-users/enterprise/compliance-patterns.md](sdk-users/enterprise/compliance-patterns.md) (Audit, data policies)
 10. **Common errors** → [sdk-users/validation/common-mistakes.md](sdk-users/validation/common-mistakes.md)
 
----
-
 ## When asked to implement a solution
 1. Use 100% kailash sdk components (latest on pypi) and consult sdk-users/ every time.
    - Do not create new code without checking it against the existing SDK components.
@@ -52,3 +50,12 @@ results, run_id = runtime.execute(workflow.build())  # runtime executes workflow
 
 ## 📁 Complete Documentation
 **Full SDK Reference**: [sdk-users/](sdk-users/) - Comprehensive guides and patterns
+
+## 🔧 API Versioning Strategy
+**ALWAYS follow the canonical API versioning pattern**
+- ✅ `/api/v1/*` - Canonical versioned endpoints
+- ✅ `/api/*` - Compatibility alias to current version
+- ❌ Duplicate route definitions
+- ❌ Version-specific logic in same router
+
+---

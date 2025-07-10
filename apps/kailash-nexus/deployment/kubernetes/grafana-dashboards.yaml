@@ -1,0 +1,532 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards-config
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      updateIntervalSeconds: 10
+      allowUiUpdates: true
+      options:
+        path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-overview-dashboard
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+    grafana_dashboard: "1"
+data:
+  nexus-overview.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Nexus Overview",
+        "tags": ["nexus", "overview"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Application Health",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "up{job=\"nexus-app\"}",
+                "legendFormat": "Nexus App",
+                "refId": "A"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "color": {
+                  "mode": "thresholds"
+                },
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "green", "value": 1}
+                  ]
+                }
+              }
+            },
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Request Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(nexus_http_requests_total[5m])",
+                "legendFormat": "{{method}} {{status}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "requests/sec",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Response Time",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.95, rate(nexus_http_request_duration_seconds_bucket[5m]))",
+                "legendFormat": "95th percentile",
+                "refId": "A"
+              },
+              {
+                "expr": "histogram_quantile(0.50, rate(nexus_http_request_duration_seconds_bucket[5m]))",
+                "legendFormat": "50th percentile",
+                "refId": "B"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "seconds",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Error Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(nexus_http_requests_total{status=~\"5..\"}[5m]) / rate(nexus_http_requests_total[5m])",
+                "legendFormat": "Error Rate",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "percentage",
+                "min": 0,
+                "max": 1
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 5,
+            "title": "CPU Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_cpu_usage_seconds_total{pod=~\"nexus-app-.*\"}[5m])",
+                "legendFormat": "{{pod}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "cpu cores",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+          },
+          {
+            "id": 6,
+            "title": "Memory Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "container_memory_usage_bytes{pod=~\"nexus-app-.*\"} / 1024 / 1024",
+                "legendFormat": "{{pod}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "MB",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "5s"
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-database-dashboard
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+    grafana_dashboard: "1"
+data:
+  nexus-database.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Nexus Database",
+        "tags": ["nexus", "database", "postgresql"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Database Connections",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "postgres_active_connections",
+                "legendFormat": "Active Connections",
+                "refId": "A"
+              },
+              {
+                "expr": "postgres_max_connections",
+                "legendFormat": "Max Connections",
+                "refId": "B"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "connections",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Query Performance",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(postgres_queries_total[5m])",
+                "legendFormat": "{{query_type}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "queries/sec",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Database Size",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "postgres_database_size_bytes / 1024 / 1024 / 1024",
+                "legendFormat": "Database Size (GB)",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "GB",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Lock Waits",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(postgres_lock_waits_total[5m])",
+                "legendFormat": "Lock Waits",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "waits/sec",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "5s"
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-infrastructure-dashboard
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+    grafana_dashboard: "1"
+data:
+  nexus-infrastructure.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "Nexus Infrastructure",
+        "tags": ["nexus", "infrastructure", "kubernetes"],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+          {
+            "id": 1,
+            "title": "Node Resources",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "kube_node_status_capacity{resource=\"cpu\"}",
+                "legendFormat": "CPU Capacity - {{node}}",
+                "refId": "A"
+              },
+              {
+                "expr": "kube_node_status_capacity{resource=\"memory\"} / 1024 / 1024 / 1024",
+                "legendFormat": "Memory Capacity (GB) - {{node}}",
+                "refId": "B"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+          },
+          {
+            "id": 2,
+            "title": "Pod Status",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "kube_pod_status_phase{namespace=\"nexus-production\"}",
+                "legendFormat": "{{phase}} - {{pod}}",
+                "refId": "A"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+          },
+          {
+            "id": 3,
+            "title": "Network Traffic",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(container_network_receive_bytes_total{namespace=\"nexus-production\"}[5m]) / 1024 / 1024",
+                "legendFormat": "RX (MB/s) - {{pod}}",
+                "refId": "A"
+              },
+              {
+                "expr": "rate(container_network_transmit_bytes_total{namespace=\"nexus-production\"}[5m]) / 1024 / 1024",
+                "legendFormat": "TX (MB/s) - {{pod}}",
+                "refId": "B"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "MB/s",
+                "min": 0
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+          },
+          {
+            "id": 4,
+            "title": "Disk Usage",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "container_fs_usage_bytes{namespace=\"nexus-production\"} / container_fs_limit_bytes * 100",
+                "legendFormat": "Disk Usage % - {{pod}}",
+                "refId": "A"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "percentage",
+                "min": 0,
+                "max": 100
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+          },
+          {
+            "id": 5,
+            "title": "Load Balancer Metrics",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "aws_applicationelb_request_count_sum",
+                "legendFormat": "Request Count",
+                "refId": "A"
+              },
+              {
+                "expr": "aws_applicationelb_target_response_time_average",
+                "legendFormat": "Response Time (s)",
+                "refId": "B"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+          },
+          {
+            "id": 6,
+            "title": "Redis Metrics",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "redis_connected_clients",
+                "legendFormat": "Connected Clients",
+                "refId": "A"
+              },
+              {
+                "expr": "redis_memory_used_bytes / 1024 / 1024",
+                "legendFormat": "Memory Used (MB)",
+                "refId": "B"
+              }
+            ],
+            "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "5s"
+      }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+data:
+  datasources.yaml: |
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://prometheus:9090
+      isDefault: true
+      editable: true
+      jsonData:
+        timeInterval: "5s"
+        queryTimeout: "60s"
+        httpMethod: "POST"
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki:3100
+      editable: true
+      jsonData:
+        maxLines: 1000
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-config
+  namespace: nexus-production
+  labels:
+    app: nexus
+    component: grafana
+    environment: production
+data:
+  grafana.ini: |
+    [analytics]
+    check_for_updates = true
+
+    [grafana_net]
+    url = https://grafana.net
+
+    [log]
+    mode = console
+    level = info
+
+    [paths]
+    data = /var/lib/grafana/
+    logs = /var/log/grafana
+    plugins = /var/lib/grafana/plugins
+    provisioning = /etc/grafana/provisioning
+
+    [server]
+    http_port = 3000
+
+    [database]
+    type = postgres
+    host = postgres:5432
+    name = grafana
+    user = grafana
+    password = $__env{GF_DATABASE_PASSWORD}
+
+    [session]
+    provider = postgres
+    provider_config = user=grafana password=$__env{GF_DATABASE_PASSWORD} host=postgres port=5432 dbname=grafana sslmode=disable
+
+    [security]
+    admin_user = admin
+    admin_password = $__env{GF_SECURITY_ADMIN_PASSWORD}
+
+    [users]
+    allow_sign_up = false
+
+    [auth.anonymous]
+    enabled = false
+
+    [dashboards]
+    default_home_dashboard_path = /var/lib/grafana/dashboards/nexus-overview.json
+
+    [alerting]
+    enabled = true
+    execute_alerts = true
+
+    [smtp]
+    enabled = true
+    host = localhost:587
+    user =
+    password =
+    from_address = admin@grafana.localhost
+    from_name = Grafana
+
+    [unified_alerting]
+    enabled = true
+
+    [feature_toggles]
+    enable = ngalert
