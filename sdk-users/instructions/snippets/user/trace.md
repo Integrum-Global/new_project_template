@@ -169,7 +169,7 @@ Analyze the testing setup to understand migration complexity:
    ```bash
    # Show test directory structure
    find . -type d -name "test*" | head -20
-   
+
    # Count test files by type
    echo "Unit tests:" && find . -name "test_*.py" -path "*/unit/*" | wc -l
    echo "Integration tests:" && find . -name "test_*.py" -path "*/integration/*" | wc -l
@@ -185,7 +185,7 @@ Analyze the testing setup to understand migration complexity:
    ```bash
    # Check if coverage report exists
    find . -name ".coverage" -o -name "htmlcov" -o -name "coverage.xml" | head -5
-   
+
    # Look for coverage config
    grep -A5 "\[coverage\|coverage:" pyproject.toml setup.cfg .coveragerc 2>/dev/null
    ```
@@ -322,31 +322,31 @@ Create a comprehensive todo tracking system for the migration:
 ```
 1. **Create Migration Todo Structure**
    mkdir -p todos/migration/{active,completed,backlog}
-   
+
 2. **Create Master Migration List** (todos/migration/000-migration-master.md):
    # Migration Master Todo List
-   
+
    ## Phase 1: Analysis & Planning
    - [ ] Complete repository analysis
    - [ ] Create migration ADR
    - [ ] Identify component priorities
    - [ ] Set up migration infrastructure
-   
+
    ## Phase 2: Structure Alignment
    - [ ] Create apps/ directory structure
    - [ ] Create manifest.yaml templates
    - [ ] Set up Docker infrastructure
-   
+
    ## Phase 3: Component Migration
    - [ ] Migrate [Component 1]
    - [ ] Migrate [Component 2]
    - [ ] Migrate [Component N]
-   
+
    ## Phase 4: Testing & Validation
    - [ ] Migrate test suite to 3-tier
    - [ ] Achieve 80%+ coverage
    - [ ] Performance validation
-   
+
    ## Phase 5: Deployment & Cutover
    - [ ] Update deployment configs
    - [ ] Parallel run validation
@@ -356,13 +356,13 @@ Create a comprehensive todo tracking system for the migration:
    For each component, create: todos/migration/active/XXX-migrate-[component].md
    ```
    # Migrate [Component Name]
-   
+
    ## Acceptance Criteria
    - [ ] All functionality preserved
    - [ ] Tests passing (unit/integration/e2e)
    - [ ] Performance maintained
    - [ ] Documentation updated
-   
+
    ## Subtasks
    - [ ] Analyze current implementation
    - [ ] Design SDK node structure
@@ -371,11 +371,11 @@ Create a comprehensive todo tracking system for the migration:
    - [ ] Migrate tests
    - [ ] Update imports
    - [ ] Validate functionality
-   
+
    ## Risks
    - [Risk 1]: [Mitigation]
    - [Risk 2]: [Mitigation]
-   
+
    ## Dependencies
    - Requires: [Component X] migrated first
    - Blocks: [Component Y] migration
