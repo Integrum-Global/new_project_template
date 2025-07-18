@@ -52,23 +52,19 @@ class Nexus:
                  monitoring: bool = True):
         pass
 
-    def register(self, workflow: Any, name: str, version: str = "1.0.0") -> Dict[str, Any]:
+    def register(self, name: str, workflow: Any) -> None:
         """
         Register a workflow with the platform
 
         Args:
-            workflow: Workflow object or WorkflowBuilder instance
             name (str): Workflow name for registration
-            version (str): Workflow version (default: "1.0.0")
+            workflow: Workflow object or WorkflowBuilder instance
 
         Returns:
-            Dict containing registration details and endpoint information
+            None
 
         Example:
-            registration = app.register(workflow, "data-processor", "2.1.0")
-            print(f"API: {registration['api_endpoint']}")
-            print(f"CLI: {registration['cli_command']}")
-            print(f"MCP: {registration['mcp_tool']}")
+            app.register("data-processor", workflow)
         """
         pass
 
