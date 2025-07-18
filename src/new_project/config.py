@@ -7,7 +7,7 @@ Update these settings for your specific app.
 
 import os
 from typing import Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -34,7 +34,7 @@ class AppConfig:
     
     # Security
     secret_key: Optional[str] = os.getenv("SECRET_KEY")
-    allowed_origins: list = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    allowed_origins: list = field(default_factory=lambda: os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(","))
     
     # Kailash SDK Configuration
     sdk_log_level: str = os.getenv("SDK_LOG_LEVEL", "INFO")
