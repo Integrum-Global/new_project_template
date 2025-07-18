@@ -1,4 +1,16 @@
-# Kailash SDK - Development Guide
+# Kailash SDK Project Template
+
+## ⚡ Quick Start
+
+### Installation
+```bash
+# Core SDK only
+pip install kailash
+
+# With app frameworks
+pip install kailash[dataflow,nexus]  # Database + multi-channel
+pip install kailash[all]             # Everything
+```
 
 ## 🚀 ESSENTIAL PATTERNS - COPY THESE FIRST
 
@@ -43,7 +55,6 @@ results, run_id = runtime.execute(workflow.build())  # Real cyclic execution
 - `workflow.connect(..., cycle=True)` → Use `workflow.create_cycle("name").connect(...).build()`
 - Override `execute()` in nodes → Implement `run()` instead
 - Use `operation` parameter → Use `action` for consistency
-- Run unit tests without `--forked` → Always use `pytest tests/unit/ --forked`
 
 ### 🎯 Multi-Step Strategy (Enterprise Workflow)
 1. **First implementation** → Copy basic pattern above
@@ -60,6 +71,61 @@ results, run_id = runtime.execute(workflow.build())  # Real cyclic execution
 12. **Distributed transactions** → [sdk-users/cheatsheet/049-distributed-transactions.md](sdk-users/cheatsheet/049-distributed-transactions.md) (Saga, 2PC, automatic pattern selection)
 13. **Governance & compliance** → [sdk-users/enterprise/compliance-patterns.md](sdk-users/enterprise/compliance-patterns.md) (Audit, data policies)
 14. **Common errors** → [sdk-users/validation/common-mistakes.md](sdk-users/validation/common-mistakes.md)
+
+---
+
+## 🏗️ Core SDK vs App Framework Architecture
+
+### Core SDK Components (kailash)
+The **Core SDK** provides foundational workflow building blocks:
+- **Runtime System**: `LocalRuntime`, `ParallelRuntime` - Execute workflows
+- **Workflow Builder**: `WorkflowBuilder` - Create workflows programmatically
+- **Node Library**: 110+ production-ready nodes
+- **MCP Integration**: Complete Model Context Protocol support
+
+### App Frameworks (via PyPI)
+Production-ready applications you can install:
+- **kailash-dataflow**: Zero-config database with MongoDB-style queries
+- **kailash-nexus**: Multi-channel platform (API, CLI, MCP from single codebase)
+
+### DataFlow Quick Start
+```python
+from dataflow import DataFlow
+from kailash.workflow.builder import WorkflowBuilder
+from kailash.runtime.local import LocalRuntime
+
+db = DataFlow()
+
+@db.model
+class User:
+    name: str
+    age: int
+
+# Use generated nodes in workflows
+workflow = WorkflowBuilder()
+workflow.add_node("UserCreateNode", "create", {"name": "Alice", "age": 25})
+workflow.add_node("UserListNode", "list", {"filter": {"age": {"$gt": 18}}})
+
+runtime = LocalRuntime()
+results, run_id = runtime.execute(workflow.build())
+```
+
+### Nexus Quick Start
+```python
+from nexus import Nexus
+from kailash.workflow.builder import WorkflowBuilder
+
+app = Nexus()
+
+# Create and register workflow
+workflow = WorkflowBuilder()
+workflow.add_node("PythonCodeNode", "process", {
+    "code": "result = {'result': sum(parameters.get('data', []))}"
+})
+app.register("process_data", workflow)
+
+app.start()  # Available as API, CLI, and MCP
+```
 
 ## When asked to implement a solution
 1. Use 100% kailash sdk components (latest on pypi) and consult sdk-users/ every time.
@@ -111,8 +177,7 @@ results, run_id = runtime.execute(workflow.build())  # Real cyclic execution
 13. **AsyncSQL Parameter Types**: PostgreSQL type inference fix with `parameter_types` for JSONB/COALESCE contexts (v0.6.6+) - see [AsyncSQL Patterns](sdk-users/cheatsheet/047-asyncsql-enterprise-patterns.md)
 14. **Core SDK Architecture**: TODO-111 resolved critical infrastructure gaps - CyclicWorkflowExecutor, WorkflowVisualizer, and ConnectionManager now production-ready with comprehensive test coverage
 15. **Parameter Naming Convention**: Use `action` (not `operation`) for consistency across nodes
-16. **Test Isolation**: Always use `--forked` flag for unit tests: `pytest tests/unit/ --forked`
-17. **Node Registry**: Tests must re-import nodes after clearing: `import kailash.nodes`
+16. **Test Performance**: Run unit tests directly for 11x faster execution: `pytest tests/unit/`
 
 ## 🔧 Core Nodes (110+ available)
 **Quick Access**: [Node Index](sdk-users/nodes/node-index.md) - Minimal reference (47 lines)
@@ -148,27 +213,28 @@ results, run_id = runtime.execute(workflow.build())  # Real cyclic execution
 
 ## 🔗 Quick Links by Need
 
-| **I need to...** | **Core SDK** | **App Framework** | **Contributors** |
-|-----------------|--------------|---------------------|-----------|
-| **Build a workflow** | [sdk-users/workflows/](sdk-users/workflows/) | - | - |
-| **Build an app** | [sdk-users/decision-matrix.md](sdk-users/decision-matrix.md) | [apps/DOCUMENTATION_STANDARDS.md](apps/DOCUMENTATION_STANDARDS.md) | - |
-| **Database operations** | [sdk-users/cheatsheet/047-asyncsql-enterprise-patterns.md](sdk-users/cheatsheet/047-asyncsql-enterprise-patterns.md) | [apps/kailash-dataflow/](apps/kailash-dataflow/) - Zero-config | - |
-| **Multi-channel platform** | [sdk-users/enterprise/nexus-patterns.md](sdk-users/enterprise/nexus-patterns.md) | [apps/kailash-nexus/](apps/kailash-nexus/) - Production-ready | - |
-| **MCP integration** | [sdk-users/cheatsheet/025-mcp-integration.md](sdk-users/cheatsheet/025-mcp-integration.md) | [apps/kailash-mcp/](apps/kailash-mcp/) - Enterprise platform | - |
-| **AI & RAG** | [sdk-users/developer/06-comprehensive-rag-guide.md](sdk-users/developer/06-comprehensive-rag-guide.md) | [apps/ai_registry/](apps/ai_registry/) - Advanced RAG | - |
-| **User management** | [sdk-users/enterprise/security-patterns.md](sdk-users/enterprise/security-patterns.md) | [apps/user_management/](apps/user_management/) - RBAC system | - |
-| **Fix an error** | [sdk-users/developer/05-troubleshooting.md](sdk-users/developer/05-troubleshooting.md) | [shared/mistakes/](shared/mistakes/) | [shared/mistakes/](shared/mistakes/) |
-| **Distributed transactions** | [sdk-users/cheatsheet/049-distributed-transactions.md](sdk-users/cheatsheet/049-distributed-transactions.md) | - | - |
-| **Run tests**   | [tests/README.md](tests/README.md) - Test guide | [tests/](tests/) - Full test suite | [tests/](tests/) - Full test suite |
+| **I need to...** | **Core SDK** | **App Framework** |
+|-----------------|--------------|---------------------|
+| **Build a workflow** | [sdk-users/workflows/](sdk-users/workflows/) | - |
+| **Build an app** | [sdk-users/decision-matrix.md](sdk-users/decision-matrix.md) | [sdk-users/apps/](sdk-users/apps/) |
+| **Database operations** | [sdk-users/cheatsheet/047-asyncsql-enterprise-patterns.md](sdk-users/cheatsheet/047-asyncsql-enterprise-patterns.md) | [sdk-users/apps/dataflow/](sdk-users/apps/dataflow/) - Zero-config |
+| **Multi-channel platform** | [sdk-users/enterprise/nexus-patterns.md](sdk-users/enterprise/nexus-patterns.md) | [sdk-users/apps/nexus/](sdk-users/apps/nexus/) - Production-ready |
+| **MCP integration** | [sdk-users/cheatsheet/025-mcp-integration.md](sdk-users/cheatsheet/025-mcp-integration.md) | - |
+| **AI & RAG** | [sdk-users/developer/06-comprehensive-rag-guide.md](sdk-users/developer/06-comprehensive-rag-guide.md) | - |
+| **User management** | [sdk-users/enterprise/security-patterns.md](sdk-users/enterprise/security-patterns.md) | - |
+| **Fix an error** | [sdk-users/developer/05-troubleshooting.md](sdk-users/developer/05-troubleshooting.md) | - |
+| **Distributed transactions** | [sdk-users/cheatsheet/049-distributed-transactions.md](sdk-users/cheatsheet/049-distributed-transactions.md) | - |
+| **Run tests**   | See Testing Requirements section below | - |
 
 ## 🧪 CRITICAL: Testing Requirements
 - **Test Guide**: [tests/README.md](tests/README.md) - 3-tier testing strategy
 
-### 1. Unit Test Isolation
-**ALWAYS use `--forked` for unit tests**: `pytest tests/unit/ --forked --timeout=1 --tb=short`
-- Eliminates NodeRegistry pollution between tests
-- Prevents shared state contamination
-- Required for consistent test execution in CI/CD
+### 1. Fast Unit Tests
+**Run unit tests directly**: `pytest tests/unit/ --timeout=1 --tb=short`
+- 11x faster execution without process forking overhead
+- Proper test isolation through fixtures
+- 99.96% pass rate with optimized state management
+- Tests requiring isolation (< 1%) are automatically handled with `@pytest.mark.requires_isolation`
 
 ### 2. Timeout Enforcement
 **ALWAYS enforce timeout limits**:
@@ -185,3 +251,9 @@ When tests exceed timeout:
 5. Use smaller test datasets
 6. Add proper cleanup in finally blocks
 ---
+
+# important-instruction-reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

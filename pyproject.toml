@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     # Core Kailash SDK (from PyPI)
-    "kailash>=0.7.1",
+    "kailash>=0.8.0",
     
     # Web Framework
     "fastapi[all]>=0.115.0",
