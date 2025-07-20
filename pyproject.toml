@@ -20,8 +20,10 @@ classifiers = [
 ]
 dependencies = [
     # Core Kailash SDK (from PyPI)
-    "kailash>=0.8.3",
-    
+    "kailash>=0.8.5",
+    "kailash-nexux>=1.0.2",
+    "kailash-dataflow>=0.2.0",
+
     # Web Framework
     "fastapi[all]>=0.115.0",
     "uvicorn[standard]>=0.24.0",
