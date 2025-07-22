@@ -6,30 +6,102 @@ This guide provides strict directives for implementing the Kailash SDK migration
 
 ## Document-First Migration Strategy
 
+### Migration Documentation Structure
+
+**IMPORTANT**: Use the two-document approach for comprehensive migration:
+
+1. **Systematic Patterns**: [WORKFLOW_MIGRATION_PATTERNS.md](WORKFLOW_MIGRATION_PATTERNS.md)
+   - Framework translation guide (LangGraph → Kailash SDK)
+   - Standard configuration templates
+   - Error handling and recovery patterns  
+   - Data validation schemas
+   - Testing strategy framework
+   - Monitoring and alerting patterns
+   - Operational readiness checklists
+
+2. **Workflow-Specific Analysis**: `workflows/wX_name/WX_ORIGINAL_COMPLETE_ANALYSIS.md`
+   - Workflow-specific business logic
+   - Workflow-specific configuration parameters
+   - Workflow-specific testing scenarios
+   - Workflow-specific monitoring metrics
+   - Workflow-specific error scenarios
+
 ### For Complex Workflow Migrations (RECOMMENDED)
 
-When migrating workflows intricate business logic, use this document-first approach:
+When migrating workflows with intricate business logic, use this document-first approach:
 
 1. **Create Comprehensive Original Analysis**
-   - Trace backwards from main.py or views.py to ensure all logic captured
-   - Document EVERY business logic in detail
+   - Check each workflow in docs/workflows (e.g. W1_ORIGINAL_COMPLETE_ANALYSIS.md) 
+   - Add to your understanding the langgraph implementations in workflows/
+   - **Reference systematic patterns**: Use [WORKFLOW_MIGRATION_PATTERNS.md](WORKFLOW_MIGRATION_PATTERNS.md) for framework concerns
+   - **Focus on workflow specifics**: Capture workflow-unique business logic, configurations, edge cases
+   - Ensure that there are no gaps and we have all the information and connectivity to recreate the migrated workflows with 100% replicability
+   - Document EVERY workflow-specific business logic in detail
    - Capture all API calls with exact parameters
    - Map all state transitions and context updates
-   - Document edge cases and error handling
-   - Include performance optimizations
-   - If there are existing SDK workflows and components, capture their logic and structure
+   - Document workflow-specific edge cases and error handling
+   - Include workflow-specific performance requirements
+   - Include trigger conditions and integration points
+   - Include model method signatures unique to this workflow
+   - Include specific error response formats
+   - Other workflow-specific implementation details
 
-2. **Self-Critique the Analysis**
-   - Review for completeness (aim for 100% coverage)
-   - Identify any missing API response formats
-   - Check for hidden dependencies
-   - Validate business rule capture
+2. **Self-Critique the Analysis from Multiple Perspectives**
+   - **Migration Engineer**: Can this be implemented in Kailash SDK?
+   - **Testing Engineer**: Are all edge cases testable?
+   - **Operations Engineer**: Can this be monitored and maintained?
+   - **Business Analyst**: Are business rules clear and complete?
+   - Review for 100% completeness using systematic patterns as baseline
+   - Identify workflow-specific gaps not covered by patterns
+   - Validate business rule capture against original requirements
 
-3. **Use Analysis to Guide Migration**
+3. **Validate Content Separation (Critical)**
+   - **Systematic Content Check**: Does anything in workflow doc apply to other workflows?
+   - **Missing Patterns Check**: Are there systematic patterns not captured in patterns doc?
+   - **Business Context Check**: Does workflow doc explain WHY not just WHAT?
+   - **Performance Baseline Check**: Are actual measurements included?
+   - **Integration Flow Check**: Are state transitions clearly documented?
+
+4. **Use Combined Documentation to Guide Migration**
+   - Use systematic patterns for framework translation
+   - Use workflow analysis for specific business logic
    - Implement based on documented logic
    - Preserve all critical business rules
    - Maintain performance optimizations
    - Keep analysis files for validation
+
+### Content Separation Quality Gates
+
+Before proceeding with migration, validate content separation:
+
+#### Must-Pass Criteria ✅
+- [ ] **No Systematic Patterns in Workflow Doc**: Everything in workflow doc is workflow-unique
+- [ ] **Complete Business Justification**: All workflow rules have WHY explanations  
+- [ ] **Performance Baselines**: Actual measurements from original implementation
+- [ ] **State Transition Flows**: Clear diagrams for integration scenarios
+- [ ] **Configuration Separation**: Only workflow-specific config in workflow doc
+
+#### Content Placement Decision Tree
+```
+Is this content workflow-specific?
+├── YES: Unique to this workflow → Put in WX_ORIGINAL_COMPLETE_ANALYSIS.md
+└── NO: Could apply to other workflows
+    ├── Framework pattern → Put in WORKFLOW_MIGRATION_PATTERNS.md
+    ├── Configuration template → Put in WORKFLOW_MIGRATION_PATTERNS.md  
+    ├── Error handling pattern → Put in WORKFLOW_MIGRATION_PATTERNS.md
+    └── Testing strategy → Put in WORKFLOW_MIGRATION_PATTERNS.md
+```
+
+## Migration Quality Validation Framework
+
+### Four-Pass Critique Strategy (MANDATORY)
+
+Perform 4 ultrathink critique passes to ensure migration completeness:
+
+**Pass 1 - Initial Analysis**: Document all business logic, API calls, state transitions  
+**Pass 2 - Completeness Check**: Identify gaps in requirements, performance, security, integration  
+**Pass 3 - Multi-Perspective Review**: Validate from migration, testing, operations, and business perspectives  
+**Pass 4 - Content Separation Validation**: Ensure systematic vs workflow-specific content is properly separated
 
 ## 🧪 TEST-FIRST DEVELOPMENT (MANDATORY)
 
@@ -292,7 +364,7 @@ Track each component's progress:
 - [ ] **SDK Compliance**: Following CLAUDE.md essential patterns exactly?
 
 #### **5. Critique Documentation Requirements**
-Create `src/shipping/phase-critiques/phase-{N}-critique.md` containing:
+Create critiques documentation containing:
 - **What Actually Works**: Evidence-based component validation
 - **Critical Gaps**: Honest assessment of missing pieces
 - **Production Risks**: Security, performance, compliance issues
