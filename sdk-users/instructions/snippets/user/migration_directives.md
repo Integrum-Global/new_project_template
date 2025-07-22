@@ -97,11 +97,11 @@ Is this content workflow-specific?
 ### Four-Pass Critique Strategy (MANDATORY)
 
 Perform 4 ultrathink critique passes to ensure migration completeness:
-
-**Pass 1 - Initial Analysis**: Document all business logic, API calls, state transitions  
-**Pass 2 - Completeness Check**: Identify gaps in requirements, performance, security, integration  
-**Pass 3 - Multi-Perspective Review**: Validate from migration, testing, operations, and business perspectives  
-**Pass 4 - Content Separation Validation**: Ensure systematic vs workflow-specific content is properly separated
+In each pass, please:
+- Document all business logic, API calls, state transitions  
+- Identify gaps in requirements, performance, security, integration  
+- Validate from migration, testing, operations, and business perspectives  
+- Ensure systematic vs workflow-specific content is properly separated
 
 ## Essential Context Loading
 Load these files before starting (DO NOT proceed until loaded):
