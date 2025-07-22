@@ -41,7 +41,7 @@ Write tests BEFORE implementation. This prevents missing tests and ensures worki
 
 Do not write new tests without checking that existing ones can be modified to include them. You MUST have all 3 kinds of tests:
 
-### Tier 1: Unit Tests_C
+### Tier 1: Unit Tests
 - **Location**: `tests/unit/`
 - **Requirements**: 
   - Fast execution (<1s per test)
