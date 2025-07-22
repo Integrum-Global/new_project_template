@@ -34,7 +34,7 @@ cycle_builder.connect("processor", "evaluator", mapping={"result": "input_data"}
              .timeout(300) \
              .build()
 
-runtime = LocalRuntime()
+runtime = LocalRuntime()  # Secure by default (v0.8.6+)
 results, run_id = runtime.execute(workflow.build())  # Real cyclic execution
 ```
 
@@ -45,7 +45,7 @@ from kailash.runtime.local import LocalRuntime
 
 workflow = WorkflowBuilder()
 workflow.add_node("LLMAgentNode", "agent", {"model": "gpt-4"})
-runtime = LocalRuntime()
+runtime = LocalRuntime()  # Secure by default (v0.8.6+)
 results, run_id = runtime.execute(workflow.build())
 ```
 
@@ -66,7 +66,7 @@ workflow = WorkflowBuilder()
 workflow.add_node("UserCreateNode", "create", {"name": "Alice", "age": 25})
 workflow.add_node("UserListNode", "list", {"filter": {"age": {"$gt": 18}}})
 
-runtime = LocalRuntime()
+runtime = LocalRuntime()  # Secure by default (v0.8.6+)
 results, run_id = runtime.execute(workflow.build())
 ```
 
@@ -288,12 +288,18 @@ The **Dataflow and Nexus** provides complete domain-specific applications built 
 14. **Core SDK Architecture**: TODO-111 resolved critical infrastructure gaps - CyclicWorkflowExecutor, WorkflowVisualizer, and ConnectionManager now production-ready with comprehensive test coverage
 15. **Parameter Naming Convention**: Use `action` (not `operation`) for consistency across nodes
 16. **Test Performance**: Run unit tests directly for 11x faster execution: `pytest tests/unit/`
-17. **Connection Parameter Validation** (v0.8.4+): Enterprise security with comprehensive validation
-    - Use `LocalRuntime(connection_validation="strict")` for production
-    - Connection contracts with `workflow.add_typed_connection(..., contract_name="no_pii_data")`
-    - Type-safe ports with `InputPort[str] = StringPort(required=True)`
-    - Monitoring with `get_validation_metrics()` and `AlertManager`
-    - Performance optimization with caching and batch validation
+17. **Parameter Validation & Debugging**: Enhanced parameter troubleshooting
+    - Use `LocalRuntime(parameter_validation="strict", enable_parameter_debugging=True)` 
+    - Debug with `ParameterDebugger().trace_parameter_flow(workflow, runtime_parameters)`
+    - Validation modes: `"off"`, `"warn"`, `"stri![img.png](img.png)ct"`, `"debug"`
+    - See: [Parameter Troubleshooting Guide](sdk-users/3-development/parameter-troubleshooting-guide.md)
+18. **Security-First Connection Parameter Validation**
+    - **DEFAULT**: `LocalRuntime()` now uses `connection_validation="strict"` (was "warn")
+    - **SECURITY**: Prevents SQL injection, type confusion, and unauthorized parameter attacks
+    - **MIGRATION**: Use `LocalRuntime(connection_validation="warn")` for backward compatibility
+    - **CONTRACTS**: `workflow.add_typed_connection(..., contract="secure")` for advanced validation
+    - **MONITORING**: Full security metrics with `get_validation_metrics()` and `AlertManager`
+    - **CRITICAL**: All connection parameters are now validated by default for enterprise security
 
 ## 🏢 Enterprise Workflow Deployment
 
