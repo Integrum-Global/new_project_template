@@ -4,6 +4,33 @@
 
 This guide provides strict directives for implementing the Kailash SDK migration using Test-Driven Development (TDD) and continuous validation.
 
+## Document-First Migration Strategy
+
+### For Complex Workflow Migrations (RECOMMENDED)
+
+When migrating workflows intricate business logic, use this document-first approach:
+
+1. **Create Comprehensive Original Analysis**
+   - Trace backwards from main.py or views.py to ensure all logic captured
+   - Document EVERY business logic in detail
+   - Capture all API calls with exact parameters
+   - Map all state transitions and context updates
+   - Document edge cases and error handling
+   - Include performance optimizations
+   - If there are existing SDK workflows and components, capture their logic and structure
+
+2. **Self-Critique the Analysis**
+   - Review for completeness (aim for 100% coverage)
+   - Identify any missing API response formats
+   - Check for hidden dependencies
+   - Validate business rule capture
+
+3. **Use Analysis to Guide Migration**
+   - Implement based on documented logic
+   - Preserve all critical business rules
+   - Maintain performance optimizations
+   - Keep analysis files for validation
+
 ## 🧪 TEST-FIRST DEVELOPMENT (MANDATORY)
 
 Write tests BEFORE implementation. This prevents missing tests and ensures working code. You MUST follow the 3-tier testing strategy exactly as specified in `sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`.
@@ -14,7 +41,7 @@ Write tests BEFORE implementation. This prevents missing tests and ensures worki
 
 Do not write new tests without checking that existing ones can be modified to include them. You MUST have all 3 kinds of tests:
 
-### Tier 1: Unit Tests
+### Tier 1: Unit Tests_C
 - **Location**: `tests/unit/`
 - **Requirements**: 
   - Fast execution (<1s per test)
