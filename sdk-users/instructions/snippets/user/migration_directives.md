@@ -19,7 +19,7 @@ This guide provides strict directives for implementing the Kailash SDK migration
    - Monitoring and alerting patterns
    - Operational readiness checklists
 
-2. **Workflow-Specific Analysis**: `workflows/wX_name/WX_ORIGINAL_COMPLETE_ANALYSIS.md`
+2. **Workflow-Specific Analysis**:
    - Workflow-specific business logic
    - Workflow-specific configuration parameters
    - Workflow-specific testing scenarios
@@ -31,8 +31,7 @@ This guide provides strict directives for implementing the Kailash SDK migration
 When migrating workflows with intricate business logic, use this document-first approach:
 
 1. **Create Comprehensive Original Analysis**
-   - Check each workflow in docs/workflows (e.g. W1_ORIGINAL_COMPLETE_ANALYSIS.md) 
-   - Add to your understanding the langgraph implementations in workflows/
+   - Trace backwards from main.py or views.py to ensure all logic captured
    - **Reference systematic patterns**: Use [WORKFLOW_MIGRATION_PATTERNS.md](WORKFLOW_MIGRATION_PATTERNS.md) for framework concerns
    - **Focus on workflow specifics**: Capture workflow-unique business logic, configurations, edge cases
    - Ensure that there are no gaps and we have all the information and connectivity to recreate the migrated workflows with 100% replicability
@@ -80,19 +79,6 @@ Before proceeding with migration, validate content separation:
 - [ ] **Performance Baselines**: Actual measurements from original implementation
 - [ ] **State Transition Flows**: Clear diagrams for integration scenarios
 - [ ] **Configuration Separation**: Only workflow-specific config in workflow doc
-
-#### Content Placement Decision Tree
-```
-Is this content workflow-specific?
-├── YES: Unique to this workflow → Put in WX_ORIGINAL_COMPLETE_ANALYSIS.md
-└── NO: Could apply to other workflows
-    ├── Framework pattern → Put in WORKFLOW_MIGRATION_PATTERNS.md
-    ├── Configuration template → Put in WORKFLOW_MIGRATION_PATTERNS.md  
-    ├── Error handling pattern → Put in WORKFLOW_MIGRATION_PATTERNS.md
-    └── Testing strategy → Put in WORKFLOW_MIGRATION_PATTERNS.md
-```
-
-## Migration Quality Validation Framework
 
 ### Four-Pass Critique Strategy (MANDATORY)
 
@@ -143,7 +129,7 @@ Write tests BEFORE implementation. This prevents missing tests and ensures worki
 
 ### Critical Requirements
 
-**Always ensure that your TDD covers all the detailed todo entries**
+**Always ensure that your TDD covers all the requirements in our Document-First Migration Documentation**
 
 Do not write new tests without checking that existing ones can be modified to include them. You MUST have all 3 kinds of tests:
 
