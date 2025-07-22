@@ -103,6 +103,40 @@ Perform 4 ultrathink critique passes to ensure migration completeness:
 **Pass 3 - Multi-Perspective Review**: Validate from migration, testing, operations, and business perspectives  
 **Pass 4 - Content Separation Validation**: Ensure systematic vs workflow-specific content is properly separated
 
+## Essential Context Loading
+Load these files before starting (DO NOT proceed until loaded):
+- Root `CLAUDE.md` - Core validation rules and critical patterns
+- `sdk-users/CLAUDE.md` - Implementation patterns and architectural guidance
+- `README.md` - Project overview and structure
+- Any existing migration documentation in `docs/migration/` or similar directories
+- Current test structure and patterns in `tests/`
+- System architecture documentation if available
+
+**For implementation guidance during development, remember these key resource locations** (use MCP tools to search when needed):
+- `sdk-users/3-development/` - Core implementation guides and patterns
+- `sdk-users/2-core-concepts/nodes/` - Node selection and usage patterns
+- `sdk-users/2-core-concepts/cheatsheet/` - Copy-paste implementation patterns
+- `sdk-users/2-core-concepts/validation/common-mistakes.md` - Error database with solutions
+
+### Framework-First Approach (MANDATORY)
+Check for existing framework solutions that can replace current components (use MCP tools to search):
+- `sdk-users/apps/dataflow/` - Replace custom state management
+- `sdk-users/apps/nexus/` - Replace FastAPI endpoints
+- Other frameworks in `sdk-users/apps/` that may replace custom code
+
+### Critical Understanding Confirmation
+After loading the essential files, you MUST confirm you understand:
+- **3-tier testing strategy** (`sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`)
+  - **Tier 1 requirements**: Fast (<1s), isolated, can use mocks, no external dependencies, no sleep
+  - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
+  - Real Docker infrastructure requirement - never skip this for integration/E2E tests
+- **Migration-specific testing**: Test against documented behavior, NOT current implementation
+- **Bug fixing during migration**: Fix known bugs instead of replicating them
+- **Project structure**: Understand how the current project is organized
+- **Available frameworks** in `sdk-users/apps/` that can replace custom code
+
+**Search relevant documentation as needed during implementation using MCP tools instead of loading everything upfront.**
+
 ## 🧪 TEST-FIRST DEVELOPMENT (MANDATORY)
 
 Write tests BEFORE implementation. This prevents missing tests and ensures working code. You MUST follow the 3-tier testing strategy exactly as specified in `sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`.
