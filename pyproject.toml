@@ -26,7 +26,7 @@ dependencies = [
     "kailash-nexus>=1.0.3",
 
     # Local apps with correct versions
-    "dataflow==0.3.1",
+    "kailash-dataflow==0.3.1",
 
     # Web Framework
     "fastapi[all]>=0.115.0",
