@@ -4,6 +4,47 @@
 
 This guide provides strict directives for implementing the Kailash SDK migration using Test-Driven Development (TDD) and continuous validation.
 
+## Essential Context Loading
+Load these files before starting (DO NOT proceed until loaded):
+- Root `CLAUDE.md` - Core validation rules and critical patterns
+- `sdk-users/CLAUDE.md` - Implementation patterns and architectural guidance
+- `sdk-users/7-gold-standards/` - Core gold standards for implementation
+
+**For implementation guidance during development, remember these key resource locations** (use MCP tools to search when needed):
+- `sdk-users/3-development/` - Core implementation guides and patterns
+- `sdk-users/2-core-concepts/nodes/` - Node selection and usage patterns
+- `sdk-users/2-core-concepts/cheatsheet/` - Copy-paste implementation patterns
+- `sdk-users/2-core-concepts/validation/common-mistakes.md` - Error database with solutions
+
+### Framework-First Approach (MANDATORY)
+Check for existing framework solutions that can accelerate implementation (use MCP tools to search):
+- `apps/kailash-dataflow/` - Workflow-native database framework
+- `apps/kailash-mcp/` - Zero-configuration MCP framework
+- `apps/kailash-nexus/` - Multi-channel unified platform
+- Other frameworks in `apps/` that may provide relevant components
+
+### Critical Understanding Confirmation
+After loading the essential files, you MUST demonstrate your understanding of the following:
+- **Gold standards** in `sdk-users/7-gold-standards/`
+  - Absolute Imports
+  - Custom Node Development
+  - Parameter Passing
+  - Test Creation
+- **kailash-nexus** in `sdk-users/apps/nexus.`
+- **kailash-dataflow** in `sdk-users/apps/dataflow.`
+- **3-tier testing strategy** (`sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`)
+  - **Tier 1 requirements**: Fast (<1s), isolated, can use mocks, no external dependencies, no sleep
+  - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
+  - Real Docker infrastructure requirement - never skip this for integration/E2E tests
+- **Todo management system** structure
+- **Available solutions** in `apps/` that can provide ready-made solutions. Demonstrate your understanding by showing me:
+  - What frameworks are available and what do they provide
+  - How they can be used to accelerate implementation
+  - How to implement using these frameworks
+- **How to use MCP tools** to search relevant documentation when needed
+
+**Search relevant documentation as needed during implementation using MCP tools instead of loading everything upfront.**
+
 ## Document-First Migration Strategy
 
 ### Migration Documentation Structure
@@ -11,7 +52,9 @@ This guide provides strict directives for implementing the Kailash SDK migration
 **IMPORTANT**: Use the two-document approach for comprehensive migration:
 
 1. **Systematic Patterns**: [WORKFLOW_MIGRATION_PATTERNS.md](WORKFLOW_MIGRATION_PATTERNS.md)
-   - Framework translation guide (LangGraph → Kailash SDK)
+   - Gateway patterns
+   - Data model and infrastructure patterns
+   - Framework translation guide
    - Standard configuration templates
    - Error handling and recovery patterns  
    - Data validation schemas
@@ -89,39 +132,72 @@ In each pass, please:
 - Validate from migration, testing, operations, and business perspectives  
 - Ensure systematic vs workflow-specific content is properly separated
 
-## Essential Context Loading
-Load these files before starting (DO NOT proceed until loaded):
-- Root `CLAUDE.md` - Core validation rules and critical patterns
-- `sdk-users/CLAUDE.md` - Implementation patterns and architectural guidance
-- `README.md` - Project overview and structure
-- Any existing migration documentation in `docs/migration/` or similar directories
-- Current test structure and patterns in `tests/`
-- System architecture documentation if available
+## Architectural Decision Documentation
+Before writing any code, you MUST create an ADR (Architecture Decision Record) in `sdk-contributors/architecture/adr/`. This prevents wrong implementations by documenting the approach and reasoning.
 
-**For implementation guidance during development, remember these key resource locations** (use MCP tools to search when needed):
-- `sdk-users/3-development/` - Core implementation guides and patterns
-- `sdk-users/2-core-concepts/nodes/` - Node selection and usage patterns
-- `sdk-users/2-core-concepts/cheatsheet/` - Copy-paste implementation patterns
-- `sdk-users/2-core-concepts/validation/common-mistakes.md` - Error database with solutions
+You MUST create an ADR with the following structure:
 
-### Framework-First Approach (MANDATORY)
-Check for existing framework solutions that can replace current components (use MCP tools to search):
-- `sdk-users/apps/dataflow/` - Replace custom state management
-- `sdk-users/apps/nexus/` - Replace FastAPI endpoints
-- Other frameworks in `sdk-users/apps/` that may replace custom code
+1. **Title**: ADR-XXX-feature-name.md (replace XXX with next number)
+2. **Context**:
+   - Why is this change needed?
+   - What problem does it solve?
+   - What are the current limitations?
+   - What are the business requirements?
 
-### Critical Understanding Confirmation
-After loading the essential files, you MUST confirm you understand:
-- **3-tier testing strategy** (`sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`)
-  - **Tier 1 requirements**: Fast (<1s), isolated, can use mocks, no external dependencies, no sleep
-  - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
-  - Real Docker infrastructure requirement - never skip this for integration/E2E tests
-- **Migration-specific testing**: Test against documented behavior, NOT current implementation
-- **Bug fixing during migration**: Fix known bugs instead of replicating them
-- **Project structure**: Understand how the current project is organized
-- **Available frameworks** in `sdk-users/apps/` that can replace custom code
+3. **Decision**:
+   - What specific approach will be taken?
+   - What technologies/patterns will be used?
+   - How does it integrate with existing SDK?
+   - What are the implementation details?
 
-**Search relevant documentation as needed during implementation using MCP tools instead of loading everything upfront.**
+4. **Consequences**:
+   - What are the positive impacts?
+   - What are the negative impacts?
+   - What are the risks?
+   - How will this affect other components?
+
+5. **Alternatives**:
+   - What other approaches were considered?
+   - Why were they rejected?
+   - What are the trade-offs?
+
+**Show me the complete ADR file contents before proceeding with any implementation. Do not write code until the ADR is approved.**
+
+## Implementation Plan
+Analyze the implementation thoroughly:
+- What existing components can you reuse? (Be specific with file paths)
+- What new components need to be created? (List each one)
+- What are the integration points? (How will components connect?)
+- What could go wrong? (Identify 3 most likely failure points)
+
+**Show me your complete implementation plan before proceeding.**
+
+## TODO SYSTEM UPDATE
+
+Update the todo management system before starting implementation. This ensures proper tracking and prevents incomplete work.
+
+The local todo management system is in `sdk-contributors/project/todos/`. You MUST:
+
+1. **Start with updating the master list** (`000-master.md`):
+   - Look through the entire file thoroughly
+   - Add the new todo with clear description
+   - Update the status of any related existing todos
+   - Keep the file concise and easy to navigate
+
+2. **Create detailed entry** in `todos/active/` with:
+   - Clear description of what needs to be implemented
+   - Specific acceptance criteria for completion
+   - Dependencies on other components
+   - Risk assessment and mitigation strategies
+   - Testing requirements for each component
+
+3. **Break down into subtasks** with clear completion criteria:
+   - Each subtask should be completable in 1-2 hours
+   - Each subtask should have specific verification steps
+   - Each subtask should have clear success criteria
+   - Each subtask should identify potential failure points
+
+**Show me the todo entries you've created before proceeding with any implementation. Do not start coding until todos are properly documented.**
 
 ## 🧪 TEST-FIRST DEVELOPMENT (MANDATORY)
 
@@ -129,7 +205,7 @@ Write tests BEFORE implementation. This prevents missing tests and ensures worki
 
 ### Critical Requirements
 
-**Always ensure that your TDD covers all the requirements in our Document-First Migration Documentation**
+**Always ensure that your TDD covers all the detailed todo entries**
 
 Do not write new tests without checking that existing ones can be modified to include them. You MUST have all 3 kinds of tests:
 
@@ -340,6 +416,68 @@ A component is ONLY complete when:
 6. Business logic preserved
 7. No breaking changes introduced
 
+## TEST COVERAGE VERIFICATION
+
+Verify test coverage:
+- Run test coverage analysis: `pytest --cov=src/kailash --cov-report=html --cov-report=term`
+- Aim for >80% test coverage at the solution's level
+- Ensure tests are importing the actual modules
+- Ensure that tests are not over-mocked that they don't reflect reality
+- Ensure that implementation and infrastructure dependencies are real and available
+- Skips do not count towards coverage and ensure no tests are skipped
+- Use real Docker services for integration/E2E tests
+  - Must use the docker implementation in `tests/utils`
+  - Always run `./tests/utils/test-env up && ./tests/utils/test-env status` before tests
+- Review coverage report carefully to identify untested code paths
+- Add additional tests for any uncovered critical code
+- Follow the same 3-tier testing strategy for new testsplea
+- **NO MOCKING** in integration/E2E tiers
+- If tests contain capabilities and components are missing
+  - Do not simply skip or remove them because we follow TDD and will write tests first before implementation.
+  - The tests covers capabilities that we must have, thus if tests are missing capabilities or functionality:
+    - Identify the missing capabilities
+    - Write new tests to cover those capabilities
+    - Ensure they follow the existing patterns and policies
+    - Do not remove tests that are not implemented yet
+
+Ensure that no tests are trivial:
+- Ensure tests actually verify intended functionality
+- Cover edge cases and error conditions
+- Avoid redundant or trivial tests that do not add value
+- Ensure tests are meaningful and cover actual behavior
+- Avoid tests that only check for syntax or trivial conditions
+- Ensure tests are not just placeholders or empty stubs
+- Ensure tests are not just checking for presence of code or artifact without verifying actual functionality
+- Ensure that performance tests are meaningful and cover actual performance characteristics
+
+**Show me the coverage report and address any gaps before proceeding.**
+
+## DOCUMENTATION VALIDATION
+
+Validate ALL documentation updates. For each doc file you've changed, you MUST create temporary tests to verify every code example actually works.
+
+For each doc file changed:
+1. Create a temp test file (e.g., `/tmp/test_docs_feature.py`)
+2. Copy-paste every code example from the documentation
+3. Add necessary imports and setup code
+4. Run it with real Docker infrastructure
+5. Confirm it works exactly as documented
+
+You MUST show me the validation results for each file:
+- **File**: [path to documentation file]
+- **Temp test**: [path to temp test file]
+- **Command**: [command used to run the test]
+- **Output**: [full output proving it works]
+
+Always run `./tests/utils/test-env up && ./tests/utils/test-env status` before running documentation tests. Use real services, not mocks.
+
+Cross-reference the actual SDK implementation and the corresponding tests in `tests/` to understand the expected behavior and correct usage patterns. Tests in `tests/` are written in accordance with the policies in `sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`.
+
+**Show me validation results for each file:**
+- File: [path to documentation file]
+- Temp test: [path to temp test file]
+- Output: [full output proving it works]
+
 ## 📊 Progress Tracking
 
 Track each component's progress:
@@ -416,12 +554,6 @@ python scripts/benchmark_phase_{N}.py --validate-requirements
 - [ ] Team can actually use the implemented components
 
 **If ANY checkbox is unchecked, DO NOT proceed to next phase.**
-
-#### **8. Stakeholder Sign-off**
-- [ ] Technical lead review of critique findings
-- [ ] Business owner validation of requirements met
-- [ ] Security review if applicable
-- [ ] Documentation review for completeness
 
 ---
 
