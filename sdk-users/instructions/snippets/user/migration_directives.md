@@ -36,7 +36,7 @@ After loading the essential files, you MUST demonstrate your understanding of th
   - **Tier 1 requirements**: Fast (<1s), isolated, can use mocks, no external dependencies, no sleep
   - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
   - Real Docker infrastructure requirement - never skip this for integration/E2E tests
-- **Todo management system** structure
+- **Todo management system** structure in `sdk-contributors/project/todos/`
 - **Available solutions** in `apps/` that can provide ready-made solutions. Demonstrate your understanding by showing me:
   - What frameworks are available and what do they provide
   - How they can be used to accelerate implementation

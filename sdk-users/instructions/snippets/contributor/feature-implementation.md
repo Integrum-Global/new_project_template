@@ -13,7 +13,6 @@ Load these files before starting (DO NOT proceed until loaded):
 - Root `CLAUDE.md` - Core validation rules and critical patterns
 - `sdk-users/CLAUDE.md` - Implementation patterns and architectural guidance
 - `sdk-users/7-gold-standards/` - Core gold standards for implementation
-  - Implemented improvements in the SDK based on the comments in this directory, yet to update 7-gold-standards.
 - `sdk-contributors/project/todos/000-master.md` - Current project state and priorities
 
 **For implementation guidance during development, remember these key resource locations** (use MCP tools to search when needed):
@@ -30,7 +29,14 @@ Check for existing framework solutions that can accelerate implementation (use M
 - Other frameworks in `apps/` that may provide relevant components
 
 ### Critical Understanding Confirmation
-After loading the essential files, you MUST confirm you understand:
+After loading the essential files, you MUST demonstrate your understanding of the following:
+- **Gold standards** in `sdk-users/7-gold-standards/`
+  - Absolute Imports
+  - Custom Node Development
+  - Parameter Passing
+  - Test Creation
+- **kailash-nexus** in `sdk-users/apps/nexus.`
+- **kailash-dataflow** in `sdk-users/apps/dataflow.`
 - **3-tier testing strategy** (`sdk-users/3-development/testing/regression-testing-strategy.md` and `sdk-users/3-development/testing/test-organization-policy.md`)
   - **Tier 1 requirements**: Fast (<1s), isolated, can use mocks, no external dependencies, no sleep
   - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
@@ -343,8 +349,7 @@ Ensure that no tests are trivial:
 - Avoid tests that only check for syntax or trivial conditions
 - Ensure tests are not just placeholders or empty stubs
 - Ensure tests are not just checking for presence of code or artifact without verifying actual functionality
-- Ensure that performance tests are meaningful and cover actual performance characteristics
-
+- Ensure that performance tests are meaningful and cover actual performance characteristic
 **Show me the coverage report and address any gaps before proceeding.**
 
 ## 7. DOCUMENTATION VALIDATION

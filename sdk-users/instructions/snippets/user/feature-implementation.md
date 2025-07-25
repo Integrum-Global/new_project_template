@@ -3,7 +3,7 @@
 *Copy-paste this entire section to Claude Code for feature additions*
 
 ---
-
+ 
 You are implementing a feature. Follow these steps exactly and show me complete outputs at each step. Do not summarize or skip any validation steps.
 
 ## 1. CONTEXT LOADING AND ULTRATHINK ACTIVATION
@@ -22,10 +22,9 @@ Load these files before starting (DO NOT proceed until loaded):
 
 ### Framework-First Approach (MANDATORY)
 Check for existing framework solutions that can accelerate implementation (use MCP tools to search):
-- `apps/kailash-dataflow/` - Workflow-native database framework
-- `apps/kailash-mcp/` - Zero-configuration MCP framework
-- `apps/kailash-nexus/` - Multi-channel unified platform
-- Other frameworks in `apps/` that may provide relevant components
+- `sdk-users/apps/dataflow/` - Workflow-native database framework
+- `sdk-users/apps/nexus/` - Multi-channel unified platform
+- Other frameworks in `sdk-users/apps/` that may provide relevant components
 
 ### Critical Understanding Confirmation
 After loading the essential files, you MUST demonstrate your understanding of the following:
@@ -41,7 +40,7 @@ After loading the essential files, you MUST demonstrate your understanding of th
   - **NO MOCKING policy** for Tier 2/3 tests - this is absolutely critical
   - Real Docker infrastructure requirement - never skip this for integration/E2E tests
 - **Todo management system** two-tiered: Repo level todos are in `todos/` and module level todos are in their respective `src/` sub-directories.
-- **Available solutions** in `apps/` that can provide ready-made solutions. Demonstrate your understanding by showing me:
+- **Available solutions** in `sdk-users/apps/` that can provide ready-made solutions. Demonstrate your understanding by showing me:
   - What frameworks are available and what do they provide
   - How they can be used to accelerate implementation
   - How to implement using these frameworks
@@ -60,7 +59,7 @@ Put on your ultrathink cap. Before we begin any implementation, you MUST analyze
 2. **What existing SDK components should I reuse instead of creating new code?**
    - Use MCP tools to search `src/kailash/` for existing implementations
    - Use MCP tools to search `sdk-users/` for documented patterns
-   - Use MCP tools to search `apps/` frameworks for ready-made solutions
+   - Use MCP tools to search `sdk-users/apps/` frameworks for ready-made solutions
    - Verify there isn't already a solution in the codebase
 
 3. **What tests will definitively prove this works in production?**
@@ -114,10 +113,9 @@ This prevents incomplete implementations by ensuring we understand exactly what 
 
 ### Framework Solutions Check (CRITICAL)
 **MANDATORY**: Search for existing solutions before writing any new code:
-- Use MCP tools to search `apps/kailash-dataflow/` for database-related solutions
-- Use MCP tools to search `apps/kailash-mcp/` for MCP-related solutions
-- Use MCP tools to search `apps/kailash-nexus/` for platform-related solutions
-- Use MCP tools to search `src/kailash/` for similar implementations
+- Use MCP tools to search `sdk-users/apps/dataflow/` for database-related solutions
+- Use MCP tools to search `sdk-users/apps/nexus/` for platform-related solutions
+- Use MCP tools to search `sdk-users/` for similar implementations
 
 **Document and show me what existing solutions you found and what you can reuse.**
 
@@ -281,7 +279,7 @@ For each component, you MUST:
 After each component, you MUST validate the following against the detailed todo entries:
 
 1. **Does it follow existing SDK patterns?**
-   - Check `src/kailash/` for similar implementations
+   - Check `sdk-users/` for similar implementations
    - Follow the established coding conventions
    - Use existing base classes and interfaces
    - Respect the established directory structure
