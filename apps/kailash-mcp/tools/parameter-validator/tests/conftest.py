@@ -2,25 +2,26 @@
 Shared test fixtures for MCP parameter validator tests.
 """
 
-import pytest
 import sys
 from pathlib import Path
-from typing import Dict, Any
+from typing import Any, Dict
+
+import pytest
 
 # Add the Kailash SDK to the path
 sdk_root = Path(__file__).parents[5]  # Go up to kailash_python_sdk root
 sys.path.insert(0, str(sdk_root / "src"))
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from kailash.mcp_server import MCPServer
-from kailash.workflow.builder import WorkflowBuilder
-from kailash.nodes.base import Node, NodeParameter, NodeRegistry
-from kailash.workflow.validation import ParameterDeclarationValidator
-
-from validator import ParameterValidator
+from server import ParameterValidationServer
 from suggestions import FixSuggestionEngine
 from tools import ParameterValidationTools
-from server import ParameterValidationServer
+from validator import ParameterValidator
+
+from kailash.mcp_server import MCPServer
+from kailash.nodes.base import Node, NodeParameter, NodeRegistry
+from kailash.workflow.builder import WorkflowBuilder
+from kailash.workflow.validation import ParameterDeclarationValidator
 
 
 @pytest.fixture
@@ -72,7 +73,7 @@ def invalid_workflow():
 @pytest.fixture
 def valid_workflow_code():
     """Python code for a valid workflow."""
-    return '''
+    return """
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
 
@@ -80,13 +81,13 @@ workflow = WorkflowBuilder()
 workflow.add_node("LLMAgentNode", "agent", {"model": "gpt-4", "prompt": "Hello"})
 runtime = LocalRuntime()
 results, run_id = runtime.execute(workflow.build())
-'''
+"""
 
 
 @pytest.fixture
 def invalid_workflow_code():
     """Python code for a workflow with parameter errors."""
-    return '''
+    return """
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
 
@@ -97,25 +98,25 @@ workflow.add_node("LLMAgentNode", "agent", {})
 workflow.add_connection("agent", "processor")
 runtime = LocalRuntime()
 results, run_id = runtime.execute(workflow.build())
-'''
+"""
 
 
-@pytest.fixture  
+@pytest.fixture
 def node_with_missing_parameters_code():
     """Node code missing get_parameters() method."""
-    return '''
+    return """
 from kailash.nodes.base import Node
 
 class TestNode(Node):
     def run(self, **kwargs):
         return {"result": "value"}
-'''
+"""
 
 
 @pytest.fixture
 def node_with_valid_parameters_code():
     """Node code with proper get_parameters() implementation."""
-    return '''
+    return """
 from kailash.nodes.base import Node, NodeParameter
 from typing import List
 
@@ -132,7 +133,7 @@ class TestNode(Node):
     
     def run(self, **kwargs):
         return {"result": "value"}
-'''
+"""
 
 
 @pytest.fixture
@@ -141,21 +142,26 @@ def connection_test_cases():
     return [
         {
             "description": "Valid 4-parameter connection",
-            "connection": {"source": "node1", "output": "result", "target": "node2", "input": "data"},
-            "should_pass": True
+            "connection": {
+                "source": "node1",
+                "output": "result",
+                "target": "node2",
+                "input": "data",
+            },
+            "should_pass": True,
         },
         {
             "description": "Invalid 2-parameter connection",
-            "connection": {"source": "node1", "target": "node2"}, 
+            "connection": {"source": "node1", "target": "node2"},
             "should_pass": False,
-            "expected_error": "CON002"
+            "expected_error": "CON002",
         },
         {
             "description": "Missing target parameter",
             "connection": {"source": "node1", "output": "result", "input": "data"},
             "should_pass": False,
-            "expected_error": "CON001"
-        }
+            "expected_error": "CON001",
+        },
     ]
 
 
@@ -168,15 +174,15 @@ def validation_error_examples():
             "message": "Node 'TestNode' missing get_parameters() method",
             "line": 5,
             "severity": "error",
-            "node_name": "TestNode"
+            "node_name": "TestNode",
         },
         {
-            "code": "PAR002", 
+            "code": "PAR002",
             "message": "Using undeclared parameter 'undeclared_param' in node 'TestNode'",
             "line": 12,
             "severity": "error",
             "node_name": "TestNode",
-            "parameter_name": "undeclared_param"
+            "parameter_name": "undeclared_param",
         },
         {
             "code": "CON002",
@@ -184,8 +190,8 @@ def validation_error_examples():
             "line": 8,
             "severity": "error",
             "source": "node1",
-            "target": "node2"
-        }
+            "target": "node2",
+        },
     ]
 
 
@@ -193,47 +199,45 @@ def validation_error_examples():
 def performance_test_workflow():
     """Large workflow for performance testing."""
     workflow = WorkflowBuilder()
-    
+
     # Create 50 nodes with connections
     for i in range(50):
-        workflow.add_node("LLMAgentNode", f"agent_{i}", {
-            "model": "gpt-4",
-            "prompt": f"Process data {i}"
-        })
-        
+        workflow.add_node(
+            "LLMAgentNode",
+            f"agent_{i}",
+            {"model": "gpt-4", "prompt": f"Process data {i}"},
+        )
+
         # Connect each node to the next (except last)
         if i > 0:
             workflow.add_connection(f"agent_{i-1}", "result", f"agent_{i}", "prompt")
-    
+
     return workflow
 
 
 class TestNodeForValidation(Node):
     """Test node class for validation testing."""
-    
+
     def get_parameters(self) -> list[NodeParameter]:
         return [
             NodeParameter(
-                name="test_param",
-                type=str,
-                required=True,
-                description="Test parameter"
+                name="test_param", type=str, required=True, description="Test parameter"
             ),
             NodeParameter(
-                name="optional_param", 
+                name="optional_param",
                 type=int,
                 required=False,
-                description="Optional parameter"
-            )
+                description="Optional parameter",
+            ),
         ]
-    
+
     def run(self, **kwargs):
         return {"result": f"Processed: {kwargs.get('test_param', 'default')}"}
 
 
 class InvalidTestNode(Node):
     """Test node missing get_parameters() for validation testing."""
-    
+
     def run(self, **kwargs):
         return {"result": "invalid"}
 
@@ -264,15 +268,15 @@ def mcp_tool_schemas():
                     "properties": {
                         "workflow_code": {
                             "type": "string",
-                            "description": "Python code defining the Kailash workflow"
+                            "description": "Python code defining the Kailash workflow",
                         }
                     },
-                    "required": ["workflow_code"]
-                }
-            }
+                    "required": ["workflow_code"],
+                },
+            },
         },
         "check_node_parameters": {
-            "type": "function", 
+            "type": "function",
             "function": {
                 "name": "check_node_parameters",
                 "description": "Validate node parameter declarations.",
@@ -281,13 +285,13 @@ def mcp_tool_schemas():
                     "properties": {
                         "node_code": {
                             "type": "string",
-                            "description": "Python code defining the node class"
+                            "description": "Python code defining the node class",
                         }
                     },
-                    "required": ["node_code"]
-                }
-            }
-        }
+                    "required": ["node_code"],
+                },
+            },
+        },
     }
 
 
@@ -296,7 +300,7 @@ def mcp_tool_schemas():
 def enforce_test_timeout(request):
     """Enforce timeout limits for different test tiers."""
     test_path = str(request.fspath)
-    
+
     if "/unit/" in test_path:
         # Unit tests must complete in <1s
         request.node.add_marker(pytest.mark.timeout(1))
