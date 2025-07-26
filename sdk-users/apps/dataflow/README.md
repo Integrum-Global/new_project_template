@@ -321,8 +321,8 @@ workflow.add_node("OrderUpdateNode", "update_total", {
 })
 
 # Connect nodes
-workflow.add_connection("create_order", "add_items")
-workflow.add_connection("add_items", "update_total")
+workflow.add_connection("create_order", "result", "add_items", "input")
+workflow.add_connection("add_items", "result", "update_total", "input")
 
 runtime = LocalRuntime()
 results, run_id = runtime.execute(workflow.build())

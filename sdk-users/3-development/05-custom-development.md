@@ -255,6 +255,7 @@ python -m kailash.cli.validate_imports src/myapp/nodes --fix
 
 ```python
 from kailash.workflow.builder import WorkflowBuilder
+from kailash.runtime.local import LocalRuntime
 from src.myapp.nodes.custom import CustomProcessorNode
 
 # Create workflow

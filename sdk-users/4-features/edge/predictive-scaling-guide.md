@@ -60,8 +60,8 @@ workflow.add_node("ResourceScalerNode", "predictor", {
 })
 
 # Connect workflow
-workflow.add_connection("scaler_start", "status", "recorder", "parameters")
-workflow.add_connection("recorder", "usage_recorded", "predictor", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 
 # Execute
 runtime = LocalRuntime()

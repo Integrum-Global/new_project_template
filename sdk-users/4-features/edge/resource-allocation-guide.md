@@ -56,8 +56,8 @@ workflow.add_node("ResourceAnalyzerNode", "optimizer", {
 })
 
 # Connect nodes
-workflow.add_connection("recorder", "status", "analyzer", "parameters")
-workflow.add_connection("analyzer", "analysis_summary", "optimizer", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 
 # Execute
 runtime = LocalRuntime()

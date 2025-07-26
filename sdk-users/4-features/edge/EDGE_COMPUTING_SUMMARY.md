@@ -361,9 +361,9 @@ workflow.add_node("EdgeMigrationNode", "migrate", {
 })
 
 # Connect nodes
-workflow.add_connection("state_check", "state", "monitor", "parameters")
-workflow.add_connection("monitor", "status", "warmer", "parameters")
-workflow.add_connection("warmer", "predictions", "migrate", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 
 # Execute
 runtime = LocalRuntime()

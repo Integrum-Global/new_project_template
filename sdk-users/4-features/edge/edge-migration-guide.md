@@ -177,7 +177,7 @@ workflow.add_node("EdgeMigrationNode", "metrics", {
 # Connect for continuous monitoring
 # Pass migration_id from migrate result to progress
 workflow.add_connection("migrate", "result", "progress", "migration_id")
-workflow.add_connection("progress", "progress", "metrics", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 ```
 
 ## Pause and Resume
@@ -291,8 +291,8 @@ workflow.add_node("EdgeMonitoringNode", "analytics", {
 })
 
 # Connect for integrated monitoring
-workflow.add_connection("monitor", "status", "migrate", "parameters")
-workflow.add_connection("migrate", "plan", "analytics", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 ```
 
 ## Shared State Architecture
@@ -418,11 +418,7 @@ workflow.add_node("EdgeMigrationNode", "migrate", {
 })
 
 # Only migrate if resources available
-workflow.add_connection(
-    "check_resources", "health",
-    "migrate", "parameters",
-    condition="health.target-edge.cpu_usage < 70"
-)
+workflow.add_connection("check_resources", "result", "health", "input")
 ```
 
 ### 4. Testing and Validation

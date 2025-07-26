@@ -278,7 +278,7 @@ class EnterpriseBaseNode(Node):
     def execute(self, **kwargs) -> Dict[str, Any]:
         """Execute with enterprise governance."""
         # Validate inputs
-        validated_inputs = self.validate_inputs(**kwargs)
+        validated_parameters= self.validate_inputs(**kwargs)
         
         # Audit parameter access
         if self.audit_enabled:
@@ -1018,6 +1018,7 @@ class GovernedProcessorNode(EnterpriseBaseNode):
 
 ```python
 from kailash.workflow.builder import WorkflowBuilder
+from kailash.runtime.local import LocalRuntime
 import warnings
 
 def create_user_management_workflow():
@@ -1047,10 +1048,7 @@ def create_user_management_workflow():
     })
     
     # Connect nodes
-    workflow.add_connection(
-        "user_mgmt_entry", "result",
-        "database_operation", "input"
-    )
+    workflow.add_connection("user_mgmt_entry", "result", "result", "input")
     
     return workflow.build()
 

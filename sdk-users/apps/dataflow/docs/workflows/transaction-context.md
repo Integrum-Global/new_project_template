@@ -149,9 +149,9 @@ workflow.add_node("UserUpdateNode", "update_user", {
 workflow.add_node("TransactionCommitNode", "commit_tx", {})
 
 # Connect nodes
-workflow.add_connection("begin_tx", "create_user")
-workflow.add_connection("create_user", "update_user")
-workflow.add_connection("update_user", "commit_tx")
+workflow.add_connection("begin_tx", "result", "create_user", "input")
+workflow.add_connection("create_user", "result", "update_user", "input")
+workflow.add_connection("update_user", "result", "commit_tx", "input")
 
 # Execute workflow
 runtime = LocalRuntime()
@@ -197,10 +197,10 @@ workflow.add_node("TransactionRollbackNode", "rollback_tx", {
 workflow.add_node("TransactionCommitNode", "commit_tx", {})
 
 # Connect with error handling
-workflow.add_connection("begin_tx", "create_user")
-workflow.add_connection("create_user", "validate_user")
-workflow.add_connection("validate_user", "commit_tx")
-workflow.add_connection("validate_user", "rollback_tx", on_error=True)
+workflow.add_connection("begin_tx", "result", "create_user", "input")
+workflow.add_connection("create_user", "result", "validate_user", "input")
+workflow.add_connection("validate_user", "result", "commit_tx", "input")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex pattern
 ```
 
 ### Savepoints for Nested Operations
@@ -250,13 +250,13 @@ workflow.add_node("TransactionRollbackToSavepointNode", "rollback_sp", {
 workflow.add_node("TransactionCommitNode", "commit_tx", {})
 
 # Connect with error handling
-workflow.add_connection("main_tx", "create_user")
-workflow.add_connection("create_user", "savepoint")
-workflow.add_connection("savepoint", "risky_update")
-workflow.add_connection("risky_update", "update_user")
+workflow.add_connection("main_tx", "result", "create_user", "input")
+workflow.add_connection("create_user", "result", "savepoint", "input")
+workflow.add_connection("savepoint", "result", "risky_update", "input")
+workflow.add_connection("risky_update", "result", "update_user", "input")
 workflow.add_connection("risky_update", "rollback_sp", on_error=True)
-workflow.add_connection("update_user", "commit_tx")
-workflow.add_connection("rollback_sp", "commit_tx")
+workflow.add_connection("update_user", "result", "commit_tx", "input")
+workflow.add_connection("rollback_sp", "result", "commit_tx", "input")
 ```
 
 ### E-commerce Order Processing
@@ -351,7 +351,7 @@ connections = [
 ]
 
 for source, target in connections:
-    workflow.add_connection(source, target)
+    workflow.add_connection(source, "result", target, "input")
 ```
 
 ## Multi-Workflow Transaction Isolation
@@ -435,7 +435,7 @@ workflow.add_node("TransactionScopeNode", "read_tx", {
 
 ```python
 # Always include error paths
-workflow.add_connection("risky_operation", "commit_tx")
+workflow.add_connection("risky_operation", "result", "commit_tx", "input")
 workflow.add_connection("risky_operation", "rollback_tx", on_error=True)
 
 # Use savepoints for partial rollbacks
@@ -582,8 +582,8 @@ workflow.add_node("UserCreateNode", "create", {
 })
 workflow.add_node("TransactionCommitNode", "commit", {})
 
-workflow.add_connection("tx", "create")
-workflow.add_connection("create", "commit")
+workflow.add_connection("tx", "result", "create", "input")
+workflow.add_connection("create", "result", "commit", "input")
 
 runtime = LocalRuntime()
 results, run_id = runtime.execute(workflow.build(), parameters={

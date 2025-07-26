@@ -251,8 +251,7 @@ workflow.add_node("EdgeDataNode", "financial_processor", {
 })
 
 # Connect with compliance-aware routing
-workflow.add_connection("eu_processor", "financial_processor", 
-    mapping={"user_id": "customer_id"})
+workflow.add_connection("eu_processor", "result", "financial_processor", "input")
 ```
 
 ## Integration with DataFlow

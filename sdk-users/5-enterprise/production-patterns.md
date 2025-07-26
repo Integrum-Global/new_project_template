@@ -25,7 +25,7 @@ from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
 from kailash.nodes.ai import LLMAgentNode
 from kailash.nodes.data import CSVReaderNode, AsyncSQLDatabaseNode
-from kailash.middleware import create_gateway
+from kailash.api.middleware import create_gateway
 from kailash.middleware.auth import MiddlewareAuthManager
 
 # ❌ AVOID: Relative imports in production code
@@ -167,7 +167,7 @@ def create_data_processing_workflow():
 
 
 # myapp/main.py
-from kailash.middleware import create_gateway
+from kailash.api.middleware import create_gateway
 from kailash.middleware.auth import MiddlewareAuthManager
 
 # Absolute imports for all app modules
@@ -385,7 +385,7 @@ print('✅ All imports verified')
 ```python
 # gateway_app.py - Production gateway application
 import os
-from kailash.middleware import create_gateway
+from kailash.api.middleware import create_gateway
 from kailash.middleware.auth import MiddlewareAuthManager
 # Note: Import PerformanceBenchmarkNode when added to exports
 
@@ -706,20 +706,11 @@ monitoring_workflow.add_node("DiscordAlertNode", "alerting", {
 })
 
 # Connect monitoring components
-monitoring_workflow.add_connection(
-    "health_checker", "result",
-    "alerting", "health_data"
-)
+monitoring_workflow.add_connection("health_checker", "result", "result", "input")
 
-monitoring_workflow.add_connection(
-    "threat_monitor", "threats",
-    "alerting", "threat_data"
-)
+monitoring_workflow.add_connection("threat_monitor", "result", "threats", "input")
 
-monitoring_workflow.add_connection(
-    "anomaly_detector", "anomalies",
-    "alerting", "anomaly_data"
-)
+monitoring_workflow.add_connection("anomaly_detector", "result", "anomalies", "input")
 ```
 
 ### Metrics Collection
@@ -802,10 +793,7 @@ metrics_workflow.add_node("HTTPRequestNode", "metrics_exporter", {
 })
 
 # Connect nodes
-metrics_workflow.add_connection(
-    "metrics_collector", "metrics",
-    "metrics_exporter", "body"
-)
+metrics_workflow.add_connection("metrics_collector", "result", "metrics", "input")
 ```
 
 ### Prometheus Integration
@@ -987,14 +975,10 @@ def create_monitored_enterprise_workflow():
     })
 
     # Connect with monitoring
-    workflow.connect("metrics", "status",
-                    mapping={"data_reader": "start_signal"})
-    workflow.connect("data_reader", "data",
-                    mapping={"database": "input_data"})
-    workflow.connect("database", "result",
-                    mapping={"processor": "data_input"})
-    workflow.connect("processor", "result",
-                    mapping={"anomaly_monitor": "execution_metrics"})
+    workflow.add_connection("metrics", "status", "data_reader", "start_signal")
+    workflow.add_connection("data_reader", "data", "database", "input_data")
+    workflow.add_connection("database", "result", "processor", "data_input")
+    workflow.add_connection("processor", "result", "anomaly_monitor", "execution_metrics")
 
     return workflow
 ```
@@ -1698,7 +1682,7 @@ async with session.get(url) as response:
 ```python
 from kailash.nodes.security import ThreatDetectionNode, AuditLogNode
 from kailash.nodes.api import RateLimitedAPINode
-from kailash.middleware import create_gateway
+from kailash.api.middleware import create_gateway
 
 # Security hardening workflow
 security_workflow = WorkflowBuilder()

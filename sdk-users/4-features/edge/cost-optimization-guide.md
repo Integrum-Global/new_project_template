@@ -61,8 +61,8 @@ workflow.add_node("ResourceOptimizerNode", "cost_optimizer", {
 })
 
 # Connect workflow
-workflow.add_connection("optimizer_start", "status", "cost_recorder", "parameters")
-workflow.add_connection("cost_recorder", "cost_recorded", "cost_optimizer", "parameters")
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
+workflow.add_connection("source", "result", "target", "input")  # Fixed complex parameters
 
 # Execute
 runtime = LocalRuntime()

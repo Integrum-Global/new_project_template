@@ -11,7 +11,7 @@ Starting in version 0.6.7, the Kailash SDK provides connection parameter validat
 
 Previously, parameters had two paths with different validation:
 - **Direct parameters** (via `runtime.execute()`) - ✅ VALIDATED
-- **Connection parameters** (via `workflow.add_connection()`) - ❌ NOT VALIDATED
+- **Connection parameters** (via `workflow.add_connection("source", "result", "target", "input")`) - ❌ NOT VALIDATED
 
 This created a security vulnerability where malicious data could flow between nodes without validation.
 

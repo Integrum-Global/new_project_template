@@ -36,6 +36,7 @@ This document consolidates all parameter passing knowledge for the Kailash SDK, 
 **Best for**: Static values, test fixtures, default settings
 
 ```python
+from kailash.workflow.builder import WorkflowBuilder
 workflow.add_node(MyNode, "node_id", {
     "param1": "static_value",
     "param2": {"nested": "data"},

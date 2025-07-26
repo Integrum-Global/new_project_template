@@ -10,6 +10,8 @@ Kailash represents a **paradigm shift** from traditional request-response archit
 
 **Traditional Approach (Django/Express/FastAPI):**
 ```python
+from kailash.workflow.builder import WorkflowBuilder
+from kailash.runtime.local import LocalRuntime
 # Best-effort execution - failure = lost work
 @app.post("/process")
 def process_data(data):
