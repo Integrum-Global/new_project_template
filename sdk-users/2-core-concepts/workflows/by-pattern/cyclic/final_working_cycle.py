@@ -135,20 +135,13 @@ def create_final_cyclic_workflow() -> Workflow:
     optimizer = EnterpriseOptimizationNode(name="optimizer")
     workflow.add_node("optimizer", optimizer)
 
-    # Create self-loop cycle
-    workflow.connect(
-        "optimizer",
-        "optimizer",
-        mapping={
-            "efficiency": "efficiency",
-            "quality": "quality",
-            "cost": "cost",
-            "performance": "performance",
-        },
-        cycle=True,
-        max_iterations=25,
-        convergence_check="score >= 0.95",
-    )
+    # Create cycle using CycleBuilder API (direct chaining for Workflow class)
+    workflow.create_cycle("final_optimization_cycle").connect("optimizer", "optimizer", mapping={
+        "efficiency": "efficiency",
+        "quality": "quality",
+        "cost": "cost",
+        "performance": "performance",
+    }).max_iterations(25).converge_when("score >= 0.90").build()
 
     return workflow
 

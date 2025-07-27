@@ -28,7 +28,9 @@ The Kailash SDK provides comprehensive edge computing capabilities that enable g
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 # WorkflowBuilder automatically manages edge infrastructure
-workflow = WorkflowBuilder(edge_config={
+workflow = WorkflowBuilder()
+# Edge configuration set via runtime parameters
+edge_config = {
     "discovery": {
         "locations": ["us-east-1", "eu-west-1", "ap-south-1"],
         "refresh_interval": 300
@@ -37,7 +39,7 @@ workflow = WorkflowBuilder(edge_config={
         "strict_mode": True,
         "default_classification": "pii"
     }
-})
+}
 ```
 
 ### 2. Edge Data Node
@@ -105,9 +107,9 @@ workflow.add_node("EdgeMonitoringNode", "monitor", {
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 # Store user data in their region for compliance
-workflow = WorkflowBuilder(edge_config={
-    "compliance": {"strict_mode": True}
-})
+workflow = WorkflowBuilder()
+# Edge configuration for compliance
+edge_config = {"compliance": {"strict_mode": True}}
 
 workflow.add_node("UserLocationNode", "locate_user", {})
 workflow.add_node("EdgeDataNode", "store_profile", {
@@ -156,7 +158,9 @@ workflow.add_node("EdgeCoordinationNode", "session_coordinator", {
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 # Process data according to regional regulations
-workflow = WorkflowBuilder(edge_config={
+workflow = WorkflowBuilder()
+# Edge configuration for compliance
+edge_config = {
     "compliance": {
         "classifications": {
             "pii": {"allowed_regions": ["us", "eu"]},
@@ -164,7 +168,7 @@ workflow = WorkflowBuilder(edge_config={
             "health": {"allowed_regions": ["us"], "requires_encryption": True}
         }
     }
-})
+}
 
 workflow.add_node("DataClassifierNode", "classifier", {})
 workflow.add_node("EdgeDataNode", "compliant_storage", {
@@ -382,7 +386,7 @@ workflow.add_node("EdgeDataNode", "l1_cache", {
 })
 
 workflow.add_node("EdgeDataNode", "l2_cache", {
-    "action": "read", 
+    "action": "read",
     "cache_ttl": 3600,  # 1 hour L2
     "fallback": "origin"
 })

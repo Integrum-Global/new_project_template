@@ -38,7 +38,6 @@ The Kailash SDK provides a complete edge computing solution with:
 ```python
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
-import asyncio
 
 async def basic_edge_setup():
     workflow = WorkflowBuilder()

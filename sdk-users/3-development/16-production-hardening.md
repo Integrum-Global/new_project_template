@@ -28,14 +28,12 @@ except Exception:
         result = await db.query("SELECT * FROM users")  # More load!
     # Thread pool exhausted, application freezes
 
-# With circuit breaker - fail fast
-from kailash.core.resilience import CircuitBreaker
+# With circuit breaker - fail fast  
+from kailash.core.resilience.circuit_breaker import CircuitBreakerManager, CircuitBreakerConfig, CircuitBreakerError
 
-breaker = CircuitBreaker(
-    failure_threshold=5,
-    recovery_timeout=60,
-    error_rate_threshold=0.5
-)
+manager = CircuitBreakerManager()
+config = CircuitBreakerConfig(failure_threshold=5, success_threshold=2)
+breaker = manager.get_or_create("database_operations", config)
 
 try:
     result = await breaker.call(db.query, "SELECT * FROM users")

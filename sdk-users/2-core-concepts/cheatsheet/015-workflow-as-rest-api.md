@@ -11,7 +11,7 @@ from kailash.api.workflow_api import WorkflowAPI
 from kailash.nodes.data import CSVReaderNode
 from kailash.nodes.transform import DataTransformerNode
 
-# Create workflow using WorkflowBuilder  
+# Create workflow using WorkflowBuilder
 from kailash.workflow.builder import WorkflowBuilder
 
 workflow = WorkflowBuilder()

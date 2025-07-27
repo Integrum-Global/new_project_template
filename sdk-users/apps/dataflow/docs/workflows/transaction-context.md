@@ -361,7 +361,7 @@ DataFlow's transaction architecture ensures proper isolation between concurrent 
 ### Isolation Guarantees
 
 1. **Per-Workflow Context**: Each workflow execution gets its own transaction context
-2. **Connection Isolation**: Transactions are isolated at the database connection level  
+2. **Connection Isolation**: Transactions are isolated at the database connection level
 3. **MVCC Support**: Leverages PostgreSQL's Multi-Version Concurrency Control
 4. **Lock Management**: Proper lock acquisition and release per transaction
 
@@ -376,7 +376,7 @@ workflow_a.add_node("TransactionScopeNode", "tx_a", {
 # ... order processing logic ...
 workflow_a.add_node("TransactionCommitNode", "commit_a", {})
 
-# Workflow B - Processing order for Customer 2  
+# Workflow B - Processing order for Customer 2
 workflow_b = WorkflowBuilder()
 workflow_b.add_node("TransactionScopeNode", "tx_b", {
     "isolation_level": "REPEATABLE_READ"
@@ -399,7 +399,7 @@ thread_a = threading.Thread(
     args=(workflow_a, {"dataflow_instance": db, "customer": "A"})
 )
 thread_b = threading.Thread(
-    target=execute_workflow, 
+    target=execute_workflow,
     args=(workflow_b, {"dataflow_instance": db, "customer": "B"})
 )
 
@@ -497,7 +497,7 @@ DataFlow-generated nodes automatically check for transaction context:
 def run(self, **kwargs):
     # Check for active transaction
     connection = self.get_workflow_context("transaction_connection")
-    
+
     if connection:
         # Use shared transaction connection
         result = await connection.execute(query, params)
@@ -506,7 +506,7 @@ def run(self, **kwargs):
         connection = await create_connection()
         result = await connection.execute(query, params)
         await connection.close()
-    
+
     return result
 ```
 
@@ -535,7 +535,7 @@ Transaction workflows automatically include performance metrics:
 results, run_id = runtime.execute(workflow.build())
 
 # Access transaction timing
-transaction_start = results["begin_tx"]["timestamp"]  
+transaction_start = results["begin_tx"]["timestamp"]
 transaction_end = results["commit_tx"]["timestamp"]
 transaction_duration = transaction_end - transaction_start
 ```
@@ -545,7 +545,7 @@ transaction_duration = transaction_end - transaction_start
 ### Common Issues
 
 1. **Connection Not Found**: Ensure `dataflow_instance` is passed in workflow context
-2. **Transaction Timeout**: Increase timeout or optimize workflow performance  
+2. **Transaction Timeout**: Increase timeout or optimize workflow performance
 3. **Deadlocks**: Use consistent ordering of operations and appropriate isolation levels
 4. **Rollback Failures**: Check that transaction is still active and not already committed
 
@@ -577,7 +577,7 @@ result = user_node.execute(name="Alice", email="alice@example.com")
 workflow = WorkflowBuilder()
 workflow.add_node("TransactionScopeNode", "tx", {})
 workflow.add_node("UserCreateNode", "create", {
-    "name": "Alice", 
+    "name": "Alice",
     "email": "alice@example.com"
 })
 workflow.add_node("TransactionCommitNode", "commit", {})
@@ -601,7 +601,7 @@ async with db.get_connection() as conn:
         await conn.execute("INSERT INTO users ...")
         await conn.execute("UPDATE accounts ...")
 
-# NEW: Workflow-based transaction management  
+# NEW: Workflow-based transaction management
 workflow = WorkflowBuilder()
 workflow.add_node("TransactionScopeNode", "tx", {})
 workflow.add_node("UserCreateNode", "create_user", {...})
@@ -621,11 +621,11 @@ workflow.add_node("TransactionCommitNode", "commit", {})
 
 Transaction context propagation in DataFlow provides:
 
-✅ **ACID Guarantees**: Full transaction support across workflow nodes  
-✅ **Performance**: Shared connections reduce overhead  
-✅ **Flexibility**: Multiple isolation levels and savepoint support  
-✅ **Reliability**: Automatic error handling and rollback capabilities  
-✅ **Scalability**: Proper isolation between concurrent workflows  
-✅ **Ease of Use**: Simple node-based transaction management  
+✅ **ACID Guarantees**: Full transaction support across workflow nodes
+✅ **Performance**: Shared connections reduce overhead
+✅ **Flexibility**: Multiple isolation levels and savepoint support
+✅ **Reliability**: Automatic error handling and rollback capabilities
+✅ **Scalability**: Proper isolation between concurrent workflows
+✅ **Ease of Use**: Simple node-based transaction management
 
 This feature enables DataFlow applications to handle complex, multi-step operations with full database consistency guarantees while maintaining the simplicity of the workflow paradigm.

@@ -60,7 +60,7 @@ workflow.add_node("LLMAgentNode", "analyzer", {
    ```python
    # ❌ DON'T
    workflow.add_node("CSVReaderNode", "reader", {}))
-   
+
    # ✅ DO
    workflow.add_node("CSVReaderNode", "reader", {})
    ```
@@ -69,7 +69,7 @@ workflow.add_node("LLMAgentNode", "analyzer", {
    ```python
    # ❌ DON'T
    workflow.add_connection("source", "result", "target", "input")
-   
+
    # ✅ DO
    workflow.add_connection("source", "output", "target", "input")
    ```
@@ -78,7 +78,7 @@ workflow.add_node("LLMAgentNode", "analyzer", {
    ```python
    # ❌ DON'T
    runtime.execute(workflow.build())
-   
+
    # ✅ DO
    runtime.execute(workflow.build())
    ```

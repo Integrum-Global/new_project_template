@@ -23,13 +23,13 @@ The Kailash SDK requires **explicit parameter declaration** as a security featur
 # SDK's WorkflowParameterInjector logic (simplified)
 def inject_parameters(self, node_instance, workflow_params):
     declared_params = node_instance.get_parameters()  # SDK checks this
-    
+
     injected_params = {}
     for param_name, param_value in workflow_params.items():
         if param_name in declared_params:  # Only if explicitly declared
             injected_params[param_name] = param_value
         # else: parameter is ignored (security feature)
-    
+
     return injected_params
 ```
 
@@ -102,10 +102,10 @@ from typing import Dict, Any
 
 class UserManagementEntryNode(Node):
     """Entry node specifically for user management workflows.
-    
+
     Enterprise Pattern: Explicit parameter contracts for security.
     """
-    
+
     def get_parameters(self) -> Dict[str, NodeParameter]:
         """Declare ALL parameters with enterprise validation."""
         return {
@@ -147,21 +147,21 @@ class UserManagementEntryNode(Node):
                 description="Audit context for compliance"
             )
         }
-    
+
     def run(self, **kwargs) -> Dict[str, Any]:
         """Process with business logic validation."""
         # All parameters are validated by SDK before reaching here
         operation = kwargs["operation"]  # Required, guaranteed to exist
         tenant_id = kwargs["tenant_id"]  # Required, guaranteed to exist
         requestor_id = kwargs["requestor_id"]  # Required, guaranteed to exist
-        
+
         # Business logic validation
         if operation in ["update", "delete", "get"] and not kwargs.get("user_id"):
             raise ValueError(f"user_id required for {operation} operation")
-        
+
         if operation in ["create", "update"] and not kwargs.get("user_data"):
             raise ValueError(f"user_data required for {operation} operation")
-        
+
         # Prepare output for downstream nodes
         return {
             "result": {
@@ -191,31 +191,31 @@ class UserManagementContract(BaseModel):
     user_id: Optional[str] = None
     tenant_id: str
     requestor_id: str
-    
+
     class Config:
         extra = "forbid"  # Security: reject unknown parameters
 
 class EnterpriseUserNode(SecureGovernedNode):
     """Enterprise-grade user management with security validation."""
-    
+
     @classmethod
     def get_parameter_contract(cls):
         return UserManagementContract
-    
+
     @classmethod
     def get_connection_contract(cls):
         """Define connection parameters for security."""
         return None  # Override if receiving connection parameters
-    
+
     def run_governed(self, **kwargs):
         """Execute with pre-validated parameters."""
         # All parameters are validated against contract
         operation = kwargs["operation"]
         tenant_id = kwargs["tenant_id"]
-        
+
         # Your secure business logic here
         result = self._process_user_operation(operation, kwargs)
-        
+
         return {"result": result}
 ```
 
@@ -495,7 +495,7 @@ runtime.execute(workflow.build(), parameters={
 class BadEntryNode(Node):
     def get_parameters(self):
         return {}  # SDK will inject nothing!
-    
+
     def run(self, **kwargs):
         # kwargs will always be empty!
         operation = kwargs.get('operation')  # Always None
@@ -559,11 +559,11 @@ workflow.add_node("PythonCodeNode", "business_logic", {
 # ✅ CORRECT - Create a proper custom node
 class BusinessLogicNode(SecureGovernedNode):
     """Properly implemented business logic with security."""
-    
+
     @classmethod
     def get_parameter_contract(cls):
         return BusinessLogicContract
-    
+
     def run_governed(self, **kwargs):
         # Testable, maintainable, secure code
         return self._process_business_logic(kwargs)
@@ -729,21 +729,21 @@ Always validate connection parameters to prevent injection attacks:
 ```python
 class SecureDatabaseNode(SecureGovernedNode):
     """Database node with connection parameter validation."""
-    
+
     @classmethod
     def get_connection_contract(cls):
         """Define connection parameters for security."""
         class DatabaseConnectionContract(BaseModel):
             params: List[Any] = Field(description="SQL parameters")
             query: Optional[str] = Field(default=None)
-            
+
             @field_validator('params')
             @classmethod
             def validate_params_list(cls, v):
                 if not isinstance(v, list):
                     raise ValueError("params must be a list for SQL safety")
                 return v
-        
+
         return DatabaseConnectionContract
 ```
 
@@ -752,7 +752,7 @@ class SecureDatabaseNode(SecureGovernedNode):
 ```python
 class AuditedNode(SecureGovernedNode):
     """Node with comprehensive audit logging."""
-    
+
     def execute(self, **kwargs):
         # Log parameter access for compliance
         self.audit_logger.log_parameter_access(
@@ -761,7 +761,7 @@ class AuditedNode(SecureGovernedNode):
             sensitivity=self._classify_parameters(kwargs),
             user_context=kwargs.get('requestor_id', 'unknown')
         )
-        
+
         return super().execute(**kwargs)
 ```
 

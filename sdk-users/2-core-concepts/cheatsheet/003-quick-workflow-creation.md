@@ -12,7 +12,7 @@ workflow = WorkflowBuilder()
 reader_id = workflow.add_node("CSVReaderNode", {"file_path": "data.csv"})
 processor_id = workflow.add_node("PythonCodeNode", {"code": "result = len(input_data)"})
 
-# Use returned IDs for connections  
+# Use returned IDs for connections
 workflow.add_connection(reader_id, "result", processor_id, "input_data")
 ```
 

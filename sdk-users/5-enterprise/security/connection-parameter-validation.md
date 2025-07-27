@@ -1,7 +1,7 @@
 # Connection Parameter Validation
 
-**Version**: 0.6.7+  
-**Priority**: CRITICAL - Security Feature  
+**Version**: 0.6.7+
+**Priority**: CRITICAL - Security Feature
 
 ## Overview
 
@@ -86,7 +86,7 @@ class StrictNode(Node):
             "count": NodeParameter(name="count", type=int, required=True),
             "name": NodeParameter(name="name", type=str, required=True)
         }
-    
+
     def run(self, **kwargs):
         # Parameters are guaranteed to be correct types
         count = kwargs["count"]  # Always int

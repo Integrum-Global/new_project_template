@@ -79,7 +79,7 @@ mfa_workflow.add_node("SessionManagementNode", "session_validate", {
 })
 
 # Connect MFA to session
-mfa_workflow.add_connection("mfa_check", "result", "authenticated", "input")
+mfa_workflow.add_connection("mfa_check", "authenticated", "session_validate", "input")
 ```
 
 ## 👥 User Management
@@ -89,15 +89,15 @@ mfa_workflow.add_connection("mfa_check", "result", "authenticated", "input")
 ```python
 from kailash.nodes.admin import UserManagementNode
 
-# User management configuration
-user_mgmt = UserManagementNode(
-    name="enterprise_user_management",
-    provider="ldap",  # or "database", "azure_ad", "okta"
-
+# User management configuration in a workflow
+workflow = WorkflowBuilder()
+workflow.add_node("UserManagementNode", "user_mgmt", {
+    "provider": "ldap",  # or "database", "azure_ad", "okta"
+    
     # User lifecycle
-    auto_provisioning=True,
-    deprovisioning_policy="immediate",
-    account_lockout_enabled=True,
+    "auto_provisioning": True,
+    "deprovisioning_policy": "immediate",
+    "account_lockout_enabled": True,
 
     # Password policies
     password_min_length=12,
@@ -630,7 +630,7 @@ Starting in v0.6.7, the Kailash SDK provides connection parameter validation to 
 ### Security Vulnerability Fixed
 
 Previously, parameters had two paths with different validation:
-- **Direct parameters** (via `runtime.execute()`) - ✅ VALIDATED  
+- **Direct parameters** (via `runtime.execute()`) - ✅ VALIDATED
 - **Connection parameters** (via `workflow.add_connection("source", "result", "target", "input")`) - ❌ NOT VALIDATED
 
 This created attack vectors for SQL injection, command injection, and other parameter-based exploits.
@@ -764,7 +764,7 @@ runtime = LocalRuntime(
 ### Related Security Features
 
 - **Input Validation Nodes** - Schema-based validation
-- **SQL Parameter Binding** - Automatic SQL injection prevention  
+- **SQL Parameter Binding** - Automatic SQL injection prevention
 - **Command Sanitization** - Safe shell command execution
 - **Access Control Integration** - Combined with RBAC/ABAC
 
