@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     # Core Kailash SDK (from PyPI) - WITHOUT nexus extra due to broken imports
-    "kailash>=0.9.0",
+    "kailash>=0.9.1",
 
     # Standalone Nexus platform (kailash-nexus on PyPI, import as 'from nexus import Nexus')
     "kailash-nexus>=1.0.3",
