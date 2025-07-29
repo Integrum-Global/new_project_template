@@ -6,8 +6,8 @@ Requirements: @modelcontextprotocol/server-filesystem (optional)
 
 import os
 
-from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow.builder import WorkflowBuilder
 
 
 def main():

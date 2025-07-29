@@ -56,7 +56,7 @@ async def basic_database_operations():
     """Demonstrate basic database operations."""
 
     runtime = LocalRuntime()
-    
+
     # Simple query
     query_workflow = WorkflowBuilder()
     query_workflow.add_node("SQLDatabaseNode", "query_users", {
@@ -65,7 +65,7 @@ async def basic_database_operations():
         "parameters": {"active": True},
         "result_format": "dict"
     })
-    
+
     results, _ = await runtime.execute_async(query_workflow.build())
     users = results["query_users"]["result"]
     print(f"Found {len(users['data'])} active users")
@@ -87,7 +87,7 @@ async def basic_database_operations():
         "result_format": "dict",
         "use_transaction": True
     })
-    
+
     results, _ = await runtime.execute_async(insert_workflow.build())
     new_user_result = results["insert_user"]["result"]
     user_id = new_user_result['data'][0]['id']
@@ -187,7 +187,7 @@ async def advanced_async_operations():
         "use_transaction": True,
         "isolation_level": "READ_COMMITTED"
     })
-    
+
     runtime = LocalRuntime()
     batch_results, _ = await runtime.execute_async(batch_workflow.build())
     batch_insert_result = batch_results["batch_insert"]["result"]
@@ -211,7 +211,7 @@ async def advanced_async_operations():
         "batch_size": 500,
         "stream_timeout": 30
     })
-    
+
     runtime = LocalRuntime()
     stream_results, _ = await runtime.execute_async(stream_workflow.build())
     large_dataset_results = stream_results["stream_query"]["result"]["data"]
@@ -221,7 +221,7 @@ async def advanced_async_operations():
 
     # Complex transaction with multiple operations
     transaction_workflow = WorkflowBuilder()
-    
+
     # Update user status
     transaction_workflow.add_node("AsyncSQLDatabaseNode", "update_status", {
         "connection_string": "postgresql://user:password@localhost:5432/production_db",
@@ -229,7 +229,7 @@ async def advanced_async_operations():
         "parameters": {"user_id": 123},
         "use_transaction": True
     })
-    
+
     # Log activity
     transaction_workflow.add_node("AsyncSQLDatabaseNode", "log_activity", {
         "connection_string": "postgresql://user:password@localhost:5432/production_db",
@@ -237,7 +237,7 @@ async def advanced_async_operations():
         "parameters": {"user_id": 123, "activity": "login"},
         "use_transaction": True
     })
-    
+
     # Update session
     transaction_workflow.add_node("AsyncSQLDatabaseNode", "update_session", {
         "connection_string": "postgresql://user:password@localhost:5432/production_db",
@@ -246,11 +246,11 @@ async def advanced_async_operations():
         "use_transaction": True,
         "fetch_mode": "one"
     })
-    
+
     # Connect in sequence for transaction ordering
     transaction_workflow.add_connection("update_status", "result", "log_activity", "previous_result")
     transaction_workflow.add_connection("log_activity", "result", "update_session", "previous_result")
-    
+
     runtime = LocalRuntime()
     tx_results, _ = await runtime.execute_async(transaction_workflow.build())
     session_id = tx_results["update_session"]["result"]["data"]["session_id"]
@@ -343,7 +343,7 @@ async def vector_database_operations():
         "data": documents,
         "on_conflict": "update"  # Update if document_id already exists
     })
-    
+
     runtime = LocalRuntime()
     insert_results, _ = await runtime.execute_async(insert_workflow.build())
     insert_result = insert_results["insert_vectors"]["result"]
@@ -371,7 +371,7 @@ async def vector_database_operations():
         "include_metadata": True,
         "include_distances": True
     })
-    
+
     runtime = LocalRuntime()
     search_results_data, _ = await runtime.execute_async(search_workflow.build())
     search_results = search_results_data["similarity_search"]["result"]
@@ -395,7 +395,7 @@ async def vector_database_operations():
             "title": {"ilike": "%learning%"}
         }
     })
-    
+
     runtime = LocalRuntime()
     hybrid_results_data, _ = await runtime.execute_async(hybrid_workflow.build())
     hybrid_results = hybrid_results_data["hybrid_search"]["result"]
@@ -411,7 +411,7 @@ async def vector_database_operations():
         "clustering_method": "kmeans",
         "include_cluster_stats": True
     })
-    
+
     runtime = LocalRuntime()
     cluster_results, _ = await runtime.execute_async(cluster_workflow.build())
     cluster_analysis = cluster_results["cluster_analysis"]["result"]
@@ -499,7 +499,7 @@ async def multi_provider_vector_operations():
         ],
         "namespace": "documents"
     })
-    
+
     runtime = LocalRuntime()
     pinecone_results, _ = await runtime.execute_async(pinecone_insert_workflow.build())
     pinecone_result = pinecone_results["pinecone_insert"]["result"]
@@ -518,7 +518,7 @@ async def multi_provider_vector_operations():
         "vector": generate_embedding("AI and Machine Learning"),
         "class_name": "Document"
     })
-    
+
     runtime = LocalRuntime()
     weaviate_results, _ = await runtime.execute_async(weaviate_insert_workflow.build())
     weaviate_result = weaviate_results["weaviate_insert"]["result"]
@@ -537,7 +537,7 @@ async def multi_provider_vector_operations():
         "filter": {"category": {"$eq": "technology"}},
         "include_metadata": True
     })
-    
+
     runtime = LocalRuntime()
     pinecone_search_results, _ = await runtime.execute_async(pinecone_search_workflow.build())
     pinecone_search = pinecone_search_results["pinecone_search"]["result"]
@@ -556,7 +556,7 @@ async def multi_provider_vector_operations():
         },
         "class_name": "Document"
     })
-    
+
     runtime = LocalRuntime()
     weaviate_search_results, _ = await runtime.execute_async(weaviate_search_workflow.build())
     weaviate_search = weaviate_search_results["weaviate_search"]["result"]
@@ -639,11 +639,11 @@ async def managed_database_workflow():
         "enable_multi_tenant": True,
         "tenant_id": "tenant_123"
     })
-    
+
     runtime = LocalRuntime()
     results, _ = await runtime.execute_async(conn_workflow.build())
     result = results["tenant_query"]["result"]["data"]
-    
+
     return {"records": len(result)}
 
 # Monitor connection health
@@ -784,7 +784,7 @@ async def intelligent_query_routing():
         "parameters": {"user_id": 12345},
         "query_type": "READ_SIMPLE"  # Auto-detected if not specified
     })
-    
+
     runtime = LocalRuntime()
     user_query_results, _ = await runtime.execute_async(user_query_workflow.build())
     user_query = user_query_results["user_query"]["result"]
@@ -806,7 +806,7 @@ async def intelligent_query_routing():
         """,
         "query_type": "READ_COMPLEX"
     })
-    
+
     runtime = LocalRuntime()
     analytics_results, _ = await runtime.execute_async(analytics_query_workflow.build())
     analytics_query = analytics_results["analytics_query"]["result"]
@@ -818,7 +818,7 @@ async def intelligent_query_routing():
         "parameters": {"user_id": 12345, "activity": "login"},
         "query_type": "WRITE_SIMPLE"
     })
-    
+
     runtime = LocalRuntime()
     write_results, _ = await runtime.execute_async(write_query_workflow.build())
     write_query = write_results["write_query"]["result"]
@@ -836,7 +836,7 @@ async def intelligent_query_routing():
         "query_type": "WRITE_BULK",
         "batch_size": 100
     })
-    
+
     runtime = LocalRuntime()
     bulk_results, _ = await runtime.execute_async(bulk_write_workflow.build())
     bulk_write = bulk_results["bulk_write"]["result"]
@@ -846,7 +846,7 @@ async def intelligent_query_routing():
     stats_workflow.add_node("QueryRouterNode", "get_stats", {
         "operation": "get_routing_stats"
     })
-    
+
     runtime = LocalRuntime()
     stats_results, _ = await runtime.execute_async(stats_workflow.build())
     routing_stats = stats_results["get_stats"]["result"]
@@ -961,7 +961,7 @@ async def schema_management_operations():
         "version": "1.0.0",
         "backup_existing": True
     })
-    
+
     runtime = LocalRuntime()
     schema_results, _ = await runtime.execute_async(schema_creation_workflow.build())
     schema_creation = schema_results["create_schema"]["result"]
@@ -979,7 +979,7 @@ async def schema_management_operations():
         ],
         "include_performance_analysis": True
     })
-    
+
     runtime = LocalRuntime()
     validation_results, _ = await runtime.execute_async(validation_workflow.build())
     validation_result = validation_results["validate_schema"]["result"]
@@ -998,7 +998,7 @@ async def schema_management_operations():
         "analyze_dependencies": True,
         "estimate_downtime": True
     })
-    
+
     runtime = LocalRuntime()
     migration_plan_results, _ = await runtime.execute_async(migration_plan_workflow.build())
     migration_plan = migration_plan_results["plan_migration"]["result"]
@@ -1014,7 +1014,7 @@ async def schema_management_operations():
             "rollback_on_failure": True,
             "max_downtime_minutes": 5
         })
-        
+
         runtime = LocalRuntime()
         migration_exec_results, _ = await runtime.execute_async(migration_exec_workflow.build())
         migration_result = migration_exec_results["execute_migration"]["result"]
@@ -1063,7 +1063,7 @@ async def create_production_database_system():
         "connection_string": "postgresql://user:pass@primary:5432/prod_db",
         "pool_config": {"min_size": 20, "max_size": 100}
     })
-    
+
     register_replica_workflow = WorkflowBuilder()
     register_replica_workflow.add_node("AsyncConnectionManagerNode", "register_replica", {
         "operation": "register_connection",
@@ -1072,7 +1072,7 @@ async def create_production_database_system():
         "pool_config": {"min_size": 10, "max_size": 50},
         "connection_type": "read_only"
     })
-    
+
     runtime = LocalRuntime()
     await runtime.execute_async(register_primary_workflow.build())
     await runtime.execute_async(register_replica_workflow.build())
@@ -1233,7 +1233,7 @@ async def optimized_query_patterns():
         "query": "SELECT * FROM users WHERE department = :department AND active = :active",
         "prepare_statement": True
     })
-    
+
     # Batch operations for better performance
     batch_workflow = WorkflowBuilder()
     for idx, (dept, active) in enumerate([("Engineering", True), ("Marketing", True), ("Sales", True)]):
@@ -1242,10 +1242,10 @@ async def optimized_query_patterns():
             "query": "SELECT * FROM users WHERE department = :department AND active = :active",
             "parameters": {"department": dept, "active": active}
         })
-    
+
     runtime = LocalRuntime()
     batch_results, _ = await runtime.execute_async(batch_workflow.build())
-    
+
     # Use appropriate fetch modes
     iterator_workflow = WorkflowBuilder()
     iterator_workflow.add_node("AsyncSQLDatabaseNode", "large_result", {
@@ -1254,10 +1254,10 @@ async def optimized_query_patterns():
         "fetch_mode": "iterator",
         "chunk_size": 1000
     })
-    
+
     iterator_results, _ = await runtime.execute_async(iterator_workflow.build())
     large_result = iterator_results["large_result"]["result"]
-    
+
     # Connection-specific optimizations
     optimization_workflow = WorkflowBuilder()
     optimization_workflow.add_node("AsyncSQLDatabaseNode", "set_work_mem", {
@@ -1272,11 +1272,11 @@ async def optimized_query_patterns():
         "connection_string": "postgresql://user:password@localhost:5432/production_db",
         "query": "SELECT * FROM complex_analytical_view"
     })
-    
+
     # Execute in sequence to maintain session settings
     optimization_workflow.add_connection("set_work_mem", "result", "set_page_cost", "previous")
     optimization_workflow.add_connection("set_page_cost", "result", "complex_query", "previous")
-    
+
     opt_results, _ = await runtime.execute_async(optimization_workflow.build())
     result = opt_results["complex_query"]["result"]
 
@@ -1327,7 +1327,7 @@ async def database_security_patterns():
         "user_context": user_context,
         "enable_access_control": True
     })
-    
+
     runtime = LocalRuntime()
     secured_results, _ = await runtime.execute_async(secured_query_workflow.build())
     secured_result = secured_results["secured_query"]["result"]

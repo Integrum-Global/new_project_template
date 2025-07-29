@@ -43,7 +43,7 @@ class TestMCPUnit:
 
         runtime = LocalRuntime()
         results, run_id = runtime.execute(workflow.build())
-        
+
         assert results["agent"]["success"] is True
         assert "tools_available" in results["agent"]["context"]
 
@@ -59,7 +59,7 @@ class TestMCPUnit:
 
         runtime = LocalRuntime()
         results, run_id = runtime.execute(workflow.build())
-        
+
         assert results["agent"]["success"] is True
 ```
 
@@ -98,7 +98,7 @@ class TestMCPIntegration:
 
         runtime = LocalRuntime()
         results, run_id = runtime.execute(workflow.build())
-        
+
         # Verify real tool discovery
         assert results["agent"]["success"] is True
         assert len(results["agent"]["context"]["tools_available"]) > 0
@@ -119,7 +119,7 @@ class TestMCPIntegration:
 
         runtime = LocalRuntime()
         results, run_id = runtime.execute(workflow.build())
-        
+
         # Should gracefully handle failure
         assert results["agent"]["success"] is True
         assert results["agent"]["context"]["tools_available"] == []

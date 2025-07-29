@@ -102,7 +102,7 @@ workflow.add_node("PythonCodeNode", "state_manager", {
 # Persistent state management using class variables
 class OptimizationState:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
@@ -111,25 +111,25 @@ class OptimizationState:
             cls._instance.quality_history = []
             cls._instance.iteration = 0
         return cls._instance
-    
+
     def initialize_state(self, initial_params):
         if self.best_params is None:
             self.best_params = initial_params.copy()
             self.best_quality = 0.0
             self.quality_history = []
             self.iteration = 0
-    
+
     def update_state(self, params, quality):
         self.quality_history.append(quality)
         if quality > self.best_quality:
             self.best_params = params.copy()
             self.best_quality = quality
         self.iteration += 1
-    
+
     def get_convergence_trend(self, window_size=5, threshold=0.001):
         if len(self.quality_history) < window_size:
             return False
-        
+
         recent = self.quality_history[-window_size:]
         variance = sum((x - sum(recent)/len(recent))**2 for x in recent) / len(recent)
         return variance < threshold
@@ -208,54 +208,54 @@ def check_convergence(quality_score, iteration, quality_history, improvement_rat
         'criteria_met': [],
         'final_metrics': {}
     }
-    
+
     # Threshold-based convergence
     if quality_score > 0.95:
         convergence_results['criteria_met'].append('quality_threshold')
-    
+
     if improvement_rate is not None and improvement_rate < 0.001:
         convergence_results['criteria_met'].append('improvement_rate')
-    
+
     if stability_variance is not None and stability_variance < 0.0001:
         convergence_results['criteria_met'].append('stability_variance')
-    
+
     # Stability-based convergence (window analysis)
     if len(quality_history) >= 5:
         recent_scores = quality_history[-5:]
         window_mean = sum(recent_scores) / len(recent_scores)
         window_variance = sum((x - window_mean)**2 for x in recent_scores) / len(recent_scores)
-        
+
         if window_variance < 0.001:
             convergence_results['criteria_met'].append('stability_window')
-    
+
     # Improvement rate monitoring
     if len(quality_history) >= 3:
         recent_improvement = quality_history[-1] - quality_history[-3]
         if recent_improvement < 0.001:
             convergence_results['criteria_met'].append('min_improvement')
-    
+
     # Custom expression conditions
     if quality_score > 0.9 and iteration > 10:
         convergence_results['criteria_met'].append('expression_1')
-    
+
     if improvement_rate is not None and stability_variance is not None:
         if improvement_rate < 0.001 and stability_variance < 0.0001:
             convergence_results['criteria_met'].append('expression_2')
-    
+
     if iteration > 30 and quality_score > 0.85:
         convergence_results['criteria_met'].append('expression_3')
-    
+
     # Adaptive criteria (early stopping)
     adaptive_thresholds = {
         10: 0.7,
         25: 0.85,
         40: 0.95
     }
-    
+
     for iter_threshold, quality_threshold in adaptive_thresholds.items():
         if iteration >= iter_threshold and quality_score >= quality_threshold:
             convergence_results['criteria_met'].append(f'adaptive_{iter_threshold}')
-    
+
     # Overall convergence decision (require at least 2 criteria)
     if len(convergence_results['criteria_met']) >= 2:
         convergence_results['converged'] = True
@@ -268,13 +268,13 @@ def check_convergence(quality_score, iteration, quality_history, improvement_rat
         convergence_results['reason'] = "Maximum iterations reached"
     else:
         convergence_results['reason'] = "Convergence criteria not yet met"
-    
+
     convergence_results['final_metrics'] = {
         'quality_score': quality_score,
         'iteration': iteration,
         'criteria_count': len(convergence_results['criteria_met'])
     }
-    
+
     return convergence_results
 
 # Get input data
@@ -353,7 +353,7 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
             "tolerance": 5.0
         }
     }
-    
+
     results = {
         'weighted_score': 0.0,
         'criteria_met': {},
@@ -361,21 +361,21 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
         'individual_scores': {},
         'convergence_details': {}
     }
-    
+
     total_weight = 0
     weighted_sum = 0
-    
+
     # Calculate individual criteria scores
     for metric_name, config in convergence_config.items():
         if metric_name not in metrics:
             continue
-            
+
         current_value = metrics[metric_name]
         target = config['target']
         weight = config['weight']
         direction = config['direction']
         tolerance = config['tolerance']
-        
+
         # Calculate score based on direction
         if direction == "maximize":
             # Score is how close we are to target (capped at 1.0)
@@ -388,7 +388,7 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
             else:
                 score = max(0.0, target / current_value)
             target_met = current_value <= (target + tolerance)
-        
+
         results['individual_scores'][metric_name] = score
         results['criteria_met'][metric_name] = target_met
         results['convergence_details'][metric_name] = {
@@ -398,29 +398,29 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
             'score': score,
             'weight': weight
         }
-        
+
         # Add to weighted sum
         weighted_sum += score * weight
         total_weight += weight
-    
+
     # Calculate overall weighted score
     if total_weight > 0:
         results['weighted_score'] = weighted_sum / total_weight
-    
+
     # Convergence strategies
     min_weighted_score = 0.85
-    
+
     # Strategy 1: Weighted score threshold
     weighted_converged = results['weighted_score'] >= min_weighted_score
-    
+
     # Strategy 2: All criteria met
     all_criteria_met = all(results['criteria_met'].values()) if results['criteria_met'] else False
-    
+
     # Strategy 3: Majority of criteria met
     criteria_count = len(results['criteria_met'])
     met_count = sum(results['criteria_met'].values())
     majority_met = met_count > (criteria_count / 2) if criteria_count > 0 else False
-    
+
     # Strategy 4: Early stopping (absolute targets)
     early_stop = False
     if 'accuracy' in metrics and metrics['accuracy'] >= 0.99:
@@ -429,7 +429,7 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
     elif 'loss' in metrics and metrics['loss'] <= 0.01:
         early_stop = True
         results['convergence_details']['early_stop'] = 'loss <= 0.01'
-    
+
     # Strategy 5: Stability check
     stability_converged = False
     if metric_history and len(metric_history) >= 5:
@@ -439,15 +439,15 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
             variance = sum((x - sum(recent_scores)/5)**2 for x in recent_scores) / 5
             stability_converged = variance < 0.002
             results['convergence_details']['stability_variance'] = variance
-    
+
     # Final convergence decision (using weighted score strategy)
     results['converged'] = (
-        weighted_converged or 
-        early_stop or 
+        weighted_converged or
+        early_stop or
         (all_criteria_met and majority_met) or
         iteration >= 100  # Safety limit
     )
-    
+
     results['convergence_reasons'] = []
     if weighted_converged:
         results['convergence_reasons'].append(f"Weighted score {results['weighted_score']:.3f} >= {min_weighted_score}")
@@ -457,7 +457,7 @@ def multi_criteria_convergence_check(metrics, iteration, metric_history=None):
         results['convergence_reasons'].append("All criteria targets achieved")
     if stability_converged:
         results['convergence_reasons'].append("Stability achieved")
-    
+
     return results
 
 # Get input data
@@ -682,40 +682,40 @@ class CycleSafetyMonitor:
         self.memory_readings = []
         self.cpu_readings = []
         self.violations = []
-        
+
         # Safety limits
         self.max_iterations = 100
         self.max_memory_mb = 1024
         self.max_cpu_time_seconds = 300
         self.memory_growth_threshold = 0.1  # 10%
-        
+
         # Alert thresholds
         self.alert_threshold_memory = 0.8  # 80%
         self.alert_threshold_cpu = 0.9     # 90%
-        
+
     def check_resource_limits(self):
         current_time = time.time()
         elapsed_time = current_time - self.start_time
-        
+
         # Memory check
         try:
             process = psutil.Process()
             memory_mb = process.memory_info().rss / 1024 / 1024
             cpu_percent = process.cpu_percent()
-            
+
             self.memory_readings.append(memory_mb)
             self.cpu_readings.append(cpu_percent)
-            
+
             # Keep only recent readings
             if len(self.memory_readings) > 50:
                 self.memory_readings = self.memory_readings[-50:]
                 self.cpu_readings = self.cpu_readings[-50:]
-                
+
         except:
             # Fallback if psutil fails
             memory_mb = 100  # Assume reasonable default
             cpu_percent = 10
-        
+
         safety_status = {
             'safe': True,
             'violations': [],
@@ -727,38 +727,38 @@ class CycleSafetyMonitor:
                 'iteration_count': self.iteration_count
             }
         }
-        
+
         # Check violations
         if memory_mb > self.max_memory_mb:
             safety_status['safe'] = False
             safety_status['violations'].append(f'Memory limit exceeded: {memory_mb:.1f}MB > {self.max_memory_mb}MB')
-        
+
         if elapsed_time > self.max_cpu_time_seconds:
             safety_status['safe'] = False
             safety_status['violations'].append(f'Time limit exceeded: {elapsed_time:.1f}s > {self.max_cpu_time_seconds}s')
-        
+
         if self.iteration_count > self.max_iterations:
             safety_status['safe'] = False
             safety_status['violations'].append(f'Iteration limit exceeded: {self.iteration_count} > {self.max_iterations}')
-        
+
         # Check warnings
         if memory_mb > (self.max_memory_mb * self.alert_threshold_memory):
             safety_status['warnings'].append(f'Memory usage high: {memory_mb:.1f}MB ({memory_mb/self.max_memory_mb*100:.1f}%)')
-        
+
         if cpu_percent > (100 * self.alert_threshold_cpu):
             safety_status['warnings'].append(f'CPU usage high: {cpu_percent:.1f}%')
-        
+
         # Check memory growth
         if len(self.memory_readings) >= 10:
             recent_avg = sum(self.memory_readings[-5:]) / 5
             earlier_avg = sum(self.memory_readings[-10:-5]) / 5
             growth_rate = (recent_avg - earlier_avg) / earlier_avg if earlier_avg > 0 else 0
-            
+
             if growth_rate > self.memory_growth_threshold:
                 safety_status['warnings'].append(f'Memory growth detected: {growth_rate*100:.1f}% per 5 iterations')
-        
+
         return safety_status
-    
+
     def increment_iteration(self):
         self.iteration_count += 1
         return self.check_resource_limits()
@@ -788,7 +788,7 @@ result = {
 def create_monitored_cycle_workflow():
     """Create a workflow with built-in monitoring."""
     workflow = WorkflowBuilder()
-    
+
     # Main processing node with monitoring
     workflow.add_node("PythonCodeNode", "monitored_processor", {
         "code": """
@@ -856,7 +856,7 @@ if safety_status['violations']:
     print(f"  Safety violations: {safety_status['violations']}")
 """
     })
-    
+
     # Build and create cycle
     built_workflow = workflow.build()
     cycle = built_workflow.create_cycle("monitored_cycle")
@@ -865,7 +865,7 @@ if safety_status['violations']:
          .converge_when("converged == True") \
          .timeout(300) \
          .build()
-    
+
     return built_workflow
 
 # Execute monitored cycle
@@ -894,7 +894,7 @@ import random
 
 def analyze_resource_usage(execution_history):
     \"\"\"Analyze resource usage patterns from execution history.\"\"\"
-    
+
     if not execution_history:
         return {
             'peak_memory_mb': 0,
@@ -903,12 +903,12 @@ def analyze_resource_usage(execution_history):
             'memory_efficiency': 0,
             'recommendations': []
         }
-    
+
     # Extract metrics from history
     memory_readings = [h.get('memory_mb', 100) for h in execution_history]
     cpu_readings = [h.get('cpu_percent', 10) for h in execution_history]
     time_readings = [h.get('elapsed_time', 0) for h in execution_history]
-    
+
     analysis = {
         'peak_memory_mb': max(memory_readings) if memory_readings else 0,
         'avg_cpu_percent': sum(cpu_readings) / len(cpu_readings) if cpu_readings else 0,
@@ -916,7 +916,7 @@ def analyze_resource_usage(execution_history):
         'memory_efficiency': 0.8,  # Simulated efficiency score
         'recommendations': []
     }
-    
+
     # Generate recommendations
     if analysis['peak_memory_mb'] > 800:
         analysis['recommendations'].append({
@@ -924,21 +924,21 @@ def analyze_resource_usage(execution_history):
             'estimated_improvement': '20-30% memory reduction',
             'implementation_steps': ['Adjust batch_size parameter', 'Use streaming processing']
         })
-    
+
     if analysis['avg_cpu_percent'] < 50:
         analysis['recommendations'].append({
             'description': 'CPU utilization is low - consider parallel processing',
             'estimated_improvement': '40-60% speed improvement',
             'implementation_steps': ['Enable parallel processing', 'Increase worker count']
         })
-    
+
     if len(execution_history) > 50:
         analysis['recommendations'].append({
             'description': 'Long-running cycle detected - consider convergence tuning',
             'estimated_improvement': '10-20% faster convergence',
             'implementation_steps': ['Adjust convergence criteria', 'Implement early stopping']
         })
-    
+
     return analysis
 
 # Simulate execution history
@@ -1005,16 +1005,16 @@ class CycleDebugger:
         self.iterations = []
         self.errors = []
         self.node_executions = []
-        
+
         # Configuration
         self.capture_node_parameters = True
         self.capture_node_outputs = True
         self.track_execution_time = True
         self.track_memory_usage = True
-        
+
     def log_iteration(self, iteration_data):
         current_time = time.time()
-        
+
         iteration_info = {
             'iteration': len(self.iterations) + 1,
             'timestamp': datetime.now().isoformat(),
@@ -1024,16 +1024,16 @@ class CycleDebugger:
             'cpu_estimate': 20 + len(self.iterations) * 2,  # Simulated
             'errors': []
         }
-        
+
         # Capture node execution details
         if self.capture_node_outputs and 'result' in iteration_data:
             iteration_info['node_outputs'] = {
                 'keys': list(iteration_data['result'].keys()) if isinstance(iteration_data['result'], dict) else str(type(iteration_data['result']))
             }
-        
+
         self.iterations.append(iteration_info)
         return iteration_info
-    
+
     def analyze_execution(self):
         if not self.iterations:
             return {
@@ -1043,13 +1043,13 @@ class CycleDebugger:
                 'convergence_trend': 'No data',
                 'iteration_details': []
             }
-        
+
         total_iterations = len(self.iterations)
         failed_iterations = len([i for i in self.iterations if i['errors']])
-        
+
         durations = [i['duration_ms'] for i in self.iterations]
         avg_iteration_time = sum(durations) / len(durations) if durations else 0
-        
+
         # Analyze convergence trend
         if total_iterations >= 3:
             recent_times = durations[-3:]
@@ -1061,7 +1061,7 @@ class CycleDebugger:
                 convergence_trend = "Variable"
         else:
             convergence_trend = "Insufficient data"
-        
+
         return {
             'total_iterations': total_iterations,
             'failed_iterations': failed_iterations,
@@ -1110,10 +1110,10 @@ for iteration_debug in debug_analysis['iteration_details']:
     print(f"  Duration: {iteration_debug['duration_ms']:.1f}ms")
     print(f"  Memory estimate: {iteration_debug['memory_estimate']:.1f}MB")
     print(f"  CPU estimate: {iteration_debug['cpu_estimate']:.1f}%")
-    
+
     if iteration_debug['errors']:
         print(f"  Errors: {iteration_debug['errors']}")
-    
+
     if 'node_outputs' in iteration_debug:
         print(f"  Node outputs: {iteration_debug['node_outputs']}")
 ```

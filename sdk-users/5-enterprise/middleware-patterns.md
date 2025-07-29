@@ -735,27 +735,27 @@ class OptimizedAgentUIMiddleware(AgentUIMiddleware):
             "batch_size": 100,
             "timeout": 5.0
         })
-        
+
         self.security_workflow = WorkflowBuilder()
         self.security_workflow.add_node("RotatingCredentialNode", "middleware_rotating_creds", {
             "credential_name": "middleware_secrets",
             "rotation_interval_days": 30
         })
-        
+
         self.tracking_workflow = WorkflowBuilder()
         self.tracking_workflow.add_node("DataLineageNode", "middleware_lineage_tracker", {})
-        
+
         self.auth_workflow = WorkflowBuilder()
         self.auth_workflow.add_node("PermissionCheckNode", "middleware_permission_check", {})
-        
+
         self.audit_workflow = WorkflowBuilder()
         self.audit_workflow.add_node("AuditLogNode", "middleware_audit_log", {})
-        
+
         self.cache_workflow = WorkflowBuilder()
         self.cache_workflow.add_node("PythonCodeNode", "middleware_cache", {
             "code": "result = parameters.get('data', {})"
         })
-        
+
         # Async SQL workflow for database operations
         if self.enable_persistence:
             self.db_workflow = WorkflowBuilder()

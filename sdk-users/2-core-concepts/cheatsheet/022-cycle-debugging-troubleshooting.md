@@ -18,16 +18,16 @@ workflow.add_node("PythonCodeNode", "processor", {
 # Cycle-aware processing with persistent state
 class ProcessorState:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.state = {}
         return cls._instance
-    
+
     def get_previous_state(self):
         return self.state.copy()
-    
+
     def set_cycle_state(self, data):
         self.state.update(data)
         return data

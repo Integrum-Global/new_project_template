@@ -53,7 +53,9 @@ def test_simple_cycle():
     workflow.add_node("counter", counter)
 
     # Create cycle using CycleBuilder API
-    workflow.create_cycle("simple_cycle").connect("counter", "counter", mapping={"count": "count"}).max_iterations(10).converge_when("count >= 5").build()
+    workflow.create_cycle("simple_cycle").connect(
+        "counter", "counter", mapping={"count": "count"}
+    ).max_iterations(10).converge_when("count >= 5").build()
 
     # Execute
     runtime = LocalRuntime(enable_cycles=True)

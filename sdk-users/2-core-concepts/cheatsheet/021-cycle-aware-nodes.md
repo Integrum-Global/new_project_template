@@ -16,23 +16,23 @@ workflow.add_node("PythonCodeNode", "optimizer", {
 # Cycle-aware state management using class variables
 class CycleState:
     _instance = None
-    
+
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.iteration = 0
             cls._instance.state = {}
         return cls._instance
-    
+
     def get_iteration(self):
         return self.iteration
-    
+
     def increment_iteration(self):
         self.iteration += 1
-    
+
     def get_previous_state(self):
         return self.state.copy()
-    
+
     def set_cycle_state(self, data):
         self.state.update(data)
         return data

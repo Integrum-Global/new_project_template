@@ -114,7 +114,7 @@ def test_requires_postgres():
 workflow = WorkflowBuilder()
 workflow.add_node("NodeType", "node_id", {})
 
-# ❌ Old deprecated way  
+# ❌ Old deprecated way
 # AsyncWorkflowBuilder is deprecated - use WorkflowBuilder with LocalRuntime
 ```
 

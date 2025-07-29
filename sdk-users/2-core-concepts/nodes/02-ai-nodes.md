@@ -48,7 +48,7 @@ runtime = LocalRuntime()
       "temperature": 0.7,
       "max_tokens": 1000
   })
-  
+
   results, run_id = runtime.execute(workflow.build())
   result = results["agent"]
 
@@ -87,7 +87,7 @@ runtime = LocalRuntime()
       "input_text": "This is a sample document",
       "operation": "embed_text"
   })
-  
+
   results, run_id = runtime.execute(workflow.build())
   result = results["embedder"]
 
@@ -142,7 +142,7 @@ runtime = LocalRuntime()
           "quality_threshold": 0.8
       }
   })
-  
+
   results, run_id = runtime.execute(workflow.build())
   result = results["iterative_agent"]
 
@@ -163,7 +163,7 @@ runtime = LocalRuntime()
       "auto_execute_tools": True,
       "max_iterations": 3
   })
-  
+
   mcp_results, mcp_run_id = runtime.execute(mcp_workflow.build())
   result = mcp_results["mcp_agent"]
 

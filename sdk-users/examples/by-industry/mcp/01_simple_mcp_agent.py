@@ -4,8 +4,8 @@ Description: Basic example of an LLM agent using MCP tools
 Requirements: None (uses mock MCP server)
 """
 
-from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow.builder import WorkflowBuilder
 
 
 def main():

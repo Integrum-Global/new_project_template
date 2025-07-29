@@ -4,9 +4,9 @@ Description: Agent using multiple MCP servers for different capabilities
 Requirements: None (uses mock servers for demonstration)
 """
 
-from kailash.workflow.builder import WorkflowBuilder
 from kailash.nodes.ai import LLMAgentNode
 from kailash.runtime.local import LocalRuntime
+from kailash.workflow.builder import WorkflowBuilder
 
 
 def main():

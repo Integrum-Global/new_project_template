@@ -222,7 +222,7 @@ from kailash.workflow.builder import WorkflowBuilder
 # Create workflow with builder
 builder = WorkflowBuilder()
 
-reader_id = builder.add_node("CSVReaderNode", "reader", 
+reader_id = builder.add_node("CSVReaderNode", "reader",
     {"file_path": "/data/input.csv"}
 )
 

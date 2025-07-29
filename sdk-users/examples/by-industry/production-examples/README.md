@@ -68,7 +68,7 @@ testing_personas = [
     # ... 24 more personas
 ]
 
-# Multi-agent testing coordination  
+# Multi-agent testing coordination
 from kailash.workflow.builder import WorkflowBuilder
 from kailash.runtime.local import LocalRuntime
 

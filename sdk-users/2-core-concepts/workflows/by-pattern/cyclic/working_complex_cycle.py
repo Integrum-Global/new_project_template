@@ -316,7 +316,12 @@ def create_working_complex_workflow() -> Workflow:
     # Build workflow first, then create cycle
     built_workflow = workflow.build()
     cycle_builder = built_workflow.create_cycle("optimization_cycle")
-    cycle_builder.connect("switch", "optimizer", condition="false_output", mapping={"false_output.metrics": "metrics"})
+    cycle_builder.connect(
+        "switch",
+        "optimizer",
+        condition="false_output",
+        mapping={"false_output.metrics": "metrics"},
+    )
     cycle_builder.max_iterations(25)
     cycle_builder.converge_when("score >= 0.95")
     cycle_builder.build()

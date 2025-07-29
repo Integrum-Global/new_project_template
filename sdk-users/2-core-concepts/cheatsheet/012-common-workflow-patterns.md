@@ -145,7 +145,7 @@ workflow.add_node("PythonCodeNode", "handle_confirmation", {
     "code": "result = {'action': 'confirmation_handled', 'data': input_data}"
 })
 
-# False path - processes data differently  
+# False path - processes data differently
 workflow.add_node("PythonCodeNode", "parse_data", {
     "code": "result = {'action': 'data_parsed', 'data': input_data}"
 })
@@ -171,7 +171,7 @@ workflow.add_node("PythonCodeNode", "data_source", {
 
 # Multi-case routing
 workflow.add_node("SwitchNode", "priority_router", {
-    "condition_field": "priority", 
+    "condition_field": "priority",
     "cases": ["high", "medium", "low"]
 })
 
@@ -205,7 +205,7 @@ workflow = WorkflowBuilder()
 
 # Data classification
 workflow.add_node("LLMAgentNode", "classifier", {
-    "provider": "openai", 
+    "provider": "openai",
     "model": "gpt-4",
     "prompt": "Classify this request priority as 'high', 'medium', or 'low': {request}"
 })
@@ -222,7 +222,7 @@ result = {'priority': priority, 'original': llm_response}
 # Route based on LLM classification
 workflow.add_node("SwitchNode", "smart_router", {
     "condition_field": "priority",
-    "cases": ["high", "medium", "low"] 
+    "cases": ["high", "medium", "low"]
 })
 
 # Different processing paths

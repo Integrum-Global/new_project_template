@@ -204,7 +204,7 @@ result = {{
 }}
 """
     })
-    
+
     runtime = LocalRuntime()
     results, run_id = runtime.execute(validation_workflow.build())
     validation_result = results["validate_tenant_access"]["result"]

@@ -115,7 +115,7 @@ for i in range(3):
     workflow.add_node("PythonCodeNode", "processor", {
         "code": "result = {'data': [1, 2, 3]}"
     })
-    
+
     run_id = task_manager.create_run(workflow_name=f"test_run_{i}")
     runtime = LocalRuntime()
     results, _ = runtime.execute(
@@ -156,15 +156,15 @@ class MetricsAwareNode(Node):
         return {
             "data": NodeParameter(name="data", type=list, required=True)
         }
-    
+
     def run(self, **kwargs):
         data = kwargs.get("data", [])
-        
+
         # Process data
         processed_data = [item for item in data if not item.get("error")]
         processed_count = len(data)
         error_count = sum(1 for item in data if item.get("error"))
-        
+
         # Return custom metrics
         return {
             "data": processed_data,

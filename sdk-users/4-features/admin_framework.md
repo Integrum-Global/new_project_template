@@ -75,12 +75,12 @@ workflow.add_node("UserManagementNode", "user_manager", {
     "tenant_id": "enterprise_corp",
     "user_data": {
         "email": "john.doe@company.com",
-        "username": "johndoe", 
+        "username": "johndoe",
         "roles": ["analyst", "reviewer"],
         "attributes": {
             "department": "finance",
             "clearance": "secret",
-            "location": "headquarters", 
+            "location": "headquarters",
             "security_level": 4,
             "cost_center": "FIN-001",
             "manager": "jane.smith"
@@ -361,7 +361,7 @@ def create_enterprise_onboarding_workflow():
                 }
             }
         }
-    
+
     workflow.add_node("PythonCodeNode", "validate_user", {
         "code": PythonCodeNode.from_function(validate_user_func).code
     })
@@ -466,7 +466,7 @@ def create_incident_response_workflow():
                 ]
             }
         }
-    
+
     workflow.add_node("PythonCodeNode", "assess_impact", {
         "code": PythonCodeNode.from_function(assess_impact_func).code
     })

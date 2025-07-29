@@ -136,12 +136,16 @@ def create_final_cyclic_workflow() -> Workflow:
     workflow.add_node("optimizer", optimizer)
 
     # Create cycle using CycleBuilder API (direct chaining for Workflow class)
-    workflow.create_cycle("final_optimization_cycle").connect("optimizer", "optimizer", mapping={
-        "efficiency": "efficiency",
-        "quality": "quality",
-        "cost": "cost",
-        "performance": "performance",
-    }).max_iterations(25).converge_when("score >= 0.90").build()
+    workflow.create_cycle("final_optimization_cycle").connect(
+        "optimizer",
+        "optimizer",
+        mapping={
+            "efficiency": "efficiency",
+            "quality": "quality",
+            "cost": "cost",
+            "performance": "performance",
+        },
+    ).max_iterations(25).converge_when("score >= 0.90").build()
 
     return workflow
 

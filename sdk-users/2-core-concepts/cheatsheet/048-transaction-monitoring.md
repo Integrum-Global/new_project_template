@@ -338,16 +338,16 @@ from kailash.runtime.local import LocalRuntime
 # Database operation with monitoring workflow
 def create_monitored_db_workflow(query, params, txn_id):
     workflow = WorkflowBuilder()
-    
+
     # Start monitoring
     workflow.add_node("DeadlockDetectorNode", "start_deadlock_monitor", {
         "operation": "start_monitoring"
     })
-    
+
     workflow.add_node("RaceConditionDetectorNode", "start_race_monitor", {
         "operation": "start_monitoring"
     })
-    
+
     # Register lock acquisition
     workflow.add_node("DeadlockDetectorNode", "register_lock", {
         "operation": "register_lock",
@@ -355,7 +355,7 @@ def create_monitored_db_workflow(query, params, txn_id):
         "resource_id": "table_orders",
         "lock_type": "SHARED"
     })
-    
+
     # Register resource access
     workflow.add_node("RaceConditionDetectorNode", "register_access", {
         "operation": "register_access",
@@ -364,27 +364,27 @@ def create_monitored_db_workflow(query, params, txn_id):
         "access_type": "read",
         "thread_id": "workflow_thread"
     })
-    
+
     # Execute query
     workflow.add_node("SQLDatabaseNode", "execute_query", {
         "connection_string": "postgresql://...",
         "query": query,
         "parameters": params
     })
-    
+
     # End access
     workflow.add_node("RaceConditionDetectorNode", "end_access", {
         "operation": "end_access",
         "access_id": f"db_access_{txn_id}"
     })
-    
+
     # Release lock
     workflow.add_node("DeadlockDetectorNode", "release_lock", {
         "operation": "release_lock",
         "transaction_id": txn_id,
         "resource_id": "table_orders"
     })
-    
+
     # Connect workflow
     workflow.add_connection("start_deadlock_monitor", "result", "start_race_monitor", "deadlock_state")
     workflow.add_connection("start_race_monitor", "result", "register_lock", "race_state")
@@ -392,7 +392,7 @@ def create_monitored_db_workflow(query, params, txn_id):
     workflow.add_connection("register_access", "result", "execute_query", "access_state")
     workflow.add_connection("execute_query", "result", "end_access", "query_result")
     workflow.add_connection("end_access", "result", "release_lock", "access_complete")
-    
+
     return workflow
 ```
 
@@ -405,7 +405,7 @@ from kailash.runtime.local import LocalRuntime
 # Setup performance monitoring workflow
 def create_performance_monitoring_workflow():
     workflow = WorkflowBuilder()
-    
+
     # Initialize baselines for different metrics
     metrics = ["api_latency", "cpu_usage", "memory_usage"]
     for i, metric in enumerate(metrics):
@@ -417,13 +417,13 @@ def create_performance_monitoring_workflow():
         })
         if i > 0:
             workflow.add_connection(f"init_baseline_{metrics[i-1]}", "result", f"init_baseline_{metric}", "previous_baseline")
-    
+
     # Get current metrics
     workflow.add_node("TransactionMetricsNode", "get_current_metrics", {
         "operation": "get_metrics",
         "metric_types": ["latency", "throughput"]
     })
-    
+
     # Process metrics and detect anomalies
     workflow.add_node("PythonCodeNode", "process_metrics", {
         "code": """
@@ -432,14 +432,14 @@ metrics_data = parameters.get('metrics_data', {})
 result = {'metrics_processed': len(metrics_data)}
 """
     })
-    
+
     # Detect anomalies
     workflow.add_node("PerformanceAnomalyNode", "detect_anomalies", {
         "operation": "detect_anomalies",
         "metric_names": ["api_latency", "cpu_usage", "memory_usage"],
         "detection_methods": ["statistical", "iqr"]
     })
-    
+
     # Handle anomalies
     workflow.add_node("PythonCodeNode", "handle_anomalies", {
         "code": """
@@ -452,13 +452,13 @@ if anomalies.get('anomaly_count', 0) > 0:
 result = {'handled': True}
 """
     })
-    
+
     # Connect workflow
     workflow.add_connection(f"init_baseline_{metrics[-1]}", "result", "get_current_metrics", "baseline_complete")
     workflow.add_connection("get_current_metrics", "result", "process_metrics", "metrics_data")
     workflow.add_connection("process_metrics", "result", "detect_anomalies", "processed_metrics")
     workflow.add_connection("detect_anomalies", "result", "handle_anomalies", "anomaly_results")
-    
+
     return workflow
 ```
 
@@ -759,33 +759,33 @@ for anomaly in result.get("anomalies_detected", []):
 ```python
 def test_transaction_lifecycle():
     test_workflow = WorkflowBuilder()
-    
+
     # Start transaction
     test_workflow.add_node("TransactionMetricsNode", "start_test_txn", {
         "operation": "start_transaction",
         "transaction_id": "test_001"
     })
-    
+
     # Complete transaction
     test_workflow.add_node("TransactionMetricsNode", "end_test_txn", {
         "operation": "end_transaction",
         "transaction_id": "test_001",
         "status": "success"
     })
-    
+
     # Verify metrics
     test_workflow.add_node("TransactionMetricsNode", "get_test_metrics", {
         "operation": "get_metrics"
     })
-    
+
     # Connect workflow
     test_workflow.add_connection("start_test_txn", "result", "end_test_txn", "start_state")
     test_workflow.add_connection("end_test_txn", "result", "get_test_metrics", "end_state")
-    
+
     # Execute
     runtime = LocalRuntime()
     results, run_id = runtime.execute(test_workflow.build())
-    
+
     assert results["start_test_txn"]["result"]["status"] == "success"
     assert results["end_test_txn"]["result"]["status"] == "success"
     assert results["get_test_metrics"]["result"]["total_transactions"] == 1
@@ -797,11 +797,11 @@ def test_transaction_lifecycle():
 ```python
 def test_deadlock_scenario():
     test_deadlock_workflow = WorkflowBuilder()
-    
+
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "start_deadlock_test", {
         "operation": "start_monitoring"
     })
-    
+
     # Create potential deadlock scenario
     # Transaction 1 acquires A, waits for txn2
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "txn1_lock_A", {
@@ -809,44 +809,44 @@ def test_deadlock_scenario():
         "transaction_id": "txn1",
         "resource_id": "resource_A"
     })
-    
+
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "txn1_wait_B", {
         "operation": "register_wait",
         "transaction_id": "txn1",
         "waiting_for_transaction_id": "txn2",
         "resource_id": "resource_B"
     })
-    
+
     # Transaction 2 acquires B, waits for txn1
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "txn2_lock_B", {
         "operation": "register_lock",
         "transaction_id": "txn2",
         "resource_id": "resource_B"
     })
-    
+
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "txn2_wait_A", {
         "operation": "register_wait",
         "transaction_id": "txn2",
         "waiting_for_transaction_id": "txn1",
         "resource_id": "resource_A"
     })
-    
+
     # Should detect deadlock
     test_deadlock_workflow.add_node("DeadlockDetectorNode", "detect_test_deadlocks", {
         "operation": "detect_deadlocks"
     })
-    
+
     # Connect workflow
     test_deadlock_workflow.add_connection("start_deadlock_test", "result", "txn1_lock_A", "monitor_state")
     test_deadlock_workflow.add_connection("txn1_lock_A", "result", "txn1_wait_B", "lock_state")
     test_deadlock_workflow.add_connection("txn1_wait_B", "result", "txn2_lock_B", "wait_state")
     test_deadlock_workflow.add_connection("txn2_lock_B", "result", "txn2_wait_A", "lock_state")
     test_deadlock_workflow.add_connection("txn2_wait_A", "result", "detect_test_deadlocks", "wait_state")
-    
+
     # Execute
     runtime = LocalRuntime()
     results, run_id = runtime.execute(test_deadlock_workflow.build())
-    
+
     assert results["detect_test_deadlocks"]["result"]["deadlocks_detected"] > 0
 ```
 
@@ -855,13 +855,13 @@ def test_deadlock_scenario():
 ```python
 def test_performance_anomaly():
     test_anomaly_workflow = WorkflowBuilder()
-    
+
     # Initialize baseline
     test_anomaly_workflow.add_node("PerformanceAnomalyNode", "init_test_baseline", {
         "operation": "initialize_baseline",
         "metric_name": "test_metric"
     })
-    
+
     # Add normal data
     normal_values = [100, 105, 95, 110, 90]
     for i, value in enumerate(normal_values):
@@ -874,7 +874,7 @@ def test_performance_anomaly():
             test_anomaly_workflow.add_connection("init_test_baseline", "result", f"add_normal_{i}", "baseline_state")
         else:
             test_anomaly_workflow.add_connection(f"add_normal_{i-1}", "result", f"add_normal_{i}", "previous_state")
-    
+
     # Add anomalous data
     test_anomaly_workflow.add_node("PerformanceAnomalyNode", "add_anomaly", {
         "operation": "add_metric",
@@ -882,18 +882,18 @@ def test_performance_anomaly():
         "value": 500  # Clear anomaly
     })
     test_anomaly_workflow.add_connection(f"add_normal_{len(normal_values)-1}", "result", "add_anomaly", "previous_state")
-    
+
     # Should detect anomaly
     test_anomaly_workflow.add_node("PerformanceAnomalyNode", "detect_test_anomalies", {
         "operation": "detect_anomalies",
         "metric_names": ["test_metric"]
     })
     test_anomaly_workflow.add_connection("add_anomaly", "result", "detect_test_anomalies", "metrics_state")
-    
+
     # Execute
     runtime = LocalRuntime()
     results, run_id = runtime.execute(test_anomaly_workflow.build())
-    
+
     assert results["detect_test_anomalies"]["result"]["anomaly_count"] > 0
 ```
 
@@ -918,50 +918,50 @@ from kailash.runtime.local import LocalRuntime
 # Integrate monitoring with circuit breaker workflow
 def create_monitored_db_workflow():
     workflow = WorkflowBuilder()
-    
+
     # Circuit breaker protection
     workflow.add_node("CircuitBreakerNode", "db_breaker", {
         "operation": "check_circuit",
         "service_name": "database"
     })
-    
+
     # Monitor transaction
     workflow.add_node("TransactionMetricsNode", "start_db_txn", {
         "operation": "start_transaction",
         "transaction_id": "db_op"
     })
-    
+
     # Database operation
     workflow.add_node("SQLDatabaseNode", "db_query", {
         "connection_string": "postgresql://...",
         "query": "SELECT * FROM users"
     })
-    
+
     # End transaction based on success
     workflow.add_node("TransactionMetricsNode", "end_db_txn_success", {
         "operation": "end_transaction",
         "transaction_id": "db_op",
         "status": "success"
     })
-    
+
     workflow.add_node("TransactionMetricsNode", "end_db_txn_failure", {
         "operation": "end_transaction",
         "transaction_id": "db_op",
         "status": "failed"
     })
-    
+
     # Switch based on query result
     workflow.add_node("SwitchNode", "check_success", {
         "condition": "result != None"
     })
-    
+
     # Connect workflow
     workflow.add_connection("db_breaker", "result", "start_db_txn", "breaker_state")
     workflow.add_connection("start_db_txn", "result", "db_query", "txn_state")
     workflow.add_connection("db_query", "result", "check_success", "result")
     workflow.add_connection("check_success", "true_output", "end_db_txn_success", "query_result")
     workflow.add_connection("check_success", "false_output", "end_db_txn_failure", "query_error")
-    
+
     return workflow
 ```
 

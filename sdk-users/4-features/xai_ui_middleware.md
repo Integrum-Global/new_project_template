@@ -200,7 +200,7 @@ class StreamingAgentNode(AsyncNode):
     async def async_run(self, prompt: str) -> Dict[str, Any]:
         # Example streaming response
         response = "Quantum computing uses quantum bits (qubits) that can be in superposition."
-        
+
         # Return structured result for the bridge
         return {
             "text": response,
@@ -240,20 +240,20 @@ class ToolAgentNode(AsyncNode):
             "args": {"query": "SELECT * FROM users"},
             "require_approval": True
         }
-        
+
         # Simulate approval flow
         # In real implementation, this would interact with the bridge
         approved = inputs.get("user_approved", True)
-        
+
         if not approved:
             return {"status": "cancelled", "reason": "User denied approval"}
-        
+
         # Simulate database query result
         result = [
             {"id": 1, "name": "Alice"},
             {"id": 2, "name": "Bob"}
         ]
-        
+
         return {"result": result, "tool_request": tool_request}
 
 ```

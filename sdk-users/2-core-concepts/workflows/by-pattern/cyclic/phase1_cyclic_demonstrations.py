@@ -808,9 +808,13 @@ def create_cyclic_demonstration_workflow(demo_type: str) -> Workflow:
 
         # Connect final output - pass the business metrics as data
         workflow.connect("enhancer", "writer", mapping={"business_metrics": "data"})
-        
+
         # Create cycle using CycleBuilder API (direct chaining for Workflow class)
-        workflow.create_cycle("quality_improvement_cycle").connect("enhancer", "enhancer", mapping={"data_batch": "data_batch", "quality_score": "quality_score"}).max_iterations(10).converge_when("converged == True").build()
+        workflow.create_cycle("quality_improvement_cycle").connect(
+            "enhancer",
+            "enhancer",
+            mapping={"data_batch": "data_batch", "quality_score": "quality_score"},
+        ).max_iterations(10).converge_when("converged == True").build()
 
     elif demo_type == "supply":
         workflow = Workflow(
@@ -834,12 +838,16 @@ def create_cyclic_demonstration_workflow(demo_type: str) -> Workflow:
 
         # Connect output - pass the metrics as data
         workflow.connect("optimizer", "writer", mapping={"metrics": "data"})
-        
+
         # Create cycle using CycleBuilder API (direct chaining for Workflow class)
-        workflow.create_cycle("supply_optimization_cycle").connect("optimizer", "optimizer", mapping={
-            "supply_network": "supply_network",
-            "optimization_score": "optimization_score",
-        }).max_iterations(15).converge_when("converged == True").build()
+        workflow.create_cycle("supply_optimization_cycle").connect(
+            "optimizer",
+            "optimizer",
+            mapping={
+                "supply_network": "supply_network",
+                "optimization_score": "optimization_score",
+            },
+        ).max_iterations(15).converge_when("converged == True").build()
 
     elif demo_type == "reconciliation":
         workflow = Workflow(
@@ -861,9 +869,13 @@ def create_cyclic_demonstration_workflow(demo_type: str) -> Workflow:
 
         # Connect output - pass the metrics as data
         workflow.connect("reconciler", "writer", mapping={"metrics": "data"})
-        
+
         # Create cycle using CycleBuilder API (direct chaining for Workflow class)
-        workflow.create_cycle("reconciliation_cycle").connect("reconciler", "reconciler", mapping={"transactions": "transactions", "match_rate": "match_rate"}).max_iterations(10).converge_when("converged == True").build()
+        workflow.create_cycle("reconciliation_cycle").connect(
+            "reconciler",
+            "reconciler",
+            mapping={"transactions": "transactions", "match_rate": "match_rate"},
+        ).max_iterations(10).converge_when("converged == True").build()
 
     else:
         raise ValueError(f"Unknown demo type: {demo_type}")

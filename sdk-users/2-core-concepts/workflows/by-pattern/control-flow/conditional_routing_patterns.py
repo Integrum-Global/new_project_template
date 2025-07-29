@@ -746,7 +746,9 @@ def example3_conditional_retry_loops():
     # Build workflow first, then create cycle for conditional retry
     built_workflow = workflow.build()
     cycle_builder = built_workflow.create_cycle("conditional_retry_cycle")
-    cycle_builder.connect("switch", "processor", condition="case_retry", mapping={"case_retry": "data"})
+    cycle_builder.connect(
+        "switch", "processor", condition="case_retry", mapping={"case_retry": "data"}
+    )
     cycle_builder.max_iterations(10)
     cycle_builder.converge_when("should_continue == False")
     cycle_builder.build()

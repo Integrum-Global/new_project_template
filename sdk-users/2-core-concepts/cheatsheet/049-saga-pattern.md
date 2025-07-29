@@ -168,11 +168,11 @@ from kailash.nodes.base import Node, NodeParameter
 
 class PaymentSagaStepNode(Node):
     """Custom payment processing node with compensation."""
-    
+
     amount = NodeParameter(type=float, required=True)
     customer_id = NodeParameter(type=str, required=True)
     operation = NodeParameter(type=str, default="execute")
-    
+
     def run(self, **kwargs):
         """Process payment or compensation."""
         if self.operation == "execute":
@@ -415,13 +415,13 @@ for error in result.get("compensation_errors", []):
 def test_saga_happy_path():
     # Create test saga workflow
     test_workflow = WorkflowBuilder()
-    
+
     # Create and configure saga
     test_workflow.add_node("SagaCoordinatorNode", "test_saga", {
         "operation": "create_saga",
         "saga_name": "test_saga"
     })
-    
+
     # Add test steps
     test_workflow.add_node("PythonCodeNode", "add_test_step", {
         "code": """
@@ -434,16 +434,16 @@ result = {
 }
 """
     })
-    
+
     # Execute saga
     test_workflow.add_node("SagaCoordinatorNode", "execute_test", {
         "operation": "execute_saga"
     })
-    
+
     # Connect workflow
     test_workflow.add_connection("test_saga", "saga_id", "add_test_step", "saga_id")
     test_workflow.add_connection("add_test_step", "step_config", "execute_test", "step")
-    
+
     # Execute
     runtime = LocalRuntime()
     results, run_id = runtime.execute(test_workflow.build())
@@ -456,12 +456,12 @@ result = {
 def test_saga_compensation():
     # Create compensation test workflow
     comp_workflow = WorkflowBuilder()
-    
+
     # Setup saga with failing step
     comp_workflow.add_node("SagaCoordinatorNode", "create_comp_saga", {
         "operation": "create_saga"
     })
-    
+
     # Configure steps where second will fail
     comp_workflow.add_node("PythonCodeNode", "configure_failing_steps", {
         "code": """
@@ -473,16 +473,16 @@ result = {
 }
 """
     })
-    
+
     # Execute and verify compensation
     comp_workflow.add_node("SagaCoordinatorNode", "execute_with_failure", {
         "operation": "execute_saga"
     })
-    
+
     # Connect workflow
     comp_workflow.add_connection("create_comp_saga", "saga_id", "configure_failing_steps", "saga_id")
     comp_workflow.add_connection("configure_failing_steps", "steps", "execute_with_failure", "steps")
-    
+
     # Execute
     runtime = LocalRuntime()
     results, run_id = runtime.execute(comp_workflow.build())

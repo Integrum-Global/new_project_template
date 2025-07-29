@@ -30,7 +30,7 @@ workflow.add_node("HTTPRequestNode", "api_client", {
     "timeout": 30
 })
 
-# Process API response  
+# Process API response
 workflow.add_node("PythonCodeNode", "processor", {
     "code": """
 # Simple response processing

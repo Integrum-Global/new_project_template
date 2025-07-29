@@ -105,7 +105,7 @@ async def get_pending_orders():
         "parameters": {"status": "pending"},
         "fetch_mode": "all"
     })
-    
+
     runtime = LocalRuntime()
     results, run_id = await runtime.execute_async(workflow.build())
     return results["query_orders"]["result"]["data"]

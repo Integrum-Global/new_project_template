@@ -106,7 +106,7 @@ workflow.create_cycle("optimization_cycle") \
 # Data quality improvement through iterations
 workflow.create_cycle("quality_improvement_cycle") \
         .connect("enhancer", "enhancer", mapping={
-            "data_batch": "data_batch", 
+            "data_batch": "data_batch",
             "quality_score": "quality_score"
         }) \
         .max_iterations(10) \
@@ -116,7 +116,7 @@ workflow.create_cycle("quality_improvement_cycle") \
 
 **Working Examples**: [2-core-concepts/workflows/by-pattern/cyclic/](2-core-concepts/workflows/by-pattern/cyclic/)
 - `test_simple_cycle.py` - Basic counter cycle
-- `test_switch_cycle.py` - Conditional routing patterns  
+- `test_switch_cycle.py` - Conditional routing patterns
 - `final_working_cycle.py` - Enterprise optimization
 - `phase1_cyclic_demonstrations.py` - Business workflows
 - `conditional_routing_patterns.py` - Complex conditional patterns

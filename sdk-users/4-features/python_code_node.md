@@ -139,7 +139,7 @@ workflow = WorkflowBuilder()
 runtime = LocalRuntime()
 
 # Load a function from file
-workflow.add_node("PythonCodeNode", "file_processor", 
+workflow.add_node("PythonCodeNode", "file_processor",
     PythonCodeNode.from_file(
         file_path="custom_processor.py",
         function_name="process_data"
@@ -269,7 +269,7 @@ runtime = LocalRuntime()
 
 # Using workflow execution (recommended approach)
 workflow = WorkflowBuilder()
-workflow.add_node("PythonCodeNode", "processor", 
+workflow.add_node("PythonCodeNode", "processor",
     PythonCodeNode.from_function(func).config
 )
 runtime = LocalRuntime()

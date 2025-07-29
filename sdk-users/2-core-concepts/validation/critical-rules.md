@@ -113,7 +113,7 @@ workflow = WorkflowBuilder()
 workflow.add_node("reader", "CSVReaderNode", {"file_path": "data.csv"})  # WRONG ORDER - should be node_type, node_id, config
 workflow.add_connection("from_node", "to_node", "output", "input")  # WRONG ORDER - should be from_node, output, to_node, input
 
-# Wrong parameter names  
+# Wrong parameter names
 runtime = LocalRuntime()
 runtime.execute(workflow.build(), config={"node": {}})     # WRONG: should be 'parameters'
 runtime.execute(workflow.build(), overrides={"param": ""}) # WRONG: should be 'parameters'

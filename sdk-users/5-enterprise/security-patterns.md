@@ -93,7 +93,7 @@ from kailash.nodes.admin import UserManagementNode
 workflow = WorkflowBuilder()
 workflow.add_node("UserManagementNode", "user_mgmt", {
     "provider": "ldap",  # or "database", "azure_ad", "okta"
-    
+
     # User lifecycle
     "auto_provisioning": True,
     "deprovisioning_policy": "immediate",

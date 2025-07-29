@@ -108,7 +108,7 @@ from kailash.runtime.local import LocalRuntime
 
 def validate_and_execute(workflow):
     """Validate workflow before execution"""
-    
+
     # Pre-execution validation
     param_errors = workflow.validate_parameter_declarations()
     if param_errors:
@@ -116,7 +116,7 @@ def validate_and_execute(workflow):
         for error in param_errors:
             print(f"  - {error.message}")
         return None
-    
+
     # Contract validation
     contracts_valid, contract_errors = workflow.validate_all_contracts()
     if not contracts_valid:
@@ -124,11 +124,11 @@ def validate_and_execute(workflow):
         for error in contract_errors:
             print(f"  - {error}")
         return None
-    
+
     # Build and validate structure
     built_workflow = workflow.build()
     structural_result = built_workflow.validate()
-    
+
     # Execute with runtime validation
     try:
         runtime = LocalRuntime()
@@ -152,32 +152,32 @@ from kailash.runtime.local import LocalRuntime
 
 def robust_workflow_execution(workflow, parameters=None):
     """Execute workflow with comprehensive validation and error handling"""
-    
+
     try:
         # Parameter validation
         param_errors = workflow.validate_parameter_declarations()
         if param_errors:
             warnings = [err for err in param_errors if err.severity.value == 'warning']
             errors = [err for err in param_errors if err.severity.value == 'error']
-            
+
             if errors:
                 print("❌ Critical parameter errors:")
                 for error in errors:
                     print(f"  - {error.message}")
                 return None, "Parameter validation failed"
-            
+
             if warnings:
                 print("⚠️  Parameter warnings:")
                 for warning in warnings:
                     print(f"  - {warning.message}")
-        
+
         # Build and execute
         built_workflow = workflow.build()
         runtime = LocalRuntime()
         results, run_id = runtime.execute(built_workflow, parameters=parameters)
-        
+
         return results, "Success"
-        
+
     except Exception as e:
         error_msg = str(e)
         if "missing required inputs" in error_msg:
@@ -207,22 +207,22 @@ import time
 
 def validate_performance(workflow, max_duration=30.0):
     """Validate workflow performance requirements"""
-    
+
     runtime = LocalRuntime()
-    
+
     # Measure execution time
     start_time = time.time()
     try:
         results, run_id = runtime.execute(workflow.build())
         execution_time = time.time() - start_time
-        
+
         if execution_time > max_duration:
             print(f"❌ Performance validation failed: {execution_time:.2f}s > {max_duration}s")
             return False, execution_time
         else:
             print(f"✅ Performance validation passed: {execution_time:.2f}s")
             return True, execution_time
-            
+
     except Exception as e:
         execution_time = time.time() - start_time
         print(f"❌ Execution failed after {execution_time:.2f}s: {e}")
@@ -243,18 +243,18 @@ from kailash.workflow.builder import WorkflowBuilder
 
 def validate_secure_inputs(workflow_config):
     """Validate workflow configuration for security issues"""
-    
+
     security_issues = []
-    
+
     # Check for sensitive data in configuration
     sensitive_keywords = ['password', 'secret', 'key', 'token']
-    
+
     for node_id, config in workflow_config.items():
         for param, value in config.items():
             if any(keyword in param.lower() for keyword in sensitive_keywords):
                 if isinstance(value, str) and len(value) > 0:
                     security_issues.append(f"Potential sensitive data in {node_id}.{param}")
-    
+
     return security_issues
 
 # Example usage

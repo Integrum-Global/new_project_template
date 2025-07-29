@@ -118,14 +118,26 @@ def test_switch_cycle():
 
     # Set up forward connections for conditional routing
     workflow.connect(
-        "switch", "optimizer", condition="false_output", mapping={"false_output.score": "score"}
+        "switch",
+        "optimizer",
+        condition="false_output",
+        mapping={"false_output.score": "score"},
     )
     workflow.connect(
         "switch", "final", condition="true_output", mapping={"true_output": "data"}
     )
 
     # Create cycle for the retry path back to start
-    workflow.create_cycle("switch_cycle").connect("optimizer", "packager", mapping={"score": "score", "converged": "converged", "iteration": "iteration", "data": "data"}).max_iterations(10).converge_when("converged == True").build()
+    workflow.create_cycle("switch_cycle").connect(
+        "optimizer",
+        "packager",
+        mapping={
+            "score": "score",
+            "converged": "converged",
+            "iteration": "iteration",
+            "data": "data",
+        },
+    ).max_iterations(10).converge_when("converged == True").build()
 
     # Execute
     runtime = LocalRuntime(enable_cycles=True)
