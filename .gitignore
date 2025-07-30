@@ -7,7 +7,6 @@ __pycache__/
 build/
 develop-eggs/
 dist/
-!dist/kailash-*.whl  # Keep kailash wheel for development
 downloads/
 eggs/
 .eggs/
@@ -43,6 +42,15 @@ venv.bak/
 .pytest_cache/
 .coverage
 htmlcov/
+test_*.db
+test_shared_*.db
+demo_mcp.db
+mcp_registry.db
+mcp_registry.json
+test-env
+
+# Housekeeping
+.temp_cleanup/
 
 # Documentation builds
 docs/_build/
@@ -55,26 +63,23 @@ site/
 # Generated outputs - all output directories
 outputs/
 output/
-data/outputs/
 examples/outputs/
 examples/output/
 
-# Task tracking storage
+# Generated files in root and examples directories
+/*.csv
+/*.json
+/examples/*.csv
+/examples/*.json
+/examples/customer_*.csv
+/examples/processed_data.csv
+
+# Task tracking storage (if they exist outside examples/data)
 **/task_storage/
 **/tasks/runs/
 **/tasks/tasks/
 **/tasks/metrics/
 **/*_tracking/
-
-# Data exports
-data/exports/docker/
-data/exports/kubernetes/
-data/exports/minimal/
-data/exports/standard/
-
-# Generated visualizations and data files
-data/*_matplotlib.png
-data/sample_metrics.csv
 
 # Jupyter Notebooks
 .ipynb_checkpoints
@@ -84,4 +89,7 @@ data/sample_metrics.csv
 .env.development.local
 .env.test.local
 .env.production.local
-.claude
+.claude/settings.local.json
+docs/build_output.txt
+
+# Prevent root-level data files (already covered above)

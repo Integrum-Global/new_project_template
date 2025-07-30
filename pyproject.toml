@@ -21,30 +21,23 @@ classifiers = [
 dependencies = [
     # Core Kailash SDK (from PyPI) - WITHOUT nexus extra due to broken imports
     "kailash>=0.9.1",
-
     # Standalone Nexus platform (kailash-nexus on PyPI, import as 'from nexus import Nexus')
     "kailash-nexus>=1.0.3",
-
     # Local apps with correct versions
     "kailash-dataflow==0.3.1",
-
     # Web Framework
     "fastapi[all]>=0.115.0",
     "uvicorn[standard]>=0.24.0",
-    
     # CLI Framework
     "click>=8.0",
     "rich>=13.0.0",
-    
     # Data Handling
     "pydantic>=2.0",
     "pandas>=2.0.0",
     "numpy>=1.24.0",
-    
     # Database
     "sqlalchemy>=2.0",
     "alembic>=1.12.0",
-    
     # Development Tools
     "pytest>=7.0",
     "pytest-cov>=4.0",
@@ -52,12 +45,12 @@ dependencies = [
     "black>=23.0",
     "isort>=5.12.0",
     "ruff>=0.1.0",
-    
     # Utilities
     "pyyaml>=6.0",
     "requests>=2.31.0",
     "python-dotenv>=1.0.0",
     "structlog>=23.1.0",
+    "torch>=2.7.1",
 ]
 
 [project.optional-dependencies]
