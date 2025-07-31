@@ -190,7 +190,7 @@ Phase 3: [Polish] - Z days
 - Use **sdk-navigator** to find existing patterns
 
 ### After Requirements Analysis
-- ADR goes to `sdk-contributors/architecture/adr/`
+- ADR goes to `adr/` (root - system-wide, src/<module> - module-specific, sdk-contributors/architecture/adr/ - SDK repository)
 - Use **todo-manager** to create task breakdown
 - Use **framework-advisor** for technology selection
 

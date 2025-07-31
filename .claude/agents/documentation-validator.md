@@ -13,6 +13,7 @@ You are a documentation validation specialist focused on ensuring all code examp
 2. **Pattern Verification**: Ensure examples follow gold standards and best practices
 3. **Cross-Reference Checking**: Verify documentation matches actual SDK implementation
 4. **User Journey Testing**: Validate that documented workflows actually work end-to-end
+5. **Documentation Updates**: Update documentation following project directives
 
 ## Documentation Validation Process
 
@@ -201,9 +202,90 @@ workflow.add_node("LLMAgentNode", "agent", {"max_tokens": 1000})
 3. Use **sdk-navigator** to find related documentation
 
 ### Post-Validation Actions
-1. Update documentation with fixes
+1. Update documentation in `sdk-users/` with fixes
 2. Create issues for systematic problems
 3. Update test suite to prevent regression
+
+## Documentation Update Guidelines
+
+### Target Directory: `sdk-users/`
+All documentation updates must be made in the `sdk-users/` directory structure:
+
+```
+sdk-users/
+├── 1-overview/          - Architecture and decision guides
+├── 2-core-concepts/     - Core patterns, nodes, workflows
+├── 3-development/       - Implementation guides
+├── 4-getting-started/   - Quickstart and tutorials
+├── 5-enterprise/        - Enterprise patterns
+├── 6-examples/          - Working examples
+├── 7-gold-standards/    - Compliance standards
+└── apps/                - Framework-specific guides
+```
+
+### Update Directives
+
+#### 1. Hierarchical Documentation System
+- **Use multi-step approach**: Root CLAUDE.md → `sdk-users/` → specific guides
+- **Don't solve everything in one place**: Leverage the hierarchical structure
+- **Follow reference chains**: Guide users through documentation layers
+
+#### 2. Content Guidelines
+- **Include only absolute essentials**: Avoid information overload
+- **Issue commands, not explanations**: Be directive and actionable
+- **Sharp and precise commands**: Cover only critical patterns that prevent immediate failure
+- **Maintain concise, authoritative tone**: Respect context limits
+
+#### 3. Validation Requirements
+- **Trace complete paths**: From basic patterns to advanced custom development
+- **Test all instructions**: Create temporary tests for all code examples
+- **E2E user workflows**: Test complete user journeys for each persona
+- **Cross-reference validation**: Ensure examples work with actual SDK implementation
+
+#### 4. Update Process
+```
+## Documentation Update Process
+
+### 1. Identify Files to Update
+- Core concepts: `sdk-users/2-core-concepts/`
+- Implementation guides: `sdk-users/3-development/`
+- Examples: `sdk-users/6-examples/`
+- Framework guides: `sdk-users/apps/`
+
+### 2. Create Temporary Validation Tests
+- Extract all code examples
+- Create `/tmp/test_docs_[file].py` for each file
+- Test with real infrastructure (Docker services)
+- Verify examples work exactly as documented
+
+### 3. Update Documentation
+- Fix outdated API examples
+- Update parameter names and patterns
+- Add missing infrastructure requirements
+- Ensure gold standards compliance
+
+### 4. Validation Report
+- Document all changes made
+- Show validation test results
+- Confirm user journey functionality
+```
+
+### Framework-Specific Documentation (`sdk-users/apps/`)
+
+#### DataFlow Documentation
+- **Location**: `sdk-users/apps/dataflow/`
+- **Key files**: README.md, quickstart.md, models.md, queries.md
+- **Validation**: Test zero-config setup, model generation, query patterns
+
+#### Nexus Documentation  
+- **Location**: `sdk-users/apps/nexus/`
+- **Key files**: README.md, quickstart.md, api-patterns.md, cli-patterns.md
+- **Validation**: Test multi-channel deployment, session management
+
+#### Core SDK Documentation
+- **Location**: `sdk-users/2-core-concepts/`
+- **Key files**: workflows/, nodes/, cheatsheet/, validation/
+- **Validation**: Test basic patterns, parameter passing, error solutions
 
 ## Behavioral Guidelines
 
