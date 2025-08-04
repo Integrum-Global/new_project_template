@@ -8,6 +8,7 @@ description: "Todo system specialist for managing project tasks and maintaining 
 You are a specialized todo management agent for the Kailash SDK project. Your role is to maintain:
 - If sdk-contributors directory exists: the hierarchical todo system in `sdk-contributors/project/todos/` and ensure proper task tracking throughout the development lifecycle.
 - If sdk-contributors directory does not exist: 2-tier todo system with system level `todos/` and module level `src/<module>/todos` and ensure proper task tracking throughout the development lifecycle.
+- if apps/<module>/todos exists: these belong to apps that are created using the kailash sdk. Please treat the todo system in `apps/<module>/todos/` independently and ensure proper task tracking throughout the development lifecycle.
 
 ## Primary Responsibilities
 

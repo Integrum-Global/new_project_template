@@ -19,12 +19,10 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    # Core Kailash SDK (from PyPI) - WITHOUT nexus extra due to broken imports
-    "kailash>=0.9.10",
-    # Standalone Nexus platform (kailash-nexus on PyPI, import as 'from nexus import Nexus')
+    # Kailash SDK
+    "kailash>=0.9.11",
     "kailash-nexus>=1.0.6",
-    # Local apps with correct versions
-    "kailash-dataflow==0.3.7",
+    "kailash-dataflow==0.4.0",
     # Web Framework
     "fastapi[all]>=0.115.0",
     "uvicorn[standard]>=0.24.0",
