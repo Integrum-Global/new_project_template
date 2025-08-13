@@ -22,13 +22,22 @@ The subagents are designed around the core workflow phases identified in `CLAUDE
 | **intermediate-reviewer** | Checkpoint reviews and progress critique | Reviewing todos and implementation milestones |
 | **todo-manager** | Task management and project tracking | Creating and managing development task lists |
 | **mcp-specialist** | MCP server implementation and integration | Model Context Protocol patterns and debugging |
+| **git-release-specialist** | Git workflows, CI validation, and releases | Pre-commit checks, PR creation, version releases |
 
 ### Framework Specialists (NEW)
 
 | Agent | Purpose | When to Use |
 |-------|---------|-------------|
-| **nexus-specialist** | Nexus multi-channel platform implementation | Zero-config deployment, API/CLI/MCP orchestration |
-| **dataflow-specialist** | DataFlow database framework implementation | Database operations, bulk processing, auto node generation |
+| **nexus-specialist** | Nexus multi-channel platform implementation | Zero-config deployment, API/CLI/MCP orchestration, **DataFlow integration** |
+| **dataflow-specialist** | DataFlow database framework implementation | Database operations, bulk processing, auto node generation, **Nexus integration** |
+
+### Critical Integration Guides
+
+**⚠️ IMPORTANT: DataFlow + Nexus Integration**
+- See: `sdk-users/guides/dataflow-nexus-integration.md` for tested configurations
+- Key settings to prevent blocking: `Nexus(auto_discovery=False)` + `DataFlow(skip_registry=True)`
+- Full featured config available with 10-30s startup time
+- Both specialists updated with integration warnings
 
 ### Design Principles
 
@@ -43,13 +52,14 @@ Follow this sequence for efficient feature development:
 
 ### Quick Reference: Agents by Phase
 
-| Phase                 | Agents (in order) | Purpose |
-|-----------------------|-------------------|---------|
-| **1. Analysis**       | ultrathink-analyst → requirements-analyst → sdk-navigator → framework-advisor → (nexus/dataflow-specialist) | Deep analysis, requirements, existing patterns, tech selection, framework-specific guidance |
-| **2. Planning**       | todo-manager → intermediate-reviewer | Task breakdown and validation |
+| Phase | Agents (in order) | Purpose |
+|-------|-------------------|---------|
+| **1. Analysis** | ultrathink-analyst → requirements-analyst → sdk-navigator → framework-advisor → (nexus/dataflow-specialist) | Deep analysis, requirements, existing patterns, tech selection, framework-specific guidance |
+| **2. Planning** | todo-manager → intermediate-reviewer | Task breakdown and validation |
 | **3. Implementation** | tdd-implementer → pattern-expert → (nexus/dataflow-specialist) → intermediate-reviewer → gold-standards-validator | Test-first, implement, framework patterns, review, validate (repeat per component) |
-| **4. Testing**        | testing-specialist → documentation-validator | Full test coverage, doc accuracy |
-| **5. Final**          | intermediate-reviewer | Final critique |
+| **4. Testing** | testing-specialist → documentation-validator | Full test coverage, doc accuracy |
+| **5. Release** | git-release-specialist | Pre-commit validation, PR creation, version management |
+| **6. Final** | intermediate-reviewer | Final critique |
 
 ### Phase 1: Analysis & Planning (Sequential)
 ```
@@ -100,7 +110,17 @@ OR chain Phase 4:
 > Use the testing-specialist, documentation-validator, and todo-manager subagents to ensure complete test coverage and documentation accuracy
 ```
 
-### Phase 5: Final Review
+### Phase 5: Release & Git Management
+```
+1. > Use the git-release-specialist subagent to run pre-commit validation (black, isort, ruff)
+2. > Use the git-release-specialist subagent to create feature branch and PR workflow
+3. > Use the git-release-specialist subagent to handle version management and release procedures (if applicable)
+
+OR chain Phase 5:
+> Use the git-release-specialist subagent to validate code quality, create PR, and manage release workflow
+```
+
+### Phase 6: Final Review
 ```
 > Use the intermediate-reviewer subagent to perform final critique of complete implementation
 ```
