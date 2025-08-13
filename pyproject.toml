@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     # Kailash SDK
-    "kailash>=0.9.14",
+    "kailash>=0.9.15",
     "kailash-nexus>=1.0.6",
     "kailash-dataflow==0.4.6",
     # Web Framework
