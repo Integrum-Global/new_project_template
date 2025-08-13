@@ -2,7 +2,7 @@
 
 ## 🏗️ Architecture Overview
 
-### Core SDK (`src/kailash/`)
+### Core SDK (`sdk-users/`)
 **Foundational building blocks** for workflow automation:
 - **Purpose**: Custom workflows, fine-grained control, integrations
 - **Components**: WorkflowBuilder, LocalRuntime, 110+ nodes, MCP integration
