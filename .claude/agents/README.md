@@ -20,7 +20,8 @@ The subagents are designed around the core workflow phases identified in `CLAUDE
 | **ultrathink-analyst** | Deep analysis and failure point identification | Complex features, systemic issues, risk analysis |
 | **requirements-analyst** | Requirements breakdown and ADR creation | Systematic analysis, architecture decisions |
 | **intermediate-reviewer** | Checkpoint reviews and progress critique | Reviewing todos and implementation milestones |
-| **todo-manager** | Task management and project tracking | Creating and managing development task lists |
+| **todo-manager** | Task management and local tracking | Creating and managing local development tasks |
+| **gh-manager** | GitHub projects and issue management | Creating user stories, syncing with project boards |
 | **mcp-specialist** | MCP server implementation and integration | Model Context Protocol patterns and debugging |
 | **git-release-specialist** | Git workflows, CI validation, and releases | Pre-commit checks, PR creation, version releases |
 
@@ -55,11 +56,11 @@ Follow this sequence for efficient feature development:
 | Phase | Agents (in order) | Purpose |
 |-------|-------------------|---------|
 | **1. Analysis** | ultrathink-analyst → requirements-analyst → sdk-navigator → framework-advisor → (nexus/dataflow-specialist) | Deep analysis, requirements, existing patterns, tech selection, framework-specific guidance |
-| **2. Planning** | todo-manager → intermediate-reviewer | Task breakdown and validation |
-| **3. Implementation** | tdd-implementer → pattern-expert → (nexus/dataflow-specialist) → intermediate-reviewer → gold-standards-validator | Test-first, implement, framework patterns, review, validate (repeat per component) |
+| **2. Planning** | gh-manager → todo-manager → intermediate-reviewer | Create GitHub issues, create local todos, validate task breakdown |
+| **3. Implementation** | tdd-implementer → pattern-expert → (nexus/dataflow-specialist) → todo-manager (sync) → intermediate-reviewer → gold-standards-validator | Test-first, implement, framework patterns, sync to GH, review, validate (repeat per component) |
 | **4. Testing** | testing-specialist → documentation-validator | Full test coverage, doc accuracy |
-| **5. Release** | git-release-specialist | Pre-commit validation, PR creation, version management |
-| **6. Final** | intermediate-reviewer | Final critique |
+| **5. Release** | git-release-specialist → gh-manager (close issues) | Pre-commit validation, PR creation, close GitHub issues |
+| **6. Final** | intermediate-reviewer → gh-manager (project update) | Final critique, update project board |
 
 ### Phase 1: Analysis & Planning (Sequential)
 ```
@@ -74,13 +75,16 @@ OR chain all Phase 1 agents:
 > Use the ultrathink-analyst, requirements-analyst, sdk-navigator, and framework-advisor subagents to perform complete analysis and planning for [feature]
 ```
 
-### Phase 2: Task Planning & Review
+### Phase 2: Project & Task Planning (Sequential)
 ```
-1. > Use the todo-manager subagent to create detailed task breakdown based on requirements
-2. > Use the intermediate-reviewer subagent to review todo completeness and feasibility
+1. > Use the gh-manager subagent to create GitHub issues from requirements/user stories
+2. > Use the todo-manager subagent to create local todos from GitHub issues
+3. > Use the intermediate-reviewer subagent to review task completeness and feasibility
 
 OR chain Phase 2:
-> Use the todo-manager and intermediate-reviewer subagents to create and validate task breakdown
+> Use the gh-manager, todo-manager, and intermediate-reviewer subagents to create GitHub issues, local todos, and validate breakdown
+
+**Important**: gh-manager creates project-level tracking (GitHub), todo-manager creates implementation tracking (local files)
 ```
 
 ### Phase 3: Implementation (Iterative per component)
@@ -90,14 +94,17 @@ For each component:
 2. > Use the pattern-expert subagent to implement [component] following SDK patterns
    - For DataFlow components: > Use the dataflow-specialist subagent for database patterns
    - For Nexus components: > Use the nexus-specialist subagent for multi-channel patterns
-3. > Use the gold-standards-validator subagent to ensure [component] compliance
-4. > Use the intermediate-reviewer subagent to review [component] implementation
+3. > Use the todo-manager subagent to update progress and sync to GitHub via gh-manager
+4. > Use the gold-standards-validator subagent to ensure [component] compliance
+5. > Use the intermediate-reviewer subagent to review [component] implementation
 
 OR chain Phase 3 for a component:
-> Use the tdd-implementer, pattern-expert, gold-standards-validator, nexus-specialist, and dataflow-specialist subagents, as needed, to implement and validate [component]
+> Use the tdd-implementer, pattern-expert, todo-manager, gold-standards-validator, nexus-specialist, and dataflow-specialist subagents, as needed, to implement, sync progress, and validate [component]
 
 POST Phase 3:
 > Use the intermediate-reviewer subagent to ensure that the implementation meets all requirements and standards
+
+**Important**: todo-manager automatically syncs progress to GitHub issues at key milestones (start, 50%, blocked, complete)
 ```
 
 ### Phase 4: Testing & Documentation
@@ -114,15 +121,22 @@ OR chain Phase 4:
 ```
 1. > Use the git-release-specialist subagent to run pre-commit validation (black, isort, ruff)
 2. > Use the git-release-specialist subagent to create feature branch and PR workflow
-3. > Use the git-release-specialist subagent to handle version management and release procedures (if applicable)
+3. > Use the gh-manager subagent to close related GitHub issues with PR references
+4. > Use the git-release-specialist subagent to handle version management and release procedures (if applicable)
 
 OR chain Phase 5:
-> Use the git-release-specialist subagent to validate code quality, create PR, and manage release workflow
+> Use the git-release-specialist and gh-manager subagents to validate code quality, create PR, close issues, and manage release workflow
+
+**Important**: Always close GitHub issues when PR is merged to maintain sync between code and project tracking
 ```
 
-### Phase 6: Final Review
+### Phase 6: Final Review & Project Update
 ```
-> Use the intermediate-reviewer subagent to perform final critique of complete implementation
+1. > Use the intermediate-reviewer subagent to perform final critique of complete implementation
+2. > Use the gh-manager subagent to update project board status and generate sprint report
+
+OR chain Phase 6:
+> Use the intermediate-reviewer and gh-manager subagents for final critique and project status update
 ```
 
 ### Quick Debugging Sequence
@@ -133,10 +147,61 @@ When facing issues:
 3. > Use the testing-specialist subagent to understand test failures
    - For DataFlow issues: > Use the dataflow-specialist subagent for database-specific debugging
    - For Nexus issues: > Use the nexus-specialist subagent for multi-channel debugging
+4. > Use the todo-manager subagent to mark todo as blocked and sync to GitHub via gh-manager
 
 OR for comprehensive debugging:
-> Use the sdk-navigator, pattern-expert, and testing-specialist subagents to diagnose and fix [issue]
+> Use the sdk-navigator, pattern-expert, testing-specialist, and todo-manager subagents to diagnose, fix, and track [issue]
+
+**Important**: Always update GitHub issue status when blocked to keep stakeholders informed
 ```
+
+### GitHub Project Management Workflows
+
+#### Creating User Stories from Requirements
+```
+1. > Use the requirements-analyst subagent to break down requirements into user stories
+2. > Use the gh-manager subagent to create GitHub issues from user stories and add to project
+3. > Use the todo-manager subagent to create implementation todos from GitHub issues
+
+**Result**: Requirements → GitHub Issues → Local Todos (full traceability chain)
+```
+
+#### Sprint Planning & Execution
+```
+1. > Use the gh-manager subagent to prioritize backlog and create sprint in GitHub project
+2. > Use the todo-manager subagent to create local todos for sprint items
+3. During implementation: todo-manager auto-syncs progress to gh-manager → GitHub issues
+4. > Use the gh-manager subagent to generate sprint status reports
+
+**Result**: Synchronized project tracking across GitHub and local development
+```
+
+#### Handling Blockers & Dependencies
+```
+1. Developer encounters blocker → update local todo status to BLOCKED
+2. > Use the todo-manager subagent to sync blocker to GitHub via gh-manager
+3. > Use the gh-manager subagent to add "blocked" label and notify stakeholders
+4. When blocker resolved → todo-manager updates status → gh-manager removes label
+
+**Result**: Real-time visibility into project blockers across teams
+```
+
+## Project & Todo Management
+
+### Dual-Tracking System
+
+This project uses **synchronized tracking** between GitHub Projects and local todos:
+
+- **GitHub (gh-manager)**: Project-level tracking, stakeholder visibility, requirements
+- **Local Todos (todo-manager)**: Implementation tracking, developer task breakdown
+
+**📖 Complete Guide**: See [PROJECT-MANAGEMENT-GUIDE.md](PROJECT-MANAGEMENT-GUIDE.md) for:
+- Synchronization rules and conflict resolution
+- Developer workflows (starting work, daily dev, completing, sprints)
+- Best practices and anti-patterns
+- Troubleshooting common issues
+
+**Key Principle**: GitHub is source of truth for requirements, local todos are source of truth for implementation status. Both stay synchronized automatically.
 
 ## Coordination Through Root CLAUDE.md
 
