@@ -291,6 +291,52 @@ workflow.add_connection("source", "target", "data")
 workflow.add_connection("source", "output", "target", "input")
 ```
 
+### 5. Connection Parameter Order Confusion (VERY COMMON)
+```python
+# ❌ WRONG - Parameters in wrong order (swapped from_output and to_node)
+workflow.add_connection(
+    "prepare_filters",   # from_node ✅
+    "execute_search",    # from_output ❌ (should be "result")
+    "result",            # to_node ❌ (should be "execute_search")
+    "input"              # to_input ✅
+)
+# Error: "Target node 'result' not found in workflow"
+
+# ✅ CORRECT - Parameter order: from_node, from_output, to_node, to_input
+workflow.add_connection(
+    "prepare_filters",   # from_node: source node ID
+    "result",            # from_output: output field from source
+    "execute_search",    # to_node: target node ID
+    "input"              # to_input: input field on target
+)
+```
+
+**Mnemonic**: Source first (node + output), then Target (node + input)
+- **Source**: `from_node`, `from_output`
+- **Target**: `to_node`, `to_input`
+
+### 6. Nested Output Access
+```python
+# If a node outputs: {'result': {'filters': {...}, 'limit': 50}}
+
+# ❌ WRONG - Missing nested path
+workflow.add_connection(
+    "prepare_filters", "filters",  # ❌ 'filters' is nested under 'result'
+    "search", "filter"
+)
+
+# ✅ CORRECT - Use dot notation for nested access
+workflow.add_connection(
+    "prepare_filters", "result.filters",  # ✅ Full path to nested value
+    "search", "filter"
+)
+
+workflow.add_connection(
+    "prepare_filters", "result.limit",
+    "search", "limit"
+)
+```
+
 ## Pattern Selection Guide
 
 ### Basic Workflow
