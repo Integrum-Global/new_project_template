@@ -20,17 +20,32 @@ The subagents are designed around the core workflow phases identified in `CLAUDE
 | **ultrathink-analyst** | Deep analysis and failure point identification | Complex features, systemic issues, risk analysis |
 | **requirements-analyst** | Requirements breakdown and ADR creation | Systematic analysis, architecture decisions |
 | **intermediate-reviewer** | Checkpoint reviews and progress critique | Reviewing todos and implementation milestones |
-| **todo-manager** | Task management and local tracking | Creating and managing local development tasks |
-| **gh-manager** | GitHub projects and issue management | Creating user stories, syncing with project boards |
+| **todo-manager** | Task management and project tracking | Creating and managing development task lists |
 | **mcp-specialist** | MCP server implementation and integration | Model Context Protocol patterns and debugging |
 | **git-release-specialist** | Git workflows, CI validation, and releases | Pre-commit checks, PR creation, version releases |
+| **gh-manager** | GitHub project and issue management | Syncing requirements with GitHub Projects, managing sprints |
 
-### Framework Specialists (NEW)
+### Framework Specialists
 
 | Agent | Purpose | When to Use |
 |-------|---------|-------------|
 | **nexus-specialist** | Nexus multi-channel platform implementation | Zero-config deployment, API/CLI/MCP orchestration, **DataFlow integration** |
 | **dataflow-specialist** | DataFlow database framework implementation | Database operations, bulk processing, auto node generation, **Nexus integration** |
+| **kaizen-specialist** | Kaizen AI framework implementation | Signature-based programming, multi-agent coordination, multi-modal workflows |
+
+### Frontend & Mobile Specialists
+
+| Agent | Purpose | When to Use |
+|-------|---------|-------------|
+| **react-specialist** | React and Next.js frontend implementation | Workflow editors, admin dashboards, AI agent interfaces with React Flow |
+| **flutter-specialist** | Flutter cross-platform mobile/desktop apps | Mobile workflow builders, AI agent interfaces, enterprise mobile apps |
+| **frontend-developer** | General responsive UI components | Creating pages, converting mockups, implementing React features |
+
+### Infrastructure Specialists
+
+| Agent | Purpose | When to Use |
+|-------|---------|-------------|
+| **deployment-specialist** | Docker and Kubernetes deployment | Production deployments, environment management, service orchestration |
 
 ### Critical Integration Guides
 
@@ -43,7 +58,7 @@ The subagents are designed around the core workflow phases identified in `CLAUDE
 ### Design Principles
 
 1. **Navigation over Loading**: Agents use file indexes rather than loading entire contexts
-2. **Focused Expertise**: Each agent has a specific, narrow domain of expertise  
+2. **Focused Expertise**: Each agent has a specific, narrow domain of expertise
 3. **Reference-Based**: Agents provide specific file paths and references
 4. **Workflow-Aligned**: Agents map to the established development workflow phases
 
@@ -55,36 +70,38 @@ Follow this sequence for efficient feature development:
 
 | Phase | Agents (in order) | Purpose |
 |-------|-------------------|---------|
-| **1. Analysis** | ultrathink-analyst → requirements-analyst → sdk-navigator → framework-advisor → (nexus/dataflow-specialist) | Deep analysis, requirements, existing patterns, tech selection, framework-specific guidance |
-| **2. Planning** | gh-manager → todo-manager → intermediate-reviewer | Create GitHub issues, create local todos, validate task breakdown |
-| **3. Implementation** | tdd-implementer → pattern-expert → (nexus/dataflow-specialist) → todo-manager (sync) → intermediate-reviewer → gold-standards-validator | Test-first, implement, framework patterns, sync to GH, review, validate (repeat per component) |
+| **1. Analysis** | ultrathink-analyst → requirements-analyst → sdk-navigator → framework-advisor → (nexus/dataflow/kaizen-specialist) | Deep analysis, requirements, existing patterns, tech selection, framework-specific guidance |
+| **2. Planning** | todo-manager → gh-manager → intermediate-reviewer | Task breakdown, GitHub sync, and validation |
+| **3. Implementation** | tdd-implementer → pattern-expert → (nexus/dataflow/kaizen/react/flutter-specialist) → intermediate-reviewer → gold-standards-validator | Test-first, implement, framework patterns, review, validate (repeat per component) |
 | **4. Testing** | testing-specialist → documentation-validator | Full test coverage, doc accuracy |
-| **5. Release** | git-release-specialist → gh-manager (close issues) | Pre-commit validation, PR creation, close GitHub issues |
-| **6. Final** | intermediate-reviewer → gh-manager (project update) | Final critique, update project board |
+| **5. Deployment** | deployment-specialist | Docker/Kubernetes setup, environment management |
+| **6. Release** | git-release-specialist | Pre-commit validation, PR creation, version management |
+| **7. Final** | intermediate-reviewer | Final critique |
 
 ### Phase 1: Analysis & Planning (Sequential)
 ```
 1. > Use the ultrathink-analyst subagent to analyze requirements and identify failure points for [feature]
 2. > Use the requirements-analyst subagent to create systematic breakdown and ADR for [feature]
 3. > Use the sdk-navigator subagent to find existing patterns similar to [feature]
-4. > Use the framework-advisor subagent to recommend Core SDK vs DataFlow vs Nexus for [feature]
+4. > Use the framework-advisor subagent to recommend Core SDK vs DataFlow vs Nexus vs Kaizen for [feature]
    - If DataFlow recommended: > Use the dataflow-specialist subagent for implementation details
    - If Nexus recommended: > Use the nexus-specialist subagent for implementation details
+   - If Kaizen recommended: > Use the kaizen-specialist subagent for implementation details
+   - If React frontend needed: > Use the react-specialist subagent for UI implementation details
+   - If Flutter mobile needed: > Use the flutter-specialist subagent for mobile implementation details
 
 OR chain all Phase 1 agents:
 > Use the ultrathink-analyst, requirements-analyst, sdk-navigator, and framework-advisor subagents to perform complete analysis and planning for [feature]
 ```
 
-### Phase 2: Project & Task Planning (Sequential)
+### Phase 2: Task Planning & Review
 ```
-1. > Use the gh-manager subagent to create GitHub issues from requirements/user stories
-2. > Use the todo-manager subagent to create local todos from GitHub issues
-3. > Use the intermediate-reviewer subagent to review task completeness and feasibility
+1. > Use the todo-manager subagent to create detailed task breakdown based on requirements
+2. > Use the gh-manager subagent to sync tasks with GitHub Projects and create issues
+3. > Use the intermediate-reviewer subagent to review todo completeness and feasibility
 
 OR chain Phase 2:
-> Use the gh-manager, todo-manager, and intermediate-reviewer subagents to create GitHub issues, local todos, and validate breakdown
-
-**Important**: gh-manager creates project-level tracking (GitHub), todo-manager creates implementation tracking (local files)
+> Use the todo-manager, gh-manager, and intermediate-reviewer subagents to create, sync, and validate task breakdown
 ```
 
 ### Phase 3: Implementation (Iterative per component)
@@ -94,17 +111,17 @@ For each component:
 2. > Use the pattern-expert subagent to implement [component] following SDK patterns
    - For DataFlow components: > Use the dataflow-specialist subagent for database patterns
    - For Nexus components: > Use the nexus-specialist subagent for multi-channel patterns
-3. > Use the todo-manager subagent to update progress and sync to GitHub via gh-manager
-4. > Use the gold-standards-validator subagent to ensure [component] compliance
-5. > Use the intermediate-reviewer subagent to review [component] implementation
+   - For Kaizen components: > Use the kaizen-specialist subagent for AI agent patterns
+   - For React components: > Use the react-specialist subagent for frontend patterns
+   - For Flutter components: > Use the flutter-specialist subagent for mobile patterns
+3. > Use the gold-standards-validator subagent to ensure [component] compliance
+4. > Use the intermediate-reviewer subagent to review [component] implementation
 
 OR chain Phase 3 for a component:
-> Use the tdd-implementer, pattern-expert, todo-manager, gold-standards-validator, nexus-specialist, and dataflow-specialist subagents, as needed, to implement, sync progress, and validate [component]
+> Use the tdd-implementer, pattern-expert, gold-standards-validator, and appropriate framework specialists to implement and validate [component]
 
 POST Phase 3:
 > Use the intermediate-reviewer subagent to ensure that the implementation meets all requirements and standards
-
-**Important**: todo-manager automatically syncs progress to GitHub issues at key milestones (start, 50%, blocked, complete)
 ```
 
 ### Phase 4: Testing & Documentation
@@ -117,26 +134,29 @@ OR chain Phase 4:
 > Use the testing-specialist, documentation-validator, and todo-manager subagents to ensure complete test coverage and documentation accuracy
 ```
 
-### Phase 5: Release & Git Management
+### Phase 5: Deployment Setup
+```
+1. > Use the deployment-specialist subagent to set up Docker Compose for local development
+2. > Use the deployment-specialist subagent to configure Kubernetes for production deployment
+3. > Use the deployment-specialist subagent to set up environment management and secrets
+
+OR chain Phase 5:
+> Use the deployment-specialist subagent to handle complete deployment setup from development to production
+```
+
+### Phase 6: Release & Git Management
 ```
 1. > Use the git-release-specialist subagent to run pre-commit validation (black, isort, ruff)
 2. > Use the git-release-specialist subagent to create feature branch and PR workflow
-3. > Use the gh-manager subagent to close related GitHub issues with PR references
-4. > Use the git-release-specialist subagent to handle version management and release procedures (if applicable)
-
-OR chain Phase 5:
-> Use the git-release-specialist and gh-manager subagents to validate code quality, create PR, close issues, and manage release workflow
-
-**Important**: Always close GitHub issues when PR is merged to maintain sync between code and project tracking
-```
-
-### Phase 6: Final Review & Project Update
-```
-1. > Use the intermediate-reviewer subagent to perform final critique of complete implementation
-2. > Use the gh-manager subagent to update project board status and generate sprint report
+3. > Use the git-release-specialist subagent to handle version management and release procedures (if applicable)
 
 OR chain Phase 6:
-> Use the intermediate-reviewer and gh-manager subagents for final critique and project status update
+> Use the git-release-specialist subagent to validate code quality, create PR, and manage release workflow
+```
+
+### Phase 7: Final Review
+```
+> Use the intermediate-reviewer subagent to perform final critique of complete implementation
 ```
 
 ### Quick Debugging Sequence
@@ -147,61 +167,14 @@ When facing issues:
 3. > Use the testing-specialist subagent to understand test failures
    - For DataFlow issues: > Use the dataflow-specialist subagent for database-specific debugging
    - For Nexus issues: > Use the nexus-specialist subagent for multi-channel debugging
-4. > Use the todo-manager subagent to mark todo as blocked and sync to GitHub via gh-manager
+   - For Kaizen issues: > Use the kaizen-specialist subagent for AI agent debugging
+   - For React issues: > Use the react-specialist subagent for frontend debugging
+   - For Flutter issues: > Use the flutter-specialist subagent for mobile debugging
+   - For deployment issues: > Use the deployment-specialist subagent for Docker/Kubernetes debugging
 
 OR for comprehensive debugging:
-> Use the sdk-navigator, pattern-expert, testing-specialist, and todo-manager subagents to diagnose, fix, and track [issue]
-
-**Important**: Always update GitHub issue status when blocked to keep stakeholders informed
+> Use the sdk-navigator, pattern-expert, testing-specialist, and appropriate framework specialists to diagnose and fix [issue]
 ```
-
-### GitHub Project Management Workflows
-
-#### Creating User Stories from Requirements
-```
-1. > Use the requirements-analyst subagent to break down requirements into user stories
-2. > Use the gh-manager subagent to create GitHub issues from user stories and add to project
-3. > Use the todo-manager subagent to create implementation todos from GitHub issues
-
-**Result**: Requirements → GitHub Issues → Local Todos (full traceability chain)
-```
-
-#### Sprint Planning & Execution
-```
-1. > Use the gh-manager subagent to prioritize backlog and create sprint in GitHub project
-2. > Use the todo-manager subagent to create local todos for sprint items
-3. During implementation: todo-manager auto-syncs progress to gh-manager → GitHub issues
-4. > Use the gh-manager subagent to generate sprint status reports
-
-**Result**: Synchronized project tracking across GitHub and local development
-```
-
-#### Handling Blockers & Dependencies
-```
-1. Developer encounters blocker → update local todo status to BLOCKED
-2. > Use the todo-manager subagent to sync blocker to GitHub via gh-manager
-3. > Use the gh-manager subagent to add "blocked" label and notify stakeholders
-4. When blocker resolved → todo-manager updates status → gh-manager removes label
-
-**Result**: Real-time visibility into project blockers across teams
-```
-
-## Project & Todo Management
-
-### Dual-Tracking System
-
-This project uses **synchronized tracking** between GitHub Projects and local todos:
-
-- **GitHub (gh-manager)**: Project-level tracking, stakeholder visibility, requirements
-- **Local Todos (todo-manager)**: Implementation tracking, developer task breakdown
-
-**📖 Complete Guide**: See [PROJECT-MANAGEMENT-GUIDE.md](PROJECT-MANAGEMENT-GUIDE.md) for:
-- Synchronization rules and conflict resolution
-- Developer workflows (starting work, daily dev, completing, sprints)
-- Best practices and anti-patterns
-- Troubleshooting common issues
-
-**Key Principle**: GitHub is source of truth for requirements, local todos are source of truth for implementation status. Both stay synchronized automatically.
 
 ## Coordination Through Root CLAUDE.md
 
@@ -216,13 +189,22 @@ Since subagents cannot invoke other subagents, coordination happens at the main 
 
 ### Primary Workflow Sources
 - **Root CLAUDE.md**: 18-step enterprise workflow, core patterns
-- **feature-implementation.md**: 4-phase detailed implementation process  
+- **feature-implementation.md**: 4-phase detailed implementation process
 - **sdk-users/CLAUDE.md**: Essential SDK patterns navigation
 
-### Framework Documentation  
+### Framework Documentation
 - **sdk-users/apps/dataflow/**: Zero-config database patterns and guides
 - **sdk-users/apps/nexus/**: Multi-channel platform patterns and guides
+- **sdk-users/apps/kaizen/**: Signature-based AI framework patterns and guides
 - **src/kailash/mcp_server/**: Production MCP server implementation
+
+### Frontend & Mobile Documentation
+- **docs/guides/frontend_guidance.md**: React/Vue integration patterns
+- **React Flow Templates**: Official workflow editor templates
+
+### Infrastructure Documentation
+- **Docker Compose**: Multi-service orchestration patterns
+- **Kubernetes**: Production deployment patterns
 
 ### Gold Standards
 - **sdk-users/7-gold-standards/**: All compliance standards
@@ -254,6 +236,37 @@ This focused architecture maintains the essential workflow while dramatically re
    - Session management
 ```
 
+### Kaizen AI Agent Applications
+```
+1. > Use the framework-advisor subagent to confirm Kaizen is appropriate
+2. > Use the kaizen-specialist subagent for:
+   - Signature-based programming patterns
+   - BaseAgent implementation
+   - Multi-agent coordination
+   - Multi-modal processing (vision/audio)
+   - A2A protocol integration
+```
+
+### React Frontend Applications
+```
+1. > Use the react-specialist subagent for:
+   - React 19 and Next.js 15 App Router patterns
+   - React Flow workflow editors
+   - @tanstack/react-query API integration
+   - Shadcn UI component implementation
+   - Modular architecture (index.tsx + elements/)
+```
+
+### Flutter Mobile Applications
+```
+1. > Use the flutter-specialist subagent for:
+   - Flutter 3.27+ Material Design 3 patterns
+   - Riverpod state management
+   - Responsive design (mobile/tablet/desktop)
+   - Kailash SDK API integration
+   - Cross-platform deployment
+```
+
 ### Combined Framework Applications
 ```
 For DataFlow + Nexus integration:
@@ -261,4 +274,37 @@ For DataFlow + Nexus integration:
 2. > Use the dataflow-specialist subagent for database layer
 3. > Use the nexus-specialist subagent for platform deployment
 4. > Use the pattern-expert subagent for workflow connections
+
+For Full-Stack Application (Backend + Frontend):
+1. > Use the framework-advisor subagent for architecture guidance
+2. > Use appropriate backend specialists (dataflow/nexus/kaizen)
+3. > Use appropriate frontend specialists (react/flutter)
+4. > Use the deployment-specialist subagent for infrastructure setup
+5. > Use the pattern-expert subagent for integration patterns
+```
+
+## GitHub Project Management Workflow
+
+### Syncing Requirements with GitHub
+```
+1. > Use the requirements-analyst subagent to create systematic breakdown
+2. > Use the todo-manager subagent to create detailed task breakdown
+3. > Use the gh-manager subagent to:
+   - Sync tasks with GitHub Projects
+   - Create issues with proper labels
+   - Link issues to project milestones
+   - Track sprint progress
+```
+
+## Production Deployment Workflow
+
+### Setting Up Production Infrastructure
+```
+1. > Use the deployment-specialist subagent to:
+   - Create Docker Compose configuration for local development
+   - Set up Kubernetes deployments for production
+   - Configure environment management (.env files, secrets)
+   - Implement health checks and monitoring
+   - Set up horizontal pod autoscaling
+   - Configure CI/CD pipelines
 ```
