@@ -171,13 +171,13 @@ workflow.add_node("PythonCodeNode", "calc", {
 def advanced_processing(data: list, threshold: float = 0.5) -> dict:
     """Complex data processing with error handling."""
     import numpy as np
-    
+
     if not data:
         return {'error': 'No data provided', 'result': []}
-    
+
     arr = np.array(data)
     filtered = arr[arr > threshold]
-    
+
     return {
         'result': filtered.tolist(),
         'mean': float(np.mean(filtered)) if len(filtered) > 0 else 0,
@@ -239,7 +239,7 @@ results, run_id = runtime.execute(workflow.build())
 ```python
 runtime = LocalRuntime()
 results, run_id = runtime.execute(
-    workflow.build(), 
+    workflow.build(),
     parameters={
         "node_id": {"param": "value"},
         "another_node": {"setting": "config"}

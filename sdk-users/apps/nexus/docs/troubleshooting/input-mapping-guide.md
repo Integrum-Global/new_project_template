@@ -12,23 +12,17 @@ Understanding how Nexus maps API request inputs to workflow node parameters is c
 │    POST /workflows/contact_search/execute                   │
 │    {"inputs": {"sector": "Technology", "limit": 50}}        │
 └────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
+                     │                     ▼┌─────────────────────────────────────────────────────────────┐
 │ 2. Nexus WorkflowAPI receives request                       │
 │    WorkflowRequest.inputs = {"sector": "Technology", ...}   │
 └────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
+                     │                     ▼┌─────────────────────────────────────────────────────────────┐
 │ 3. Runtime executes workflow                                │
 │    runtime.execute(workflow, parameters={...})              │
 │                                                             │
 │    Note: API "inputs" becomes runtime "parameters"          │
 └────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
+                     │                     ▼┌─────────────────────────────────────────────────────────────┐
 │ 4. Nexus maps inputs to ALL nodes' parameters               │
 │    Each node receives the FULL inputs dict as parameters    │
 │                                                             │
@@ -38,9 +32,7 @@ Understanding how Nexus maps API request inputs to workflow node parameters is c
 │    search node gets:                                        │
 │      parameters = {"sector": "Technology", "limit": 50}     │
 └────────────────────┬────────────────────────────────────────┘
-                     │
-                     ▼
-┌─────────────────────────────────────────────────────────────┐
+                     │                     ▼┌─────────────────────────────────────────────────────────────┐
 │ 5. Inside PythonCodeNode code:                              │
 │    - Parameters injected as local variables                 │
 │    - Access via try/except for optional params              │
@@ -73,19 +65,11 @@ Understanding how Nexus maps API request inputs to workflow node parameters is c
 ```python
 # API Request
 {
-  "inputs": {
-    "sector": "Technology",
-    "geography": "North America",
-    "limit": 50
-  }
-}
+  "inputs": {    "sector": "Technology",    "geography": "North America",    "limit": 50  }}
 
 # What EVERY node receives as parameters:
 {
-  "sector": "Technology",
-  "geography": "North America",
-  "limit": 50
-}
+  "sector": "Technology",  "geography": "North America",  "limit": 50}
 ```
 
 **This means**:
@@ -98,41 +82,29 @@ Understanding how Nexus maps API request inputs to workflow node parameters is c
 
 **WRONG** ❌ - These patterns DO NOT work:
 ```python
-# ❌ NO 'inputs' variable exists
-sector = inputs.get('sector')
+# ❌ NO 'inputs' variable existssector = inputs.get('sector')
 
-# ❌ locals() is restricted in PythonCodeNode
-sector = locals().get('sector')
+# ❌ locals() is restricted in PythonCodeNodesector = locals().get('sector')
 
-# ❌ globals() is also restricted
-sector = globals().get('sector')
+# ❌ globals() is also restrictedsector = globals().get('sector')
 ```
 
 **CORRECT** ✅ - Use try/except for optional parameters:
 ```python
-# ✅ Safe access to optional parameters
-try:
-    s = sector  # Will be injected if provided in API inputs
-except NameError:
+# ✅ Safe access to optional parameterstry:
+    s = sector  # Will be injected if provided in API inputsexcept NameError:
     s = None
-
 try:
-    g = geography
-except NameError:
+    g = geographyexcept NameError:
     g = None
-
 try:
-    lim = limit
-except NameError:
+    lim = limitexcept NameError:
     lim = 100  # Default value
-
 # Now use s, g, lim safely
 filters = {}
 if s:
-    filters['sector'] = s
-if g:
+    filters['sector'] = sif g:
     filters['geography'] = g
-
 result = {'filters': filters, 'limit': lim}
 ```
 
@@ -145,66 +117,29 @@ from kailash.workflow.builder import WorkflowBuilder
 
 def create_contact_search_workflow():
     workflow = WorkflowBuilder()
-
-    # Node 1: Build filters from API inputs
-    workflow.add_node(
-        "PythonCodeNode",
-        "prepare_filters",
-        {
-            "code": """
-# Access optional parameters via try/except
+    # Node 1: Build filters from API inputs    workflow.add_node(        "PythonCodeNode",        "prepare_filters",        {            "code": """# Access optional parameters via try/except
 try:
-    s = sector
-except NameError:
+    s = sectorexcept NameError:
     s = None
-
 try:
-    g = geography
-except NameError:
+    g = geographyexcept NameError:
     g = None
-
 try:
-    lim = limit
-except NameError:
+    lim = limitexcept NameError:
     lim = 100
-
 # Build filters
 filters = {}
 if s and str(s).strip():
-    filters['sector'] = str(s).strip()
-if g and str(g).strip():
+    filters['sector'] = str(s).strip()if g and str(g).strip():
     filters['geography'] = str(g).strip()
-
 # Output for next node
 result = {
-    'filters': filters,
-    'limit': lim
-}
+    'filters': filters,    'limit': lim}
 """
-        }
-    )
-
-    # Node 2: Execute search
-    workflow.add_node(
-        "ContactListNode",
-        "search",
-        {
-            "filter": {},   # Will be populated via connection
-            "limit": 100
-        }
-    )
-
-    # Connect filter data from prepare_filters to search
-    workflow.add_connection(
-        "prepare_filters", "result.filters",
-        "search", "filter"
-    )
-
-    workflow.add_connection(
-        "prepare_filters", "result.limit",
-        "search", "limit"
-    )
-
+        }    )
+    # Node 2: Execute search    workflow.add_node(        "ContactListNode",        "search",        {            "filter": {},   # Will be populated via connection            "limit": 100        }    )
+    # Connect filter data from prepare_filters to search    workflow.add_connection(        "prepare_filters", "result.filters",        "search", "filter"    )
+    workflow.add_connection(        "prepare_filters", "result.limit",        "search", "limit"    )
     return workflow.build()
 ```
 
@@ -223,33 +158,13 @@ app.start()
 ```bash
 # Example 1: Search Technology sector
 curl -X POST http://localhost:8000/workflows/contact_search/execute \
-  -H "Content-Type: application/json" \
-  -d '{
-    "inputs": {
-      "sector": "Technology",
-      "limit": 10
-    }
-  }'
-
+  -H "Content-Type: application/json" \  -d '{    "inputs": {      "sector": "Technology",      "limit": 10    }  }'
 # Example 2: Search with geography
 curl -X POST http://localhost:8000/workflows/contact_search/execute \
-  -H "Content-Type: application/json" \
-  -d '{
-    "inputs": {
-      "sector": "Healthcare",
-      "geography": "Europe",
-      "limit": 5
-    }
-  }'
-
+  -H "Content-Type: application/json" \  -d '{    "inputs": {      "sector": "Healthcare",      "geography": "Europe",      "limit": 5    }  }'
 # Example 3: No filters (get all)
 curl -X POST http://localhost:8000/workflows/contact_search/execute \
-  -H "Content-Type: application/json" \
-  -d '{
-    "inputs": {
-      "limit": 100
-    }
-  }'
+  -H "Content-Type: application/json" \  -d '{    "inputs": {      "limit": 100    }  }'
 ```
 
 ## Common Pitfalls
@@ -259,36 +174,20 @@ curl -X POST http://localhost:8000/workflows/contact_search/execute \
 **WRONG** ❌:
 ```python
 workflow.add_node(
-    "ContactListNode",
-    "search",
-    {
-        "filter": "${prepare_filters.result.filters}",  # ❌ Not evaluated!
-        "limit": "${prepare_filters.result.limit}"
-    }
-)
+    "ContactListNode",    "search",    {        "filter": "${prepare_filters.result.filters}",  # ❌ Not evaluated!        "limit": "${prepare_filters.result.limit}"    })
 ```
 
 **CORRECT** ✅:
 ```python
 # Use explicit connections instead
 workflow.add_node(
-    "ContactListNode",
-    "search",
-    {
-        "filter": {},   # Default value
-        "limit": 100
-    }
-)
+    "ContactListNode",    "search",    {        "filter": {},   # Default value        "limit": 100    })
 
 workflow.add_connection(
-    "prepare_filters", "result.filters",
-    "search", "filter"
-)
+    "prepare_filters", "result.filters",    "search", "filter")
 
 workflow.add_connection(
-    "prepare_filters", "result.limit",
-    "search", "limit"
-)
+    "prepare_filters", "result.limit",    "search", "limit")
 ```
 
 ### Pitfall 2: Accessing Nested Output Incorrectly
@@ -297,18 +196,14 @@ workflow.add_connection(
 ```python
 # If prepare_filters outputs: {'result': {'filters': {...}, 'limit': 50}}
 workflow.add_connection(
-    "prepare_filters", "filters",  # ❌ Missing 'result.' prefix
-    "search", "filter"
-)
+    "prepare_filters", "filters",  # ❌ Missing 'result.' prefix    "search", "filter")
 ```
 
 **CORRECT** ✅:
 ```python
 # Access nested output with dot notation
 workflow.add_connection(
-    "prepare_filters", "result.filters",  # ✅ Full path
-    "search", "filter"
-)
+    "prepare_filters", "result.filters",  # ✅ Full path    "search", "filter")
 ```
 
 ### Pitfall 3: Node-Specific vs Broadcast Parameters
@@ -322,28 +217,18 @@ workflow.add_connection(
 ```python
 # API Request - trying to target specific nodes
 {
-  "inputs": {
-    "prepare_filters": {"sector": "Tech"},  # ❌ Nexus doesn't support this
-    "search": {"limit": 50}
-  }
-}
+  "inputs": {    "prepare_filters": {"sector": "Tech"},  # ❌ Nexus doesn't support this    "search": {"limit": 50}  }}
 ```
 
 **CORRECT** ✅ - Use flat inputs + connections:
 ```python
 # API Request - flat inputs
 {
-  "inputs": {
-    "sector": "Tech",
-    "limit": 50
-  }
-}
+  "inputs": {    "sector": "Tech",    "limit": 50  }}
 
 # Workflow - use connections for node-to-node data
 workflow.add_connection(
-    "prepare_filters", "result",
-    "search", "input"
-)
+    "prepare_filters", "result",    "search", "input")
 ```
 
 ## Backward Compatibility
@@ -366,18 +251,7 @@ Enterprise Nexus supports additional request fields:
 
 ```json
 {
-  "inputs": {
-    "sector": "Technology"
-  },
-  "resources": {
-    "database": "production_db",
-    "api_key": "secret_key"
-  },
-  "context": {
-    "user_id": "12345",
-    "request_id": "abc-def"
-  }
-}
+  "inputs": {    "sector": "Technology"  },  "resources": {    "database": "production_db",    "api_key": "secret_key"  },  "context": {    "user_id": "12345",    "request_id": "abc-def"  }}
 ```
 
 - `resources`: System resources (databases, APIs, credentials)
@@ -392,36 +266,19 @@ Add a debug node to see parameters:
 
 ```python
 workflow.add_node(
-    "PythonCodeNode",
-    "debug",
-    {
-        "code": """
-import json
+    "PythonCodeNode",    "debug",    {        "code": """import json
 
 # This will show all parameters passed to this node
 try:
-    s = sector
-    has_sector = True
-except NameError:
+    s = sector    has_sector = Trueexcept NameError:
     has_sector = False
-
 try:
-    lim = limit
-    has_limit = True
-except NameError:
+    lim = limit    has_limit = Trueexcept NameError:
     has_limit = False
-
 result = {
-    'debug_info': {
-        'has_sector': has_sector,
-        'sector_value': s if has_sector else None,
-        'has_limit': has_limit,
-        'limit_value': lim if has_limit else None
-    }
-}
+    'debug_info': {        'has_sector': has_sector,        'sector_value': s if has_sector else None,        'has_limit': has_limit,        'limit_value': lim if has_limit else None    }}
 """
-    }
-)
+    })
 ```
 
 ### 2. Check Workflow Execution Logs
@@ -443,10 +300,7 @@ dataflow.core.nodes - INFO - Run called with kwargs: {'limit': 2, 'filter': {}, 
 Use `-v` with curl to see what you're actually sending:
 
 ```bash
-curl -v -X POST http://localhost:8000/workflows/contact_search/execute \
-  -H "Content-Type: application/json" \
-  -d '{"inputs": {"sector": "Technology"}}'
-```
+curl -v -X POST http://localhost:8000/workflows/contact_search/execute \  -H "Content-Type: application/json" \  -d '{"inputs": {"sector": "Technology"}}'```
 
 ## Related Documentation
 
@@ -473,16 +327,12 @@ curl -v -X POST http://localhost:8000/workflows/contact_search/execute \
 
 # Inside PythonCodeNode
 try:
-    s = sector  # "Tech"
-except NameError:
+    s = sector  # "Tech"except NameError:
     s = None
-
 # Output
 result = {'filters': {'sector': s}, 'limit': limit}
 
 # Connection to next node
 workflow.add_connection(
-    "prepare_filters", "result.filters",
-    "search", "filter"
-)
+    "prepare_filters", "result.filters",    "search", "filter")
 ```

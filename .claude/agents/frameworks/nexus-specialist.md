@@ -67,7 +67,7 @@ app.start()
 ```python
 app = Nexus(
     api_port=8000,          # API server port (default: 8000)
-    mcp_port=3001,          # MCP server port (default: 3001) 
+    mcp_port=3001,          # MCP server port (default: 3001)
     enable_auth=True,       # Enable authentication
     enable_monitoring=True, # Enable monitoring
     rate_limit=100,         # Rate limit per minute
@@ -107,13 +107,13 @@ app.register("workflow_name", workflow.build())
 # ❌ WRONG: Register without building
 app.register("workflow_name", workflow)
 
-# ❌ WRONG: Wrong parameter order  
+# ❌ WRONG: Wrong parameter order
 app.register(workflow, "workflow_name")
 ```
 
 ### Auto-Discovery Patterns
 - `workflows/*.py`
-- `*.workflow.py` 
+- `*.workflow.py`
 - `workflow_*.py`
 - `*_workflow.py`
 
@@ -360,7 +360,7 @@ app.register("create_user", workflow.build())
 
 ### Why This Happens
 1. **auto_discovery=True** causes Nexus to scan and import Python files
-2. Importing DataFlow models triggers workflow execution 
+2. Importing DataFlow models triggers workflow execution
 3. Each model registration executes `LocalRuntime.execute()` synchronously
 4. This creates a blocking loop that prevents server startup
 
@@ -394,7 +394,7 @@ app.register("create_user", workflow.build())
 # API Channel Testing
 response = requests.post("http://localhost:8000/api/workflows/test/execute", json={"param": "value"})
 
-# CLI Channel Testing  
+# CLI Channel Testing
 subprocess.run(["nexus", "execute", "test", "--param", "value"])
 
 # MCP Channel Testing
@@ -413,7 +413,7 @@ result = client.call_tool("test", {"param": "value"})
 
 ### Production Deployment
 1. Configure authentication and monitoring
-2. Set appropriate rate limits  
+2. Set appropriate rate limits
 3. Use environment variables for configuration
 4. Implement proper logging and alerts
 5. Test failover and recovery scenarios
