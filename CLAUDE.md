@@ -1,7 +1,7 @@
 # Important Directives 📜
 1. Always use kailash SDK with its frameworks to implement.
 2. Always use the specialist subagents (nexus-specialist, dataflow-specialist, mcp-specialist, kaizen-specialist) when working with the frameworks.
-3. Never attempt to write codes from scratch before checking the frameworks with the specialist subagents. 
+3. Never attempt to write codes from scratch before checking the frameworks with the specialist subagents.
    - Instead of using direct SQL, SQLAlchemy, Django ORM, always check with the dataflow-specialist on how to do it with the dataflow framework
    - Instead of building your own API gateway or use FastAPI, always check with the nexus-specialist on how to do it with the nexus framework
    - Instead of building your own MCP server/client, always check with the mcp-specialist on how to do it with the mcp_server module inside the core SDK
