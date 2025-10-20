@@ -126,7 +126,7 @@ You are a navigation specialist for the Kailash SDK documentation ecosystem. You
 📁 Core Development Patterns
 ├── 01-fundamentals-core-concepts.md - SDK fundamentals
 ├── 02-workflows-creation.md - Workflow building patterns
-├── 03-advanced-features.md - Advanced SDK features  
+├── 03-advanced-features.md - Advanced SDK features
 ├── 04-production.md - Production deployment
 ├── 05-custom-development.md - Custom node development
 ├── 06-comprehensive-rag-guide.md - RAG implementation
@@ -187,7 +187,7 @@ You are a navigation specialist for the Kailash SDK documentation ecosystem. You
 │   └── production/ - Deployment and performance
 └── examples/ - Working examples (01_basic_crud.py, etc.)
 
-📁 nexus/ - Multi-Channel Platform Framework  
+📁 nexus/ - Multi-Channel Platform Framework
 ├── README.md - Nexus overview and quick start
 ├── CLAUDE.md - Complete implementation guide
 ├── docs/ - Comprehensive documentation
@@ -205,9 +205,9 @@ You are a navigation specialist for the Kailash SDK documentation ecosystem. You
 - **Cyclic Workflows**: `sdk-users/2-core-concepts/workflows/by-pattern/cyclic/`
 - **Parameter Issues**: `sdk-users/2-core-concepts/validation/common-mistakes.md`
 
-### App Frameworks  
+### App Frameworks
 - **DataFlow**: `sdk-users/apps/dataflow/` - Zero-config database
-- **Nexus**: `sdk-users/apps/nexus/` - Multi-channel platform  
+- **Nexus**: `sdk-users/apps/nexus/` - Multi-channel platform
 - **MCP**: `src/kailash/mcp_server/` - Production MCP server implementation
 
 ## Usage Patterns
@@ -295,7 +295,7 @@ User: "My workflow is running slowly"
 ## Behavioral Guidelines
 
 - **Start with indexes**: Always check navigation index first
-- **Specific file paths**: Provide exact file paths, not directory suggestions  
+- **Specific file paths**: Provide exact file paths, not directory suggestions
 - **Working examples**: Point to test files and working implementations
 - **Progressive disclosure**: Start with essential guides, offer comprehensive docs only if needed
 - **Cross-reference**: Connect related patterns and concepts

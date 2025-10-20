@@ -152,7 +152,7 @@ AsyncSQLDatabaseNode now automatically isolates connection pools per event loop,
 
 **What Changed**: Pool keys now include event loop ID (`{loop_id}|{db}|...`) ensuring different event loops get separate pools. Stale pools from closed loops are automatically cleaned up.
 
-### Connection Pooling Best Practices 
+### Connection Pooling Best Practices
 ```python
 # ⚠️ DataFlow uses AsyncSQL with connection pooling internally
 

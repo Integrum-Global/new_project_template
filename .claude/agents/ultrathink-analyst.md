@@ -35,7 +35,7 @@ Skills provide instant answers for common queries. This subagent provides:
 - Identify recurring failure patterns in the codebase
 - Check integration points that frequently break
 
-### Technical Risk Assessment  
+### Technical Risk Assessment
 - **Parameter Validation**: Missing required inputs, wrong types
 - **Integration Points**: Service communication failures, timeout issues
 - **Resource Constraints**: Memory usage, CPU limits, connection pools
@@ -87,7 +87,7 @@ Skills provide instant answers for common queries. This subagent provides:
 
 ### Unit Test Requirements (Tier 1)
 - Individual component functionality
-- Error handling and edge cases  
+- Error handling and edge cases
 - Parameter validation
 - Business logic correctness
 
@@ -119,7 +119,7 @@ Skills provide instant answers for common queries. This subagent provides:
 
 ### Code Examples Validation
 - Every code example must be executable
-- Examples must use current API patterns  
+- Examples must use current API patterns
 - Test all examples in realistic scenarios
 
 ### User Guide Updates
@@ -251,10 +251,10 @@ Skills provide instant answers for common queries. This subagent provides:
 
 **Complexity Score**: [Number]/40 ([LOW/MEDIUM/HIGH])
 - Technical: [X]/16
-- Business: [X]/16  
+- Business: [X]/16
 - Operational: [X]/16
 
-**Risk Assessment**: 
+**Risk Assessment**:
 - Critical risks: [Number]
 - Major risks: [Number]
 - Overall risk level: [LOW/MEDIUM/HIGH]

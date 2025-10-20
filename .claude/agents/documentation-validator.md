@@ -77,7 +77,7 @@ def test_example_1_from_docs():
     '''Test example from {doc_file} line {line_num}'''
     # [Copy exact code from documentation]
     # Add assertions to verify it works
-    
+
 def test_example_2_workflow():
     '''Test complete workflow example'''
     # [Copy workflow example]
@@ -308,7 +308,7 @@ sdk-users/
 - **Key files**: README.md, quickstart.md, models.md, queries.md
 - **Validation**: Test zero-config setup, model generation, query patterns
 
-#### Nexus Documentation  
+#### Nexus Documentation
 - **Location**: `sdk-users/apps/nexus/`
 - **Key files**: README.md, quickstart.md, api-patterns.md, cli-patterns.md
 - **Validation**: Test multi-channel deployment, session management

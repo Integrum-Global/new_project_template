@@ -88,7 +88,7 @@ mcp_servers = [
     {
         "name": "weather-service",
         "transport": "http",
-        "url": "http://localhost:8081", 
+        "url": "http://localhost:8081",
         "headers": {"API-Key": "demo-key"}
     },
     # STDIO server
@@ -101,7 +101,7 @@ mcp_servers = [
     # External NPX server
     {
         "name": "file-system",
-        "transport": "stdio", 
+        "transport": "stdio",
         "command": "npx",
         "args": ["@modelcontextprotocol/server-filesystem", "./output"]
     }
@@ -157,7 +157,7 @@ from kailash.mcp_server import discover_mcp_servers, get_mcp_client
 # Auto-discover servers
 servers = await discover_mcp_servers(capability="tools")
 
-# Get client for specific capability  
+# Get client for specific capability
 client = await get_mcp_client("database")
 ```
 

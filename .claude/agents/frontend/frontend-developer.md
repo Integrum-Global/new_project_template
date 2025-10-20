@@ -64,7 +64,7 @@ function UserList() {
 
   if (isPending) return <UserListSkeleton />
   if (error) return 'An error has occurred: ' + error.message
-  
+
   return (
     <div className="grid gap-4">
       {data.map(user => <UserCard key={user.id} user={user} />)}
@@ -137,7 +137,7 @@ function Dashboard() {
 ## Common Mistakes to Avoid
 
 1. **Multiple API calls in one component** - Split into separate components
-2. **Business logic in index.jsx** - Move to elements/ components  
+2. **Business logic in index.jsx** - Move to elements/ components
 3. **Missing loading states** - Always add Shadcn skeletons
 4. **Non-responsive design** - Test all breakpoints
 5. **Creating duplicate components** - Check @/components first
