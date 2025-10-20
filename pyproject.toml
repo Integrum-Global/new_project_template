@@ -22,7 +22,7 @@ dependencies = [
     # Kailash SDK
     "kailash>=0.9.25",
     "kailash-nexus>=1.0.8",
-    "kailash-dataflow==0.5.4",
+    "kailash-dataflow==0.5.5",
     "kailash-kaizen==0.1.2",
     # Web Framework
     "fastapi[all]>=0.115.0",
