@@ -20,10 +20,10 @@ classifiers = [
 ]
 dependencies = [
     # Kailash SDK
-    "kailash>=0.10.5",
+    "kailash>=0.10.7",
     "kailash-nexus>=1.1.2",
-    "kailash-dataflow>=0.7.11",
-    "kailash-kaizen>=0.6.2",
+    "kailash-dataflow>=0.7.13",
+    "kailash-kaizen>=0.6.3",
     # Web Framework
     "fastapi[all]>=0.115.0",
     "uvicorn[standard]>=0.24.0",
