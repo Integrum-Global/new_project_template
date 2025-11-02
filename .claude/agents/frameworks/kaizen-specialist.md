@@ -67,6 +67,11 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 - **[Integration Patterns](../../../sdk-users/apps/kaizen/docs/guides/integration-patterns.md)** - DataFlow, Nexus, MCP
 - **[Troubleshooting](../../../sdk-users/apps/kaizen/docs/reference/troubleshooting.md)** - Common errors
 
+### Autonomy System Guides (NEW - v0.6.0)
+- **[Autonomy System Overview](../../../sdk-users/apps/kaizen/docs/guides/autonomy-system-overview.md)** - Complete autonomy infrastructure guide (6 subsystems)
+- **[Planning Agents Guide](../../../sdk-users/apps/kaizen/docs/guides/planning-agents-guide.md)** - PlanningAgent & PEVAgent patterns with decision matrix
+- **[Meta-Controller Routing Guide](../../../sdk-users/apps/kaizen/docs/guides/meta-controller-routing-guide.md)** - A2A-based intelligent task delegation
+
 ### By Use Case
 | Need | Documentation |
 |------|---------------|
@@ -79,6 +84,9 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 | Custom transports | `sdk-users/apps/kaizen/docs/guides/custom-transports.md` |
 | Migration guide | `sdk-users/apps/kaizen/docs/guides/migrating-to-control-protocol.md` |
 | Ollama local LLM | `sdk-users/apps/kaizen/docs/guides/ollama-quickstart.md` |
+| **Autonomy infrastructure (NEW)** | `sdk-users/apps/kaizen/docs/guides/autonomy-system-overview.md` |
+| **Planning agents (NEW)** | `sdk-users/apps/kaizen/docs/guides/planning-agents-guide.md` |
+| **Intelligent routing (NEW)** | `sdk-users/apps/kaizen/docs/guides/meta-controller-routing-guide.md` |
 | Multi-modal (vision/audio) | `sdk-users/apps/kaizen/docs/reference/multi-modal-api-reference.md` |
 | Memory patterns | `sdk-users/apps/kaizen/docs/reference/memory-patterns-guide.md` |
 | Strategy selection | `sdk-users/apps/kaizen/docs/reference/strategy-selection-guide.md` |
@@ -3029,6 +3037,111 @@ def test_qa_agent(simple_qa_example, assert_async_strategy, test_queries):
 - **Test Data**: `test_queries`, `test_documents`, `test_code_snippets`
 
 **When to Use:** Always use standardized fixtures for unit tests to ensure consistency and reduce boilerplate.
+
+### E2E Testing for Autonomous Agents
+
+**E2E (End-to-End) tests validate complete autonomous agent workflows with real infrastructure:**
+
+**What E2E Tests Are:**
+- **Real LLM inference** using Ollama llama3.2:1b (FREE, no API costs)
+- **Real database** operations with DataFlow (SQLite/PostgreSQL)
+- **Real tools** execution (file system, HTTP, bash commands)
+- **NO MOCKING** (Tier 3 testing strategy - real infrastructure only)
+
+**How to Run E2E Tests:**
+
+```bash
+# Run all E2E tests
+pytest tests/e2e/autonomy/ -v
+
+# Run specific autonomy system
+pytest tests/e2e/autonomy/test_tool_calling_e2e.py -v       # Tool calling
+pytest tests/e2e/autonomy/test_planning_e2e.py -v           # Planning agents
+pytest tests/e2e/autonomy/test_meta_controller_e2e.py -v    # Meta-controller
+pytest tests/e2e/autonomy/test_memory_e2e.py -v             # Memory system
+pytest tests/e2e/autonomy/checkpoints/ -v                   # Checkpoint system
+
+# Prerequisites: Install and start Ollama
+ollama pull llama3.2:1b  # First time only
+pytest tests/e2e/autonomy/ -v
+```
+
+**Writing E2E Tests:**
+
+```python
+import pytest
+from kaizen.agents.autonomous.base import BaseAutonomousAgent
+from kaizen.agents.autonomous.config import AutonomousConfig
+from kaizen.signatures import Signature, InputField, OutputField
+
+class TaskSignature(Signature):
+    task: str = InputField(description="Task to perform")
+    result: str = OutputField(description="Task result")
+
+@pytest.mark.e2e  # Mark as E2E test
+@pytest.mark.asyncio  # Async test
+async def test_autonomous_workflow():
+    """Test autonomous agent with real LLM."""
+
+    # 1. Create config with Ollama (FREE)
+    config = AutonomousConfig(
+        llm_provider="ollama",
+        model="llama3.2:1b",
+        enable_interrupts=True,
+        checkpoint_on_interrupt=True
+    )
+
+    # 2. Create agent
+    agent = BaseAutonomousAgent(config=config, signature=TaskSignature())
+
+    # 3. Execute with real LLM
+    result = await agent.run_autonomous(task="Analyze data file")
+
+    # 4. Validate results
+    assert result is not None
+    assert "result" in result
+    assert len(result["result"]) > 0
+```
+
+**Key E2E Testing Patterns:**
+
+1. **Always use Ollama** for E2E tests (FREE, no API costs)
+2. **Always mark with @pytest.mark.e2e** for test discovery
+3. **Always use real infrastructure** (NO MOCKING)
+4. **Always clean up** resources in teardown
+
+**Available E2E Test Suites:**
+
+| Test Suite | File | Tests | What It Validates |
+|------------|------|-------|-------------------|
+| **Tool Calling** | `test_tool_calling_e2e.py` | 4 | File/HTTP/bash tools with permission policies and approval workflows |
+| **Planning** | `test_planning_e2e.py` | 3 | Planning/PEV/ToT agents with multi-step decomposition |
+| **Meta-Controller** | `test_meta_controller_e2e.py` | 3 | Semantic routing, fallback strategies, task decomposition |
+| **Memory** | `test_memory_e2e.py` | 4 | Hot/warm/cold tier persistence, multi-hour conversations |
+| **Checkpoints** | `checkpoints/` | 3 | Auto-checkpoint creation, resume from checkpoint, compression |
+
+**Prerequisites:**
+
+**Required:**
+- Ollama installed and running (`ollama serve`)
+- Model downloaded (`ollama pull llama3.2:1b`)
+- SQLite (included with Python)
+
+**Optional:**
+- PostgreSQL (for production-like memory tests)
+- OpenAI API key (for quality validation)
+
+**Cost Analysis:**
+
+**E2E Tests Cost**: $0.00
+- Ollama LLM: FREE (local inference)
+- SQLite: FREE (local database)
+- No API calls to paid services
+
+If using OpenAI for quality validation:
+- Use `gpt-4o-mini` ($0.15/1M input, $0.60/1M output)
+- Budget: <$20 for full E2E suite
+- Cost tracking built into tests
 
 ## Critical Rules
 
