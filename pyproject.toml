@@ -23,7 +23,7 @@ dependencies = [
     "kailash>=0.10.10",
     "kailash-nexus>=1.1.2",
     "kailash-dataflow>=0.8.0",
-    "kailash-kaizen>=0.6.6",
+    "kailash-kaizen>=0.6.7",
     # Web Framework
     "fastapi[all]>=0.115.0",
     "uvicorn[standard]>=0.24.0",

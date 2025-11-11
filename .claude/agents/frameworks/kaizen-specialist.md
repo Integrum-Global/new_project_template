@@ -56,83 +56,37 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 - **[Examples](../../examples/)** - 35+ working implementations
 
 ### Critical API References
-
-**Core Architecture:**
 - **[API Reference](../../../sdk-users/apps/kaizen/docs/reference/api-reference.md)** - Complete API documentation
 - **[BaseAgent Architecture](../../../sdk-users/apps/kaizen/docs/guides/baseagent-architecture.md)** - Unified agent system
-- **[Signature Programming](../../../sdk-users/apps/kaizen/docs/guides/signature-programming.md)** - Type-safe I/O
-- **[Configuration](../../../sdk-users/apps/kaizen/docs/reference/configuration.md)** - All config options
-
-**Multi-Agent & Coordination:**
 - **[Multi-Agent Coordination](../../../sdk-users/apps/kaizen/docs/guides/multi-agent-coordination.md)** - Google A2A protocol
-- **[Coordination API](../../../sdk-users/apps/kaizen/docs/reference/coordination-api.md)** - Pipeline patterns, meta-controller routing
-- **[Meta-Controller Guide](../../../sdk-users/apps/kaizen/docs/guides/meta-controller-guide.md)** - Production guide for multi-agent routing
-
-**Planning & Specialized Agents:**
-- **[Planning System Guide](../../../sdk-users/apps/kaizen/docs/guides/planning-system-guide.md)** - Complete planning patterns guide
-- **[Planning Agents API](../../../sdk-users/apps/kaizen/docs/reference/planning-agents-api.md)** - PlanningAgent, PEVAgent API reference
-- **[PEV Agent](../../../sdk-users/apps/kaizen/docs/guides/pev-agent.md)** - Plan-Execute-Verify pattern
-- **[Pipeline Patterns](../../../sdk-users/apps/kaizen/docs/guides/pipeline-patterns.md)** - Composable workflow patterns
-
-**Lifecycle & State Management:**
-- **[Observability API](../../../sdk-users/apps/kaizen/docs/reference/observability-api.md)** - Hooks system, event lifecycle
-- **[Memory API](../../../sdk-users/apps/kaizen/docs/reference/memory-api.md)** - Hot/Warm/Cold memory tiers
-- **[Checkpoint API](../../../sdk-users/apps/kaizen/docs/reference/checkpoint-api.md)** - State persistence, save/load/fork
-- **[Interrupts API](../../../sdk-users/apps/kaizen/docs/reference/interrupts-api.md)** - Graceful shutdown, interrupt handling
-
-**Multi-Modal & Communication:**
 - **[Control Protocol API](../../../sdk-users/apps/kaizen/docs/reference/control-protocol-api.md)** - Bidirectional communication
 - **[Multi-Modal API](../../../sdk-users/apps/kaizen/docs/reference/multi-modal-api-reference.md)** - Vision, audio APIs
-
-**Integration & Patterns:**
 - **[Memory Patterns](../../../sdk-users/apps/kaizen/docs/reference/memory-patterns-guide.md)** - Memory usage patterns
 - **[Strategy Selection](../../../sdk-users/apps/kaizen/docs/reference/strategy-selection-guide.md)** - When to use which strategy
+- **[Signature Programming](../../../sdk-users/apps/kaizen/docs/guides/signature-programming.md)** - Type-safe I/O
 - **[Integration Patterns](../../../sdk-users/apps/kaizen/docs/guides/integration-patterns.md)** - DataFlow, Nexus, MCP
 - **[Troubleshooting](../../../sdk-users/apps/kaizen/docs/reference/troubleshooting.md)** - Common errors
 
 ### By Use Case
 | Need | Documentation |
 |------|---------------|
-| **Getting Started** | |
 | Getting started | `sdk-users/apps/kaizen/docs/getting-started/quickstart.md` |
 | First agent tutorial | `sdk-users/apps/kaizen/docs/getting-started/first-agent.md` |
 | Installation | `sdk-users/apps/kaizen/docs/getting-started/installation.md` |
-| **Core Architecture** | |
 | BaseAgent architecture | `sdk-users/apps/kaizen/docs/guides/baseagent-architecture.md` |
-| Signature programming | `sdk-users/apps/kaizen/docs/guides/signature-programming.md` |
-| Configuration | `sdk-users/apps/kaizen/docs/reference/configuration.md` |
-| **Multi-Agent Coordination** | |
 | Multi-agent coordination | `sdk-users/apps/kaizen/docs/guides/multi-agent-coordination.md` |
-| Meta-controller routing | `sdk-users/apps/kaizen/docs/guides/meta-controller-guide.md` |
-| Pipeline patterns | `sdk-users/apps/kaizen/docs/guides/pipeline-patterns.md` |
-| Coordination API | `sdk-users/apps/kaizen/docs/reference/coordination-api.md` |
-| **Planning & Specialized Agents** | |
-| Planning system overview | `sdk-users/apps/kaizen/docs/guides/planning-system-guide.md` |
-| Planning agents (API) | `sdk-users/apps/kaizen/docs/reference/planning-agents-api.md` |
-| PEV agent (Plan-Execute-Verify) | `sdk-users/apps/kaizen/docs/guides/pev-agent.md` |
-| Tree-of-Thoughts agent | `sdk-users/apps/kaizen/docs/guides/tree-of-thoughts-agent.md` |
-| Single-agent patterns | `sdk-users/apps/kaizen/docs/guides/single-agent-patterns.md` |
-| **Lifecycle & State Management** | |
-| Observability & hooks | `sdk-users/apps/kaizen/docs/reference/observability-api.md` |
-| Memory tiers (Hot/Warm/Cold) | `sdk-users/apps/kaizen/docs/reference/memory-api.md` |
-| Checkpoint & resume | `sdk-users/apps/kaizen/docs/reference/checkpoint-api.md` |
-| Interrupts & shutdown | `sdk-users/apps/kaizen/docs/reference/interrupts-api.md` |
-| Hooks system guide | `sdk-users/apps/kaizen/docs/guides/hooks-system.md` |
-| Memory patterns | `sdk-users/apps/kaizen/docs/reference/memory-patterns-guide.md` |
-| **Communication & Multi-Modal** | |
 | Control Protocol tutorial | `sdk-users/apps/kaizen/docs/guides/control-protocol-tutorial.md` |
-| Control Protocol API | `sdk-users/apps/kaizen/docs/reference/control-protocol-api.md` |
 | Custom transports | `sdk-users/apps/kaizen/docs/guides/custom-transports.md` |
-| Migration guide (Control Protocol) | `sdk-users/apps/kaizen/docs/guides/migrating-to-control-protocol.md` |
-| Multi-modal (vision/audio) | `sdk-users/apps/kaizen/docs/reference/multi-modal-api-reference.md` |
-| **Integration & Configuration** | |
+| Migration guide | `sdk-users/apps/kaizen/docs/guides/migrating-to-control-protocol.md` |
 | Ollama local LLM | `sdk-users/apps/kaizen/docs/guides/ollama-quickstart.md` |
+| Multi-modal (vision/audio) | `sdk-users/apps/kaizen/docs/reference/multi-modal-api-reference.md` |
+| Memory patterns | `sdk-users/apps/kaizen/docs/reference/memory-patterns-guide.md` |
 | Strategy selection | `sdk-users/apps/kaizen/docs/reference/strategy-selection-guide.md` |
+| Configuration | `sdk-users/apps/kaizen/docs/reference/configuration.md` |
+| Signature programming | `sdk-users/apps/kaizen/docs/guides/signature-programming.md` |
 | Integration patterns | `sdk-users/apps/kaizen/docs/guides/integration-patterns.md` |
-| Async execution | `sdk-users/apps/kaizen/docs/guides/async-execution.md` |
-| **Reference** | |
-| Complete API reference | `sdk-users/apps/kaizen/docs/reference/api-reference.md` |
 | Troubleshooting | `sdk-users/apps/kaizen/docs/reference/troubleshooting.md` |
+| Complete API reference | `sdk-users/apps/kaizen/docs/reference/api-reference.md` |
 | Complete guide | `sdk-users/apps/kaizen/README.md` |
 | Working examples | `apps/kailash-kaizen/examples/` |
 
@@ -145,7 +99,7 @@ Expert in Kaizen AI framework - signature-based programming, BaseAgent architect
 
 ### Key Concepts
 - **Signature-Based Programming**: Type-safe I/O with InputField/OutputField
-- **Structured Outputs** (v0.6.6): OpenAI Structured Outputs API with 100% schema compliance. Supports strict mode (100% compliance, gpt-4o-2024-08-06+) and legacy mode (70-85% best-effort, all models). Fixed in v0.6.6: Legacy mode now returns correct OpenAI format.
+- **Structured Outputs**: OpenAI Structured Outputs API with 100% schema compliance. Use `create_structured_output_config()` with `provider_config`. Strict mode (100% compliance, gpt-4o-2024-08-06+) returns dict responses - strategies auto-detect and handle transparently. Legacy mode (70-85% best-effort, all models).
 - **Signature Inheritance** (v0.6.5): Child signatures merge parent fields with proper type validation
 - **Extension Points** (v0.6.5): Custom system prompts via callback pattern enabling subclass method overrides without circular dependencies
 - **BaseAgent**: Unified agent system with lazy initialization, auto-generates A2A capability cards
