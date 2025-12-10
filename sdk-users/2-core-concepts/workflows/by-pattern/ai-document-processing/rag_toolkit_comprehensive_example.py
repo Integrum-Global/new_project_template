@@ -17,9 +17,6 @@ import asyncio
 import logging
 from typing import Any, Dict, List
 
-from kailash.nodes.logic import SwitchNode
-from kailash.runtime.local import LocalRuntime
-from kailash.workflow.builder import WorkflowBuilder
 from kaizen.nodes.rag import (
     AdaptiveRAGWorkflowNode,
     AdvancedRAGWorkflowNode,
@@ -36,6 +33,9 @@ from kaizen.nodes.rag import (
 )
 
 from examples.utils.data_paths import get_input_data_path, get_output_data_path
+from kailash.nodes.logic import SwitchNode
+from kailash.runtime.local import LocalRuntime
+from kailash.workflow.builder import WorkflowBuilder
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
